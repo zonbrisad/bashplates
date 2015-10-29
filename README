@@ -1,0 +1,16 @@
+
+  Bashplates	
+-------------------------------------------------------------------------
+Author: Peter Malmberg  <peter.malmberg@gmail.com>
+Licence: MIT
+
+Description:
+Bashplates is a small collection of templates to speed the development
+of bash shellscripts.
+-------------------------------------------------------------------------
+
+
+cmd-template
+----------------
+A template for shellscripts with subcommands. It contains a help
+command that parses itself for documentation. 
