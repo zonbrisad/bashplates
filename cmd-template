@@ -9,19 +9,39 @@
 #---------------------------------------------------------------------
 #
 
-#
-# Basedir for script
-#
-basedir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+# User Settings
+#---------------------------------------------------------------------
 
-
-#
 # logfile
-#
 logfile=/var/log/logfile.log
 
 
-#
+
+#--------------------------------------------------------------------- 
+# User functions
+#---------------------------------------------------------------------
+
+funk1() { ## Description of funktion 1 
+  echo "Funk 1"
+}
+
+funk2() { ## Description of function 2
+  echo "Funk 2"
+	chSetting "test.conf" "central.database" arne
+}
+
+clean() { ## Remove leftover files
+  find . -name "*~" -delete
+}
+
+ 
+#--------------------------------------------------------------------- 
+# System functions and settings
+#---------------------------------------------------------------------
+
+# Basedir for script
+basedir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
 # ANSI foreground colors codes
 #
 E_BLACK='\e[0;30m'        # Black
@@ -41,7 +61,6 @@ E_BOLD_MAGENTA='\e[1;35m' # Bold Magenta
 E_BOLD_CYAN='\e[1;36m'    # Bold Cyan
 E_BOLD_WHITE='\e[1;37m'   # White
 
-#
 # ANSI background color codes
 #
 On_Black='\e[40m'         # Black
@@ -53,7 +72,6 @@ On_Purple='\e[45m'        # Purple
 On_Cyan='\e[46m'          # Cyan
 On_White='\e[47m'         # White
 
-#
 # ANSI cursor operations
 #
 E_RETURN="\e[F"           # Move cursor to begining of line
@@ -61,8 +79,8 @@ E_UP="\e[A"               # Move cursor one line up
 E_DOWN="\e[B"             # Move cursor one line down
 E_FORWARD="\e[C"          # Move cursor forward
 E_BACK="\e[D"             # Move cursor backward
-E_HIDE="\e[?25l"           # Hide cursor 
-E_SHOW="\e[?25h"           # Show cursor 
+E_HIDE="\e[?25l"          # Hide cursor 
+E_SHOW="\e[?25h"          # Show cursor 
 
 E_END="\e[m"              # Clear Attributes
 
@@ -70,24 +88,7 @@ printLine() {
   echo -e "${E_BOLD_WHITE}------------------------------------------------------------------------------${E_END}"
 }
 
-#--------------------------------------------------------------------- 
-# Add your code after here 
-#---------------------------------------------------------------------
 
-funk1() { ## Description of funktion 1 
-  echo "Funk 1"
-}
-
-funk2() { ## Description of function 2
-  echo "Funk 2"
-	chSetting "test.conf" "central.database" arne
-}
-
-#--------------------------------------------------------------------- 
-# 
-#---------------------------------------------------------------------
-
-#
 # Function logging to file
 #
 # Arg1 String to log to file
@@ -97,8 +98,6 @@ fnLog() {
 	echo $ts $1 >> $logfile
 }
 
-
-#
 # Change setting in config file (key value pair)
 #
 # arg1 config file
