@@ -17,5 +17,5 @@ command that parses itself for documentation.
 - ANSI Color codes
 - Handler for subcommands
 - Help command
-- A simple log to file command
+- A simple log to file function
 
