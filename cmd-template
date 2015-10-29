@@ -92,9 +92,9 @@ printLine() {
 # Function logging to file
 #
 # Arg1 String to log to file
-#
+# 
 fnLog() {
-  #ts=´date +"%Y-%m-%d %H:%M:%S 
+  ts=$(date +"%Y-%m-%d %H:%M:%S")
 	echo $ts $1 >> $logfile
 }
 
