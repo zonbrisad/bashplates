@@ -1,8 +1,8 @@
 #!/bin/bash
 #---------------------------------------------------------------------
 #
-#  A basic template for bash shellscripts with commands and help information, 
-#  color coding etc.
+#  ANSI Escape test script
+#  
 #
 #  Author: Peter Malmberg <peter.malmberg@gmail.com>
 #
@@ -53,7 +53,18 @@ On_Purple='\e[45m'        # Purple
 On_Cyan='\e[46m'          # Cyan
 On_White='\e[47m'         # White
 
-E_END="\e[m"              # Color Reset
+#
+# ANSI cursor operations
+#
+E_RETURN="\e[F"           # Move cursor to begining of line
+E_UP="\e[A"               # Move cursor one line up
+E_DOWN="\e[B"             # Move cursor one line down
+E_FORWARD="\e[C"          # Move cursor forward
+E_BACK="\e[D"             # Move cursor backward
+E_HIDE="\e[?25l"           # Hide cursor 
+E_SHOW="\e[?25h"           # Show cursor 
+
+E_END="\e[m"              # Clear Attributes
 
 printLine() {
   echo -e "${E_BOLD_WHITE}------------------------------------------------------------------------------${E_END}"
@@ -68,8 +79,6 @@ info() { ## Display rows and columns
 	echo "Columns: ${COLUMNS}"
 }
 
-E_RETURN="\e[F" # Move to begining one line up
-
 
 print_bar() {
   echo -n "["
@@ -79,22 +88,20 @@ print_bar() {
 	for i in `seq 1 $(expr $1 - $2)`; do
 	  echo -n " "
 	done
-	echo -e "]  " $(expr $1 / $2 )  $E_RETURN
+	echo  "]"   
 }
 
 test() { ## test command
-
-  #print_bar 10 5
+#  echo -en $E_HIDE
   for i in `seq 1 30`;
 	do
 	  sleep 0.1
-	  #echo -e $i $E_RETURN
-		echo -e $i $E_RETURN
+#		echo -e $i $E_RETURN
 		print_bar 30 $i
-		echo -e $E_RETURN
-		#echo -e $E_RETURN
+		print_bar 30 $i
+		echo -e $E_RETURN $E_UP $E_UP
 	done
-
+#  echo -en $E_SHOW
 }
 
 

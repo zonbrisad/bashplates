@@ -53,7 +53,18 @@ On_Purple='\e[45m'        # Purple
 On_Cyan='\e[46m'          # Cyan
 On_White='\e[47m'         # White
 
-E_END="\e[m"              # Color Reset
+#
+# ANSI cursor operations
+#
+E_RETURN="\e[F"           # Move cursor to begining of line
+E_UP="\e[A"               # Move cursor one line up
+E_DOWN="\e[B"             # Move cursor one line down
+E_FORWARD="\e[C"          # Move cursor forward
+E_BACK="\e[D"             # Move cursor backward
+E_HIDE="\e[?25l"           # Hide cursor 
+E_SHOW="\e[?25h"           # Show cursor 
+
+E_END="\e[m"              # Clear Attributes
 
 printLine() {
   echo -e "${E_BOLD_WHITE}------------------------------------------------------------------------------${E_END}"
