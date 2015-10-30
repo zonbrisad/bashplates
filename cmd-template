@@ -9,15 +9,16 @@
 #---------------------------------------------------------------------
 #
 
+#---------------------------------------------------------------------
 # User Settings
 #---------------------------------------------------------------------
 
 # logfile
-logfile=/var/log/logfile.log
+LOGFILE=/var/log/logfile.log
 
 
-
-#--------------------------------------------------------------------- 
+VERSION="Bashtemplate 1.01"
+#---------------------------------------------------------------------
 # User functions
 #---------------------------------------------------------------------
 
@@ -89,13 +90,15 @@ printLine() {
 }
 
 
+
+
 # Function logging to file
 #
 # Arg1 String to log to file
 # 
 fnLog() {
   ts=$(date +"%Y-%m-%d %H:%M:%S")
-	echo $ts $1 >> $logfile
+	echo $ts $1 >> $LOGFILE
 }
 
 # Change setting in config file (key value pair)
@@ -126,8 +129,17 @@ help() { ## Print this help information
 	echo
 }
 
+version() { ## Print version information
+  echo $VERSION
+}
+
 # Runs a function in this file as a command
-runCommand() { 
+runCommand() {
+	if [ $# == "1" ]; then
+	  echo -e ${E_BOLD_RED}"No command given"${E_END}
+		help
+		exit
+	fi
   funks=`grep "##" $0 | grep -v grep | grep -v help_line`
 	for line in ${funks[@]}; do
 	  command=`echo $line | sed -s 's/(.*//'`
@@ -136,7 +148,9 @@ runCommand() {
 			exit
 		fi
 	done
-	help	
+	echo -e ${E_BOLD_RED}"Command not found"${E_END}
+	help
+	exit 
 }
 
 runCommand $1 $2 $3 $4 $5 $6 $7 $8 $9 $10
