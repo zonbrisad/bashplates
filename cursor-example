@@ -89,11 +89,8 @@ test() { ## test command
   for i in `seq 1 30`;
 	do
 	  sleep 0.03
-#		echo -e $i $E_RETURN
 		print_bar 30 $i
-		print_bar 30 $i
-		echo -e $E_RETURN $E_UP $E_UP
-#		echo -e $E_RETURN $E_UP 
+		echo -e $E_RETURN $E_UP 
 	done
   echo -en $E_SHOW
 }
