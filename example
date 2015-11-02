@@ -106,7 +106,7 @@ colors() { ## Color test
 
 commit() { ## Commit project to repository
   git commit -a
-	git push --tags
+	git push --tags -a
 }
 
 #--------------------------------------------------------------------- 
