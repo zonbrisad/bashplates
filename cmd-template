@@ -13,26 +13,33 @@
 # User Settings
 #---------------------------------------------------------------------
 
-# logfile
-LOGFILE=/var/log/logfile.log
+# Script version info
+VERSION="Bashplate 1.02"
 
+# Usage info
+USAGE="Usage: cmd-template command [option]" 
 
-VERSION="Bashtemplate 1.01"
+# Description
+DESC="Bashplate is a bash script template to ease development of\n\
+command style shellsctipts"
+
+# logfile (uncomment to use logfile)
+#LOGFILE=/var/log/bashplate.log
+
+# Default command (uncomment to use a default command )
+#DEFAULT=funk1
+
 #---------------------------------------------------------------------
 # User functions
 #---------------------------------------------------------------------
 
 funk1() { ## Description of funktion 1 
-  echo "Funk 1"
+  echo "Funk 1 (this is the default command)"
 }
 
 funk2() { ## Description of function 2
   echo "Funk 2"
 	chSetting "test.conf" "central.database" arne
-}
-
-clean() { ## Remove leftover files
-  find . -name "*~" -delete
 }
 
  
@@ -90,8 +97,11 @@ printLine() {
 }
 
 
+#--------------------------------------------------------------------- 
+# 
+#---------------------------------------------------------------------
 
-
+#
 # Function logging to file
 #
 # Arg1 String to log to file
@@ -114,8 +124,10 @@ chSetting() {
 }
 
 help() { ## Print this help information
-  echo 
-	printf "%-20s  %s\n" "Target" "Help"
+	echo $USAGE
+	echo -e $DESC
+	echo 
+	printf "%-20s  %s\n" "Command" "Help"
 	printLine
 	IFS=$'\n'
   help_lines=`grep -h "##" $0 | grep -v grep | grep -v help_line`
@@ -136,6 +148,13 @@ version() { ## Print version information
 # Runs a function in this file as a command
 runCommand() {
 	if [ $# == "1" ]; then
+	 
+	  # check for a default command
+	  if [ -n "$DEFAULT" ]; then
+		  $DEFAULT
+		  exit
+		fi
+		
 	  echo -e ${E_BOLD_RED}"No command given"${E_END}
 		help
 		exit
