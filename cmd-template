@@ -106,9 +106,18 @@ printLine() {
 #
 # Arg1 String to log to file
 # 
-fnLog() {
+bpLog() {
+  # check for LOGFILE variable
+	if [ -n "$LOGFILE" ]; then
+	  return
+	fi
+
   ts=$(date +"%Y-%m-%d %H:%M:%S")
 	echo $ts $1 >> $LOGFILE
+}
+
+log() { ## View logfile
+  cat $LOGFILE 
 }
 
 # Change setting in config file (key value pair)
