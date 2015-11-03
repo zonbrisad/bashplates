@@ -100,7 +100,9 @@ colors() { ## Color test
 	echo -e "${E_WHITE}${ON_YELLOW}WHITE on YELLOW${E_END}"
 	echo -e "${E_WHITE}${ON_BLUE}WHITE on BLUE${E_END}"
 	echo -e "${E_WHITE}${ON_MAGENTA}WHITE on MAGENTA${E_END}"
-	echo -e "${E_WHITE}${ON_CYAN}WHITE on CYAN${E_END}"	
+	echo -e "${E_WHITE}${ON_CYAN}WHITE on CYAN${E_END}"
+	echo -e "${E_BLACK}${ON_WHITE}BLACK on WHITE${E_END}"
+	
 }
 
 
