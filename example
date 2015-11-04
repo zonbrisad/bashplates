@@ -9,12 +9,12 @@
 #---------------------------------------------------------------------
 #
 
+# Directory where script is located
+BASEDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
 #---------------------------------------------------------------------
 # User Settings
 #---------------------------------------------------------------------
-
-# logfile
-LOGFILE=/var/log/bashplate-example.log
 
 # Script version info
 VERSION="example 1.03"
@@ -26,10 +26,23 @@ USAGE="Usage: example command [option]"
 DESC="Bashplate is a bash script template to ease development of\n\
 command style shellscripts"
 
+# logfile (uncomment to use logfile)
+LOGFILE=${BASEDIR}/example.log
+
+# Default command (uncomment to use a default command )
+#DEFAULT=funk1
 
 #---------------------------------------------------------------------
 # User functions
 #---------------------------------------------------------------------
+
+errorTest() { ## Test of error messages
+  echo $LOGFILE
+	bpInfo "Info test"
+  bpWarning "Warning test"
+	bpError "Error test"
+	bpCritical "Critical test"
+}
 
 info() { # Display rows and columns
   echo $LINES
@@ -115,9 +128,6 @@ commit() { ## Commit project to repository
 # System functions and settings
 #---------------------------------------------------------------------
 
-# Basedir for script
-basedir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-
 # ANSI foreground colors codes
 #
 E_BLACK='\e[0;30m'        # Black
@@ -160,10 +170,14 @@ E_SHOW="\e[?25h"          # Show cursor
 
 E_END="\e[m"              # Clear Attributes
 
+E_INFO=$E_WHITE
+E_WARNING=$E_BOLD_YELLOW
+E_ERROR=$E_BOLD_RED
+E_CRITICAL=$ON_RED$E_WHITE
+
 printLine() {
   echo -e "${E_BOLD_WHITE}------------------------------------------------------------------------------${E_END}"
 }
-
 
 
 #--------------------------------------------------------------------- 
@@ -175,10 +189,40 @@ printLine() {
 #
 # Arg1 String to log to file
 # 
-fnLog() {
-  ts=$(date +"%Y-%m-%d %H:%M:%S")
-	echo $ts $1 >> $LOGFILE
+bpLog() {
+  # check for LOGFILE variable
+	if [ -n "$LOGFILE" ]; then
+	  ts=$(date +"%Y-%m-%d %H:%M:%S")
+ 	  echo $ts $1 >> $LOGFILE
+	fi
 }
+
+log() { ## View logfile
+  cat $LOGFILE 
+}
+
+
+bpInfo() {
+  bpLog "[INFO] $1"
+	echo -e "${E_INFO}[INFO]  $1 $E_END"
+}
+
+bpWarning() {
+  bpLog "[WARNING] $1"
+  echo -e "${E_WARNING}[Warning]  $1 $E_END"
+}
+
+bpError() {
+  bpLog "[ERROR] $1"
+  echo -e "${E_ERROR}[Error]  $1 $E_END"
+}
+
+bpCritical() {
+  bpLog "[CRITICAL] $1"
+  echo -e "${E_CRITICAL}[Critical]  $1 $E_END"
+	exit
+}
+
 
 # Change setting in config file (key value pair)
 #
@@ -217,6 +261,13 @@ version() { ## Print version information
 # Runs a function in this file as a command
 runCommand() {
 	if [ $# == "1" ]; then
+	 
+	  # check for a default command
+	  if [ -n "$DEFAULT" ]; then
+		  $DEFAULT
+		  exit
+		fi
+		
 	  echo -e ${E_BOLD_RED}"No command given"${E_END}
 		help
 		exit
