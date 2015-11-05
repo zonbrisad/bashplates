@@ -14,9 +14,16 @@ cmd-template
 ----------------
 A template for shellscripts with subcommands. It contains a help
 command that parses itself for documentation. 
+
+Built in services
+=======================
 - ANSI Color codes
 - Handler for subcommands
-- Help command
 - A simple message log function
 - Simple error/message handling
 
+Built in commands
+=======================
+- help    - Help information
+- log     - View log 
+- version - version information
