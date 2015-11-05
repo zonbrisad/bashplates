@@ -37,15 +37,11 @@ DEFAULT=funk1
 #---------------------------------------------------------------------
 
 funk1() { ## Description of funktion 1 
-  bpInfo "Info"
-  bpWarning "En varning"
-	bpError "Ett fel"
-	bpCritical "Critical"
-  echo "Funk 1 (this is the default command)"
+  bpInfo "Funk 1 (this is the default command)"
 }
 
 funk2() { ## Description of function 2
-  echo "Funk 2"
+  bpInfo "Funk 2"
 	chSetting "test.conf" "central.database" arne
 }
 
