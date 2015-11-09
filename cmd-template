@@ -92,7 +92,7 @@ E_SHOW="\e[?25h"          # Show cursor
 
 E_END="\e[m"              # Clear Attributes
 
-E_INFO=$E_WHITE
+E_INFO=$E_BOLD_CYAN
 E_WARNING=$E_BOLD_YELLOW
 E_ERROR=$E_BOLD_RED
 E_CRITICAL=$ON_RED$E_WHITE
@@ -125,23 +125,23 @@ log() { ## View logfile
 
 
 bpInfo() {
-  bpLog "[INFO] $1"
-	echo -e "${E_INFO}[INFO]  $1 $E_END"
+  bpLog "[Info] $1"
+	echo -e "[${E_INFO}INFO${E_END}] $1"
 }
 
 bpWarning() {
   bpLog "[WARNING] $1"
-  echo -e "${E_WARNING}[Warning]  $1 $E_END"
+  echo -e "[${E_WARNING}Warn${E_END}] $1"
 }
 
 bpError() {
   bpLog "[ERROR] $1"
-  echo -e "${E_ERROR}[Error]  $1 $E_END"
+  echo -e "[${E_ERROR}Erro${E_END}] $1"
 }
 
 bpCritical() {
   bpLog "[CRITICAL] $1"
-  echo -e "${E_CRITICAL}[Critical]  $1 $E_END"
+  echo -e "[${E_CRITICAL}Crit${E_END}] $1"
 	exit
 }
 
