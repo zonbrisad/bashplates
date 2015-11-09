@@ -78,7 +78,7 @@ ON_YELLOW='\e[43m'        # Yellow
 ON_BLUE='\e[44m'          # Blue
 ON_MAGENTA='\e[45m'       # Magenta
 ON_CYAN='\e[46m'          # Cyan
-ON_WHITE='\e[47m'         # White
+ON_WHITE='\e[1;47m'         # White
 
 # ANSI cursor operations
 #
