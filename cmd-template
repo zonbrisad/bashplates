@@ -45,7 +45,6 @@ funk2() { ## Description of function 2
 	chSetting "test.conf" "central.database" arne
 }
 
- 
 #--------------------------------------------------------------------- 
 # System functions and settings
 #---------------------------------------------------------------------
