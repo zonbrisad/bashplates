@@ -70,14 +70,14 @@ E_WHITE='\e[1;37m'        # White
 
 # ANSI background color codes
 #
-ON_BLACK='\e[40m'         # Black
-ON_RED='\e[41m'           # Red
-ON_GREEN='\e[42m'         # Green
-ON_YELLOW='\e[43m'        # Yellow
-ON_BLUE='\e[44m'          # Blue
-ON_MAGENTA='\e[45m'       # Magenta
-ON_CYAN='\e[46m'          # Cyan
-ON_WHITE='\e[1;47m'         # White
+E_ON_BLACK='\e[40m'         # Black
+E_ON_RED='\e[41m'           # Red
+E_ON_GREEN='\e[42m'         # Green
+E_ON_YELLOW='\e[43m'        # Yellow
+E_ON_BLUE='\e[44m'          # Blue
+E_ON_MAGENTA='\e[45m'       # Magenta
+E_ON_CYAN='\e[46m'          # Cyan
+E_ON_WHITE='\e[47m'         # White
 
 # ANSI cursor operations
 #
@@ -94,7 +94,7 @@ E_END="\e[m"              # Clear Attributes
 E_INFO=$E_BR_CYAN
 E_WARNING=$E_BR_YELLOW
 E_ERROR=$E_BR_RED
-E_CRITICAL=$ON_RED$E_WHITE
+E_CRITICAL=$E_ON_RED$E_WHITE
 
 printLine() {
   echo -e "${E_BOLD_WHITE}------------------------------------------------------------------------------${E_END}"
@@ -119,27 +119,31 @@ bpLog() {
 }
 
 log() { ## View logfile
-  cat $LOGFILE 
+  D=$(sed -e "s|\[Info\]|\[\\${E_INFO}Info\\${E_END}\]|"     \
+	        -e "s|\[Warn\]|\[\\${E_WARNING}Warn\\${E_END}\]|"  \
+	        -e "s|\[Erro\]|\[\\${E_ERROR}Erro\\${E_END}\]|"    \
+	        -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < ${LOGFILE} )
+	echo -e "$D"
 }
 
 
 bpInfo() {
   bpLog "[Info] $1"
-	echo -e "[${E_INFO}INFO${E_END}] $1"
+	echo -e "[${E_INFO}Info${E_END}] $1"
 }
 
 bpWarning() {
-  bpLog "[WARNING] $1"
+  bpLog "[Warn] $1"
   echo -e "[${E_WARNING}Warn${E_END}] $1"
 }
 
 bpError() {
-  bpLog "[ERROR] $1"
+  bpLog "[Erro] $1"
   echo -e "[${E_ERROR}Erro${E_END}] $1"
 }
 
 bpCritical() {
-  bpLog "[CRITICAL] $1"
+  bpLog "[Crit] $1"
   echo -e "[${E_CRITICAL}Crit${E_END}] $1"
 	exit
 }
