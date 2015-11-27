@@ -114,15 +114,18 @@ bpLog() {
   # check for LOGFILE variable
 	if [ -n "$LOGFILE" ]; then
 	  ts=$(date +"%Y-%m-%d %H:%M:%S")
- 	  echo $ts $1 >> $LOGFILE
+ 	  echo $ts $1 >> ${LOGFILE}
 	fi
 }
 
 log() { ## View logfile
-  D=$(sed -e "s|\[Info\]|\[\\${E_INFO}Info\\${E_END}\]|"     \
+  D=$(sed -r -e "s|\[Info\]|\[\\${E_INFO}Info\\${E_END}\]|"  \
 	        -e "s|\[Warn\]|\[\\${E_WARNING}Warn\\${E_END}\]|"  \
 	        -e "s|\[Erro\]|\[\\${E_ERROR}Erro\\${E_END}\]|"    \
-	        -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < ${LOGFILE} )
+					-e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
+					-e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
+	        -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < ${LOGFILE} ) 
+
 	echo -e "$D"
 }
 
