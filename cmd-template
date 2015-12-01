@@ -196,7 +196,7 @@ runCommand() {
 		  exit
 		fi
 		
-	  echo -e ${E_BOLD_RED}"No command given"${E_END}
+	  echo -e ${E_BR_RED}"No command given"${E_END}
 		help
 		exit
 	fi
@@ -204,13 +204,13 @@ runCommand() {
 	for line in ${funks[@]}; do
 	  command=`echo $line | sed -s 's/(.*//'`
 		if [ "$command" == "$1" ]; then
-		  $command $1 $2 $3 $4 $5 $6 $7 $8 $9 $10
+		  $command "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
 			exit
 		fi
 	done
-	echo -e ${E_BOLD_RED}"Command not found"${E_END}
+	echo -e ${E_BR_RED}"Command not found"${E_END}
 	help
 	exit 
 }
 
-runCommand $1 $2 $3 $4 $5 $6 $7 $8 $9 $10
+runCommand "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
