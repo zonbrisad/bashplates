@@ -192,11 +192,11 @@ runCommand() {
 	 
 	  # check for a default command
 	  if [ -n "$DEFAULT" ]; then
-		  $DEFAULT
+		  $DEFAULT "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
 		  exit
 		fi
 		
-	  echo -e ${E_BR_RED}"No command given"${E_END}
+	  echo -e ${E_ERROR}"No command given"${E_END}
 		help
 		exit
 	fi
@@ -208,7 +208,7 @@ runCommand() {
 			exit
 		fi
 	done
-	echo -e ${E_BR_RED}"Command not found"${E_END}
+	echo -e ${E_ERROR}"Command not found"${E_END}
 	help
 	exit 
 }
