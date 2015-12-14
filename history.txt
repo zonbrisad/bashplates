@@ -1,0 +1,8 @@
+
+
+Version 1.04
+ - Added template verion variable
+ - Added lock file handling
+ - Added root user check
+ - Added required programs check
+ - fixed no command error
