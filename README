@@ -21,9 +21,25 @@ Built in services
 - Handler for subcommands
 - A simple message log function
 - Simple error/message handling
+- Check if root user
+- Check for required programs
+- lock file feature
+- Trap handling
+- Cleanup handling
+
 
 Built in commands
 =======================
 - help    - Help information
 - log     - View log 
 - version - version information
+
+
+
+
+Some usefull links
+-------------------------------------------------
+https://gist.github.com/KylePDavis/3901321
+https://gist.github.com/KylePDavis/3f8c511838a36f2528d7
+http://natelandau.com/boilerplate-shell-script-template/
+http://linuxcommand.org/lc3_new_script.php

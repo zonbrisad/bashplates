@@ -1,16 +1,27 @@
 #!/bin/bash
 #---------------------------------------------------------------------
 #
-#  Bashplate example script.
+#  [Description]
+#    Bashplate example script. This script inludes a number of examples
+#    demonstrating a number features of the bashplate template.
 #  
+#  [Author] 
+#    Peter Malmberg <peter.malmberg@gmail.com>
 #
-#  Author: Peter Malmberg <peter.malmberg@gmail.com>
-#
+#  [Licence] 
+#     MIT
+#    
 #---------------------------------------------------------------------
 #
 
+# Set debug messages
+#set x
+
 # Directory where script is located
-BASEDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+scriptPath=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+# Name of script
+scriptName=$(basename $0)
 
 #---------------------------------------------------------------------
 # User Settings
@@ -19,22 +30,34 @@ BASEDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 # Script version info
 VERSION="example 1.03"
 
+# Bashplate version
+templateVersion="1.04"
+
 # Usage info
-USAGE="Usage: example command [option]" 
+USAGE="Usage: ${scriptName} command [option]" 
 
-# Description
-DESC="example is a bash script that demonstrates some of the features of the bashplate template."
-
+# Description text
+DESC="This script demonstrates some of the features of the bashplate template."
 
 # logfile (uncomment to use logfile)
-LOGFILE=${BASEDIR}/example.log
+LOGFILE=${scriptPath}/${scriptName}.log
 
 # Default command (uncomment to use a default command )
-#DEFAULT=funk1
+DEFAULT=defaultFunction
+
+# Programs that are required to run the script
+#REQUIRED_PROGRAMS=(ls mv kalle)
+
+# Lock file
+LOCK_FILE=/tmp/${scriptName}.lock
 
 #---------------------------------------------------------------------
 # User functions
 #---------------------------------------------------------------------
+
+defaultFunction() {
+  echo "This is the default function. Type \"example help\" to get more info."
+}
 
 errorTest() { ## Test of error messages
   echo $LOGFILE
@@ -44,9 +67,13 @@ errorTest() { ## Test of error messages
 	bpCritical "Critical test"
 }
 
-info() { # Display rows and columns
+printInfo() {
+  echo $1  $2
+}
+info() { ## Display rows and columns
   echo $LINES
-	echo "Columns: ${COLUMNS}"
+	printInfo "Script path" $scriptPath
+	
 }
 
 print_bar() {
@@ -75,20 +102,15 @@ clean() { ## Remove leftover files
   find . -name "*~" -delete
 }
 
-
-traper() {
-  echo "Traped SIGINT"
-	exit
-}
-
 traptest() { ## Trap signal test
   # trap the signal SIGINT to function traper
-	trap traper SIGINT
+#	trap traper SIGINT
 
-  for i in $(seq 1 30); do
-	  sleep 0.1
-	  echo "Wating"
-	done
+  read -p "Press CTRL-C" -t 30
+#  for i in $(seq 1 30); do
+#	  sleep 0.1
+#	  echo "Wating"
+#	done
 }
 
 colors() { ## Color test
@@ -121,6 +143,54 @@ colors() { ## Color test
 commit() { ## Commit project to repository
   git commit -a
 	git push --tags -a
+}
+
+rootTest() { ## Test assert root
+  assertRoot
+}
+
+lockTest() { ## Lock file test
+  ./example help	
+} 
+
+
+
+#--------------------------------------------------------------------- 
+# Signal traps
+#---------------------------------------------------------------------
+
+signalInt() {
+  bpCleanUp
+	exit $EX_OK
+}
+
+signalHup() {
+  bpCleanUp
+}
+
+signalQuit() {
+  echo "Quit"
+  bpCleanUp
+}
+
+signalTerm() {
+  echo "Term"
+  bpCleanUp
+}
+
+bpCleanUp() {
+#  echo "Cleanup"
+  rm -f $LOCK_FILE    # remove Lock file
+}
+
+safeExit() {
+  bpCleanUp
+	exit
+}
+
+errorExit() {
+  bpCleanUp
+	exit
 }
 
 #--------------------------------------------------------------------- 
@@ -178,6 +248,25 @@ printLine() {
   echo -e "${E_BOLD_WHITE}------------------------------------------------------------------------------${E_END}"
 }
 
+# Exit codes 
+#
+EX_OK=0            # successful termination 
+#EX_USAGE=64        # command line usage error 
+#EX_DATAERR=65      # data format error 
+#EX_NOINPUT=66      # cannot open input 
+#EX_NOUSER=67       # addressee unknown 
+#EX_NOHOST=68       # host name unknown 
+#EX_UNAVAILABLE=69  # service unavailable 
+#EX_SOFTWARE=70     # internal software error 
+#EX_OSERR=71        # system error (e.g., can't fork) 
+#EX_OSFILE=72       # critical OS file missing 
+#EX_CANTCREAT=73    # can't create (user) output file 
+#EX_IOERR=74        # input/output error 
+#EX_TEMPFAIL=75     # temp failure; user is invited to retry 
+#EX_PROTOCOL=76     # remote error in protocol 
+#EX_NOPERM=77       # permission denied 
+#EX_CONFIG=78       # configuration error 
+
 
 #--------------------------------------------------------------------- 
 # 
@@ -215,18 +304,25 @@ bpInfo() {
 
 bpWarning() {
   bpLog "[Warn] $1"
-  echo -e "[${E_WARNING}Warn${E_END}] $1"
+  echo -e "[${E_WARNING}Warning${E_END}] $1"
 }
 
 bpError() {
   bpLog "[Erro] $1"
-  echo -e "[${E_ERROR}Erro${E_END}] $1"
+  echo -e "[${E_ERROR}Error${E_END}] $1"
 }
 
 bpCritical() {
   bpLog "[Crit] $1"
-  echo -e "[${E_CRITICAL}Crit${E_END}] $1"
-	exit
+  echo -e "[${E_CRITICAL}Critical${E_END}] $1"
+	safeExit
+}
+
+assertRoot() {
+  if [ $(whoami) != root ]; then
+    echo -e "${E_ERROR}Must be root to use.${E_END}"
+    safeExit
+  fi
 }
 
 
@@ -264,9 +360,36 @@ version() { ## Print version information
   echo $VERSION
 }
 
+# Check if a number of required programs are available on the system
+requiredPrograms() {
+  if [ -n "${REQUIRED_PROGRAMS}" ]; then
+    for p in ${REQUIRED_PROGRAMS[@]}; do
+	    hash "$p" 2>&- || \
+	    { echo -e >&2 "${E_ERROR}Required program \"$p\" not installed.${E_END}"; exit 1; }
+	  done
+	fi
+}
+
+# handler for script lock file
+lockFile() {
+	if [ -n "$LOCK_FILE" ]; then
+	 
+	  if [ -f "$LOCK_FILE" ]; then
+	    echo -e "${E_ERROR}Script is already running${E_END}"
+			#help
+		  exit  # do not use safeExit because lock belongs to other process
+		fi
+				
+		#trap "rm -f $LOCK_FILE" EXIT
+		touch $LOCK_FILE							
+	fi
+}
+
+
 # Runs a function in this file as a command
 runCommand() {
-	if [ $# == "1" ]; then
+#  echo $bpArguments
+	if [ "$bpArguments" -eq 0 ]; then
 	 
 	  # check for a default command
 	  if [ -n "$DEFAULT" ]; then
@@ -276,19 +399,35 @@ runCommand() {
 		
 	  echo -e ${E_ERROR}"No command given"${E_END}
 		help
-		exit
+		safeExit
 	fi
+	
+	# check for required programs 
+	requiredPrograms
+
+  # check for lockfile
+  lockFile
+
   funks=`grep "##" $0 | grep -v grep | grep -v help_line`
 	for line in ${funks[@]}; do
 	  command=`echo $line | sed -s 's/(.*//'`
 		if [ "$command" == "$1" ]; then
-		  $command "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
-			exit
+      $command "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
+			safeExit
 		fi
 	done
 	echo -e ${E_ERROR}"Command not found"${E_END}
 	help
-	exit 
+	safeExit 
 }
 
+trap  signalQuit SIGQUIT
+trap  signalInt  SIGINT
+trap  signalHup  SIGHUP
+trap  signalTerm SIGTERM
+
+bpArguments=$#
+
 runCommand "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
+
+safeExit
