@@ -14,8 +14,10 @@
 #---------------------------------------------------------------------
 #
 
-# Set debug messages
-#set x
+# Display commands as they are executed
+#set -x
+# Display shell input lines as they are read
+#set -v
 
 # Directory where script is located
 scriptPath=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -28,10 +30,10 @@ scriptName=$(basename $0)
 #---------------------------------------------------------------------
 
 # Script version info
-VERSION="example 1.03"
+VERSION="1.04"
 
 # Bashplate version
-templateVersion="1.04"
+templateVersion="1.06"
 
 # Usage info
 USAGE="Usage: ${scriptName} command [option]" 
@@ -45,10 +47,10 @@ LOGFILE=${scriptPath}/${scriptName}.log
 # Default command (uncomment to use a default command )
 DEFAULT=defaultFunction
 
-# Programs that are required to run the script
-#REQUIRED_PROGRAMS=(ls mv kalle)
+# Programs that are required to run the script (uncomment to use)
+REQUIRED_PROGRAMS=(ls mv)
 
-# Lock file
+# Lock file (uncomment to use lock file feature )
 LOCK_FILE=/tmp/${scriptName}.lock
 
 #---------------------------------------------------------------------
@@ -67,14 +69,6 @@ errorTest() { ## Test of error messages
 	bpCritical "Critical test"
 }
 
-printInfo() {
-  echo $1  $2
-}
-info() { ## Display rows and columns
-  echo $LINES
-	printInfo "Script path" $scriptPath
-	
-}
 
 print_bar() {
   echo -n " ["
@@ -103,14 +97,7 @@ clean() { ## Remove leftover files
 }
 
 traptest() { ## Trap signal test
-  # trap the signal SIGINT to function traper
-#	trap traper SIGINT
-
   read -p "Press CTRL-C" -t 30
-#  for i in $(seq 1 30); do
-#	  sleep 0.1
-#	  echo "Wating"
-#	done
 }
 
 colors() { ## Color test
@@ -152,7 +139,6 @@ rootTest() { ## Test assert root
 lockTest() { ## Lock file test
   ./example help	
 } 
-
 
 
 #--------------------------------------------------------------------- 
@@ -239,33 +225,42 @@ E_SHOW="\e[?25h"          # Show cursor
 
 E_END="\e[m"              # Clear Attributes
 
+# Message colors
 E_INFO=$E_BR_CYAN
 E_WARNING=$E_BR_YELLOW
 E_ERROR=$E_BR_RED
 E_CRITICAL=$E_ON_RED$E_WHITE
 
+# Exit codes 
+#
+EX_OK=0            # successful termination 
+
+# Print a divider row
 printLine() {
   echo -e "${E_BOLD_WHITE}------------------------------------------------------------------------------${E_END}"
 }
 
-# Exit codes 
+# Print text into two columns
 #
-EX_OK=0            # successful termination 
-#EX_USAGE=64        # command line usage error 
-#EX_DATAERR=65      # data format error 
-#EX_NOINPUT=66      # cannot open input 
-#EX_NOUSER=67       # addressee unknown 
-#EX_NOHOST=68       # host name unknown 
-#EX_UNAVAILABLE=69  # service unavailable 
-#EX_SOFTWARE=70     # internal software error 
-#EX_OSERR=71        # system error (e.g., can't fork) 
-#EX_OSFILE=72       # critical OS file missing 
-#EX_CANTCREAT=73    # can't create (user) output file 
-#EX_IOERR=74        # input/output error 
-#EX_TEMPFAIL=75     # temp failure; user is invited to retry 
-#EX_PROTOCOL=76     # remote error in protocol 
-#EX_NOPERM=77       # permission denied 
-#EX_CONFIG=78       # configuration error 
+# arg1 text for column 1
+# arg2 text for column 2
+printInfo() {  
+  printf "${E_BR_CYAN}%-20s${E_END} ${E_BR_GREEN}%s${E_END}\n" "$1" "$2"
+}
+
+# Print a variable + text into two columns
+#
+# arg1 variable for column 1
+# arg2 text for column 2
+printVar() {
+  var=$1
+  if [ ${!var} ]; then
+		printInfo "$2" "${!var}"
+	else 
+	  printf "${E_BR_CYAN}%-20s${E_END} ${E_BR_RED}N/A${E_END}\n" "$2"
+	fi
+}
+
 
 
 #--------------------------------------------------------------------- 
@@ -320,9 +315,23 @@ bpCritical() {
 
 assertRoot() {
   if [ $(whoami) != root ]; then
-    echo -e "${E_ERROR}Must be root to use.${E_END}"
+    echo -e "${E_ERROR}Must be root to use this command.${E_END}"
     safeExit
   fi
+}
+
+info() { ## Display rows and columns
+	printVar scriptName      "Script name" 
+	printVar scriptPath      "Script path" 
+	printVar VERSION         "Script version" 
+	printVar templateVersion "Template version" 
+	printVar LOGFILE         "Log file" 
+	printVar LOCK_FILE       "Lock file" 
+	printVar DEFAULT         "Default function" 
+	printVar "REQUIRED_PROGRAMS" "Dependencies"
+	printInfo "PID" $$	
+	printVar DATE "Date" 
+	printVar TIME "Time" 
 }
 
 
@@ -349,8 +358,7 @@ help() { ## Print this help information
 	for help_line in ${help_lines[@]}; do                                     
     help_command=`echo $help_line | sed -s 's/(.*//'`
 		help_info=`echo $help_line | sed -s 's/^.*##//'`
-	  printf "${E_BR_CYAN}%-20s %s${E_END}" $help_command                  
-	  printf "${E_BR_GREEN}%s${E_END}\n" $help_info
+    printInfo $help_command $help_info
 	done 
 	printLine
 	echo
@@ -375,7 +383,7 @@ lockFile() {
 	if [ -n "$LOCK_FILE" ]; then
 	 
 	  if [ -f "$LOCK_FILE" ]; then
-	    echo -e "${E_ERROR}Script is already running${E_END}"
+	    echo -e "${E_ERROR}Script is already running. (${LOCK_FILE})${E_END} "
 			#help
 		  exit  # do not use safeExit because lock belongs to other process
 		fi
@@ -384,7 +392,6 @@ lockFile() {
 		touch $LOCK_FILE							
 	fi
 }
-
 
 # Runs a function in this file as a command
 runCommand() {
@@ -421,6 +428,11 @@ runCommand() {
 	safeExit 
 }
 
+# Init 
+#
+DATE=$(date +"%Y-%m-%d")
+TIME=$(date +"%H:%M:%S")
+
 trap  signalQuit SIGQUIT
 trap  signalInt  SIGINT
 trap  signalHup  SIGHUP
@@ -428,6 +440,8 @@ trap  signalTerm SIGTERM
 
 bpArguments=$#
 
+# Run command parser
 runCommand "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
 
+# Exit cleanly
 safeExit

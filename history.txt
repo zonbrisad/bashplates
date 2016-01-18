@@ -1,4 +1,10 @@
 
+Version 1.06
+ - Added info command
+ - Code cleanup
+
+Version 1.05
+ - Changed script locked printout
 
 Version 1.04
  - Added template verion variable

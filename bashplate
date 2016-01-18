@@ -14,8 +14,10 @@
 #---------------------------------------------------------------------
 #
 
-# Set debug messages
-#set x
+# Display commands as they are executed
+#set -x
+# Display shell input lines as they are read
+#set -v
 
 # Directory where script is located
 scriptPath=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -28,29 +30,29 @@ scriptName=$(basename $0)
 #---------------------------------------------------------------------
 
 # Script version info
-VERSION="Bashplate 1.03"
+VERSION="Bashplate 1.06"
 
 # Bashplate version
-templateVersion="1.04"
+templateVersion="1.06"
 
 # Usage info
 USAGE="Usage: ${scriptName} command [option]" 
 
-# Description
+# Description text
 DESC="Bashplate is a bash script template to ease development of\n\
 command style shellscripts"
 
 # logfile (uncomment to use logfile)
-LOGFILE=${scriptPath}/${scriptName}.log
+#LOGFILE=${scriptPath}/${scriptName}.log
 
 # Default command (uncomment to use a default command )
 DEFAULT=funk1
 
-# Programs that are required to run the script
+# Programs that are required to run the script (uncomment to use)
 #REQUIRED_PROGRAMS=(ls mv kalle)
 
-# Lock file
-LOCK_FILE=/tmp/${scriptName}.lock
+# Lock file (uncomment to use lock file feature )
+#LOCK_FILE=/tmp/${scriptName}.lock
 
 #---------------------------------------------------------------------
 # User functions
@@ -149,14 +151,42 @@ E_SHOW="\e[?25h"          # Show cursor
 
 E_END="\e[m"              # Clear Attributes
 
+# Message colors
 E_INFO=$E_BR_CYAN
 E_WARNING=$E_BR_YELLOW
 E_ERROR=$E_BR_RED
 E_CRITICAL=$E_ON_RED$E_WHITE
 
+# Exit codes 
+#
+EX_OK=0            # successful termination 
+
+# Print a divider row
 printLine() {
   echo -e "${E_BOLD_WHITE}------------------------------------------------------------------------------${E_END}"
 }
+
+# Print text into two columns
+#
+# arg1 text for column 1
+# arg2 text for column 2
+printInfo() {  
+  printf "${E_BR_CYAN}%-20s${E_END} ${E_BR_GREEN}%s${E_END}\n" "$1" "$2"
+}
+
+# Print a variable + text into two columns
+#
+# arg1 variable for column 1
+# arg2 text for column 2
+printVar() {
+  var=$1
+  if [ ${!var} ]; then
+		printInfo "$2" "${!var}"
+	else 
+	  printf "${E_BR_CYAN}%-20s${E_END} ${E_BR_RED}N/A${E_END}\n" "$2"
+	fi
+}
+
 
 
 #--------------------------------------------------------------------- 
@@ -211,9 +241,23 @@ bpCritical() {
 
 assertRoot() {
   if [ $(whoami) != root ]; then
-    echo -e "${E_ERROR}Must be root to use.${E_END}"
+    echo -e "${E_ERROR}Must be root to use this command.${E_END}"
     safeExit
   fi
+}
+
+info() { ## Display rows and columns
+	printVar scriptName      "Script name" 
+	printVar scriptPath      "Script path" 
+	printVar VERSION         "Script version" 
+	printVar templateVersion "Template version" 
+	printVar LOGFILE         "Log file" 
+	printVar LOCK_FILE       "Lock file" 
+	printVar DEFAULT         "Default function" 
+	printVar "REQUIRED_PROGRAMS" "Dependencies"
+	printInfo "PID" $$	
+	printVar DATE "Date" 
+	printVar TIME "Time" 
 }
 
 
@@ -240,8 +284,7 @@ help() { ## Print this help information
 	for help_line in ${help_lines[@]}; do                                     
     help_command=`echo $help_line | sed -s 's/(.*//'`
 		help_info=`echo $help_line | sed -s 's/^.*##//'`
-	  printf "${E_BR_CYAN}%-20s %s${E_END}" $help_command                  
-	  printf "${E_BR_GREEN}%s${E_END}\n" $help_info
+    printInfo $help_command $help_info
 	done 
 	printLine
 	echo
@@ -266,7 +309,7 @@ lockFile() {
 	if [ -n "$LOCK_FILE" ]; then
 	 
 	  if [ -f "$LOCK_FILE" ]; then
-	    echo -e "${E_ERROR}Script is already running${E_END}"
+	    echo -e "${E_ERROR}Script is already running. (${LOCK_FILE})${E_END} "
 			#help
 		  exit  # do not use safeExit because lock belongs to other process
 		fi
@@ -275,7 +318,6 @@ lockFile() {
 		touch $LOCK_FILE							
 	fi
 }
-
 
 # Runs a function in this file as a command
 runCommand() {
@@ -312,6 +354,11 @@ runCommand() {
 	safeExit 
 }
 
+# Init 
+#
+DATE=$(date +"%Y-%m-%d")
+TIME=$(date +"%H:%M:%S")
+
 trap  signalQuit SIGQUIT
 trap  signalInt  SIGINT
 trap  signalHup  SIGHUP
@@ -319,6 +366,8 @@ trap  signalTerm SIGTERM
 
 bpArguments=$#
 
+# Run command parser
 runCommand "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
 
+# Exit cleanly
 safeExit
