@@ -30,10 +30,10 @@ scriptName=$(basename $0)
 #---------------------------------------------------------------------
 
 # Script version info
-VERSION="Bashplate 1.06"
+VERSION="1.07"
 
 # Bashplate version
-templateVersion="1.06"
+templateVersion="1.07"
 
 # Usage info
 USAGE="Usage: ${scriptName} command [option]" 
@@ -161,6 +161,8 @@ E_CRITICAL=$E_ON_RED$E_WHITE
 #
 EX_OK=0            # successful termination 
 
+##-
+
 # Print a divider row
 printLine() {
   echo -e "${E_BOLD_WHITE}------------------------------------------------------------------------------${E_END}"
@@ -207,14 +209,19 @@ bpLog() {
 }
 
 log() { ## View logfile
-  D=$(sed -r -e "s|\[Info\]|\[\\${E_INFO}Info\\${E_END}\]|"  \
-	        -e "s|\[Warn\]|\[\\${E_WARNING}Warn\\${E_END}\]|"  \
-	        -e "s|\[Erro\]|\[\\${E_ERROR}Erro\\${E_END}\]|"    \
-					-e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
-					-e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
-	        -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < ${LOGFILE} ) 
+	if [ -n "$LOGFILE" ]; then
+    D=$(sed -r -e "s|\[Info\]|\[\\${E_INFO}Info\\${E_END}\]|"  \
+	          -e "s|\[Warn\]|\[\\${E_WARNING}Warn\\${E_END}\]|"  \
+	          -e "s|\[Erro\]|\[\\${E_ERROR}Erro\\${E_END}\]|"    \
+			  		-e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
+				  	-e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
+	          -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < ${LOGFILE} ) 
 
-	echo -e "$D"
+	  echo -e "$D"
+	else
+	  bpInfo "Logging is not activated"
+		exit
+	fi
 }
 
 
@@ -241,12 +248,13 @@ bpCritical() {
 
 assertRoot() {
   if [ $(whoami) != root ]; then
-    echo -e "${E_ERROR}Must be root to use this command.${E_END}"
+	  bpError "Must be root to use this command."
+  #  echo -e "${E_ERROR}Must be root to use this command.${E_END}"
     safeExit
   fi
 }
 
-info() { ## Display rows and columns
+info() { ## Show information about script
 	printVar scriptName      "Script name" 
 	printVar scriptPath      "Script path" 
 	printVar VERSION         "Script version" 
@@ -280,11 +288,17 @@ help() { ## Print this help information
 	printf "%-20s  %s\n" "Command" "Help"
 	printLine
 	IFS=$'\n'
-  help_lines=`grep -h "##" $0 | grep -v grep | grep -v help_line`
-	for help_line in ${help_lines[@]}; do                                     
-    help_command=`echo $help_line | sed -s 's/(.*//'`
-		help_info=`echo $help_line | sed -s 's/^.*##//'`
-    printInfo $help_command $help_info
+  help_lines=`grep -h "##" $0 | grep -v grep | grep -v help_line | grep -v printLine`
+	
+	for help_line in ${help_lines[@]}; do
+		case $help_line in
+		  *"##-"*) printLine ;;
+			*) 
+	        help_command=`echo $help_line | sed -s 's/(.*//'`
+	      	help_info=`echo $help_line | sed -s 's/^.*##//'`
+          printInfo $help_command $help_info
+		  ;;	 
+		esac
 	done 
 	printLine
 	echo

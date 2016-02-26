@@ -38,7 +38,7 @@ templateVersion="1.06"
 USAGE="Usage: ${scriptName} command [option]" 
 
 # Description text
-DESC="Bashplate prject management script"
+DESC="Bashplate project management script"
 
 # logfile (uncomment to use logfile)
 #LOGFILE=${scriptPath}/${scriptName}.log
@@ -75,11 +75,10 @@ tag() { ## Make a new tag
 	
 	# Tag revision
   git tag -a $tag -m "$desc"
-	#echo $desc
 }
 
 push() { ## Push to GITHUB
-  ./example help	
+  git push --progress
 } 
 
 
@@ -177,6 +176,8 @@ E_CRITICAL=$E_ON_RED$E_WHITE
 #
 EX_OK=0            # successful termination 
 
+##-
+
 # Print a divider row
 printLine() {
   echo -e "${E_BOLD_WHITE}------------------------------------------------------------------------------${E_END}"
@@ -223,14 +224,19 @@ bpLog() {
 }
 
 log() { ## View logfile
-  D=$(sed -r -e "s|\[Info\]|\[\\${E_INFO}Info\\${E_END}\]|"  \
-	        -e "s|\[Warn\]|\[\\${E_WARNING}Warn\\${E_END}\]|"  \
-	        -e "s|\[Erro\]|\[\\${E_ERROR}Erro\\${E_END}\]|"    \
-					-e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
-					-e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
-	        -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < ${LOGFILE} ) 
+	if [ -n "$LOGFILE" ]; then
+    D=$(sed -r -e "s|\[Info\]|\[\\${E_INFO}Info\\${E_END}\]|"  \
+	          -e "s|\[Warn\]|\[\\${E_WARNING}Warn\\${E_END}\]|"  \
+	          -e "s|\[Erro\]|\[\\${E_ERROR}Erro\\${E_END}\]|"    \
+			  		-e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
+				  	-e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
+	          -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < ${LOGFILE} ) 
 
-	echo -e "$D"
+	  echo -e "$D"
+	else
+	  bpInfo "Logging is not activated"
+		exit
+	fi
 }
 
 
@@ -296,11 +302,17 @@ help() { ## Print this help information
 	printf "%-20s  %s\n" "Command" "Help"
 	printLine
 	IFS=$'\n'
-  help_lines=`grep -h "##" $0 | grep -v grep | grep -v help_line`
-	for help_line in ${help_lines[@]}; do                                     
-    help_command=`echo $help_line | sed -s 's/(.*//'`
-		help_info=`echo $help_line | sed -s 's/^.*##//'`
-    printInfo $help_command $help_info
+  help_lines=`grep -h "##" $0 | grep -v grep | grep -v help_line | grep -v printLine`
+	
+	for help_line in ${help_lines[@]}; do
+		case $help_line in
+		  *"##-"*) printLine ;;
+			*) 
+	        help_command=`echo $help_line | sed -s 's/(.*//'`
+	      	help_info=`echo $help_line | sed -s 's/^.*##//'`
+          printInfo $help_command $help_info
+		  ;;	 
+		esac
 	done 
 	printLine
 	echo
