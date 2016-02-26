@@ -1,5 +1,6 @@
 
 #Bashplates	
+
 -------------------------------------------------------------------------
 Author: Peter Malmberg  <peter.malmberg@gmail.com>
 Licence: MIT
@@ -10,13 +11,11 @@ of bash shellscripts.
 -------------------------------------------------------------------------
 
 
-cmd-template
-----------------
+### Files
 A template for shellscripts with subcommands. It contains a help
 command that parses itself for documentation. 
 
-Built in services
-=======================
+### Built in services
 - ANSI Color codes
 - Handler for subcommands
 - A simple message log function
@@ -28,20 +27,21 @@ Built in services
 - Cleanup handling
 
 
-Built in commands
-=======================
+### Built in commands
 - help    - Help information
 - log     - View log 
 - version - version information
+- info    - show various script information
 
 
-TODO
-=======================
+### TODO
+- Add documentation to internal function/variables
+- Conditional display of log command
 
 
-Some usefull links
--------------------------------------------------
-https://gist.github.com/KylePDavis/3901321
-https://gist.github.com/KylePDavis/3f8c511838a36f2528d7
-http://natelandau.com/boilerplate-shell-script-template/
-http://linuxcommand.org/lc3_new_script.php
+### Links to informative sites
+
+[](https://gist.github.com/KylePDavis/3901321)
+[](https://gist.github.com/KylePDavis/3f8c511838a36f2528d7)
+[](http://natelandau.com/boilerplate-shell-script-template/)
+[](http://linuxcommand.org/lc3_new_script.php)

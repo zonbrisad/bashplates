@@ -33,7 +33,7 @@ scriptName=$(basename $0)
 VERSION="1.07"
 
 # Bashplate version
-templateVersion="1.07"
+templateVersion="1.07"   
 
 # Usage info
 USAGE="Usage: ${scriptName} command [option]" 
@@ -200,7 +200,7 @@ printVar() {
 #
 # Arg1 String to log to file
 # 
-bpLog() {
+bpLog() { 
   # check for LOGFILE variable
 	if [ -n "$LOGFILE" ]; then
 	  ts=$(date +"%Y-%m-%d %H:%M:%S")
@@ -225,7 +225,7 @@ log() { ## View logfile
 }
 
 
-bpInfo() {
+bpInfo() { #D# 
   bpLog "[Info] $1"
 	echo -e "[${E_INFO}Info${E_END}] $1"
 }
