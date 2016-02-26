@@ -1,21 +1,15 @@
 
 #Bashplates	
 
--------------------------------------------------------------------------
-Author: Peter Malmberg  <peter.malmberg@gmail.com>
-Licence: MIT
-
-Description:
+#### Author 
+Peter Malmberg  <peter.malmberg@gmail.com>
+#### Licence
+MIT
+#### Description
 Bashplates is a small collection of templates to speed the development
 of bash shellscripts.
--------------------------------------------------------------------------
 
-
-## Files
-A template for shellscripts with subcommands. It contains a help
-command that parses itself for documentation. 
-
-## Built in services
+## Features
 - ANSI Color codes
 - Handler for subcommands
 - A simple message log function
@@ -26,18 +20,16 @@ command that parses itself for documentation.
 - Trap handling
 - Cleanup handling
 
+## Files
+A template for shellscripts with subcommands. It contains a help
+command that parses itself for documentation. 
 
 ## Built in commands
 - help    - Help information
 - log     - View log 
 - version - version information
 - info    - show various script information
-
-
-## TODO
-- Add documentation to internal function/variables
-- Conditional display of log command
-
+ 
 ## Documentation
 
 ### Add new command to file
@@ -48,6 +40,12 @@ myFunction() { ## Command description
   do-stuff
 }
 ```
+
+## TODO
+- Add documentation to internal function/variables
+- Conditional display of log command
+- Add verbose option
+
 
 ### Links to informative sites
 
