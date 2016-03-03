@@ -2,8 +2,7 @@
 #---------------------------------------------------------------------
 #
 #  [Description]
-#    Bashplate example script. This script inludes a number of examples
-#    demonstrating a number features of the bashplate template.
+#    Bashplate management script
 #  
 #  [Author] 
 #    Peter Malmberg <peter.malmberg@gmail.com>
@@ -30,7 +29,7 @@ scriptName=$(basename $0)
 #---------------------------------------------------------------------
 
 # Script version info
-VERSION="1.04"
+VERSION="1.00"
 
 # Bashplate version
 templateVersion="1.06"
@@ -39,105 +38,47 @@ templateVersion="1.06"
 USAGE="Usage: ${scriptName} command [option]" 
 
 # Description text
-DESC="This script demonstrates some of the features of the bashplate template."
+DESC="Bashplate project management script"
 
 # logfile (uncomment to use logfile)
-LOGFILE=${scriptPath}/${scriptName}.log
+#LOGFILE=${scriptPath}/${scriptName}.log
 
 # Default command (uncomment to use a default command )
-DEFAULT=defaultFunction
+DEFAULT=help
 
 # Programs that are required to run the script (uncomment to use)
-REQUIRED_PROGRAMS=(ls mv)
+#REQUIRED_PROGRAMS=(ls mv)
 
 # Lock file (uncomment to use lock file feature )
-LOCK_FILE=/tmp/${scriptName}.lock
+#LOCK_FILE=/tmp/${scriptName}.lock
 
 #---------------------------------------------------------------------
 # User functions
 #---------------------------------------------------------------------
 
-defaultFunction() {
-  echo "This is the default function. Type \"example help\" to get more info."
-}
-
-errorTest() { ## Test of error messages
-  echo $LOGFILE
-	bpInfo "Info test"
-  bpWarning "Warning test"
-	bpError "Error test"
-	bpCritical "Critical test"
-}
-
-
-print_bar() {
-  echo -n " ["
-	for jx in `seq 1 $2`; do
-	  echo -n "="
-	done
-	for jx in `seq 1 $(expr $1 - $2)`; do
-	  echo -n " "
-	done
-	echo  "]"   
-}
-
-bar() { ## print a testbar (ANSI) 
-  echo -en $E_HIDE
-  for i in `seq 1 30`;
-	do
-	  sleep 0.03
-		print_bar 30 $i
-		echo -e $E_RETURN $E_UP 
-	done
-  echo -en $E_SHOW
-}
-
 clean() { ## Remove leftover files
   find . -name "*~" -delete
 }
-
-traptest() { ## Trap signal test
-  read -p "Press CTRL-C" -t 30
-}
-
-colors() { ## Color test
-  echo -e "${E_RED}RED${E_END}"
-  echo -e "${E_GREEN}GREEN${E_END}"
-  echo -e "${E_YELLOW}YELLOW${E_END}"
-  echo -e "${E_BLUE}BLUE${E_END}"
-  echo -e "${E_MAGENTA}MAGENTA${E_END}"
-  echo -e "${E_CYAN}CYAN${E_END}"
-  echo -e "${E_GRAY}GRAY${E_END}"
-  echo -e "${E_DARKGRAY}DARKGRAY${E_END}"
-  echo -e "${E_BR_RED}Bright RED${E_END}"
-  echo -e "${E_BR_GREEN}Bright GREEN${E_END}"
-  echo -e "${E_BR_YELLOW}Bright YELLOW${E_END}"
-  echo -e "${E_BR_BLUE}Bright BLUE${E_END}"
-  echo -e "${E_BR_MAGENTA}Bright MAGENTA${E_END}"
-  echo -e "${E_BR_CYAN}Bright CYAN${E_END}"
-  echo -e "${E_WHITE}WHITE${E_END}"
-  echo -e "${E_WHITE}${E_ON_RED}WHITE on RED${E_END}"
-  echo -e "${E_WHITE}${E_ON_GREEN}WHITE on GREEN${E_END}"
-  echo -e "${E_WHITE}${E_ON_YELLOW}WHITE on YELLOW${E_END}"
-  echo -e "${E_WHITE}${E_ON_BLUE}WHITE on BLUE${E_END}"
-  echo -e "${E_WHITE}${E_ON_MAGENTA}WHITE on MAGENTA${E_END}"
-  echo -e "${E_WHITE}${E_ON_CYAN}WHITE on CYAN${E_END}"
-  echo -e "${E_BLACK}${E_ON_WHITE}BLACK on WHITE${E_END}"
-	
-}
-
 
 commit() { ## Commit project to repository
   git commit -a
 	git push --tags -a
 }
 
-rootTest() { ## Test assert root
-  assertRoot
+tag() { ## Make a new tag
+  # List existing tags
+  git tag
+	
+	# read tag name/description
+  read -p "Tagname: " tag
+	read -p "Description: " desc
+	
+	# Tag revision
+  git tag -a $tag -m "$desc"
 }
 
-lockTest() { ## Lock file test
-  ./example help	
+push() { ## Push to GITHUB
+  git push --progress
 } 
 
 

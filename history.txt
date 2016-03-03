@@ -1,4 +1,8 @@
 
+Version 1.07
+ - Added line separator(##-) feature for help command
+ - Added error message when using log command without log active
+
 Version 1.06
  - Added info command
  - Code cleanup
