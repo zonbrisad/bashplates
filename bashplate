@@ -95,7 +95,7 @@ bpCleanUp() {
   rm -f $LOCK_FILE    # remove Lock file
 }
 
-safeExit() {
+safeExit() { 
   bpCleanUp
 	exit
 }
@@ -225,22 +225,22 @@ log() { ## View logfile
 }
 
 
-bpInfo() { #D# 
+bpInfo() { ##D Info
   bpLog "[Info] $1"
 	echo -e "[${E_INFO}Info${E_END}] $1"
 }
 
-bpWarning() {
+bpWarning() { ##D Warning
   bpLog "[Warn] $1"
   echo -e "[${E_WARNING}Warning${E_END}] $1"
 }
 
-bpError() {
+bpError() { ##D Error
   bpLog "[Erro] $1"
   echo -e "[${E_ERROR}Error${E_END}] $1"
 }
 
-bpCritical() {
+bpCritical() { ##D Critical error
   bpLog "[Crit] $1"
   echo -e "[${E_CRITICAL}Critical${E_END}] $1"
 	safeExit
@@ -280,6 +280,56 @@ chSetting() {
 	VAL=$3
 	sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" $1
 }
+
+
+hhelp() { ## hhelp
+#  ghelp "#D#"
+	ghelp2 
+}
+ghelp() { 
+	IFS=$'\n'
+	SC=$1
+  help_lines=`grep -h ${SC} $0 | grep -v grep | grep -v ghelp | grep -v help_line | grep -v printLine`
+	pr
+	for help_line in ${help_lines[@]}; do
+		case $help_line in
+		  *"##-"*) printLine ;;
+			*) 
+	        help_command=`echo $help_line | sed -s 's/(.*//'`
+	      	help_info=`echo $help_line | sed -s 's/^.*'${SC}'//'`
+          printInfo $help_command $help_info
+		  ;;	 
+		esac
+	done 
+}
+
+printCommand() {
+  help_line = $0
+  help_command=`echo $help_line | sed -s 's/(.*//'`
+	help_info=`echo $help_line | sed -s 's/^.*'$1'//'`
+	printInfo $help_command $help_info 
+}
+
+ghelp2() { ##D Test help
+	IFS=$'\n'
+	SC=$1
+  help_lines=`grep -h '##'  $0 | grep -v grep | grep -v '\*"##[ A-Z]"\*' | grep -v help_line | grep -v printLine`
+	echo -e $help_lines
+	for help_line in ${help_lines[@]}; do
+		case $help_line in
+		  *"##-"*) printLine ;;
+			*"##[ ]"*) echo "hit"
+	        help_command=`echo $help_line | sed -s 's/(.*//'`
+	      	help_info=`echo $help_line | sed -s 's/^.*##[ ]//'`
+          printInfo $help_command $help_info ;;
+			*"##D"*) 
+			    echo printCommand $help_line "##D" ;;
+			*)		
+		  ;;	 
+		esac
+	done 
+}
+
 
 help() { ## Print this help information
 	echo $USAGE
