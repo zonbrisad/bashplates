@@ -304,9 +304,10 @@ ghelp() {
 }
 
 printCommand() {
-  help_line = $0
+  help_line=$0
   help_command=`echo $help_line | sed -s 's/(.*//'`
-	help_info=`echo $help_line | sed -s 's/^.*'$1'//'`
+#	help_info=`echo $help_line | sed -s 's/^.*'$1'//'`
+	help_info=$(echo $help_line | sed -s 's/^.*'$1'//')
 	printInfo $help_command $help_info 
 }
 
@@ -323,7 +324,7 @@ ghelp2() { ##D Test help
 	      	help_info=`echo $help_line | sed -s 's/^.*##[ ]//'`
           printInfo $help_command $help_info ;;
 			*"##D"*) 
-			    echo printCommand $help_line "##D" ;;
+			    printCommand $help_line '##D' ;;
 			*)		
 		  ;;	 
 		esac
