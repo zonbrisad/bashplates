@@ -200,7 +200,7 @@ printVar() {
 #
 # Arg1 String to log to file
 # 
-bpLog() { 
+bpLog() { ##D Log to file command
   # check for LOGFILE variable
 	if [ -n "$LOGFILE" ]; then
 	  ts=$(date +"%Y-%m-%d %H:%M:%S")
@@ -225,28 +225,28 @@ log() { ## View logfile
 }
 
 
-bpInfo() { ##D Info
+bpInfo() { ##D Info message 
   bpLog "[Info] $1"
 	echo -e "[${E_INFO}Info${E_END}] $1"
 }
 
-bpWarning() { ##D Warning
+bpWarning() { ##D Warning message
   bpLog "[Warn] $1"
   echo -e "[${E_WARNING}Warning${E_END}] $1"
 }
 
-bpError() { ##D Error
+bpError() { ##D Error message
   bpLog "[Erro] $1"
   echo -e "[${E_ERROR}Error${E_END}] $1"
 }
 
-bpCritical() { ##D Critical error
+bpCritical() { ##D Critical error message
   bpLog "[Crit] $1"
   echo -e "[${E_CRITICAL}Critical${E_END}] $1"
 	safeExit
 }
 
-assertRoot() {
+assertRoot() { ##D Stop execution if user is not root
   if [ $(whoami) != root ]; then
 	  bpError "Must be root to use this command."
   #  echo -e "${E_ERROR}Must be root to use this command.${E_END}"
@@ -281,48 +281,46 @@ chSetting() {
 	sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" $1
 }
 
-
-hhelp() { ## hhelp
-#  ghelp "#D#"
-	ghelp2 
+printCommand() {
+  help_line=$1
+#	echo $help_line
+  help_command=`echo $help_line | sed -s 's/(.*//'`
+#	help_info=`echo $help_line | sed -s 's/^.*'$1'//'`
+	help_info=$(echo $help_line | sed -s 's/^.*'$2'//')
+	printInfo $help_command $help_info 
 }
-ghelp() { 
+
+ghelp() { ##D Experimental help
 	IFS=$'\n'
 	SC=$1
-  help_lines=`grep -h ${SC} $0 | grep -v grep | grep -v ghelp | grep -v help_line | grep -v printLine`
-	pr
+#  help_lines=`grep -h ${SC} $0 | grep -v grep | grep -v ghelp | grep -v help_line | grep -v printLine`
+#  help_lines=`grep -h '##' $0 | grep -v grep | grep -v '\*"##[ A-Z]"\*' | grep -v help_line | grep -v printLine | grep -v printCommand`
+	help_lines=`grep -h '##' $0 | grep -v grep | grep -v '##D' | grep -v help_line | grep -v printLine`
+	echo $help_lines
 	for help_line in ${help_lines[@]}; do
+	echo $help_line
 		case $help_line in
 		  *"##-"*) printLine ;;
-			*) 
-	        help_command=`echo $help_line | sed -s 's/(.*//'`
-	      	help_info=`echo $help_line | sed -s 's/^.*'${SC}'//'`
-          printInfo $help_command $help_info
+			*"##[ ]"*)
+			echo "X"
+			     printCommand $help_line '##[ ]' ;;
+#	        help_command=`echo $help_line | sed -s 's/(.*//'`
+#	      	help_info=`echo $help_line | sed -s 's/^.*'${SC}'//'`
+ #         printInfo $help_command $help_info
+			*)		
 		  ;;	 
 		esac
 	done 
 }
 
-printCommand() {
-  help_line=$0
-  help_command=`echo $help_line | sed -s 's/(.*//'`
-#	help_info=`echo $help_line | sed -s 's/^.*'$1'//'`
-	help_info=$(echo $help_line | sed -s 's/^.*'$1'//')
-	printInfo $help_command $help_info 
-}
 
-ghelp2() { ##D Test help
+ihelp() { ##D Print internal help information
 	IFS=$'\n'
 	SC=$1
-  help_lines=`grep -h '##'  $0 | grep -v grep | grep -v '\*"##[ A-Z]"\*' | grep -v help_line | grep -v printLine`
-	echo -e $help_lines
+  help_lines=`grep -h '##' $0 | grep -v grep | grep -v '\*"##[ A-Z]"\*' | grep -v help_line | grep -v printLine`
 	for help_line in ${help_lines[@]}; do
 		case $help_line in
-		  *"##-"*) printLine ;;
-			*"##[ ]"*) echo "hit"
-	        help_command=`echo $help_line | sed -s 's/(.*//'`
-	      	help_info=`echo $help_line | sed -s 's/^.*##[ ]//'`
-          printInfo $help_command $help_info ;;
+		  "##-") printLine ;;
 			*"##D"*) 
 			    printCommand $help_line '##D' ;;
 			*)		
@@ -436,3 +434,6 @@ runCommand "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
 
 # Exit cleanly
 safeExit
+
+
+##-
