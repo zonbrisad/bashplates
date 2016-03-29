@@ -1,4 +1,9 @@
 
+Version 1.08
+  - Added ##D internal documentation tag
+	- Added ##C conditional documentation tag
+
+
 Version 1.07
  - Added line separator(##-) feature for help command
  - Added error message when using log command without log active

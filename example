@@ -225,7 +225,7 @@ bpCleanUp() {
   rm -f $LOCK_FILE    # remove Lock file
 }
 
-safeExit() {
+safeExit() { 
   bpCleanUp
 	exit
 }
@@ -294,7 +294,7 @@ EX_OK=0            # successful termination
 ##-
 
 # Print a divider row
-printLine() {
+printLine() { ##D Print a line  
   echo -e "${E_BOLD_WHITE}------------------------------------------------------------------------------${E_END}"
 }
 
@@ -330,7 +330,7 @@ printVar() {
 #
 # Arg1 String to log to file
 # 
-bpLog() {
+bpLog() { ##D Log to file command
   # check for LOGFILE variable
 	if [ -n "$LOGFILE" ]; then
 	  ts=$(date +"%Y-%m-%d %H:%M:%S")
@@ -338,7 +338,7 @@ bpLog() {
 	fi
 }
 
-log() { ## View logfile
+log() { ##C LOGFILE View logfile
 	if [ -n "$LOGFILE" ]; then
     D=$(sed -r -e "s|\[Info\]|\[\\${E_INFO}Info\\${E_END}\]|"  \
 	          -e "s|\[Warn\]|\[\\${E_WARNING}Warn\\${E_END}\]|"  \
@@ -355,35 +355,36 @@ log() { ## View logfile
 }
 
 
-bpInfo() {
+bpInfo() { ##D Info message 
   bpLog "[Info] $1"
 	echo -e "[${E_INFO}Info${E_END}] $1"
 }
 
-bpWarning() {
+bpWarning() { ##D Warning message
   bpLog "[Warn] $1"
   echo -e "[${E_WARNING}Warning${E_END}] $1"
 }
 
-bpError() {
+bpError() { ##D Error message
   bpLog "[Erro] $1"
   echo -e "[${E_ERROR}Error${E_END}] $1"
 }
 
-bpCritical() {
+bpCritical() { ##D Critical error message
   bpLog "[Crit] $1"
   echo -e "[${E_CRITICAL}Critical${E_END}] $1"
 	safeExit
 }
 
-assertRoot() {
+assertRoot() { ##D Stop execution if user is not root
   if [ $(whoami) != root ]; then
-    echo -e "${E_ERROR}Must be root to use this command.${E_END}"
+	  bpError "Must be root to use this command."
+  #  echo -e "${E_ERROR}Must be root to use this command.${E_END}"
     safeExit
   fi
 }
 
-info() { ## Display rows and columns
+info() { ##D Show information about script
 	printVar scriptName      "Script name" 
 	printVar scriptPath      "Script path" 
 	printVar VERSION         "Script version" 
@@ -410,27 +411,57 @@ chSetting() {
 	sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" $1
 }
 
+printCommand() { 
+  help_line=$1
+  help_command=$(echo $help_line | sed -s 's/(.*//')
+	help_info=$(echo $help_line | sed -s 's/^.*'$2'//')
+	printInfo $help_command $help_info 
+}
+
+printCondCommand() {
+  help_line=$1
+	C=$(echo $1 | sed -s 's/^.*##C//' | awk '{print $1}')
+	eval "D=\$$C"
+  if [ -n "$D" ]; then
+	  help_command=$(echo $help_line | sed -s 's/(.*//')
+		help_info=$(echo $help_line | sed -s 's/^.*'$C'//')
+	  printInfo $help_command $help_info
+	fi
+}
+
 help() { ## Print this help information
 	echo $USAGE
 	echo -e $DESC
 	echo 
 	printf "%-20s  %s\n" "Command" "Help"
 	printLine
-	IFS=$'\n'
-  help_lines=`grep -h "##" $0 | grep -v grep | grep -v help_line | grep -v printLine`
-	
+  IFS=$'\n'
+	SC=$1
+	help_lines=`grep -h '##' $0 | grep -v grep | grep -v '##D' | grep -v '\*##C' |  grep -v '\"##' | grep -v help_line | grep -v printLine`
 	for help_line in ${help_lines[@]}; do
 		case $help_line in
 		  *"##-"*) printLine ;;
-			*) 
-	        help_command=`echo $help_line | sed -s 's/(.*//'`
-	      	help_info=`echo $help_line | sed -s 's/^.*##//'`
-          printInfo $help_command $help_info
+			*"##C"*) printCondCommand $help_line ;;
+			*"##"*)	 printCommand $help_line '##' ;;
+			*)		
 		  ;;	 
 		esac
 	done 
-	printLine
-	echo
+}
+
+ihelp() { ##D Print internal help information
+	IFS=$'\n'
+	SC=$1
+  help_lines=`grep -h '##' $0 | grep -v grep | grep -v '\*"##[ A-Z]"\*' | grep -v help_line | grep -v printLine`
+	for help_line in ${help_lines[@]}; do
+		case $help_line in
+		  "##-") printLine ;;
+			*"##D"*) 
+			    printCommand $help_line '##D' ;;
+			*)		
+		  ;;	 
+		esac
+	done 
 }
 
 version() { ## Print version information
@@ -514,3 +545,6 @@ runCommand "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
 
 # Exit cleanly
 safeExit
+
+
+##-

@@ -164,7 +164,7 @@ EX_OK=0            # successful termination
 ##-
 
 # Print a divider row
-printLine() {
+printLine() { ##D Print a line  
   echo -e "${E_BOLD_WHITE}------------------------------------------------------------------------------${E_END}"
 }
 
@@ -208,7 +208,7 @@ bpLog() { ##D Log to file command
 	fi
 }
 
-log() { ## View logfile
+log() { ##C LOGFILE View logfile
 	if [ -n "$LOGFILE" ]; then
     D=$(sed -r -e "s|\[Info\]|\[\\${E_INFO}Info\\${E_END}\]|"  \
 	          -e "s|\[Warn\]|\[\\${E_WARNING}Warn\\${E_END}\]|"  \
@@ -283,20 +283,22 @@ chSetting() {
 
 printCommand() { 
   help_line=$1
-  help_command=`echo $help_line | sed -s 's/(.*//'`
+  help_command=$(echo $help_line | sed -s 's/(.*//')
 	help_info=$(echo $help_line | sed -s 's/^.*'$2'//')
 	printInfo $help_command $help_info 
 }
 
-kalle() { ##C LOGFILE Kalle(cond)
-  ls
+printCondCommand() {
+  help_line=$1
+	C=$(echo $1 | sed -s 's/^.*##C//' | awk '{print $1}')
+	eval "D=\$$C"
+  if [ -n "$D" ]; then
+	  help_command=$(echo $help_line | sed -s 's/(.*//')
+		help_info=$(echo $help_line | sed -s 's/^.*'$C'//')
+	  printInfo $help_command $help_info
+	fi
 }
 
-printCondCommand() { 
-  echo "Conditional command"
-	echo $1 | sed -s 's/^.##C/test/p'
-	
-}
 help() { ## Print this help information
 	echo $USAGE
 	echo -e $DESC
@@ -305,19 +307,17 @@ help() { ## Print this help information
 	printLine
   IFS=$'\n'
 	SC=$1
-	help_lines=`grep -h '##' $0 | grep -v grep | grep -v '##D' | grep -v '\"##' | grep -v help_line | grep -v printLine`
+	help_lines=`grep -h '##' $0 | grep -v grep | grep -v '##D' | grep -v '\*##C' |  grep -v '\"##' | grep -v help_line | grep -v printLine`
 	for help_line in ${help_lines[@]}; do
 		case $help_line in
 		  *"##-"*) printLine ;;
 			*"##C"*) printCondCommand $help_line ;;
 			*"##"*)	 printCommand $help_line '##' ;;
-					 
 			*)		
 		  ;;	 
 		esac
 	done 
 }
-
 
 ihelp() { ##D Print internal help information
 	IFS=$'\n'
@@ -333,8 +333,6 @@ ihelp() { ##D Print internal help information
 		esac
 	done 
 }
-
-
 
 version() { ## Print version information
   echo $VERSION
