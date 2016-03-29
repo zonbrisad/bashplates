@@ -283,9 +283,7 @@ chSetting() {
 
 printCommand() {
   help_line=$1
-#	echo $help_line
   help_command=`echo $help_line | sed -s 's/(.*//'`
-#	help_info=`echo $help_line | sed -s 's/^.*'$1'//'`
 	help_info=$(echo $help_line | sed -s 's/^.*'$2'//')
 	printInfo $help_command $help_info 
 }
