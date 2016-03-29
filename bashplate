@@ -30,10 +30,10 @@ scriptName=$(basename $0)
 #---------------------------------------------------------------------
 
 # Script version info
-VERSION="1.07"
+VERSION="1.08"
 
 # Bashplate version
-templateVersion="1.07"   
+templateVersion="1.08"   
 
 # Usage info
 USAGE="Usage: ${scriptName} command [option]" 
@@ -254,7 +254,7 @@ assertRoot() { ##D Stop execution if user is not root
   fi
 }
 
-info() { ## Show information about script
+info() { ##D Show information about script
 	printVar scriptName      "Script name" 
 	printVar scriptPath      "Script path" 
 	printVar VERSION         "Script version" 
@@ -281,30 +281,37 @@ chSetting() {
 	sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" $1
 }
 
-printCommand() {
+printCommand() { 
   help_line=$1
   help_command=`echo $help_line | sed -s 's/(.*//'`
 	help_info=$(echo $help_line | sed -s 's/^.*'$2'//')
 	printInfo $help_command $help_info 
 }
 
-ghelp() { ##D Experimental help
-	IFS=$'\n'
+kalle() { ##C LOGFILE Kalle(cond)
+  ls
+}
+
+printCondCommand() { 
+  echo "Conditional command"
+	echo $1 | sed -s 's/^.##C/test/p'
+	
+}
+help() { ## Print this help information
+	echo $USAGE
+	echo -e $DESC
+	echo 
+	printf "%-20s  %s\n" "Command" "Help"
+	printLine
+  IFS=$'\n'
 	SC=$1
-#  help_lines=`grep -h ${SC} $0 | grep -v grep | grep -v ghelp | grep -v help_line | grep -v printLine`
-#  help_lines=`grep -h '##' $0 | grep -v grep | grep -v '\*"##[ A-Z]"\*' | grep -v help_line | grep -v printLine | grep -v printCommand`
-	help_lines=`grep -h '##' $0 | grep -v grep | grep -v '##D' | grep -v help_line | grep -v printLine`
-	echo $help_lines
+	help_lines=`grep -h '##' $0 | grep -v grep | grep -v '##D' | grep -v '\"##' | grep -v help_line | grep -v printLine`
 	for help_line in ${help_lines[@]}; do
-	echo $help_line
 		case $help_line in
 		  *"##-"*) printLine ;;
-			*"##[ ]"*)
-			echo "X"
-			     printCommand $help_line '##[ ]' ;;
-#	        help_command=`echo $help_line | sed -s 's/(.*//'`
-#	      	help_info=`echo $help_line | sed -s 's/^.*'${SC}'//'`
- #         printInfo $help_command $help_info
+			*"##C"*) printCondCommand $help_line ;;
+			*"##"*)	 printCommand $help_line '##' ;;
+					 
 			*)		
 		  ;;	 
 		esac
@@ -328,28 +335,6 @@ ihelp() { ##D Print internal help information
 }
 
 
-help() { ## Print this help information
-	echo $USAGE
-	echo -e $DESC
-	echo 
-	printf "%-20s  %s\n" "Command" "Help"
-	printLine
-	IFS=$'\n'
-  help_lines=`grep -h "##" $0 | grep -v grep | grep -v help_line | grep -v printLine`
-	
-	for help_line in ${help_lines[@]}; do
-		case $help_line in
-		  *"##-"*) printLine ;;
-			*) 
-	        help_command=`echo $help_line | sed -s 's/(.*//'`
-	      	help_info=`echo $help_line | sed -s 's/^.*##//'`
-          printInfo $help_command $help_info
-		  ;;	 
-		esac
-	done 
-	printLine
-	echo
-}
 
 version() { ## Print version information
   echo $VERSION
