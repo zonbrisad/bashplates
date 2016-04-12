@@ -26,6 +26,7 @@ command that parses itself for documentation.
 
 ## Built in commands
 - help    - Help information
+- ihelp   - Help information about internal commands
 - log     - View log 
 - version - version information
 - info    - show various script information
@@ -41,9 +42,14 @@ myFunction() { ## Command description
 }
 ```
 
+### Script documentation
+- ##    Documentation tag for userdefined function
+- ##D   Documentation tag for internal functions
+- ##C   Conditional documentation tag
+- ##-   Separator line tag
+
+
 ## TODO
-- Add documentation to internal function/variables
-- Conditional display of log command
 - Add verbose option
 
 
