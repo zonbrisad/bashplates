@@ -15,9 +15,11 @@
 #
 
 # Display commands as they are executed
-#set -x
+#set -o xtrace
 # Display shell input lines as they are read
 #set -v
+# Make script exit when a command fails
+#set -o errexit
 
 # Directory where script is located
 scriptPath=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
