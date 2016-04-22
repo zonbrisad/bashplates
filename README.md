@@ -48,14 +48,21 @@ myFunction() { ## Command description
 - ##-   Separator line tag
 
 
-## TODO
+# TODO
 - Add verbose option
 - Add variable documentation option.
 - Use logrotate for logs
 - Mail feature
 
 
-### Links to informative sites
+# Bash scripting tips and tricks
+
+- Use long options when scripting(`ls --all` vs`ls -a`). This makes
+  readabilty much easier and you will reduce serching documentation
+	to understand what yout code does.
+- Use {} to surround your variables to avoid name confusion.
+  
+# Links to informative sites
 
 [(https://gist.github.com/KylePDavis/3901321)]
 

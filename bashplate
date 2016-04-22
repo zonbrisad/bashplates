@@ -18,8 +18,13 @@
 #set -o xtrace
 # Display shell input lines as they are read
 #set -v
-# Make script exit when a command fails
-#set -o errexit
+
+# Exit script when a command fails. Append ||true if error is expected
+set -o errexit # || true
+# Exit script when undeclared variable is used
+#set -o nounset
+# Exit script when pipe fails
+set -o pipefail
 
 # Directory where script is located
 scriptPath=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -28,7 +33,26 @@ scriptPath=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 scriptName=$(basename $0)
 
 #---------------------------------------------------------------------
-# User Settings
+# User defined Settings
+#---------------------------------------------------------------------
+
+
+#---------------------------------------------------------------------
+# User defined functions
+#---------------------------------------------------------------------
+
+funk1() { ## Description of funktion 1 
+  bpInfo "Funk 1 (this is the default command)"
+}
+
+funk2() { ## Description of function 2
+  bpInfo "Funk 2"
+	chSetting "test.conf" "central.database" arne
+}
+
+
+#--------------------------------------------------------------------- 
+# Bashplate settings
 #---------------------------------------------------------------------
 
 # Script version info
@@ -55,19 +79,6 @@ DEFAULT=funk1
 
 ##V Lock file (uncomment to use lock file feature )
 #LOCK_FILE=/tmp/${scriptName}.lock
-
-#---------------------------------------------------------------------
-# User functions
-#---------------------------------------------------------------------
-
-funk1() { ## Description of funktion 1 
-  bpInfo "Funk 1 (this is the default command)"
-}
-
-funk2() { ## Description of function 2
-  bpInfo "Funk 2"
-	chSetting "test.conf" "central.database" arne
-}
 
 #--------------------------------------------------------------------- 
 # Signal traps
