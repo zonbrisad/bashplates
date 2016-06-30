@@ -9,8 +9,8 @@ MIT
 Bashplates is a template to ease rapid development of bash shellscripts.
 
 ## Features
-- Handler for subcommands
-- Built in Documantation handling of subcommands
+- Handler for commands
+- Built in Documantation handling of commands
 - logfile function
 - Simple error/message handling
 - Check if root user
@@ -30,22 +30,35 @@ Bashplates is a template to ease rapid development of bash shellscripts.
  
 ## Documentation
 
-BP has a very simple but effective documentation feature
-A user defined subcommand is simply documented as shown below with a
-double hash. When invoking `scriptname help` the text after will be
-shown as the description for that function. 
+BP has a very simple tag based documentation feature that is acivated 
+when invoking `scriptname help` subcommand. It will output formated list of all subcommands
+and a short description of their function.
+ 
 
-```bash
-myFunction() { ## Command description
-  do-stuff
-}
-```
-
-### Script documentation
+### Documentation tags
 - ##    Documentation tag for userdefined function
 - ##D   Documentation tag for internal functions
 - ##C   Conditional documentation tag
 - ##-   Separator line tag
+
+
+### Standard subcommand function documentation
+In the example below the standard way to document a command function is shown.
+
+```bash
+myCommand() { ## Command description
+  do-stuff
+}
+```
+
+### Conditional subcommand function documentation
+In the example below the description will only appear if MYVAR is declared.
+
+```bash
+myCommand() { ##C MYVAR Command description
+  do-stuff
+}
+```
 
 
 # TODO
