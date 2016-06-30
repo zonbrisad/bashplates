@@ -61,6 +61,13 @@ myCommand() { ##C MYVAR Command description
 ```
 
 
+# Files
+ - `example  ` example bashplate script
+ - `bashplate` bashplate template
+ - `bpm`       bashplate project management script
+ - `history.txt` history file 
+ - `README.md` this documentation
+
 # TODO
 - Add verbose option
 - Add variable documentation option.
