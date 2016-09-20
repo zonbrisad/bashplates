@@ -15,9 +15,16 @@
 #
 
 # Display commands as they are executed
-#set -x
+#set -o xtrace
 # Display shell input lines as they are read
 #set -v
+
+# Exit script when a command fails. Append ||true if error is expected
+set -o errexit # || true
+# Exit script when undeclared variable is used
+#set -o nounset
+# Exit script when pipe fails
+set -o pipefail
 
 # Directory where script is located
 scriptPath=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -26,35 +33,12 @@ scriptPath=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 scriptName=$(basename $0)
 
 #---------------------------------------------------------------------
-# User Settings
+# User defined Settings
 #---------------------------------------------------------------------
 
-# Script version info
-VERSION="1.04"
-
-# Bashplate version
-templateVersion="1.06"
-
-# Usage info
-USAGE="Usage: ${scriptName} command [option]" 
-
-# Description text
-DESC="This script demonstrates some of the features of the bashplate template."
-
-# logfile (uncomment to use logfile)
-LOGFILE=${scriptPath}/${scriptName}.log
-
-# Default command (uncomment to use a default command )
-DEFAULT=defaultFunction
-
-# Programs that are required to run the script (uncomment to use)
-REQUIRED_PROGRAMS=(ls mv)
-
-# Lock file (uncomment to use lock file feature )
-LOCK_FILE=/tmp/${scriptName}.lock
 
 #---------------------------------------------------------------------
-# User functions
+# User defined functions
 #---------------------------------------------------------------------
 
 defaultFunction() {
@@ -68,7 +52,6 @@ errorTest() { ## Test of error messages
 	bpError "Error test"
 	bpCritical "Critical test"
 }
-
 
 print_bar() {
   echo -n " ["
@@ -177,9 +160,6 @@ colors() { ## Color test
   echo -e "${E_WHITE}${E_ON_MAGENTA}WHITE on MAGENTA${E_END}"
   echo -e "${E_WHITE}${E_ON_CYAN}WHITE on CYAN${E_END}"
 
-
-
-
 }
 
 rootTest() { ## Test assert root
@@ -187,9 +167,56 @@ rootTest() { ## Test assert root
 }
 
 lockTest() { ## Lock file test
-  assertLockFile
+  assertNoLockFile
   ./example lockTest	
-} 
+}
+
+assertProgs() { ## Assert required programs test 
+  assertRequiredProgs
+}
+
+prefunc() {
+  echo -e "${E_WHITE}Prefunc${E_END} -------------------------------------------------------"
+}
+
+postfunc() {
+  echo -e "${E_WHITE}Postfunc${E_END} ------------------------------------------------------"
+}
+
+
+#--------------------------------------------------------------------- 
+# Bashplate settings
+#---------------------------------------------------------------------
+
+# Script version info
+VERSION="1.05"
+
+##V Bashplate version
+templateVersion="1.09"   
+
+##V Usage info
+USAGE="Usage: ${scriptName} command [option]" 
+
+# Description text
+DESC="This script demonstrates some of the features of the bashplate template."
+
+##V logfile (uncomment to use logfile)
+LOGFILE=${scriptPath}/${scriptName}.log
+
+##V Default command (uncomment to use a default command )
+DEFAULT=defaultFunction
+
+##V Function to be executed before every other function except DEFAULT function
+PREFUNCTION=prefunc
+
+##V Function to be executed after every other function except DEFAULT function
+POSTFUNCTION=postfunc
+
+##V Programs that are required to run the script (uncomment to use)
+REQUIRED_PROGRAMS=(ls nisse)
+
+##V Lock file (uncomment to use lock file feature )
+LOCK_FILE=/tmp/${scriptName}.lock
 
 #--------------------------------------------------------------------- 
 # Signal traps
@@ -347,7 +374,6 @@ log() { ##C LOGFILE View logfile
 	fi
 }
 
-
 bpInfo() { ##D Info message 
   bpLog "[Info] $1"
 	echo -e "[${E_INFO}Info${E_END}] $1"
@@ -376,8 +402,7 @@ assertRoot() { ##D Assert that user is root
   fi
 }
 
-
-assertLockFile() { ##D Assert that lockfile is not present
+assertNoLockFile() { ##D Assert that lockfile is not present
 	if [ -n "$LOCK_FILE" ]; then 
 	  if [ -f "$LOCK_FILE" ]; then
 	    echo -e "${E_ERROR}Script is already running. (${LOCK_FILE})${E_END} "
@@ -387,6 +412,14 @@ assertLockFile() { ##D Assert that lockfile is not present
 	fi
 }
 
+assertRequiredProgs() { ##D Assert that required programs are available on the system
+  if [ -n "${REQUIRED_PROGRAMS}" ]; then
+    for p in ${REQUIRED_PROGRAMS[@]}; do
+	    hash "$p" 2>&- || \
+	    { echo -e >&2 "${E_ERROR}Required program \"$p\" not found.${E_END}"; exit 1; }
+	  done
+	fi
+}
 
 info() { ##D Show information about script
 	printVar scriptName      "Script name" 
@@ -441,7 +474,7 @@ help() { ## Print this help information
 	printLine
   IFS=$'\n'
 	SC=$1
-	help_lines=`grep -h '##' $0 | grep -v grep | grep -v '##D' | grep -v '\*##C' |  grep -v '\"##' | grep -v help_line | grep -v printLine`
+	help_lines=`grep -h '##' $0 | grep -v grep | grep -v '##D' | grep -v '##V' | grep -v '\*##C' |  grep -v '\"##' | grep -v help_line | grep -v printLine`
 	for help_line in ${help_lines[@]}; do
 		case $help_line in
 		  *"##-"*) printLine ;;
@@ -472,25 +505,15 @@ version() { ## Print version information
   echo $VERSION
 }
 
-# Check if a number of required programs are available on the system
-requiredPrograms() {
-  if [ -n "${REQUIRED_PROGRAMS}" ]; then
-    for p in ${REQUIRED_PROGRAMS[@]}; do
-	    hash "$p" 2>&- || \
-	    { echo -e >&2 "${E_ERROR}Required program \"$p\" not installed.${E_END}"; exit 1; }
-	  done
-	fi
-}
 
 # Runs a function in this file as a command
 runCommand() {
-#  echo $bpArguments
 	if [ "$bpArguments" -eq 0 ]; then
 	 
 	  # check for a default command
 	  if [ -n "$DEFAULT" ]; then
 		  $DEFAULT "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
-		  exit
+		  safeExit
 		fi
 		
 	  echo -e ${E_ERROR}"No command given"${E_END}
@@ -498,14 +521,25 @@ runCommand() {
 		safeExit
 	fi
 	
-	# check for required programs 
-	requiredPrograms
-
   funks=`grep "##" $0 | grep -v grep | grep -v help_line`
 	for line in ${funks[@]}; do
 	  command=`echo $line | sed -s 's/(.*//'`
 		if [ "$command" == "$1" ]; then
-      $command "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
+		  
+			
+			# execute prefunction if existing
+			if [ -n "$PREFUNCTION" ]; then
+			  ${PREFUNCTION}
+			fi
+			
+			# execute command
+      ${command} "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
+			
+			# execute postfunction if existing
+			if [ -n "$POSTFUNCTION" ]; then
+			  ${POSTFUNCTION}
+			fi
+			
 			safeExit
 		fi
 	done

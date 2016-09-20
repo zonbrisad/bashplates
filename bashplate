@@ -56,10 +56,10 @@ funk2() { ## Description of function 2
 #---------------------------------------------------------------------
 
 # Script version info
-VERSION="1.08"
+VERSION="1.09"
 
 ##V Bashplate version
-templateVersion="1.08"   
+templateVersion="1.09"   
 
 ##V Usage info
 USAGE="Usage: ${scriptName} command [option]" 
@@ -73,6 +73,12 @@ LOGFILE=${scriptPath}/${scriptName}.log
 
 ##V Default command (uncomment to use a default command )
 DEFAULT=funk1
+
+##V Function to be executed before every other function except DEFAULT function
+#PREFUNCTION=prefunc
+
+##V Function to be executed after every other function except DEFAULT function
+#POSTFUNCTION=postfunc
 
 ##V Programs that are required to run the script (uncomment to use)
 #REQUIRED_PROGRAMS=(ls mv kalle)
@@ -142,14 +148,14 @@ E_WHITE='\e[1;37m'        # White
 
 # ANSI background color codes
 #
-E_ON_BLACK='\e[40m'         # Black
-E_ON_RED='\e[41m'           # Red
-E_ON_GREEN='\e[42m'         # Green
-E_ON_YELLOW='\e[43m'        # Yellow
-E_ON_BLUE='\e[44m'          # Blue
-E_ON_MAGENTA='\e[45m'       # Magenta
-E_ON_CYAN='\e[46m'          # Cyan
-E_ON_WHITE='\e[47m'         # White
+E_ON_BLACK='\e[40m'       # Black
+E_ON_RED='\e[41m'         # Red
+E_ON_GREEN='\e[42m'       # Green
+E_ON_YELLOW='\e[43m'      # Yellow
+E_ON_BLUE='\e[44m'        # Blue
+E_ON_MAGENTA='\e[45m'     # Magenta
+E_ON_CYAN='\e[46m'        # Cyan
+E_ON_WHITE='\e[47m'       # White
 
 # ANSI cursor operations
 #
@@ -236,7 +242,6 @@ log() { ##C LOGFILE View logfile
 	fi
 }
 
-
 bpInfo() { ##D Info message 
   bpLog "[Info] $1"
 	echo -e "[${E_INFO}Info${E_END}] $1"
@@ -265,8 +270,7 @@ assertRoot() { ##D Assert that user is root
   fi
 }
 
-
-assertLockFile() { ##D Assert that lockfile is not present
+assertNoLockFile() { ##D Assert that lockfile is not present
 	if [ -n "$LOCK_FILE" ]; then 
 	  if [ -f "$LOCK_FILE" ]; then
 	    echo -e "${E_ERROR}Script is already running. (${LOCK_FILE})${E_END} "
@@ -276,6 +280,14 @@ assertLockFile() { ##D Assert that lockfile is not present
 	fi
 }
 
+assertRequiredProgs() { ##D Assert that required programs are available on the system
+  if [ -n "${REQUIRED_PROGRAMS}" ]; then
+    for p in ${REQUIRED_PROGRAMS[@]}; do
+	    hash "$p" 2>&- || \
+	    { echo -e >&2 "${E_ERROR}Required program \"$p\" not found.${E_END}"; exit 1; }
+	  done
+	fi
+}
 
 info() { ##D Show information about script
 	printVar scriptName      "Script name" 
@@ -379,25 +391,15 @@ version() { ## Print version information
   echo $VERSION
 }
 
-# Check if a number of required programs are available on the system
-requiredPrograms() {
-  if [ -n "${REQUIRED_PROGRAMS}" ]; then
-    for p in ${REQUIRED_PROGRAMS[@]}; do
-	    hash "$p" 2>&- || \
-	    { echo -e >&2 "${E_ERROR}Required program \"$p\" not installed.${E_END}"; exit 1; }
-	  done
-	fi
-}
 
 # Runs a function in this file as a command
 runCommand() {
-#  echo $bpArguments
 	if [ "$bpArguments" -eq 0 ]; then
 	 
 	  # check for a default command
 	  if [ -n "$DEFAULT" ]; then
 		  $DEFAULT "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
-		  exit
+		  safeExit
 		fi
 		
 	  echo -e ${E_ERROR}"No command given"${E_END}
@@ -405,14 +407,25 @@ runCommand() {
 		safeExit
 	fi
 	
-	# check for required programs 
-	requiredPrograms
-
   funks=`grep "##" $0 | grep -v grep | grep -v help_line`
 	for line in ${funks[@]}; do
 	  command=`echo $line | sed -s 's/(.*//'`
 		if [ "$command" == "$1" ]; then
-      $command "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
+		  
+			
+			# execute prefunction if existing
+			if [ -n "$PREFUNCTION" ]; then
+			  ${PREFUNCTION}
+			fi
+			
+			# execute command
+      ${command} "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
+			
+			# execute postfunction if existing
+			if [ -n "$POSTFUNCTION" ]; then
+			  ${POSTFUNCTION}
+			fi
+			
 			safeExit
 		fi
 	done
