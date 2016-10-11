@@ -84,9 +84,10 @@ myCommand() { ##C MYVAR Command description
   
 # Links to informative sites
 
+[Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.html#Programmable-Completion)
+
 [(https://gist.github.com/KylePDavis/3901321)]
 
-https://www.gnu.org/software/bash/manual/bash.html#Programmable-Completion
 
 [2](https://gist.github.com/KylePDavis/3f8c511838a36f2528d7)
 
@@ -94,8 +95,8 @@ https://www.gnu.org/software/bash/manual/bash.html#Programmable-Completion
 
 [4](http://linuxcommand.org/lc3_new_script.php)
 
-http://kvz.io/blog/2013/11/21/bash-best-practices/
+[](http://kvz.io/blog/2013/11/21/bash-best-practices/)
 
-https://github.com/kvz/bash3boilerplate/blob/master/main.sh
+[](https://github.com/kvz/bash3boilerplate/blob/master/main.sh)
 
-https://www.quora.com/What-are-the-best-practices-for-writing-shell-scripts
+[What are the best practices for writing shell scripts?](https://www.quora.com/What-are-the-best-practices-for-writing-shell-scripts)
