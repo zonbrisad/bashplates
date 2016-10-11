@@ -86,6 +86,8 @@ myCommand() { ##C MYVAR Command description
 
 [(https://gist.github.com/KylePDavis/3901321)]
 
+https://www.gnu.org/software/bash/manual/bash.html#Programmable-Completion
+
 [2](https://gist.github.com/KylePDavis/3f8c511838a36f2528d7)
 
 [3](http://natelandau.com/boilerplate-shell-script-template/)
