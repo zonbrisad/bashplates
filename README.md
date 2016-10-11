@@ -82,21 +82,28 @@ myCommand() { ##C MYVAR Command description
 	to understand what yout code does.
 - Use {} to surround your variables to avoid name confusion.
   
-# Links to informative sites
+# References and tutorials
 
 [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.html#Programmable-Completion)
 
-[(https://gist.github.com/KylePDavis/3901321)]
-
-
-[2](https://gist.github.com/KylePDavis/3f8c511838a36f2528d7)
-
-[3](http://natelandau.com/boilerplate-shell-script-template/)
-
-[4](http://linuxcommand.org/lc3_new_script.php)
-
-[](http://kvz.io/blog/2013/11/21/bash-best-practices/)
-
-[](https://github.com/kvz/bash3boilerplate/blob/master/main.sh)
+[Best Practices for Writing Bash Scripts](http://kvz.io/blog/2013/11/21/bash-best-practices/)
 
 [What are the best practices for writing shell scripts?](https://www.quora.com/What-are-the-best-practices-for-writing-shell-scripts)
+
+
+# Example scripts
+
+[Simple bash shell script template](https://gist.github.com/KylePDavis/3901321)
+
+[BOILERPLATE SHELL SCRIPT TEMPLATE](http://natelandau.com/boilerplate-shell-script-template/)
+
+[bash3boilerplate](https://github.com/kvz/bash3boilerplate/blob/master/main.sh)
+
+[Self-contained auto-updating rsync-based backup script](https://gist.github.com/KylePDavis/3f8c511838a36f2528d7)
+
+[This is a shell script template generator](http://linuxcommand.org/lc3_new_script.php)
+
+
+
+
+
