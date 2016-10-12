@@ -1,7 +1,7 @@
 
 Version 1.08
-  - Added ##D internal documentation tag
-	- Added ##C conditional documentation tag
+ - Added ##D internal documentation tag
+ - Added ##C conditional documentation tag
 
 
 Version 1.07

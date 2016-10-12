@@ -187,7 +187,7 @@ rootTest() { ## Test assert root
 }
 
 lockTest() { ## Lock file test
-  assertLockFile
+  assertNoLockFile
   ./example lockTest	
 } 
 
@@ -377,7 +377,7 @@ assertRoot() { ##D Assert that user is root
 }
 
 
-assertLockFile() { ##D Assert that lockfile is not present
+assertNoLockFile() { ##D Assert that no lockfile is exists
 	if [ -n "$LOCK_FILE" ]; then 
 	  if [ -f "$LOCK_FILE" ]; then
 	    echo -e "${E_ERROR}Script is already running. (${LOCK_FILE})${E_END} "
