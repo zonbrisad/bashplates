@@ -1,3 +1,8 @@
+Version 1.09
+  - Added postfunc
+	- Added prefunc
+	- Several namechanges
+	- Added assertRequiredProgs
 
 Version 1.08
  - Added ##D internal documentation tag
