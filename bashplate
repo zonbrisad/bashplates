@@ -20,7 +20,7 @@
 #set -v
 
 # Exit script when a command fails. Append ||true if error is expected
-set -o errexit # || true
+#set -o errexit # || true
 # Exit script when undeclared variable is used
 #set -o nounset
 # Exit script when pipe fails
