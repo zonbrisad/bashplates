@@ -47,7 +47,7 @@ funk1() { ## Description of funktion 1
 
 funk2() { ## Description of function 2
   bpInfo "Funk 2"
-	chSetting "test.conf" "central.database" arne
+  chSetting "test.conf" "central.database" arne
 }
 
 
@@ -93,7 +93,7 @@ DEFAULT=funk1
 
 signalInt() {
   bpCleanUp
-	exit $EX_OK
+  exit $EX_OK
 }
 
 signalHup() {
@@ -116,12 +116,12 @@ bpCleanUp() { ##D Cleanup function
 
 safeExit() { ##D Function for safely exiting script
   bpCleanUp
-	exit
+  exit
 }
 
 errorExit() {
   bpCleanUp
-	exit
+  exit
 }
 
 #--------------------------------------------------------------------- 
@@ -202,10 +202,10 @@ printInfo() {
 printVar() {
   var="$1"
   if [ "${!var}" ]; then
-		printInfo "$2" "${!var}"
-	else 
-	  printf "${E_BR_CYAN}%-20s${E_END} ${E_BR_RED}N/A${E_END}\n" "$2"
-	fi
+    printInfo "$2" "${!var}"
+  else 
+    printf "${E_BR_CYAN}%-20s${E_END} ${E_BR_RED}N/A${E_END}\n" "$2"
+  fi
 }
 
 
@@ -221,31 +221,31 @@ printVar() {
 # 
 bpLog() { ##D Log to file command
   # check for LOGFILE variable
-	if [ -n "$LOGFILE" ]; then
-	  ts=$(date +"%Y-%m-%d %H:%M:%S")
- 	  echo $ts $1 >> ${LOGFILE}
-	fi
+  if [ -n "$LOGFILE" ]; then
+    ts=$(date +"%Y-%m-%d %H:%M:%S")
+     echo "$ts" "$1" >> "${LOGFILE}"
+  fi
 }
 
 log() { ##C LOGFILE View logfile
-	if [ -n "$LOGFILE" ]; then
+  if [ -n "$LOGFILE" ]; then
     D=$(sed -r -e "s|\[Info\]|\[\\${E_INFO}Info\\${E_END}\]|"  \
-	          -e "s|\[Warn\]|\[\\${E_WARNING}Warn\\${E_END}\]|"  \
-	          -e "s|\[Erro\]|\[\\${E_ERROR}Erro\\${E_END}\]|"    \
-			  		-e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
-				  	-e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
-	          -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < ${LOGFILE} ) 
+            -e "s|\[Warn\]|\[\\${E_WARNING}Warn\\${E_END}\]|"  \
+            -e "s|\[Erro\]|\[\\${E_ERROR}Erro\\${E_END}\]|"    \
+            -e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
+            -e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
+            -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < ${LOGFILE} ) 
 
-	  echo -e "$D"
-	else
-	  bpInfo "Logging is not activated"
-		exit
-	fi
+    echo -e "$D"
+  else
+    bpInfo "Logging is not activated"
+    exit
+  fi
 }
 
 bpInfo() { ##D Info message 
   bpLog "[Info] $1"
-	echo -e "[${E_INFO}Info${E_END}] $1"
+  echo -e "[${E_INFO}Info${E_END}] $1"
 }
 
 bpWarning() { ##D Warning message
@@ -261,48 +261,48 @@ bpError() { ##D Error message
 bpCritical() { ##D Critical error message
   bpLog "[Crit] $1"
   echo -e "[${E_CRITICAL}Critical${E_END}] $1"
-	safeExit
+  safeExit
 }
 
 assertRoot() { ##D Assert that user is root
   if [ "$(whoami)" != root ]; then
-	  bpError "Must be root to use this command."
+    bpError "Must be root to use this command."
     safeExit
   fi
 }
 
 
 assertNoLockFile() { ##D Assert that lockfile is not present
-	if [ -n "$LOCK_FILE" ]; then 
-	  if [ -f "$LOCK_FILE" ]; then
-	    echo -e "${E_ERROR}Script is already running. (${LOCK_FILE})${E_END} "
-		  exit  # do not use safeExit because lock belongs to other process
-		fi
-		touch "$LOCK_FILE"							
-	fi
+  if [ -n "$LOCK_FILE" ]; then 
+    if [ -f "$LOCK_FILE" ]; then
+      echo -e "${E_ERROR}Script is already running. (${LOCK_FILE})${E_END} "
+      exit  # do not use safeExit because lock belongs to other process
+    fi
+    touch "$LOCK_FILE"              
+  fi
 }
 
 assertRequiredProgs() { ##D Assert that required programs are available on the system
   if [ -n "${REQUIRED_PROGRAMS}" ]; then
     for p in ${REQUIRED_PROGRAMS[@]}; do
-	    hash "$p" 2>&- || \
-	    { echo -e >&2 "${E_ERROR}Required program \"$p\" not found.${E_END}"; exit 1; }
-	  done
-	fi
+      hash "$p" 2>&- || \
+      { echo -e >&2 "${E_ERROR}Required program \"$p\" not found.${E_END}"; exit 1; }
+    done
+  fi
 }
 
 info() { ##D Show information about script
-	printVar scriptName      "Script name" 
-	printVar scriptPath      "Script path" 
-	printVar VERSION         "Script version" 
-	printVar templateVersion "Template version" 
-	printVar LOGFILE         "Log file" 
-	printVar LOCK_FILE       "Lock file" 
-	printVar DEFAULT         "Default function" 
-	printVar "REQUIRED_PROGRAMS" "Dependencies"
-	printInfo "PID" $$	
-	printVar DATE "Date" 
-	printVar TIME "Time" 
+  printVar scriptName      "Script name" 
+  printVar scriptPath      "Script path" 
+  printVar VERSION         "Script version" 
+  printVar templateVersion "Template version" 
+  printVar LOGFILE         "Log file" 
+  printVar LOCK_FILE       "Lock file" 
+  printVar DEFAULT         "Default function" 
+  printVar "REQUIRED_PROGRAMS" "Dependencies"
+  printInfo "PID" $$  
+  printVar DATE "Date" 
+  printVar TIME "Time" 
 }
 
 
@@ -314,79 +314,79 @@ info() { ##D Show information about script
 #
 chSetting() { 
   SETTING="$2"
-	VAL="$3"
-	sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" $1
+  VAL="$3"
+  sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" $1
 }
 
 printCommand() { 
   help_line=$1
   help_command=$(echo "$help_line" | sed -s 's/(.*//')
-	help_info=$(echo "$help_line" | sed -s 's/^.*'$2'//')
-	printInfo "$help_command" "$help_info" 
+  help_info=$(echo "$help_line" | sed -s 's/^.*'$2'//')
+  printInfo "$help_command" "$help_info" 
 }
 
 printCondCommand() {
   help_line=$1
-	C=$(echo $1 | sed -s 's/^.*##C//' | awk '{print $1}')
-	eval "D=\$$C"
+  C=$(echo "$1" | sed -s 's/^.*##C//' | awk '{print $1}')
+  eval "D=\$$C"
   if [ -n "$D" ]; then
-	  help_command=$(echo "$help_line" | sed -s 's/(.*//')
-		help_info=$(echo "$help_line" | sed -s 's/^.*'$C'//')
-	  printInfo "$help_command" "$help_info"
-	fi
+    help_command=$(echo "$help_line" | sed -s 's/(.*//')
+    help_info=$(echo "$help_line" | sed -s 's/^.*'$C'//')
+    printInfo "$help_command" "$help_info"
+  fi
 }
 
 help() { ## Print this help information
-	echo "$USAGE"
-	echo -e "$DESC"
-	echo 
-	printf "%-20s  %s\n" "Command" "Help"
-	printLine
+  echo "$USAGE"
+  echo -e "$DESC"
+  echo 
+  printf "%-20s  %s\n" "Command" "Help"
+  printLine
   IFS=$'\n'
-	SC=$1
-	help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '##D' | grep -v '##V' | grep -v '\*##C' |  grep -v '\"##' | grep -v help_line | grep -v printLine)
-	for help_line in ${help_lines[@]}; do
-		case "$help_line" in
-		  *"##-"*) printLine ;;
-			*"##C"*) printCondCommand "$help_line" ;;
-			*"##"*)	 printCommand "$help_line" '##' ;;
-			*)		
-		  ;;	 
-		esac
-	done 
+  SC=$1
+  help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '##D' | grep -v '##V' | grep -v '\*##C' |  grep -v '\"##' | grep -v help_line | grep -v printLine)
+  for help_line in ${help_lines[@]}; do
+    case "$help_line" in
+      *"##-"*) printLine ;;
+      *"##C"*) printCondCommand "$help_line" ;;
+      *"##"*)   printCommand "$help_line" '##' ;;
+      *)    
+      ;;   
+    esac
+  done 
 }
 
 ihelp() { ##D Print internal help information
-	IFS=$'\n'
-	SC=$1
-  help_lines=$(grep -h '##' $0 | grep -v grep | grep -v '\*"##[ A-Z]"\*' | grep -v help_line | grep -v printLine)
-	for help_line in ${help_lines[@]}; do
-		case "$help_line" in
-		  "##-") printLine ;;
-			*"##D"*) 
-			    printCommand "$help_line" '##D' ;;
-			*)		
-		  ;;	 
-		esac
-	done 
+  IFS=$'\n'
+  SC=$1
+  help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '\*"##[ A-Z]"\*' | grep -v help_line | grep -v printLine)
+  for help_line in ${help_lines[@]}; do
+    case "$help_line" in
+      "##-") printLine ;;
+      *"##D"*) 
+          printCommand "$help_line" '##D' ;;
+      *)    
+      ;;   
+    esac
+  done 
 }
 
 vhelp() { ##D Print internal variable information
-	IFS=$'\n'
-  lines=$(grep -A 1 '##V' $0 | grep -v 'lines')
-	echo "$lines"
-	for line in ${lines[@]}; do
-	  echo "$line"
-#		case $line in
-#		  "##x") printLine ;;
-#			*"##D"*) 
-#			    printCommand $help_line '##D' ;;
-#			*)		
-#		  ;;	 
-#		esac
-	done 
+  IFS=$'\n'
+  lines=$(grep -A 1 '##V' "$0" | grep -v 'lines')
+  echo "$lines"
+  for line in ${lines[@]}; do
+    echo "$line"
+#    case $line in
+#      "##x") printLine ;;
+#      *"##D"*) 
+#          printCommand $help_line '##D' ;;
+#      *)    
+#      ;;   
+#    esac
+  done 
 
-#	echo $lines
+#  echo $lines
 }
 
 version() { ## Print version information
@@ -396,44 +396,44 @@ version() { ## Print version information
 
 # Runs a function in this file as a command
 runCommand() {
-	if [ "$bpArguments" -eq 0 ]; then
-	 
-	  # check for a default command
-	  if [ -n "$DEFAULT" ]; then
-		  $DEFAULT "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
-		  safeExit
-		fi
-		
-	  echo -e ${E_ERROR}"No command given"${E_END}
-		help
-		safeExit
-	fi
-	
+  if [ "$bpArguments" -eq 0 ]; then
+   
+    # check for a default command
+    if [ -n "$DEFAULT" ]; then
+      $DEFAULT "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
+      safeExit
+    fi
+    
+    echo -e "${E_ERROR}No command given${E_END}"
+    help
+    safeExit
+  fi
+  
   funks=$(grep "##" "$0" | grep -v grep | grep -v help_line)
-	for line in ${funks[@]}; do
-	  command=$(echo "$line" | sed -s 's/(.*//')
-		if [ "$command" == "$1" ]; then
-		  
-			
-			# execute prefunction if existing
-			if [ -n "$PREFUNCTION" ]; then
-			  ${PREFUNCTION}
-			fi
-			
-			# execute command
+  for line in ${funks[@]}; do
+    command=$(echo "$line" | sed -s 's/(.*//')
+    if [ "$command" == "$1" ]; then
+      
+      
+      # execute prefunction if existing
+      if [ -n "$PREFUNCTION" ]; then
+        ${PREFUNCTION}
+      fi
+      
+      # execute command
       ${command} "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
-			
-			# execute postfunction if existing
-			if [ -n "$POSTFUNCTION" ]; then
-			  ${POSTFUNCTION}
-			fi
-			
-			safeExit
-		fi
-	done
-	echo -e ${E_ERROR}"Command not found"${E_END}
-	help
-	safeExit 
+      
+      # execute postfunction if existing
+      if [ -n "$POSTFUNCTION" ]; then
+        ${POSTFUNCTION}
+      fi
+      
+      safeExit
+    fi
+  done
+  echo -e "${E_ERROR}Command not found${E_END}"
+  help
+  safeExit 
 }
 
 # Init 
