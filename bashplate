@@ -93,7 +93,7 @@ DEFAULT=funk1
 
 signalInt() {
   bpCleanUp
-  exit $EX_OK
+  exit "$EX_OK"
 }
 
 signalHup() {
@@ -111,7 +111,7 @@ signalTerm() {
 }
 
 bpCleanUp() { ##D Cleanup function 
-  rm -f $LOCK_FILE    # remove Lock file
+  rm -f "$LOCK_FILE"    # remove Lock file
 }
 
 safeExit() { ##D Function for safely exiting script
@@ -234,7 +234,7 @@ log() { ##C LOGFILE View logfile
             -e "s|\[Erro\]|\[\\${E_ERROR}Erro\\${E_END}\]|"    \
             -e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
             -e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
-            -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < ${LOGFILE} ) 
+            -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < "${LOGFILE}" ) 
 
     echo -e "$D"
   else
@@ -315,13 +315,13 @@ info() { ##D Show information about script
 chSetting() { 
   SETTING="$2"
   VAL="$3"
-  sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" $1
+  sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" "$1"
 }
 
 printCommand() { 
   help_line=$1
   help_command=$(echo "$help_line" | sed -s 's/(.*//')
-  help_info=$(echo "$help_line" | sed -s 's/^.*'$2'//')
+  help_info=$(echo "$help_line" | sed -s 's/^.*'"$2"'//')
   printInfo "$help_command" "$help_info" 
 }
 
@@ -331,7 +331,7 @@ printCondCommand() {
   eval "D=\$$C"
   if [ -n "$D" ]; then
     help_command=$(echo "$help_line" | sed -s 's/(.*//')
-    help_info=$(echo "$help_line" | sed -s 's/^.*'$C'//')
+    help_info=$(echo "$help_line" | sed -s 's/^.*'"$C"'//')
     printInfo "$help_command" "$help_info"
   fi
 }
