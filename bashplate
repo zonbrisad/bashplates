@@ -30,7 +30,7 @@ set -o pipefail
 scriptPath=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # Name of script
-scriptName=$(basename $0)
+scriptName=$(basename "$0")
 
 #---------------------------------------------------------------------
 # User defined Settings
@@ -49,6 +49,7 @@ funk2() { ## Description of function 2
   bpInfo "Funk 2"
 	chSetting "test.conf" "central.database" arne
 }
+
 
 
 #--------------------------------------------------------------------- 
@@ -199,8 +200,8 @@ printInfo() {
 # arg1 variable for column 1
 # arg2 text for column 2
 printVar() {
-  var=$1
-  if [ ${!var} ]; then
+  var="$1"
+  if [ "${!var}" ]; then
 		printInfo "$2" "${!var}"
 	else 
 	  printf "${E_BR_CYAN}%-20s${E_END} ${E_BR_RED}N/A${E_END}\n" "$2"
@@ -264,7 +265,7 @@ bpCritical() { ##D Critical error message
 }
 
 assertRoot() { ##D Assert that user is root
-  if [ $(whoami) != root ]; then
+  if [ "$(whoami)" != root ]; then
 	  bpError "Must be root to use this command."
     safeExit
   fi
@@ -277,7 +278,7 @@ assertNoLockFile() { ##D Assert that lockfile is not present
 	    echo -e "${E_ERROR}Script is already running. (${LOCK_FILE})${E_END} "
 		  exit  # do not use safeExit because lock belongs to other process
 		fi
-		touch $LOCK_FILE							
+		touch "$LOCK_FILE"							
 	fi
 }
 
@@ -312,16 +313,16 @@ info() { ##D Show information about script
 # arg3 new value for setting
 #
 chSetting() { 
-  SETTING=$2
-	VAL=$3
+  SETTING="$2"
+	VAL="$3"
 	sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" $1
 }
 
 printCommand() { 
   help_line=$1
-  help_command=$(echo $help_line | sed -s 's/(.*//')
-	help_info=$(echo $help_line | sed -s 's/^.*'$2'//')
-	printInfo $help_command $help_info 
+  help_command=$(echo "$help_line" | sed -s 's/(.*//')
+	help_info=$(echo "$help_line" | sed -s 's/^.*'$2'//')
+	printInfo "$help_command" "$help_info" 
 }
 
 printCondCommand() {
@@ -329,26 +330,26 @@ printCondCommand() {
 	C=$(echo $1 | sed -s 's/^.*##C//' | awk '{print $1}')
 	eval "D=\$$C"
   if [ -n "$D" ]; then
-	  help_command=$(echo $help_line | sed -s 's/(.*//')
-		help_info=$(echo $help_line | sed -s 's/^.*'$C'//')
-	  printInfo $help_command $help_info
+	  help_command=$(echo "$help_line" | sed -s 's/(.*//')
+		help_info=$(echo "$help_line" | sed -s 's/^.*'$C'//')
+	  printInfo "$help_command" "$help_info"
 	fi
 }
 
 help() { ## Print this help information
-	echo $USAGE
-	echo -e $DESC
+	echo "$USAGE"
+	echo -e "$DESC"
 	echo 
 	printf "%-20s  %s\n" "Command" "Help"
 	printLine
   IFS=$'\n'
 	SC=$1
-	help_lines=`grep -h '##' $0 | grep -v grep | grep -v '##D' | grep -v '##V' | grep -v '\*##C' |  grep -v '\"##' | grep -v help_line | grep -v printLine`
+	help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '##D' | grep -v '##V' | grep -v '\*##C' |  grep -v '\"##' | grep -v help_line | grep -v printLine)
 	for help_line in ${help_lines[@]}; do
-		case $help_line in
+		case "$help_line" in
 		  *"##-"*) printLine ;;
-			*"##C"*) printCondCommand $help_line ;;
-			*"##"*)	 printCommand $help_line '##' ;;
+			*"##C"*) printCondCommand "$help_line" ;;
+			*"##"*)	 printCommand "$help_line" '##' ;;
 			*)		
 		  ;;	 
 		esac
@@ -358,12 +359,12 @@ help() { ## Print this help information
 ihelp() { ##D Print internal help information
 	IFS=$'\n'
 	SC=$1
-  help_lines=`grep -h '##' $0 | grep -v grep | grep -v '\*"##[ A-Z]"\*' | grep -v help_line | grep -v printLine`
+  help_lines=$(grep -h '##' $0 | grep -v grep | grep -v '\*"##[ A-Z]"\*' | grep -v help_line | grep -v printLine)
 	for help_line in ${help_lines[@]}; do
-		case $help_line in
+		case "$help_line" in
 		  "##-") printLine ;;
 			*"##D"*) 
-			    printCommand $help_line '##D' ;;
+			    printCommand "$help_line" '##D' ;;
 			*)		
 		  ;;	 
 		esac
@@ -373,9 +374,9 @@ ihelp() { ##D Print internal help information
 vhelp() { ##D Print internal variable information
 	IFS=$'\n'
   lines=$(grep -A 1 '##V' $0 | grep -v 'lines')
-	echo $lines
+	echo "$lines"
 	for line in ${lines[@]}; do
-	  echo $line
+	  echo "$line"
 #		case $line in
 #		  "##x") printLine ;;
 #			*"##D"*) 
@@ -389,7 +390,7 @@ vhelp() { ##D Print internal variable information
 }
 
 version() { ## Print version information
-  echo $VERSION
+  echo "$VERSION"
 }
 
 
@@ -399,7 +400,7 @@ runCommand() {
 	 
 	  # check for a default command
 	  if [ -n "$DEFAULT" ]; then
-		  $DEFAULT "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
+		  $DEFAULT "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
 		  safeExit
 		fi
 		
@@ -408,9 +409,9 @@ runCommand() {
 		safeExit
 	fi
 	
-  funks=`grep "##" $0 | grep -v grep | grep -v help_line`
+  funks=$(grep "##" "$0" | grep -v grep | grep -v help_line)
 	for line in ${funks[@]}; do
-	  command=`echo $line | sed -s 's/(.*//'`
+	  command=$(echo "$line" | sed -s 's/(.*//')
 		if [ "$command" == "$1" ]; then
 		  
 			
@@ -420,7 +421,7 @@ runCommand() {
 			fi
 			
 			# execute command
-      ${command} "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
+      ${command} "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
 			
 			# execute postfunction if existing
 			if [ -n "$POSTFUNCTION" ]; then
@@ -448,7 +449,7 @@ trap  signalTerm SIGTERM
 bpArguments=$#
 
 # Run command parser
-runCommand "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
+runCommand "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
 
 # Exit cleanly
 safeExit
