@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=2034
 #---------------------------------------------------------------------
 #
 #  [Description]
@@ -130,7 +131,8 @@ errorExit() {
 
 # ANSI foreground colors codes
 #
-E_BLACK='\e[0;30m'        # Black
+
+E_BLACK='\e[0;30m'        # Black 
 E_RED='\e[0;31m'          # Red
 E_GREEN='\e[0;32m'        # Green
 E_YELLOW='\e[0;33m'       # Yellow
@@ -305,6 +307,9 @@ info() { ##D Show information about script
   printVar TIME "Time" 
 }
 
+check() { ##D Make a shellcheck
+  shellcheck "$0"
+}
 
 # Change setting in config file (key value pair)
 #
@@ -345,7 +350,9 @@ help() { ## Print this help information
   IFS=$'\n'
   SC=$1
   help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '##D' | grep -v '##V' | grep -v '\*##C' |  grep -v '\"##' | grep -v help_line | grep -v printLine)
-  for help_line in ${help_lines[@]}; do
+  for help_line in ${help_lines[@]} ; do
+#	for help_line in "${help_lines}" ; do
+#  for help_line in "${help_lines[@]}" ; do
     case "$help_line" in
       *"##-"*) printLine ;;
       *"##C"*) printCondCommand "$help_line" ;;
