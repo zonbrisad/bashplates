@@ -60,7 +60,7 @@ funk2() { ## Description of function 2
 VERSION="1.09"
 
 ##V Bashplate version
-templateVersion="1.09"   
+BPVERSION="1.09"   
 
 ##V Usage info
 USAGE="Usage: ${scriptName} command [option]" 
@@ -114,12 +114,13 @@ bpCleanUp() { ##D Cleanup function
   rm -f $LOCK_FILE    # remove Lock file
 }
 
-safeExit() { ##D Function for safely exiting script
+bpExit() { ##D Function for safely exiting script
   bpCleanUp
   exit
 }
 
-errorExit() {
+bpErrorExit() {  ##D Safely exit script with a error 
+  echo -e "${E_ERROR}${1}${E_END}"
   bpCleanUp
   exit
 }
@@ -261,13 +262,13 @@ bpError() { ##D Error message
 bpCritical() { ##D Critical error message
   bpLog "[Crit] $1"
   echo -e "[${E_CRITICAL}Critical${E_END}] $1"
-  safeExit
+  bpExit
 }
 
 assertRoot() { ##D Assert that user is root
   if [ "$(whoami)" != root ]; then
     bpError "Must be root to use this command."
-    safeExit
+    bpExit
   fi
 }
 
@@ -276,7 +277,7 @@ assertNoLockFile() { ##D Assert that lockfile is not present
   if [ -n "$LOCK_FILE" ]; then 
     if [ -f "$LOCK_FILE" ]; then
       echo -e "${E_ERROR}Script is already running. (${LOCK_FILE})${E_END} "
-      exit  # do not use safeExit because lock belongs to other process
+      exit  # do not use bpExit because lock belongs to other process
     fi
     touch "$LOCK_FILE"              
   fi
@@ -295,7 +296,7 @@ info() { ##D Show information about script
   printVar scriptName      "Script name" 
   printVar scriptPath      "Script path" 
   printVar VERSION         "Script version" 
-  printVar templateVersion "Template version" 
+  printVar BPVERSION       "Template version" 
   printVar LOGFILE         "Log file" 
   printVar LOCK_FILE       "Lock file" 
   printVar DEFAULT         "Default function" 
@@ -401,12 +402,9 @@ runCommand() {
     # check for a default command
     if [ -n "$DEFAULT" ]; then
       $DEFAULT "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
-      safeExit
+      bpExit
     fi
-    
-    echo -e "${E_ERROR}No command given${E_END}"
-    help
-    safeExit
+    bpErrorExit "No command given"
   fi
   
   funks=$(grep "##" "$0" | grep -v grep | grep -v help_line)
@@ -426,14 +424,11 @@ runCommand() {
       # execute postfunction if existing
       if [ -n "$POSTFUNCTION" ]; then
         ${POSTFUNCTION}
-      fi
-      
-      safeExit
+      fi      
+      bpExit
     fi
   done
-  echo -e "${E_ERROR}Command not found${E_END}"
-  help
-  safeExit 
+  bpErrorExit "Command \"$1\" not found"	 
 }
 
 # Init 
@@ -452,7 +447,7 @@ bpArguments=$#
 runCommand "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
 
 # Exit cleanly
-safeExit
+bpExit
 
 
 ##-
