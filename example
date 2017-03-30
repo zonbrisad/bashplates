@@ -82,12 +82,18 @@ clean() { ## Remove leftover files
 traptest() { ## Trap signal test
   read -p "Press CTRL-C" -t 30
 }
-
+  
 colors() { ## Color test
   for c in ${colorss[*]}
 	do
 	  echo $c
 	done
+  echo -e "${E_ATTR_UNDERLINE}Underline${E_END}"  	
+  echo -e "${E_ATTR_BOLD}Bold${E_END}"
+  echo -e "${E_ATTR_BLINK}Blink${E_END}"
+  echo -e "${E_ATTR_LOWI}Low Intensity${E_END}"
+  echo -e "${E_ATTR_REVERSE}Reverse video${E_END}"
+ 
   echo -e "${E_RED}RED${E_END}"
   echo -e "${E_GREEN}GREEN${E_END}"
   echo -e "${E_YELLOW}YELLOW${E_END}"
@@ -290,6 +296,13 @@ E_ON_BLUE='\e[44m'        # Blue
 E_ON_MAGENTA='\e[45m'     # Magenta
 E_ON_CYAN='\e[46m'        # Cyan
 E_ON_WHITE='\e[47m'       # White
+
+# ANSI Text attributes
+E_ATTR_BOLD='\e[1m'
+E_ATTR_LOWI='\e[2m' 
+E_ATTR_UNDERLINE='\e[4m'
+E_ATTR_BLINK='\e[5m'
+E_ATTR_REVERSE='\e[7m'
 
 # ANSI cursor operations
 #

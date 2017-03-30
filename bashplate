@@ -159,6 +159,13 @@ E_ON_MAGENTA='\e[45m'     # Magenta
 E_ON_CYAN='\e[46m'        # Cyan
 E_ON_WHITE='\e[47m'       # White
 
+# ANSI Text attributes
+E_ATTR_BOLD='\e[1m'
+E_ATTR_LOWI='\e[2m' 
+E_ATTR_UNDERLINE='\e[4m'
+E_ATTR_BLINK='\e[5m'
+E_ATTR_REVERSE='\e[7m'
+
 # ANSI cursor operations
 #
 E_RETURN="\e[F"           # Move cursor to begining of line
