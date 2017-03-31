@@ -83,11 +83,38 @@ traptest() { ## Trap signal test
   read -p "Press CTRL-C" -t 30
 }
 
+color-test() { 
+  echo -e "$1${E_ON_RED}$2 on RED${E_END}"
+  echo -e "$1${E_ON_GREEN}$2 on GREEN${E_END}"
+  echo -e "$1${E_ON_YELLOW}$2 on YELLOW${E_END}"
+  echo -e "$1${E_ON_BLUE}$2 on BLUE${E_END}"
+  echo -e "$1${E_ON_MAGENTA}$2 on MAGENTA${E_END}"
+  echo -e "$1${E_ON_CYAN}$2 on CYAN${E_END}"
+  echo -e "$1${E_ON_WHITE}$2 on WHITE${E_END}"
+	echo -e "$1${E_ON_BLACK}$2 on BLACK${E_END}"
+}
+
+colorss=("A" "B" "C")
+
+
+
 colors() { ## Color test
-  for c in ${colorss[*]}
+  FCOLORS=( ${E_BLACK} ${E_RED} ${E_GREEN} ${E_YELLOW} ${E_BLUE} ${E_MAGENTA} ${E_CYAN} ${E_GRAY} ${E_DARKGRAY} ${E_BR_RED} ${E_BR_GREEN} ${E_BR_YELLOW} ${E_BR_BLUE} ${E_BR_MAGENTA} ${E_BR_CYAN} ${E_WHITE} )
+  BCOLORS=( ${E_ON_BLACK} ${E_ON_RED} ${E_ON_GREEN} ${E_ON_YELLOW} ${E_ON_BLUE} ${E_ON_MAGENTA} ${E_ON_CYAN} ${E_ON_WHITE} )
+
+  	echo -e "\n\n"
+  for fc in ${FCOLORS[*]}
 	do
-	  echo $c
+	  for bc in ${BCOLORS[*]}
+		do
+		  echo  -en "${fc}${bc}   XXXX   ${E_END}"
+		done
+			  echo ""
 	done
+	echo -e "\n\n"
+	
+	exit;
+
   echo -e "${E_RED}RED${E_END}"
   echo -e "${E_GREEN}GREEN${E_END}"
   echo -e "${E_YELLOW}YELLOW${E_END}"
@@ -103,63 +130,30 @@ colors() { ## Color test
   echo -e "${E_BR_MAGENTA}Bright MAGENTA${E_END}"
   echo -e "${E_BR_CYAN}Bright CYAN${E_END}"
   echo -e "${E_WHITE}WHITE${E_END}"
-  echo -e "${E_WHITE}${E_ON_RED}WHITE on RED${E_END}"
-  echo -e "${E_WHITE}${E_ON_GREEN}WHITE on GREEN${E_END}"
-  echo -e "${E_WHITE}${E_ON_YELLOW}WHITE on YELLOW${E_END}"
-  echo -e "${E_WHITE}${E_ON_BLUE}WHITE on BLUE${E_END}"
-  echo -e "${E_WHITE}${E_ON_MAGENTA}WHITE on MAGENTA${E_END}"
-  echo -e "${E_WHITE}${E_ON_CYAN}WHITE on CYAN${E_END}"
-  echo -e "${E_BLACK}${E_ON_WHITE}BLACK on WHITE${E_END}"	
+  
+	color-test "${E_BLACK}" "Black"
+	
+  color-test "${E_WHITE}" "White"
+	color-test "${E_GRAY}" "Gray"
 
-  echo -e "${E_BR_RED}${E_ON_RED}WHITE on RED${E_END}"
-  echo -e "${E_BR_RED}${E_ON_GREEN}WHITE on GREEN${E_END}"
-  echo -e "${E_BR_RED}${E_ON_YELLOW}WHITE on YELLOW${E_END}"
-  echo -e "${E_BR_RED}${E_ON_BLUE}WHITE on BLUE${E_END}"
-  echo -e "${E_BR_RED}${E_ON_MAGENTA}WHITE on MAGENTA${E_END}"
-  echo -e "${E_BR_RED}${E_ON_CYAN}WHITE on CYAN${E_END}"
-
-  echo -e "${E_BR_GREEN}${E_ON_RED}WHITE on RED${E_END}"
-  echo -e "${E_BR_GREEN}${E_ON_GREEN}WHITE on GREEN${E_END}"
-  echo -e "${E_BR_GREEN}${E_ON_YELLOW}WHITE on YELLOW${E_END}"
-  echo -e "${E_BR_GREEN}${E_ON_BLUE}WHITE on BLUE${E_END}"
-  echo -e "${E_BR_GREEN}${E_ON_MAGENTA}WHITE on MAGENTA${E_END}"
-  echo -e "${E_BR_GREEN}${E_ON_CYAN}WHITE on CYAN${E_END}"
-
-  echo -e "${E_BR_CYAN}${E_ON_RED}WHITE on RED${E_END}"
-  echo -e "${E_BR_CYAN}${E_ON_GREEN}WHITE on GREEN${E_END}"
-  echo -e "${E_BR_CYAN}${E_ON_YELLOW}WHITE on YELLOW${E_END}"
-  echo -e "${E_BR_CYAN}${E_ON_BLUE}WHITE on BLUE${E_END}"
-  echo -e "${E_BR_CYAN}${E_ON_MAGENTA}WHITE on MAGENTA${E_END}"
-  echo -e "${E_BR_CYAN}${E_ON_CYAN}WHITE on CYAN${E_END}"
-
-  echo -e "${E_BR_MAGENTA}${E_ON_RED}WHITE on RED${E_END}"
-  echo -e "${E_BR_MAGENTA}${E_ON_GREEN}WHITE on GREEN${E_END}"
-  echo -e "${E_BR_MAGENTA}${E_ON_YELLOW}WHITE on YELLOW${E_END}"
-  echo -e "${E_BR_MAGENTA}${E_ON_BLUE}WHITE on BLUE${E_END}"
-  echo -e "${E_BR_MAGENTA}${E_ON_MAGENTA}WHITE on MAGENTA${E_END}"
-  echo -e "${E_BR_MAGENTA}${E_ON_CYAN}WHITE on CYAN${E_END}"
-
-  echo -e "${E_BR_BLUE}${E_ON_RED}WHITE on RED${E_END}"
-  echo -e "${E_BR_BLUE}${E_ON_GREEN}WHITE on GREEN${E_END}"
-  echo -e "${E_BR_BLUE}${E_ON_YELLOW}WHITE on YELLOW${E_END}"
-  echo -e "${E_BR_BLUE}${E_ON_BLUE}WHITE on BLUE${E_END}"
-  echo -e "${E_BR_BLUE}${E_ON_MAGENTA}WHITE on MAGENTA${E_END}"
-  echo -e "${E_BR_BLUE}${E_ON_CYAN}WHITE on CYAN${E_END}"
-
-  echo -e "${E_BR_YELLOW}${E_ON_RED}WHITE on RED${E_END}"
-  echo -e "${E_BR_YELLOW}${E_ON_GREEN}WHITE on GREEN${E_END}"
-  echo -e "${E_BR_YELLOW}${E_ON_YELLOW}WHITE on YELLOW${E_END}"
-  echo -e "${E_BR_YELLOW}${E_ON_BLUE}WHITE on BLUE${E_END}"
-  echo -e "${E_BR_YELLOW}${E_ON_MAGENTA}WHITE on MAGENTA${E_END}"
-  echo -e "${E_BR_YELLOW}${E_ON_CYAN}WHITE on CYAN${E_END}"
-
-  echo -e "${E_WHITE}${E_ON_RED}WHITE on RED${E_END}"
-  echo -e "${E_WHITE}${E_ON_GREEN}WHITE on GREEN${E_END}"
-  echo -e "${E_WHITE}${E_ON_YELLOW}WHITE on YELLOW${E_END}"
-  echo -e "${E_WHITE}${E_ON_BLUE}WHITE on BLUE${E_END}"
-  echo -e "${E_WHITE}${E_ON_MAGENTA}WHITE on MAGENTA${E_END}"
-  echo -e "${E_WHITE}${E_ON_CYAN}WHITE on CYAN${E_END}"
-
+  color-test "${E_YELLOW}" "Yellow"
+	color-test "${E_BR_YELLOW}" "Yellow Bright"
+	
+	color-test "${E_RED}" "Red"
+	color-test "${E_BR_RED}" "Red Bright"
+	
+	color-test "${E_MAGENTA}" "Magenta"
+	color-test "${E_BR_MAGENTA}" "Magenta Bright"
+	
+  color-test "${E_CYAN}" "CYAN"
+	color-test "${E_BR_CYAN}" "CYAN Bright"
+	
+	color-test "${E_BLUE}" "Blue"
+	color-test "${E_BR_BLUE}" "Blue Bright"
+	
+	color-test "${E_GREEN}" "Green"
+	color-test "${E_BR_GREEN}" "Green Bright"
+	
 }
 
 rootTest() { ## Test assert root
