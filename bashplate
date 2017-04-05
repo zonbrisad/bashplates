@@ -58,10 +58,10 @@ funk2() { ## Description of function 2
 #---------------------------------------------------------------------
 
 # Script version info
-VERSION="1.09"
+VERSION="1.10"
 
 ##V Bashplate version
-BPVERSION="1.09"   
+BPVERSION="1.10"   
 
 ##V Usage info
 USAGE="Usage: ${scriptName} command [option]" 
@@ -372,6 +372,7 @@ help() { ## Print this help information
 }
 
 ihelp() { ##D Print internal help information
+  printLine
   IFS=$'\n'
   SC=$1
   help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '\*"##[ A-Z]"\*' | grep -v help_line | grep -v printLine)
@@ -384,6 +385,13 @@ ihelp() { ##D Print internal help information
       ;;   
     esac
   done 
+	
+	printInfo "#" "Normal bash comment"
+	printInfo "##" "Subcommand information comment (shown with help)"
+	printInfo "##C" "Conditional subcommand comment (shown with help)"
+	printInfo "##-" "Generates a line at output (shown with help)"
+	printInfo "##d" "Internal function comment (shown ihelp)"
+	printLine
 }
 
 vhelp() { ##D Print internal variable information
