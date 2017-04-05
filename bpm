@@ -14,58 +14,51 @@
 #
 
 # Display commands as they are executed
-#set -x
+#set -o xtrace
 # Display shell input lines as they are read
 #set -v
+
+# Exit script when a command fails. Append ||true if error is expected
+#set -o errexit # || true
+# Exit script when undeclared variable is used
+#set -o nounset
+# Exit script when pipe fails
+set -o pipefail
 
 # Directory where script is located
 scriptPath=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # Name of script
-scriptName=$(basename $0)
+scriptName=$(basename "$0")
 
 #---------------------------------------------------------------------
-# User Settings
+# User defined Settings
 #---------------------------------------------------------------------
 
-# Script version info
-VERSION="1.00"
+BP_DIR=bashplate_files
+BP_INSTALL_DIR=~/bin/${BP_DIR}
 
-# Bashplate version
-templateVersion="1.06"
-
-# Usage info
-USAGE="Usage: ${scriptName} command [option]" 
-
-# Description text
-DESC="Bashplate project management script"
-
-# logfile (uncomment to use logfile)
-#LOGFILE=${scriptPath}/${scriptName}.log
-
-# Default command (uncomment to use a default command )
-DEFAULT=help
-
-# Programs that are required to run the script (uncomment to use)
-#REQUIRED_PROGRAMS=(ls mv)
-
-# Lock file (uncomment to use lock file feature )
-#LOCK_FILE=/tmp/${scriptName}.lock
-
+if [ -e ${scriptPath}/BP ]; then
+  BP=1
+else
+  NEW=1
+fi
+		
 #---------------------------------------------------------------------
-# User functions
+# User defined functions
 #---------------------------------------------------------------------
 
-clean() { ## Remove leftover files
+
+clean() { ##C BP Remove leftover files
   find . -name "*~" -delete
 }
 
-commit() { ## Commit project to repository
+commit() { ##C BP Commit project to repository
   git commit -a
 	git push --tags -a
 }
 
-tag() { ## Make a new tag
+tag() { ##C BP Make a new tag
   # List existing tags
   git tag
 	
@@ -77,10 +70,61 @@ tag() { ## Make a new tag
   git tag -a $tag -m "$desc"
 }
 
-push() { ## Push to GITHUB
+push() { ##C BP Push to GITHUB
   git push --progress
 } 
 
+
+install-local() { ##C BP Install bashplate localy for easy creating new scripts
+  echo -e "Installing bashplates localy"
+	mkdir -p ${BP_INSTALL_DIR}
+
+	cp -rf ${scriptPath}/bashplate ${BP_INSTALL_DIR}/.
+	cp -rf ${scriptPath}/bpm ${BP_INSTALL_DIR}/bp
+	
+	ln -fs ${BP_INSTALL_DIR}/bp ~/bin/bp
+	rm -f ${BP_INSTALL_DIR}/BP
+}
+	
+new() { ##C NEW Create a new standard makeplate project
+	echo -e "Creating new makeplate project"
+	cp -rf ${BP_INSTALL_DIR}/bashplate .
+	#rm -f makeplate
+}
+
+#--------------------------------------------------------------------- 
+# Bashplate settings
+#---------------------------------------------------------------------
+
+# Script version info
+VERSION="1.01"
+
+##V Bashplate version
+BPVERSION="1.09"   
+
+##V Usage info
+USAGE="Usage: ${scriptName} command [option]" 
+
+# Description text
+DESC="Bashplate project management script"
+
+##V logfile (uncomment to use logfile)
+#LOGFILE=${scriptPath}/${scriptName}.log
+
+##V Default command (uncomment to use a default command )
+DEFAULT=help
+
+##V Function to be executed before every other function except DEFAULT function
+#PREFUNCTION=prefunc
+
+##V Function to be executed after every other function except DEFAULT function
+#POSTFUNCTION=postfunc
+
+##V Programs that are required to run the script (uncomment to use)
+#REQUIRED_PROGRAMS=(ls mv kalle)
+
+##V Lock file (uncomment to use lock file feature )
+#LOCK_FILE=/tmp/${scriptName}.lock
 
 #--------------------------------------------------------------------- 
 # Signal traps
@@ -88,7 +132,7 @@ push() { ## Push to GITHUB
 
 signalInt() {
   bpCleanUp
-	exit $EX_OK
+  exit "$EX_OK"
 }
 
 signalHup() {
@@ -105,19 +149,19 @@ signalTerm() {
   bpCleanUp
 }
 
-bpCleanUp() {
-#  echo "Cleanup"
-  rm -f $LOCK_FILE    # remove Lock file
+bpCleanUp() { ##D Cleanup function 
+  rm -f "$LOCK_FILE"    # remove Lock file
 }
 
-safeExit() {
+bpExit() { ##D Function for safely exiting script
   bpCleanUp
-	exit
+  exit
 }
 
-errorExit() {
+bpErrorExit() {  ##D Safely exit script with a error 
+  echo -e "${E_ERROR}${1}${E_END}"
   bpCleanUp
-	exit
+  exit
 }
 
 #--------------------------------------------------------------------- 
@@ -126,7 +170,8 @@ errorExit() {
 
 # ANSI foreground colors codes
 #
-E_BLACK='\e[0;30m'        # Black
+
+E_BLACK='\e[0;30m'        # Black 
 E_RED='\e[0;31m'          # Red
 E_GREEN='\e[0;32m'        # Green
 E_YELLOW='\e[0;33m'       # Yellow
@@ -145,14 +190,21 @@ E_WHITE='\e[1;37m'        # White
 
 # ANSI background color codes
 #
-E_ON_BLACK='\e[40m'         # Black
-E_ON_RED='\e[41m'           # Red
-E_ON_GREEN='\e[42m'         # Green
-E_ON_YELLOW='\e[43m'        # Yellow
-E_ON_BLUE='\e[44m'          # Blue
-E_ON_MAGENTA='\e[45m'       # Magenta
-E_ON_CYAN='\e[46m'          # Cyan
-E_ON_WHITE='\e[47m'         # White
+E_ON_BLACK='\e[40m'       # Black
+E_ON_RED='\e[41m'         # Red
+E_ON_GREEN='\e[42m'       # Green
+E_ON_YELLOW='\e[43m'      # Yellow
+E_ON_BLUE='\e[44m'        # Blue
+E_ON_MAGENTA='\e[45m'     # Magenta
+E_ON_CYAN='\e[46m'        # Cyan
+E_ON_WHITE='\e[47m'       # White
+
+# ANSI Text attributes
+E_ATTR_BOLD='\e[1m'
+E_ATTR_LOWI='\e[2m' 
+E_ATTR_UNDERLINE='\e[4m'
+E_ATTR_BLINK='\e[5m'
+E_ATTR_REVERSE='\e[7m'
 
 # ANSI cursor operations
 #
@@ -179,7 +231,7 @@ EX_OK=0            # successful termination
 ##-
 
 # Print a divider row
-printLine() {
+printLine() { ##D Print a line  
   echo -e "${E_BOLD_WHITE}------------------------------------------------------------------------------${E_END}"
 }
 
@@ -196,12 +248,12 @@ printInfo() {
 # arg1 variable for column 1
 # arg2 text for column 2
 printVar() {
-  var=$1
-  if [ ${!var} ]; then
-		printInfo "$2" "${!var}"
-	else 
-	  printf "${E_BR_CYAN}%-20s${E_END} ${E_BR_RED}N/A${E_END}\n" "$2"
-	fi
+  var="$1"
+  if [ "${!var}" ]; then
+    printInfo "$2" "${!var}"
+  else 
+    printf "${E_BR_CYAN}%-20s${E_END} ${E_BR_RED}N/A${E_END}\n" "$2"
+  fi
 }
 
 
@@ -215,73 +267,95 @@ printVar() {
 #
 # Arg1 String to log to file
 # 
-bpLog() {
+bpLog() { ##D Log to file command
   # check for LOGFILE variable
-	if [ -n "$LOGFILE" ]; then
-	  ts=$(date +"%Y-%m-%d %H:%M:%S")
- 	  echo $ts $1 >> ${LOGFILE}
-	fi
+  if [ -n "$LOGFILE" ]; then
+    ts=$(date +"%Y-%m-%d %H:%M:%S")
+     echo "$ts" "$1" >> "${LOGFILE}"
+  fi
 }
 
-log() { ## View logfile
-	if [ -n "$LOGFILE" ]; then
+log() { ##C LOGFILE View logfile
+  if [ -n "$LOGFILE" ]; then
     D=$(sed -r -e "s|\[Info\]|\[\\${E_INFO}Info\\${E_END}\]|"  \
-	          -e "s|\[Warn\]|\[\\${E_WARNING}Warn\\${E_END}\]|"  \
-	          -e "s|\[Erro\]|\[\\${E_ERROR}Erro\\${E_END}\]|"    \
-			  		-e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
-				  	-e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
-	          -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < ${LOGFILE} ) 
+            -e "s|\[Warn\]|\[\\${E_WARNING}Warn\\${E_END}\]|"  \
+            -e "s|\[Erro\]|\[\\${E_ERROR}Erro\\${E_END}\]|"    \
+            -e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
+            -e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
+            -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < "${LOGFILE}" ) 
 
-	  echo -e "$D"
-	else
-	  bpInfo "Logging is not activated"
-		exit
-	fi
+    echo -e "$D"
+  else
+    bpInfo "Logging is not activated"
+    exit
+  fi
 }
 
-
-bpInfo() {
+bpInfo() { ##D Info message 
   bpLog "[Info] $1"
-	echo -e "[${E_INFO}Info${E_END}] $1"
+  echo -e "[${E_INFO}Info${E_END}] $1"
 }
 
-bpWarning() {
+bpWarning() { ##D Warning message
   bpLog "[Warn] $1"
   echo -e "[${E_WARNING}Warning${E_END}] $1"
 }
 
-bpError() {
+bpError() { ##D Error message
   bpLog "[Erro] $1"
   echo -e "[${E_ERROR}Error${E_END}] $1"
 }
 
-bpCritical() {
+bpCritical() { ##D Critical error message
   bpLog "[Crit] $1"
   echo -e "[${E_CRITICAL}Critical${E_END}] $1"
-	safeExit
+  bpExit
 }
 
-assertRoot() {
-  if [ $(whoami) != root ]; then
-    echo -e "${E_ERROR}Must be root to use this command.${E_END}"
-    safeExit
+assertRoot() { ##D Assert that user is root
+  if [ "$(whoami)" != root ]; then
+    bpError "Must be root to use this command."
+    bpExit
   fi
 }
 
-info() { ## Display rows and columns
-	printVar scriptName      "Script name" 
-	printVar scriptPath      "Script path" 
-	printVar VERSION         "Script version" 
-	printVar templateVersion "Template version" 
-	printVar LOGFILE         "Log file" 
-	printVar LOCK_FILE       "Lock file" 
-	printVar DEFAULT         "Default function" 
-	printVar "REQUIRED_PROGRAMS" "Dependencies"
-	printInfo "PID" $$	
-	printVar DATE "Date" 
-	printVar TIME "Time" 
+
+assertNoLockFile() { ##D Assert that lockfile is not present
+  if [ -n "$LOCK_FILE" ]; then 
+    if [ -f "$LOCK_FILE" ]; then
+      echo -e "${E_ERROR}Script is already running. (${LOCK_FILE})${E_END} "
+      exit  # do not use bpExit because lock belongs to other process
+    fi
+    touch "$LOCK_FILE"              
+  fi
 }
 
+assertRequiredProgs() { ##D Assert that required programs are available on the system
+  if [ -n "${REQUIRED_PROGRAMS}" ]; then
+    for p in ${REQUIRED_PROGRAMS[@]}; do
+      hash "$p" 2>&- || \
+      { echo -e >&2 "${E_ERROR}Required program \"$p\" not found.${E_END}"; exit 1; }
+    done
+  fi
+}
+
+info() { ##D Show information about script
+  printVar scriptName      "Script name" 
+  printVar scriptPath      "Script path" 
+  printVar VERSION         "Script version" 
+  printVar BPVERSION       "Template version" 
+  printVar LOGFILE         "Log file" 
+  printVar LOCK_FILE       "Lock file" 
+  printVar DEFAULT         "Default function" 
+  printVar "REQUIRED_PROGRAMS" "Dependencies"
+  printInfo "PID" $$  
+  printVar DATE "Date" 
+  printVar TIME "Time" 
+}
+
+check() { ##D Make a shellcheck
+  shellcheck "$0"
+}
 
 # Change setting in config file (key value pair)
 #
@@ -290,96 +364,123 @@ info() { ## Display rows and columns
 # arg3 new value for setting
 #
 chSetting() { 
-  SETTING=$2
-	VAL=$3
-	sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" $1
+  SETTING="$2"
+  VAL="$3"
+  sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" "$1"
+}
+
+printCommand() { 
+  help_line=$1
+  help_command=$(echo "$help_line" | sed -s 's/(.*//')
+  help_info=$(echo "$help_line" | sed -s 's/^.*'"$2"'//')
+  printInfo "$help_command" "$help_info" 
+}
+
+printCondCommand() {
+  help_line=$1
+  C=$(echo "$1" | sed -s 's/^.*##C//' | awk '{print $1}')
+  eval "D=\$$C"
+  if [ -n "$D" ]; then
+    help_command=$(echo "$help_line" | sed -s 's/(.*//')
+    help_info=$(echo "$help_line" | sed -s 's/^.*'"$C"'//')
+    printInfo "$help_command" "$help_info"
+  fi
 }
 
 help() { ## Print this help information
-	echo $USAGE
-	echo -e $DESC
-	echo 
-	printf "%-20s  %s\n" "Command" "Help"
-	printLine
-	IFS=$'\n'
-  help_lines=`grep -h "##" $0 | grep -v grep | grep -v help_line | grep -v printLine`
-	
-	for help_line in ${help_lines[@]}; do
-		case $help_line in
-		  *"##-"*) printLine ;;
-			*) 
-	        help_command=`echo $help_line | sed -s 's/(.*//'`
-	      	help_info=`echo $help_line | sed -s 's/^.*##//'`
-          printInfo $help_command $help_info
-		  ;;	 
-		esac
-	done 
-	printLine
-	echo
+  echo "$USAGE"
+  echo -e "$DESC"
+  echo 
+  printf "%-20s  %s\n" "Command" "Help"
+  printLine
+  IFS=$'\n'
+  SC=$1
+  help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '##D' | grep -v '##V' | grep -v '\*##C' |  grep -v '\"##' | grep -v help_line | grep -v printLine)
+  for help_line in ${help_lines[@]} ; do
+#	for help_line in "${help_lines}" ; do
+#  for help_line in "${help_lines[@]}" ; do
+    case "$help_line" in
+      *"##-"*) printLine ;;
+      *"##C"*) printCondCommand "$help_line" ;;
+      *"##"*)   printCommand "$help_line" '##' ;;
+      *)    
+      ;;   
+    esac
+  done 
+}
+
+ihelp() { ##D Print internal help information
+  IFS=$'\n'
+  SC=$1
+  help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '\*"##[ A-Z]"\*' | grep -v help_line | grep -v printLine)
+  for help_line in ${help_lines[@]}; do
+    case "$help_line" in
+      "##-") printLine ;;
+      *"##D"*) 
+          printCommand "$help_line" '##D' ;;
+      *)    
+      ;;   
+    esac
+  done 
+}
+
+vhelp() { ##D Print internal variable information
+  IFS=$'\n'
+  lines=$(grep -A 1 '##V' "$0" | grep -v 'lines')
+  echo "$lines"
+  for line in ${lines[@]}; do
+    echo "$line"
+#    case $line in
+#      "##x") printLine ;;
+#      *"##D"*) 
+#          printCommand $help_line '##D' ;;
+#      *)    
+#      ;;   
+#    esac
+  done 
+
+#  echo $lines
 }
 
 version() { ## Print version information
-  echo $VERSION
+  echo "$VERSION"
 }
 
-# Check if a number of required programs are available on the system
-requiredPrograms() {
-  if [ -n "${REQUIRED_PROGRAMS}" ]; then
-    for p in ${REQUIRED_PROGRAMS[@]}; do
-	    hash "$p" 2>&- || \
-	    { echo -e >&2 "${E_ERROR}Required program \"$p\" not installed.${E_END}"; exit 1; }
-	  done
-	fi
-}
-
-# handler for script lock file
-lockFile() {
-	if [ -n "$LOCK_FILE" ]; then
-	 
-	  if [ -f "$LOCK_FILE" ]; then
-	    echo -e "${E_ERROR}Script is already running. (${LOCK_FILE})${E_END} "
-			#help
-		  exit  # do not use safeExit because lock belongs to other process
-		fi
-				
-		#trap "rm -f $LOCK_FILE" EXIT
-		touch $LOCK_FILE							
-	fi
-}
 
 # Runs a function in this file as a command
 runCommand() {
-#  echo $bpArguments
-	if [ "$bpArguments" -eq 0 ]; then
-	 
-	  # check for a default command
-	  if [ -n "$DEFAULT" ]; then
-		  $DEFAULT "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
-		  exit
-		fi
-		
-	  echo -e ${E_ERROR}"No command given"${E_END}
-		help
-		safeExit
-	fi
-	
-	# check for required programs 
-	requiredPrograms
-
-  # check for lockfile
-  lockFile
-
-  funks=`grep "##" $0 | grep -v grep | grep -v help_line`
-	for line in ${funks[@]}; do
-	  command=`echo $line | sed -s 's/(.*//'`
-		if [ "$command" == "$1" ]; then
-      $command "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
-			safeExit
-		fi
-	done
-	echo -e ${E_ERROR}"Command not found"${E_END}
-	help
-	safeExit 
+  if [ "$bpArguments" -eq 0 ]; then
+   
+    # check for a default command
+    if [ -n "$DEFAULT" ]; then
+      $DEFAULT "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
+      bpExit
+    fi
+    bpErrorExit "No command given"
+  fi
+  
+  funks=$(grep "##" "$0" | grep -v grep | grep -v help_line)
+  for line in ${funks[@]}; do
+    command=$(echo "$line" | sed -s 's/(.*//')
+    if [ "$command" == "$1" ]; then
+      
+      
+      # execute prefunction if existing
+      if [ -n "$PREFUNCTION" ]; then
+        ${PREFUNCTION}
+      fi
+      
+      # execute command
+      ${command} "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
+      
+      # execute postfunction if existing
+      if [ -n "$POSTFUNCTION" ]; then
+        ${POSTFUNCTION}
+      fi      
+      bpExit
+    fi
+  done
+  bpErrorExit "Command \"$1\" not found"	 
 }
 
 # Init 
@@ -395,7 +496,10 @@ trap  signalTerm SIGTERM
 bpArguments=$#
 
 # Run command parser
-runCommand "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"
+runCommand "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
 
 # Exit cleanly
-safeExit
+bpExit
+
+
+##-
