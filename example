@@ -45,6 +45,19 @@ defaultFunction() {
   echo "This is the default function. Type \"example help\" to get more info."
 }
 
+
+
+tlTest() { ## Test textline
+	bpTextLineC "Green" ${E_BR_GREEN} ${E_GREEN}
+	bpTextLineC "Magenta" ${E_BR_MAGENTA} ${E_MAGENTA}
+	bpTextLineC "Blue" ${E_BR_BLUE} ${E_BLUE}
+	bpTextLineC "Red" ${E_BR_RED} ${E_RED}
+	bpTextLineC "Yellow" ${E_BR_YELLOW} ${E_YELLOW}
+	bpTextLineC "White" ${E_WHITE} ${E_GRAY}
+	bpTextLine "Standard colors"
+}
+
+
 errorTest() { ## Test of error messages
   echo $LOGFILE
 	bpInfo "Info test"
@@ -226,7 +239,7 @@ LOCK_FILE=/tmp/${scriptName}.lock
 
 signalInt() {
   bpCleanUp
-  exit $EX_OK
+  exit "$EX_OK"
 }
 
 signalHup() {
@@ -244,7 +257,7 @@ signalTerm() {
 }
 
 bpCleanUp() { ##D Cleanup function 
-  rm -f $LOCK_FILE    # remove Lock file
+  rm -f "$LOCK_FILE"    # remove Lock file
 }
 
 bpExit() { ##D Function for safely exiting script
@@ -264,7 +277,8 @@ bpErrorExit() {  ##D Safely exit script with a error
 
 # ANSI foreground colors codes
 #
-E_BLACK='\e[0;30m'        # Black
+
+E_BLACK='\e[0;30m'        # Black 
 E_RED='\e[0;31m'          # Red
 E_GREEN='\e[0;32m'        # Green
 E_YELLOW='\e[0;33m'       # Yellow
@@ -316,6 +330,8 @@ E_INFO=$E_BR_CYAN
 E_WARNING=$E_BR_YELLOW
 E_ERROR=$E_BR_RED
 E_CRITICAL=$E_ON_RED$E_WHITE
+C_LINE=$E_GREEN
+C_LINE_TEXT=$E_BR_GREEN
 
 # Exit codes 
 #
@@ -326,6 +342,24 @@ EX_OK=0            # successful termination
 # Print a divider row
 printLine() { ##D Print a line  
   echo -e "${E_BOLD_WHITE}------------------------------------------------------------------------------${E_END}"
+}
+
+# Print text with row
+#
+# arg1 text to be printed
+# arg2 text color
+# arg3 line color
+bpTextLineC() { ##D Print text with adjusted line after with selectable colors
+  len=${#1}
+	echo -en ${2}${1}" "${3}
+	l=$((75-$len))
+	seq -s- ${l}|tr -d '[:digit:]'
+	echo -e ${E_END}
+}
+
+
+bpTextLine() { ##D Print text with adjusted line after
+  bpTextLineC "$1" "${C_LINE_TEXT}" "${C_LINE}"
 }
 
 # Print text into two columns
@@ -498,6 +532,7 @@ help() { ## Print this help information
 }
 
 ihelp() { ##D Print internal help information
+  printLine
   IFS=$'\n'
   SC=$1
   help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '\*"##[ A-Z]"\*' | grep -v help_line | grep -v printLine)

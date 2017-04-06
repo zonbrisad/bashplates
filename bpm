@@ -88,7 +88,8 @@ install-local() { ##C BP Install bashplate localy for easy creating new scripts
 	
 new() { ##C NEW Create a new standard makeplate project
 	echo -e "Creating new makeplate project"
-	cp -rf ${BP_INSTALL_DIR}/bashplate .
+	read -p "Enter name of new scipt>" sname
+	cp -rf ${BP_INSTALL_DIR}/bashplate $sname
 	#rm -f makeplate
 }
 
