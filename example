@@ -53,6 +53,7 @@ tlTest() { ## Test textline
 	bpTextLineC "Blue" ${E_BR_BLUE} ${E_BLUE}
 	bpTextLineC "Red" ${E_BR_RED} ${E_RED}
 	bpTextLineC "Yellow" ${E_BR_YELLOW} ${E_YELLOW}
+	bpTextLineC "Cyan" ${E_BR_CYAN} ${E_CYAN}
 	bpTextLineC "White" ${E_WHITE} ${E_GRAY}
 	bpTextLine "Standard colors"
 }
@@ -352,9 +353,9 @@ printLine() { ##D Print a line
 bpTextLineC() { ##D Print text with adjusted line after with selectable colors
   len=${#1}
 	echo -en ${2}${1}" "${3}
-	l=$((75-$len))
-	seq -s- ${l}|tr -d '[:digit:]'
-	echo -e ${E_END}
+	l=$((${COLUMNS} - ${len} - 3 ))
+	seq -s_ ${l}|tr -d '[:digit:]'
+	echo -e ${E_END} 
 }
 
 
@@ -409,7 +410,7 @@ log() { ##C LOGFILE View logfile
             -e "s|\[Erro\]|\[\\${E_ERROR}Erro\\${E_END}\]|"    \
             -e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
             -e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
-            -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < ${LOGFILE} ) 
+            -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < "${LOGFILE}" ) 
 
     echo -e "$D"
   else
@@ -480,6 +481,9 @@ info() { ##D Show information about script
   printVar TIME "Time" 
 }
 
+check() { ##D Make a shellcheck
+  shellcheck "$0"
+}
 
 # Change setting in config file (key value pair)
 #
@@ -490,13 +494,13 @@ info() { ##D Show information about script
 chSetting() { 
   SETTING="$2"
   VAL="$3"
-  sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" $1
+  sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" "$1"
 }
 
 printCommand() { 
   help_line=$1
   help_command=$(echo "$help_line" | sed -s 's/(.*//')
-  help_info=$(echo "$help_line" | sed -s 's/^.*'$2'//')
+  help_info=$(echo "$help_line" | sed -s 's/^.*'"$2"'//')
   printInfo "$help_command" "$help_info" 
 }
 
@@ -506,7 +510,7 @@ printCondCommand() {
   eval "D=\$$C"
   if [ -n "$D" ]; then
     help_command=$(echo "$help_line" | sed -s 's/(.*//')
-    help_info=$(echo "$help_line" | sed -s 's/^.*'$C'//')
+    help_info=$(echo "$help_line" | sed -s 's/^.*'"$C"'//')
     printInfo "$help_command" "$help_info"
   fi
 }
@@ -610,6 +614,8 @@ runCommand() {
 #
 DATE=$(date +"%Y-%m-%d")
 TIME=$(date +"%H:%M:%S")
+COLUMNS=$(tput cols)
+LINES=$(tput lines)
 
 trap  signalQuit SIGQUIT
 trap  signalInt  SIGINT

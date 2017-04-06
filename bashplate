@@ -207,9 +207,9 @@ printLine() { ##D Print a line
 bpTextLineC() { ##D Print text with adjusted line after with selectable colors
   len=${#1}
 	echo -en ${2}${1}" "${3}
-	l=$((75-$len))
-	seq -s- ${l}|tr -d '[:digit:]'
-	echo -e ${E_END}
+	l=$((${COLUMNS} - ${len} - 3 ))
+	seq -s_ ${l}|tr -d '[:digit:]'
+	echo -e ${E_END} 
 }
 
 
@@ -477,6 +477,8 @@ runCommand() {
 #
 DATE=$(date +"%Y-%m-%d")
 TIME=$(date +"%H:%M:%S")
+COLUMNS=$(tput cols)
+LINES=$(tput lines)
 
 trap  signalQuit SIGQUIT
 trap  signalInt  SIGINT
