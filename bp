@@ -49,8 +49,11 @@ fi
 #---------------------------------------------------------------------
 
 
-clean() { ##C BP Remove leftover files
+clean() { ##C BP Remove leftover files 
   find . -name "*~" -delete
+	
+  # Remove untraced files
+	git clean -df
 }
 
 commit() { ##C BP Commit project to repository
