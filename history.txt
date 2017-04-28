@@ -1,3 +1,7 @@
+Version 1.11
+	- Added install feature
+  - Added meld compare feature (for developers of bashplates)
+
 Version 1.09
   - Added postfunc
 	- Added prefunc

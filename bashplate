@@ -58,10 +58,10 @@ funk2() { ## Description of function 2
 #---------------------------------------------------------------------
 
 # Script version info
-VERSION="1.10"
+VERSION="1.11"
 
 ##V Bashplate version
-BPVERSION="1.10"   
+BPVERSION="1.11"   
 
 ##V Usage info
 USAGE="Usage: ${scriptName} command [option]" 
@@ -432,10 +432,13 @@ vhelp() { ##D Print internal variable information
 #  echo $lines
 }
 
+imeld() { ##D Run meld file compare with local installed bashplate
+  meld ${scriptPath}/${scriptName} ~/bin/bashplate_files/bashplate
+}
+
 version() { ## Print version information
   echo "$VERSION"
 }
-
 
 # Runs a function in this file as a command
 runCommand() {
