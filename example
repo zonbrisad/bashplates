@@ -554,6 +554,13 @@ ihelp() { ##D Print internal help information
       ;;   
     esac
   done 
+	
+  printInfo "#" "Normal bash comment"
+  printInfo "##" "Subcommand information comment (shown with help)"
+  printInfo "##C" "Conditional subcommand comment (shown with help)"
+  printInfo "##-" "Generates a line at output (shown with help)"
+  printInfo "##d" "Internal function comment (shown ihelp)"
+  printLine
 }
 
 vhelp() { ##D Print internal variable information

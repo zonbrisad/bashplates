@@ -1,5 +1,5 @@
 
-#Bashplates	
+# Bashplates	
 
 #### Author 
 Peter Malmberg  <peter.malmberg@gmail.com>
@@ -21,6 +21,7 @@ Bashplates is a template to ease rapid development of bash shellscripts.
 - ANSI Color codes
 
 
+
 ## Built in commands
 - help    - Show help information about user define subcommands + some internal commands
 - ihelp   - Help information about internal commands
@@ -36,7 +37,7 @@ and a short description of their function.
  
 
 ### Documentation tags
-- ##    Documentation tag for userdefined function
+- *##*    Documentation tag for userdefined function
 - ##D   Documentation tag for internal functions
 - ##C   Conditional documentation tag
 - ##-   Separator line tag
@@ -61,10 +62,53 @@ myCommand() { ##C MYVAR Command description
 ```
 
 
+
+## Installation
+
+Bashplates can be installed on your system to enable rapid creation of
+new scripts. 
+There are two install options.
+- install
+- install-local
+
+
+### Local installation
+
+```bash
+$ cd bashplates
+$ ./bp install-local
+}
+```
+
+Make sure that ~/bin is in the path.
+
+
+### System wide installation
+
+```bash
+$ cd bashplates
+$ ./bp install
+}
+```
+
+Make sure that /usr/loval/bin is in the path.
+
+
+## Usage
+
+```bash
+$ bp new
+}
+```
+
+
+
+
+
 # Files
  - `example  ` example bashplate script
  - `bashplate` bashplate template
- - `bpm`       bashplate project management script
+ - `bp`        bashplate project management script
  - `history.txt` history file 
  - `README.md` this documentation
 

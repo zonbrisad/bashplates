@@ -194,11 +194,6 @@ EX_OK=0            # successful termination
 
 ##-
 
-# Print a divider row
-printLine() { ##D Print a line  
-  echo -e "${E_BOLD_WHITE}------------------------------------------------------------------------------${E_END}"
-}
-
 # Print text with row
 #
 # arg1 text to be printed
@@ -206,16 +201,26 @@ printLine() { ##D Print a line
 # arg3 line color
 bpTextLineC() { ##D Print text with adjusted line after with selectable colors
   len=${#1}
-	echo -en ${2}${1}" "${3}
 	l=$((${COLUMNS} - ${len} - 3 ))
-	seq -s_ ${l}|tr -d '[:digit:]'
-	echo -e ${E_END} 
+	if [ $len -eq 0 ]; then
+	   	echo -en ${3}
+	else
+	  	echo -en ${2}${1}" "${3}
+	fi
+	seq -s${4} ${l}|tr -d '[:digit:]'
+	echo -en ${E_END}
 }
-
 
 bpTextLine() { ##D Print text with adjusted line after
-  bpTextLineC "$1" "${C_LINE_TEXT}" "${C_LINE}"
+  bpTextLineC "$1" "${C_LINE_TEXT}" "${C_LINE}" "_"
 }
+
+# Print a divider row
+printLine() { ##D Print a line
+  bpTextLineC "" "${C_LINE_TEXT}" "${E_GRAY}"  "-"
+	#bpTextLineC "" "${C_LINE_TEXT}" "${E_GREEN}" "-"
+}
+
 
 # Print text into two columns
 #
@@ -369,6 +374,13 @@ printCondCommand() {
   fi
 }
 
+##- Kalle
+
+printHelpLine() {
+   echo $(echo $1 | awk '{print $2}')
+   printLineC $(echo $1 | awk '{print $2}')
+}
+
 help() { ## Print this help information
   echo "$USAGE"
   echo -e "$DESC"
@@ -378,11 +390,9 @@ help() { ## Print this help information
   IFS=$'\n'
   SC=$1
   help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '##D' | grep -v '##V' | grep -v '\*##C' |  grep -v '\"##' | grep -v help_line | grep -v printLine)
-  for help_line in ${help_lines[@]} ; do
-#	for help_line in "${help_lines}" ; do
-#  for help_line in "${help_lines[@]}" ; do
+  for help_line in ${help_lines[@]}; do
     case "$help_line" in
-      *"##-"*) printLine ;;
+      *"##-"*) printHelpLine $help_line ;;
       *"##C"*) printCondCommand "$help_line" ;;
       *"##"*)   printCommand "$help_line" '##' ;;
       *)    
@@ -406,12 +416,12 @@ ihelp() { ##D Print internal help information
     esac
   done 
 	
-	printInfo "#" "Normal bash comment"
-	printInfo "##" "Subcommand information comment (shown with help)"
-	printInfo "##C" "Conditional subcommand comment (shown with help)"
-	printInfo "##-" "Generates a line at output (shown with help)"
-	printInfo "##d" "Internal function comment (shown ihelp)"
-	printLine
+  printInfo "#" "Normal bash comment"
+  printInfo "##" "Subcommand information comment (shown with help)"
+  printInfo "##C" "Conditional subcommand comment (shown with help)"
+  printInfo "##-" "Generates a line at output (shown with help)"
+  printInfo "##d" "Internal function comment (shown ihelp)"
+  printLine
 }
 
 vhelp() { ##D Print internal variable information

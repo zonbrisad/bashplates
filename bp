@@ -134,8 +134,12 @@ DESC="Bashplate project management script"
 ##V Default command (uncomment to use a default command )
 DEFAULT=help
 
+prefunc() {
+  echo -e "XXXX"
+}
+
 ##V Function to be executed before every other function except DEFAULT function
-#PREFUNCTION=prefunc
+PREFUNCTION=prefunc
 
 ##V Function to be executed after every other function except DEFAULT function
 #POSTFUNCTION=postfunc
