@@ -49,8 +49,11 @@ fi
 #---------------------------------------------------------------------
 
 
-clean() { ##C BP Remove leftover files
+clean() { ##C BP Remove leftover files 
   find . -name "*~" -delete
+	
+  # Remove untraced files
+	git clean -df
 }
 
 commit() { ##C BP Commit project to repository
@@ -131,8 +134,12 @@ DESC="Bashplate project management script"
 ##V Default command (uncomment to use a default command )
 DEFAULT=help
 
+prefunc() {
+  echo -e "XXXX"
+}
+
 ##V Function to be executed before every other function except DEFAULT function
-#PREFUNCTION=prefunc
+PREFUNCTION=prefunc
 
 ##V Function to be executed after every other function except DEFAULT function
 #POSTFUNCTION=postfunc
