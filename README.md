@@ -6,21 +6,23 @@ Peter Malmberg  <peter.malmberg@gmail.com>
 #### Licence
 MIT
 #### Description
-Bashplates is a template to ease rapid development of bash shellscripts.
+Bashplates is a bash scipt template to enabel quick development of
+subcommandbased shellscripts.
 
 ## Features
 - Handler for commands
-- Built in Documantation handling of commands
+- Built in Documantation handling of commands (help command)
 - logfile function
 - Simple error/message handling
 - Check if root user
-- Check for required programs
+- Check for required installed programs
 - lock file feature
 - Trap handling
 - Cleanup handling
 - ANSI Color codes
-
-
+- Numerous internal variables setup on default
+- Execution hooks
+- default function
 
 ## Built in commands
 - help    - Show help information about user define subcommands + some internal commands
@@ -61,8 +63,6 @@ myCommand() { ##C MYVAR Command description
 }
 ```
 
-
-
 ## Installation
 
 Bashplates can be installed on your system to enable rapid creation of
@@ -72,12 +72,24 @@ There are two install options.
 - install-local
 
 
+### Download
+
+Get bashplates from github with the following command.
+
+```bash
+$ git clone https://github.com/zonbrisad/bashplates.git
+```
+
+
 ### Local installation
+
+Local installation will install bp on your personal useraccount. It is
+convenient if you do not have root access on the machine you are
+installing it on.
 
 ```bash
 $ cd bashplates
 $ ./bp install-local
-}
 ```
 
 Make sure that ~/bin is in the path.
@@ -85,25 +97,25 @@ Make sure that ~/bin is in the path.
 
 ### System wide installation
 
+This option will install bp system wide. Bp will in this way be
+available to all users. Requires root access. 
+
 ```bash
 $ cd bashplates
-$ ./bp install
-}
+$ sudo ./bp install
 ```
 
-Make sure that /usr/loval/bin is in the path.
+Make sure that /usr/local/bin is in the path.
 
 
-## Usage
+## Create new script
+
+To create a new script type the command bellow.  The new script will
+be created in the directory you are currently standing in.
 
 ```bash
 $ bp new
-}
 ```
-
-
-
-
 
 # Files
  - `example  ` example bashplate script
@@ -117,15 +129,9 @@ $ bp new
 - Add variable documentation option.
 - Use logrotate for logs
 - Mail feature
+- Remove option
 
 
-# Bash scripting tips and tricks
-
-- Use long options when scripting(`ls --all` vs`ls -a`). This makes
-  readabilty much easier and you will reduce serching documentation
-	to understand what yout code does.
-- Use {} to surround your variables to avoid name confusion.
-  
 # References and tutorials
 
 [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.html#Programmable-Completion)
@@ -146,8 +152,4 @@ $ bp new
 [Self-contained auto-updating rsync-based backup script](https://gist.github.com/KylePDavis/3f8c511838a36f2528d7)
 
 [This is a shell script template generator](http://linuxcommand.org/lc3_new_script.php)
-
-
-
-
 

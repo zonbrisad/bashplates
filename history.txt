@@ -1,6 +1,11 @@
 Version 1.11
 	- Added install feature
   - Added meld compare feature (for developers of bashplates)
+  - introducing hooks
+	- finer controll over what to log
+	- internal namechanges
+	- new documentation tags
+	
 
 Version 1.09
   - Added postfunc
