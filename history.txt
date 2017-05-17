@@ -1,3 +1,10 @@
+Version 1.11
+  - introducing hooks
+	- finer controll over what to log
+	- internal namechanges
+	- new documentation tags
+	
+
 Version 1.09
   - Added postfunc
 	- Added prefunc
