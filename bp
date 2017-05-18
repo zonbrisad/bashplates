@@ -86,7 +86,7 @@ bpInstall() {
 
 	mkdir -p ${1}
 
-	cp -rf ${scriptPath}/bashplate ${1}/.
+	cp -rf ${scriptPath}/bashplate* ${1}/.
 	cp -rf ${scriptPath}/bp ${1}/bp
 	
 	ln -fs ${1}/bp ${2}
@@ -106,10 +106,16 @@ install-local() { ##C BP Install bashplate localy for easy creating new scripts
 	bpInstall ${BP_INSTALL_DIR} ~/bin/bp
 }
 	
-new() { ##C NEW Create a new standard makeplate project
-	echo -e "Creating new makeplate project"
+new() { ##C NEW Create a new standard bashplate project
+	echo -e "Creating new bashplate project"
 	read -p "Enter name of new scipt>" sname
 	cp -rf ${scriptPath}/bashplate_files/bashplate $sname
+}
+
+newS() { ##C NEW Create a new simple bashplate project
+	echo -e "Creating new simple bashplate project"
+	read -p "Enter name of new scipt>" sname
+	cp -rf ${scriptPath}/bashplate_files/bashplate-simple $sname
 }
 
 #--------------------------------------------------------------------- 
@@ -139,7 +145,7 @@ prefunc() {
 }
 
 ##V Function to be executed before every other function except DEFAULT function
-PREFUNCTION=prefunc
+#PREFUNCTION=prefunc
 
 ##V Function to be executed after every other function except DEFAULT function
 #POSTFUNCTION=postfunc

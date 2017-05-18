@@ -1,3 +1,7 @@
+Version 1.x
+  - Adding simple template
+
+
 Version 1.11
   - introducing hooks
 	- finer controll over what to log
