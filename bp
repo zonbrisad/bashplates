@@ -123,10 +123,10 @@ newS() { ##C NEW Create a new simple bashplate project
 #---------------------------------------------------------------------
 
 # Script version info
-VERSION="1.01"
+VERSION="1.02"
 
 ##V Bashplate version
-BPVERSION="1.09"   
+BPVERSION="1.11"   
 
 ##V Usage info
 USAGE="Usage: ${scriptName} command [option]" 
@@ -135,20 +135,28 @@ USAGE="Usage: ${scriptName} command [option]"
 DESC="Bashplate project management script"
 
 ##V logfile (uncomment to use logfile)
-#LOGFILE=${scriptPath}/${scriptName}.log
+LOGFILE=${scriptPath}/${scriptName}.log
+
+##V Logging options (uncomment to activate logging parameters)
+#LOG_INFO=1
+#LOG_WARNING=1
+#LOG_ERROR=1
+#LOG_CRITICAL=1
 
 ##V Default command (uncomment to use a default command )
 DEFAULT=help
 
-prefunc() {
-  echo -e "XXXX"
-}
+##V Pre script hook, execute this function before every command
+#PREHOOK=preCheck
 
-##V Function to be executed before every other function except DEFAULT function
-#PREFUNCTION=prefunc
+##V Post script hook, execute this function after every command
+#POSTHOOK=
+
+##V Function to be executed before every other cmd except DEFAULT function
+#PRECMDHOOK=
 
 ##V Function to be executed after every other function except DEFAULT function
-#POSTFUNCTION=postfunc
+#POSTCMDHOOK=
 
 ##V Programs that are required to run the script (uncomment to use)
 #REQUIRED_PROGRAMS=(ls mv kalle)
@@ -162,7 +170,7 @@ prefunc() {
 
 signalInt() {
   bpCleanUp
-  exit "$EX_OK"
+  exit "$BP_E_OK"
 }
 
 signalHup() {
@@ -185,11 +193,18 @@ bpCleanUp() { ##D Cleanup function
 
 bpExit() { ##D Function for safely exiting script
   bpCleanUp
+	
+  # execute postscript hook if existing
+  if [ -n "$POSTHOOK" ]; then
+     ${POSTHOOK}
+  fi
+	
   exit
 }
 
 bpErrorExit() {  ##D Safely exit script with a error 
-  echo -e "${E_ERROR}${1}${E_END}"
+  #echo -e "${BP_C_ERROR}${1}${E_END}"
+  bpError "${1}"
   bpCleanUp
   exit
 }
@@ -248,22 +263,61 @@ E_SHOW="\e[?25h"          # Show cursor
 
 E_END="\e[m"              # Clear Attributes
 
-# Message colors
-E_INFO=$E_BR_CYAN
-E_WARNING=$E_BR_YELLOW
-E_ERROR=$E_BR_RED
-E_CRITICAL=$E_ON_RED$E_WHITE
+# Internal bashplate colors
+BP_C_OK=$E_BR_GREEN
+BP_C_INFO=$E_BR_CYAN
+BP_C_WARNING=$E_BR_YELLOW
+BP_C_ERROR=$E_BR_RED
+BP_C_CRITICAL=$E_ON_RED$E_WHITE
+BP_C_LINE=$E_GREEN
+BP_C_LINE_TEXT=$E_BR_GREEN
 
 # Exit codes 
 #
-EX_OK=0            # successful termination 
+BP_E_OK=0            # successful termination 
 
 ##-
 
-# Print a divider row
-printLine() { ##D Print a line  
-  echo -e "${E_BOLD_WHITE}------------------------------------------------------------------------------${E_END}"
+# Print text with row
+#
+# arg1 text to be printed
+# arg2 text color
+# arg3 line color
+# arg4 middle character
+# arg5 line character
+bpPrintLineC() { ##D Print text with adjusted line after with selectable colors
+  len1=${#1}
+  len4=${#4}
+	
+  echo -en ${2}${1}${4}${3}
+  l=$((${COLUMNS} - ${len1} - ${len4} - 3 ))
+  seq -s${5} ${l}|tr -d '[:digit:]'
+  echo -en ${E_END} 
 }
+
+# Print text with row
+#
+# arg1 text to be printed
+# arg2 text color
+# arg3 line color
+bpTextLineC() { ##D Print text with adjusted line after with selectable colors
+  bpPrintLineC "$1" "$2" "$3" " " "-"
+}
+
+bpTextLine() { ##D Print text with line after
+  bpTextLineC "$1" "${C_LINE_TEXT}" "${C_LINE}"
+}
+
+# Print a divider row
+bpLine() { ##D Print a line  
+  bpPrintLineC "" "${E_GRAY}" "${E_GRAY}" "" "-" 
+}
+
+# Legacy function
+printLine() { 
+  bpLine
+}
+
 
 # Print text into two columns
 #
@@ -307,9 +361,9 @@ bpLog() { ##D Log to file command
 
 log() { ##C LOGFILE View logfile
   if [ -n "$LOGFILE" ]; then
-    D=$(sed -r -e "s|\[Info\]|\[\\${E_INFO}Info\\${E_END}\]|"  \
-            -e "s|\[Warn\]|\[\\${E_WARNING}Warn\\${E_END}\]|"  \
-            -e "s|\[Erro\]|\[\\${E_ERROR}Erro\\${E_END}\]|"    \
+    D=$(sed -r -e "s|\[Info\]|\[\\${BP_C_INFO}Info\\${E_END}\]|"  \
+            -e "s|\[Warn\]|\[\\${BP_C_WARNING}Warn\\${E_END}\]|"  \
+            -e "s|\[Erro\]|\[\\${BP_C_ERROR}Erro\\${E_END}\]|"    \
             -e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
             -e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
             -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < "${LOGFILE}" ) 
@@ -321,24 +375,38 @@ log() { ##C LOGFILE View logfile
   fi
 }
 
+
+bpOk() { ##D Success message 
+  bpLog "[ Ok ] $1"
+  echo -e "[${BP_C_OK}Ok${E_END}] $1"
+}
+
 bpInfo() { ##D Info message 
-  bpLog "[Info] $1"
-  echo -e "[${E_INFO}Info${E_END}] $1"
+  if [ -n "$LOG_INFO" ]; then
+    bpLog "[Info] $1"
+  fi
+  echo -e "[${BP_C_INFO}Info${E_END}] $1"
 }
 
 bpWarning() { ##D Warning message
-  bpLog "[Warn] $1"
-  echo -e "[${E_WARNING}Warning${E_END}] $1"
+  if [ -n "$LOG_WARNING" ]; then	
+    bpLog "[Warn] $1"
+  fi
+  echo -e "[${BP_C_WARNING}Warning${E_END}] $1"
 }
 
 bpError() { ##D Error message
-  bpLog "[Erro] $1"
-  echo -e "[${E_ERROR}Error${E_END}] $1"
+  if [ -n "$LOG_ERROR" ]; then
+    bpLog "[Erro] $1"  
+  fi
+  echo -e "[${BP_C_ERROR}Error${E_END}] $1"
 }
 
 bpCritical() { ##D Critical error message
-  bpLog "[Crit] $1"
-  echo -e "[${E_CRITICAL}Critical${E_END}] $1"
+  if [ -n "$LOG_CRITICAL" ]; then
+    bpLog "[Crit] $1"
+  fi
+  echo -e "[${BP_C_CRITICAL}Critical${E_END}] $1"
   bpExit
 }
 
@@ -353,7 +421,8 @@ assertRoot() { ##D Assert that user is root
 assertNoLockFile() { ##D Assert that lockfile is not present
   if [ -n "$LOCK_FILE" ]; then 
     if [ -f "$LOCK_FILE" ]; then
-      echo -e "${E_ERROR}Script is already running. (${LOCK_FILE})${E_END} "
+      #echo -e "${BP_C_ERROR}Script is already running. (${LOCK_FILE})${E_END} "
+      bpError "Script is already running. (${LOCK_FILE})"
       exit  # do not use bpExit because lock belongs to other process
     fi
     touch "$LOCK_FILE"              
@@ -364,7 +433,8 @@ assertRequiredProgs() { ##D Assert that required programs are available on the s
   if [ -n "${REQUIRED_PROGRAMS}" ]; then
     for p in ${REQUIRED_PROGRAMS[@]}; do
       hash "$p" 2>&- || \
-      { echo -e >&2 "${E_ERROR}Required program \"$p\" not found.${E_END}"; exit 1; }
+        { bpError "Required program \"$p\" not found."; exit 1; }
+#      { echo -e >&2 "${BP_C_ERROR}Required program \"$p\" not found.${E_END}"; exit 1; }
     done
   fi
 }
@@ -417,6 +487,34 @@ printCondCommand() {
   fi
 }
 
+printCondLine() {
+  help_line=$1
+  C=$(echo "$1" | sed -s 's/^.*##C-//' | awk '{print $1}')
+  eval "D=\$$C"
+  if [ -n "$D" ]; then
+     printLine
+  fi
+}
+
+printNamedLine() {
+  #name=$(echo "$1" | sed -s 's/^.*##N-//' | awk '{print $1}')
+  name=$(echo "$1" | sed -e 's/^.*##N-//' -e 's/^[ \t]*//' )
+  bpTextLineC $name "${E_BLUE}" "${E_GREEN}"
+}
+
+
+printCondNamedLine() {
+  help_line=$1
+  C=$(echo "$1" | sed -s 's/^.*##CN-//' | awk '{print $1}')
+	#name=$(echo "$1" | sed -s 's/^.*##CN-//' | awk '{print $2}')
+	name=$(echo "$help_line" | sed -e 's/^.*'"$C"'//' -e 's/^[ \t]*//' )
+  eval "D=\$$C"
+  if [ -n "$D" ]; then
+    #bpTextLineC $name "${E_BLUE}" "${E_GREEN}"
+    bpTextLine "$name" 
+  fi
+}
+
 help() { ## Print this help information
   echo "$USAGE"
   echo -e "$DESC"
@@ -425,14 +523,16 @@ help() { ## Print this help information
   printLine
   IFS=$'\n'
   SC=$1
-  help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '##D' | grep -v '##V' | grep -v '\*##C' |  grep -v '\"##' | grep -v help_line | grep -v printLine)
+  #help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '##D' | grep -v '##V' | grep -v '\*##C' | grep -v '\*##C-' |  grep -v '\"##' |  grep -v '##N-//' | grep -v help_line | grep -v printLine)
+  help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##N-//' -e 'help_line' -e   'printLine')
   for help_line in ${help_lines[@]} ; do
-#	for help_line in "${help_lines}" ; do
-#  for help_line in "${help_lines[@]}" ; do
     case "$help_line" in
-      *"##-"*) printLine ;;
-      *"##C"*) printCondCommand "$help_line" ;;
-      *"##"*)   printCommand "$help_line" '##' ;;
+      *"##-"*)   printLine ;;
+      *"##C-"*)  printCondLine       "$help_line" ;;
+      *"##N-"*)  printNamedLine      "$help_line" ;;
+      *"##CN-"*) printCondNamedLine  "$help_line" ;;
+      *"##C"*)   printCondCommand    "$help_line" ;;
+      *"##"*)    printCommand        "$help_line" '##' ;;
       *)    
       ;;   
     esac
@@ -440,18 +540,25 @@ help() { ## Print this help information
 }
 
 ihelp() { ##D Print internal help information
+  printLine
   IFS=$'\n'
   SC=$1
   help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '\*"##[ A-Z]"\*' | grep -v help_line | grep -v printLine)
   for help_line in ${help_lines[@]}; do
     case "$help_line" in
-      "##-") printLine ;;
-      *"##D"*) 
-          printCommand "$help_line" '##D' ;;
+      "##-")   printLine ;;
+      *"##D"*) printCommand "$help_line" '##D' ;;
       *)    
       ;;   
     esac
   done 
+	
+  printInfo "#" "Normal bash comment"
+  printInfo "##" "Subcommand information comment (shown with help)"
+  printInfo "##C" "Conditional subcommand comment (shown with help)"
+  printInfo "##-" "Generates a line at output (shown with help)"
+  printInfo "##d" "Internal function comment (shown ihelp)"
+  printLine
 }
 
 vhelp() { ##D Print internal variable information
@@ -472,10 +579,13 @@ vhelp() { ##D Print internal variable information
 #  echo $lines
 }
 
+imeld() { ##D Run meld file compare with local installed bashplate
+  meld ${scriptPath}/${scriptName} ~/bin/bashplate_files/bashplate
+}
+
 version() { ## Print version information
   echo "$VERSION"
 }
-
 
 # Runs a function in this file as a command
 runCommand() {
@@ -495,17 +605,17 @@ runCommand() {
     if [ "$command" == "$1" ]; then
       
       
-      # execute prefunction if existing
-      if [ -n "$PREFUNCTION" ]; then
-        ${PREFUNCTION}
+      # execute pre command hook  if existing
+      if [ -n "$PRECMDHOOK" ]; then
+        ${PRECMDHOOK}
       fi
       
       # execute command
       ${command} "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
       
-      # execute postfunction if existing
-      if [ -n "$POSTFUNCTION" ]; then
-        ${POSTFUNCTION}
+      # execute post command hook  if existing
+      if [ -n "$POSTCMDHOOK" ]; then
+        ${POSTCMDHOOK}
       fi      
       bpExit
     fi
@@ -513,10 +623,12 @@ runCommand() {
   bpErrorExit "Command \"$1\" not found"	 
 }
 
-# Init 
+# Init magic variables
 #
 DATE=$(date +"%Y-%m-%d")
 TIME=$(date +"%H:%M:%S")
+COLUMNS=$(tput cols)
+LINES=$(tput lines)
 
 trap  signalQuit SIGQUIT
 trap  signalInt  SIGINT
@@ -525,11 +637,15 @@ trap  signalTerm SIGTERM
 
 bpArguments=$#
 
+# execute prescript hook if existing
+if [ -n "$PREHOOK" ]; then
+  ${PREHOOK} "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
+fi
+
 # Run command parser
 runCommand "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
 
 # Exit cleanly
 bpExit
-
 
 ##-
