@@ -112,7 +112,7 @@ new() { ##C NEW Create a new standard bashplate project
 	cp -rf ${scriptPath}/bashplate_files/bashplate $sname
 }
 
-newS() { ##C NEW Create a new simple bashplate project
+news() { ##C NEW Create a new simple bashplate project
 	echo -e "Creating new simple bashplate project"
 	read -p "Enter name of new scipt>" sname
 	cp -rf ${scriptPath}/bashplate_files/bashplate-simple $sname
