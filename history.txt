@@ -1,6 +1,8 @@
 Version 1.x
   - Adding simple template
-
+  - Added info hook
+	- removed command help print output
+	- corrected colors on documentation lines
 
 Version 1.11
 	- Added install feature

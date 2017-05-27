@@ -200,6 +200,11 @@ postfunc() {
   echo -e "${E_WHITE}Postfunc${E_END} ------------------------------------------------------"
 }
 
+infoHook() {
+	printVar "Test1"       "Information test1"
+	printVar "Test2"       "Information test2"
+}
+
 
 #--------------------------------------------------------------------- 
 # Bashplate settings
@@ -240,6 +245,9 @@ DEFAULT=defaultFunction
 
 ##V Function to be executed after every other function except DEFAULT function
 #POSTCMDHOOK=postfunc
+
+##V Function to be executed after information command
+INFOHOOK=infoHook
 
 ##V Programs that are required to run the script (uncomment to use)
 REQUIRED_PROGRAMS=(ls nisse)
@@ -523,17 +531,23 @@ assertRequiredProgs() { ##D Assert that required programs are available on the s
 }
 
 info() { ##D Show information about script
+  bpTextLine "Script information"
   printVar scriptName      "Script name" 
   printVar scriptPath      "Script path" 
   printVar VERSION         "Script version" 
-  printVar BPVERSION       "Template version" 
+  printVar BPVERSION       "Template version"
   printVar LOGFILE         "Log file" 
   printVar LOCK_FILE       "Lock file" 
   printVar DEFAULT         "Default function" 
   printVar "REQUIRED_PROGRAMS" "Dependencies"
   printInfo "PID" $$  
   printVar DATE "Date" 
-  printVar TIME "Time" 
+  printVar TIME "Time"
+	
+  if [ -n "${INFOHOOK}" ]; then
+    bpTextLine "App. information"
+    ${INFOHOOK}
+  fi
 }
 
 check() { ##D Make a shellcheck
