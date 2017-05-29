@@ -118,6 +118,38 @@ news() { ##C NEW Create a new simple bashplate project
 	cp -rf ${scriptPath}/bashplate_files/bashplate-simple $sname
 }
 
+
+PL_DIR=~/.config/plateSettings
+PL_FILE=${PL_DIR}/settings.conf
+
+plCreate() { ## PLC
+
+  bpInfo "Creating new settings file. $PL_FILE" 
+	mkdir -p ${PL_DIR}
+	
+  echo "# Plate common settings" > ${PL_FILE}
+	echo "# " >> ${PL_FILE}
+	echo "# Name of user"   >> ${PL_FILE}
+	echo "PL_NAME = A B"    >> ${PL_FILE}
+	echo "# " >> ${PL_FILE}	
+	echo "# Email of user"  >> ${PL_FILE}
+	echo "PL_EMAIL = a@b"  >> ${PL_FILE}
+	
+	echo "# Default license for scripts"  >> ${PL_FILE}
+	echo "PL_LICENSE = a@b"  >> ${PL_FILE}
+
+}
+
+pl_info() { ## Print plate information
+  source ${PL_FILE}
+	bpTextLine "Kalle"
+	printVar PL_NAME      "Name:"
+	printVar PL_EMAIL     "Email:"
+	printVar PL_LICENSE   "Defult license:"
+	bpLine "NissE"
+}
+
+
 #--------------------------------------------------------------------- 
 # Bashplate settings
 #---------------------------------------------------------------------
@@ -440,7 +472,7 @@ assertRequiredProgs() { ##D Assert that required programs are available on the s
 }
 
 info() { ##D Show information about script
-  printVar scriptName      "Script name" 
+  printVar scriptName      "Script name"
   printVar scriptPath      "Script path" 
   printVar VERSION         "Script version" 
   printVar BPVERSION       "Template version" 
