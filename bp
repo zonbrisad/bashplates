@@ -119,35 +119,6 @@ news() { ##C NEW Create a new simple bashplate project
 }
 
 
-PL_DIR=~/.config/plateSettings
-PL_FILE=${PL_DIR}/settings.conf
-
-plCreate() { ## PLC
-
-  bpInfo "Creating new settings file. $PL_FILE" 
-	mkdir -p ${PL_DIR}
-	
-  echo "# Plate common settings" > ${PL_FILE}
-	echo "# " >> ${PL_FILE}
-	echo "# Name of user"   >> ${PL_FILE}
-	echo "PL_NAME = A B"    >> ${PL_FILE}
-	echo "# " >> ${PL_FILE}	
-	echo "# Email of user"  >> ${PL_FILE}
-	echo "PL_EMAIL = a@b"  >> ${PL_FILE}
-	
-	echo "# Default license for scripts"  >> ${PL_FILE}
-	echo "PL_LICENSE = a@b"  >> ${PL_FILE}
-
-}
-
-pl_info() { ## Print plate information
-  source ${PL_FILE}
-	bpTextLine "Kalle"
-	printVar PL_NAME      "Name:"
-	printVar PL_EMAIL     "Email:"
-	printVar PL_LICENSE   "Defult license:"
-	bpLine "NissE"
-}
 
 
 #--------------------------------------------------------------------- 
@@ -195,6 +166,17 @@ DEFAULT=help
 
 ##V Lock file (uncomment to use lock file feature )
 #LOCK_FILE=/tmp/${scriptName}.lock
+
+
+# Activate settings function (will create settings file when run)
+SETTINGS=1
+
+# Create settings file if non existent
+#CREATEPLSETTINGS=1
+
+SETTINGS_DIR=~/.config/bashplate
+SETTINGS_FILE=${SETTINGS_DIR}/settings.conf
+
 
 #--------------------------------------------------------------------- 
 # Signal traps
@@ -378,6 +360,60 @@ printVar() {
 # 
 #---------------------------------------------------------------------
 
+# Settings file ------------------------------------------------------
+
+createSettings() { 
+
+  bpInfo "Creating new settings file. ${SETTINGS_FILE}" 
+	mkdir -p ${SETTINGS_DIR}
+	
+  echo "# Plate common settings" > ${SETTINGS_FILE}
+	echo "# " >> ${SETTINGS_FILE}
+	echo "# Name of user"   >> ${SETTINGS_FILE}
+	echo "PL_NAME=\"AB\""    >> ${SETTINGS_FILE}
+	echo "# " >> ${SETTINGS_FILE}	
+	echo "# Email of user"  >> ${SETTINGS_FILE}
+	echo "PL_EMAIL=\"a@b\""  >> ${SETTINGS_FILE}
+	
+	echo "# Default license for scripts"  >> ${SETTINGS_FILE}
+	echo "PL_LICENSE=\"a@b\""  >> ${SETTINGS_FILE}
+
+}
+
+loadSettings() {
+  if [ -n "${SETTINGS}" ]; then
+    if [ -e ${SETTINGS_FILE} ]; then
+	    source ${SETTINGS_FILE}
+	  else
+	      createSettings
+				source ${SETTINGS_FILE}
+	  fi
+	fi
+}
+
+printSettings() { ## Print plate information
+
+	bpTextLine "Settings file"
+	printVar PL_NAME      "Name:"
+	printVar PL_EMAIL     "Email:"
+	#printVar PL_LICENSE   "Default license:"
+}
+
+setname() { ## Set name
+	chSetting ${SETTINGS_FILE} "PL_NAME" "\"${2}\""	
+}
+
+setemail() { ## Set email address
+	chSetting ${SETTINGS_FILE} "PL_EMAIL" "\"${2}\""	
+}
+
+setlic() { ## Set default license
+	chSetting ${SETTINGS_FILE} "PL_LICENSE" "\"${2}\""	
+}
+
+
+# Logging ---------------------------------------------------------
+
 #
 # Function logging to file
 #
@@ -450,6 +486,8 @@ assertRoot() { ##D Assert that user is root
 }
 
 
+# Various  ---------------------------------------------------------
+
 assertNoLockFile() { ##D Assert that lockfile is not present
   if [ -n "$LOCK_FILE" ]; then 
     if [ -f "$LOCK_FILE" ]; then
@@ -472,6 +510,7 @@ assertRequiredProgs() { ##D Assert that required programs are available on the s
 }
 
 info() { ##D Show information about script
+	bpTextLine "Script information"
   printVar scriptName      "Script name"
   printVar scriptPath      "Script path" 
   printVar VERSION         "Script version" 
@@ -483,6 +522,8 @@ info() { ##D Show information about script
   printInfo "PID" $$  
   printVar DATE "Date" 
   printVar TIME "Time" 
+	printSettings
+	bpLine
 }
 
 check() { ##D Make a shellcheck
@@ -668,6 +709,10 @@ trap  signalHup  SIGHUP
 trap  signalTerm SIGTERM
 
 bpArguments=$#
+
+
+# Load configuration file settings
+loadSettings
 
 # execute prescript hook if existing
 if [ -n "$PREHOOK" ]; then

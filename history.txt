@@ -1,7 +1,6 @@
 Version 1.x
   - Adding simple template
-	- Added
-
+	- Added settings file function
 
 Version 1.11
 	- Added install feature
