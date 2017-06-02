@@ -1,6 +1,8 @@
 Version 1.x
   - Adding simple template
 	- Added settings file function
+	- Added mlog command
+	- Fixed sed color printout
 
 Version 1.11
 	- Added install feature

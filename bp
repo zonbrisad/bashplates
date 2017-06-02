@@ -283,8 +283,8 @@ BP_C_INFO=$E_BR_CYAN
 BP_C_WARNING=$E_BR_YELLOW
 BP_C_ERROR=$E_BR_RED
 BP_C_CRITICAL=$E_ON_RED$E_WHITE
-BP_C_LINE=$E_GREEN
-BP_C_LINE_TEXT=$E_BR_GREEN
+BP_C_LINE=$E_GRAY
+BP_C_LINE_TEXT=$E_WHITE
 
 # Exit codes 
 #
@@ -510,7 +510,7 @@ assertRequiredProgs() { ##D Assert that required programs are available on the s
 }
 
 info() { ##D Show information about script
-	bpTextLine "Script information"
+  bpTextLine "Script information"
   printVar scriptName      "Script name"
   printVar scriptPath      "Script path" 
   printVar VERSION         "Script version" 
@@ -522,8 +522,8 @@ info() { ##D Show information about script
   printInfo "PID" $$  
   printVar DATE "Date" 
   printVar TIME "Time" 
-	printSettings
-	bpLine
+  printSettings
+  bpLine
 }
 
 check() { ##D Make a shellcheck
