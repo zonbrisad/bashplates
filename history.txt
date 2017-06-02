@@ -3,6 +3,10 @@ Version 1.x
   - Added info hook
 	- removed command help print output
 	- corrected colors on documentation lines
+	- Added settings file function
+	- Added mlog command
+	- Fixed sed color printout
+
 
 Version 1.11
 	- Added install feature
