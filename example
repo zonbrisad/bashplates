@@ -9,7 +9,7 @@
 #  [Author] 
 #    Peter Malmberg <peter.malmberg@gmail.com>
 #
-#  [Licence] 
+#  [License] 
 #     MIT
 #    
 #---------------------------------------------------------------------
@@ -42,9 +42,7 @@ scriptName=$(basename "$0")
 # User defined functions
 #---------------------------------------------------------------------
 
-defaultFunction() {
-  echo "This is the default function. Type \"example help\" to get more info."
-}
+##N- My functions
 
 
 
@@ -301,7 +299,7 @@ bpErrorExit() {  ##D Safely exit script with a error
 }
 
 #--------------------------------------------------------------------- 
-# System functions and settings
+# Bashplate internal functions
 #---------------------------------------------------------------------
 
 # ANSI foreground colors codes
@@ -360,8 +358,8 @@ BP_C_INFO=$E_BR_CYAN
 BP_C_WARNING=$E_BR_YELLOW
 BP_C_ERROR=$E_BR_RED
 BP_C_CRITICAL=$E_ON_RED$E_WHITE
-BP_C_LINE=$E_GREEN
-BP_C_LINE_TEXT=$E_BR_GREEN
+BP_C_LINE=$E_GRAY
+BP_C_LINE_TEXT=$E_GRAY
 
 # Exit codes 
 #
@@ -404,7 +402,7 @@ bpLine() { ##D Print a line
   bpPrintLineC "" "${E_GRAY}" "${E_GRAY}" "" "-" 
 }
 
-# Legacy function
+# Legacy function (do not use in new applications)
 printLine() { 
   bpLine
 }
@@ -452,7 +450,7 @@ bpLog() { ##D Log to file command
 
 log() { ##C LOGFILE View logfile
   if [ -n "$LOGFILE" ]; then
-	  if [ -f ${LOGFILE} ]; then  # Check that logfile exists
+    if [ -f ${LOGFILE} ]; then  # Check that logfile exists
 	
       D=$(sed -r -e "s|\[Info\]|\[\\${BP_C_INFO}Info\\${E_END}\]|"  \
             -e "s|\[Warn\]|\[\\${BP_C_WARNING}Warn\\${E_END}\]|"  \
@@ -462,7 +460,7 @@ log() { ##C LOGFILE View logfile
             -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < "${LOGFILE}" ) 
 
       echo -e "$D"
-		fi
+    fi
   else
     bpInfo "Logging is not activated"
     exit
@@ -554,7 +552,7 @@ info() { ##D Show information about script
   printVar scriptName      "Script name" 
   printVar scriptPath      "Script path" 
   printVar VERSION         "Script version" 
-  printVar BPVERSION       "Template version"
+  printVar BPVERSION       "Template version" 
   printVar LOGFILE         "Log file" 
   printVar LOCK_FILE       "Lock file" 
   printVar DEFAULT         "Default function" 
@@ -585,6 +583,16 @@ chSetting() {
   sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" "$1"
 }
 
+# Replace text in file
+#
+# arg1 file 
+# arg2 text to replace
+# arg3 new text
+bpReplace() {  ##D Replace text in file
+  sed -i -e "s/${2}/${3}/g"  $1
+}
+	 
+
 printCommand() { 
   help_line=$1
   help_command=$(echo "$help_line" | sed -s 's/(.*//')
@@ -613,21 +621,18 @@ printCondLine() {
 }
 
 printNamedLine() {
-  #name=$(echo "$1" | sed -s 's/^.*##N-//' | awk '{print $1}')
   name=$(echo "$1" | sed -e 's/^.*##N-//' -e 's/^[ \t]*//' )
-  bpTextLineC $name "${E_BLUE}" "${E_GREEN}"
+  bpTextLine "$name"
 }
 
 
 printCondNamedLine() {
   help_line=$1
   C=$(echo "$1" | sed -s 's/^.*##CN-//' | awk '{print $1}')
-	#name=$(echo "$1" | sed -s 's/^.*##CN-//' | awk '{print $2}')
 	name=$(echo "$help_line" | sed -e 's/^.*'"$C"'//' -e 's/^[ \t]*//' )
   eval "D=\$$C"
   if [ -n "$D" ]; then
-    #bpTextLineC $name "${E_BLUE}" "${E_GREEN}"
-    bpTextLine "$name" 
+    bpTextLine "$name"
   fi
 }
 
@@ -635,8 +640,8 @@ help() { ## Print this help information
   echo "$USAGE"
   echo -e "$DESC"
   echo 
-  printf "%-20s  %s\n" "Command" "Help"
-  printLine
+#  printf "%-20s  %s\n" "Command" "Help"
+#  printLine
   IFS=$'\n'
   SC=$1
   #help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '##D' | grep -v '##V' | grep -v '\*##C' | grep -v '\*##C-' |  grep -v '\"##' |  grep -v '##N-//' | grep -v help_line | grep -v printLine)

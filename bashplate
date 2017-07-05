@@ -2,16 +2,29 @@
 # shellcheck disable=2034
 #---------------------------------------------------------------------
 #
+#  __NAME__
+#
 #  [Description]
-#  A basic template for bash shellscripts with commands and help information, 
-#  color coding etc.
+#    __DESC__
 #
 #  [Author] 
-#    Peter Malmberg <peter.malmberg@gmail.com>
+#    __AUTHOR__
 #
-#  [Licence] 
-#     MIT
+#  [Date]
+#    __DATE__
+#
+#  [License] 
+#    __LICENSE__
 #    
+#---------------------------------------------------------------------
+# [Bashplates]
+# This script is generated from bashplates template generator.
+# 
+# Bashplates is developed by:
+# Peter Malmberg <peter.malmberg@gmail.com>
+#
+# Bashplates is available at:
+# https://github.com/zonbrisad/bashplates
 #---------------------------------------------------------------------
 #
 
@@ -241,8 +254,7 @@ bpTextLineC() { ##D Print text with adjusted line after with selectable colors
 }
 
 bpTextLine() { ##D Print text with line after
-#	bpPrintLineC "$1" "${C_LINE_TEXT}" "${C_LINE}" " " "-"
-	bpPrintLineC "$1" "${E_WHITE}" "${E_GRAY}" " " "-"
+  bpTextLineC "$1" "${C_LINE_TEXT}" "${C_LINE}"
 }
 
 # Print a divider row
@@ -298,7 +310,7 @@ bpLog() { ##D Log to file command
 
 log() { ##C LOGFILE View logfile
   if [ -n "$LOGFILE" ]; then
-	  if [ -f ${LOGFILE} ]; then  # Check that logfile exists
+    if [ -f ${LOGFILE} ]; then  # Check that logfile exists
 	
       D=$(sed -r -e "s|\[Info\]|\[\\${BP_C_INFO}Info\\${E_END}\]|"  \
             -e "s|\[Warn\]|\[\\${BP_C_WARNING}Warn\\${E_END}\]|"  \
@@ -308,7 +320,7 @@ log() { ##C LOGFILE View logfile
             -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < "${LOGFILE}" ) 
 
       echo -e "$D"
-		fi
+    fi
   else
     bpInfo "Logging is not activated"
     exit
@@ -431,6 +443,16 @@ chSetting() {
   sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" "$1"
 }
 
+# Replace text in file
+#
+# arg1 file 
+# arg2 text to replace
+# arg3 new text
+bpReplace() {  ##D Replace text in file
+  sed -i -e "s/${2}/${3}/g"  $1
+}
+	 
+
 printCommand() { 
   help_line=$1
   help_command=$(echo "$help_line" | sed -s 's/(.*//')
@@ -458,10 +480,9 @@ printCondLine() {
   fi
 }
 
-
 printNamedLine() {
   name=$(echo "$1" | sed -e 's/^.*##N-//' -e 's/^[ \t]*//' )
-	bpTextLine "$name"
+  bpTextLine "$name"
 }
 
 
