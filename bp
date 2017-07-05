@@ -170,7 +170,7 @@ USAGE="Usage: ${scriptName} command [option]"
 DESC="Bashplate project management script"
 
 ##V logfile (uncomment to use logfile)
-LOGFILE=${scriptPath}/${scriptName}.log
+#LOGFILE=${scriptPath}/${scriptName}.log
 
 ##V Logging options (uncomment to activate logging parameters)
 #LOG_INFO=1
@@ -403,15 +403,19 @@ createSettings() {
 	mkdir -p ${SETTINGS_DIR}
 	
   echo "# Plate common settings" > ${SETTINGS_FILE}
-	echo "# " >> ${SETTINGS_FILE}
+	echo "" >> ${SETTINGS_FILE}
 	echo "# Name of user"   >> ${SETTINGS_FILE}
 	echo "PL_NAME=\"AB\""    >> ${SETTINGS_FILE}
-	echo "# " >> ${SETTINGS_FILE}	
+	echo "" >> ${SETTINGS_FILE}
 	echo "# Email of user"  >> ${SETTINGS_FILE}
 	echo "PL_EMAIL=\"a@b\""  >> ${SETTINGS_FILE}
-	
+	echo "" >> ${SETTINGS_FILE}
 	echo "# Default license for scripts"  >> ${SETTINGS_FILE}
 	echo "PL_LICENSE=\"a@b\""  >> ${SETTINGS_FILE}
+	echo "" >> ${SETTINGS_FILE}
+	echo "# Default editor"  >> ${SETTINGS_FILE}
+	echo "PL_EDITOR=\"jed\""  >> ${SETTINGS_FILE}
+	
 
 }
 
@@ -431,7 +435,9 @@ printSettings() { ## Print plate information
 	bpTextLine "Settings file"
 	printVar PL_NAME      "Name:"
 	printVar PL_EMAIL     "Email:"
+	printVar PL_EDITOR    "Editor:"
 	#printVar PL_LICENSE   "Default license:"
+	bpLine
 }
 
 setname() { ## Set name
