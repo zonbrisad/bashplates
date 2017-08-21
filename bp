@@ -59,6 +59,7 @@ fi
 # User defined functions
 #---------------------------------------------------------------------
 
+##N- bashplate
 
 clean() { ##C BP Remove leftover files 
   find . -name "*~" -delete
@@ -334,7 +335,6 @@ BP_C_LINE_TEXT=$E_GRAY
 #
 BP_E_OK=0            # successful termination 
 
-##-
 
 # Print text with row
 #
@@ -414,13 +414,13 @@ createSettings() {
   echo "# Plate common settings" > ${SETTINGS_FILE}
 	echo "# " >> ${SETTINGS_FILE}
 	echo "# Name of user"   >> ${SETTINGS_FILE}
-	echo "PL_NAME=\"AB\""    >> ${SETTINGS_FILE}
+	echo "PL_NAME=\"John Doe\""    >> ${SETTINGS_FILE}
 	echo "# " >> ${SETTINGS_FILE}	
 	echo "# Email of user"  >> ${SETTINGS_FILE}
-	echo "PL_EMAIL=\"a@b\""  >> ${SETTINGS_FILE}
+	echo "PL_EMAIL=\"john.doe@foo.bar\""  >> ${SETTINGS_FILE}
 	
 	echo "# Default license for scripts"  >> ${SETTINGS_FILE}
-	echo "PL_LICENSE=\"a@b\""  >> ${SETTINGS_FILE}
+	echo "PL_LICENSE=\"GPL\""  >> ${SETTINGS_FILE}
 
 }
 
@@ -435,12 +435,14 @@ loadSettings() {
 	fi
 }
 
+##N- Settings
 printSettings() { ## Print plate information
 
 	bpTextLine "Settings file"
 	printVar PL_NAME      "Name:"
 	printVar PL_EMAIL     "Email:"
 	#printVar PL_LICENSE   "Default license:"
+	"printVar PL_EDITOR   "Default editor"
 }
 
 setname() { ## Set name
@@ -454,7 +456,7 @@ setemail() { ## Set email address
 setlic() { ## Set default license
 	chSetting ${SETTINGS_FILE} "PL_LICENSE" "\"${2}\""	
 }
-
+##- 
 
 # Logging ---------------------------------------------------------
 
