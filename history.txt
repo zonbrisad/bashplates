@@ -6,7 +6,7 @@ Version 1.x
 	- Added settings file function
 	- Added mlog command
 	- Fixed sed color printout
-
+  - Check for existing file when creating new script
 
 Version 1.11
 	- Added install feature

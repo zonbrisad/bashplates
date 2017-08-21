@@ -123,10 +123,17 @@ install-local() { ##C BP Install bashplate localy for easy creating new scripts
 newScript() { 
 	echo -e "Creating new bashplate project"
 	read -p "Enter name of new scipt>" script
+	
+
+  if [ -e ${script} ]; then
+	  bpError "File "${E_BR_CYAN}${script}${E_END}" already exists"
+		return
+	else
+	  cp -rf ${scriptPath}/bashplate_files/${1} ${script}
+	fi
+	
 	read -p "Enter script descriptiont>" desc
 	read -p "Enter author>" author
-	
-	cp -rf ${scriptPath}/bashplate_files/${1} ${script}
 	
 	bpReplace ${script} "__NAME__" "${script}"
 	bpReplace ${script} "__DATE__" "${DATE}"
