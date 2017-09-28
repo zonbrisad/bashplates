@@ -204,6 +204,31 @@ infoHook() {
 }
 
 
+appendTest() { ## Testing append line to file function
+  rm -f append
+	touch append
+	
+  appendIfNoSuchLine "append" "Line to append1"
+	appendIfNoSuchLine "append" "Line to append2"
+	appendIfNoSuchLine "append" "Line to append3"
+	
+	echo "File first time"
+	cat append
+
+  appendIfNoSuchLine "append" "Line to append1"
+	appendIfNoSuchLine "append" "Line to append2"
+	appendIfNoSuchLine "append" "Line to append3"
+
+  echo -e "\nFile second time"
+	cat append
+
+  removeLineContaining "append" "append2"
+  echo -e "\nFile third time"
+	cat append
+  
+
+}
+
 #--------------------------------------------------------------------- 
 # Bashplate settings
 #---------------------------------------------------------------------
@@ -591,7 +616,25 @@ chSetting() {
 bpReplace() {  ##D Replace text in file
   sed -i -e "s/${2}/${3}/g"  $1
 }
-	 
+
+# Appends a line to a file if it is not present in that file.
+#
+# $1 file
+# $2 line to append
+#
+appendIfNoSuchLine() { ##D Append a line if it does not exist in file
+  grep -q -F "$2" $1 || echo "$2" >> $1
+}
+	
+# Remove line in file containing a given string
+#
+# $1 file
+# $2 string
+#
+removeLineContaining() { ##D Remove line in file if it contains given string
+  grep -v $2 $1 > $1
+}
+		
 
 printCommand() { 
   help_line=$1
