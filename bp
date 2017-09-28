@@ -102,9 +102,6 @@ news() { ##C NEW Create a new simple bashplate project
 	newScript "bashplate-simple"
 }
 
-
-
-
 ##N- Project
 
 clean() { ##C BP Remove leftover files 
@@ -223,8 +220,11 @@ SETTINGS=1
 # Create settings file if non existent
 #CREATEPLSETTINGS=1
 
-SETTINGS_DIR=~/.config/bashplate
-SETTINGS_FILE=${SETTINGS_DIR}/settings.conf
+#SETTINGS_DIR=~/.config/bashplate
+#SETTINGS_FILE=${SETTINGS_DIR}/settings.conf
+
+bpSettingsDir=~/.config/bashplates
+bpSettings=${bpSettingsDir}/bashplates.conf
 
 
 #--------------------------------------------------------------------- 
@@ -410,56 +410,68 @@ printVar() {
 
 # Settings file ------------------------------------------------------
 
-createSettings() { 
 
-  bpInfo "Creating new settings file. ${SETTINGS_FILE}" 
-	mkdir -p ${SETTINGS_DIR}
+bpAddSetting() {
+  echo "# "${3}    >> ${bpSettings}
+	echo ${1}"=\""${2}"\"" >> ${bpSettings}
+	echo >> ${bpSettings}
+}
+			
+bpCreateSettings() {
+			
+  echo "Creating new bashplates settings file. ${bpSettings}"
+	mkdir -p ${bpSettingsDir}
+					
+	echo "# " >> ${bpSettings}
+	echo "# Bashplates common settings" > ${bpSettings}
+	echo "# " >> ${bpSettings}
+	echo      >> ${bpSettings}
 	
-  echo "# Plate common settings" > ${SETTINGS_FILE}
-	echo "# " >> ${SETTINGS_FILE}
-	echo "# Name of user"   >> ${SETTINGS_FILE}
-	echo "PL_NAME=\"John Doe\""    >> ${SETTINGS_FILE}
-	echo "# " >> ${SETTINGS_FILE}	
-	echo "# Email of user"  >> ${SETTINGS_FILE}
-	echo "PL_EMAIL=\"john.doe@foo.bar\""  >> ${SETTINGS_FILE}
-	
-	echo "# Default license for scripts"  >> ${SETTINGS_FILE}
-	echo "PL_LICENSE=\"GPL\""  >> ${SETTINGS_FILE}
-
+	bpAddSetting "BP_NAME"  "John Doe"        "Name of user"
+	bpAddSetting "BP_EMAIL" "JohnDoe@foo.bar" "Email of user"
+	bpAddSetting "BP_EDITOR" "vi"             "Default editor"
+	bpAddSetting "BP_LICENSE" "MIT"           "Default project license"
 }
 
-loadSettings() {
-  if [ -n "${SETTINGS}" ]; then
-    if [ -e ${SETTINGS_FILE} ]; then
-	    source ${SETTINGS_FILE}
+bpLoadSettings() {
+  if [ -n "${bpSettings}" ]; then
+	  if [ -e ${bpSettings} ]; then
+	    source ${bpSettings}
 	  else
-	      createSettings
-				source ${SETTINGS_FILE}
-	  fi
+		  bpCreateSettings
+			source ${bpSettings}
+		fi
 	fi
 }
-
+																														
 ##N- Settings
 printSettings() { ## Print plate information
 
-	bpTextLine "Settings file"
-	printVar PL_NAME      "Name:"
-	printVar PL_EMAIL     "Email:"
-	#printVar PL_LICENSE   "Default license:"
-	printVar PL_EDITOR   "Default editor"
+	bpTextLine "Bashplates settings"
+	bpTextLine "Bashplates"
+	printVar BP_NAME      "Name:"
+	printVar BP_EMAIL     "Email:"
+	printVar BP_LICENSE   "Default license:"
+	printVar BP_EDITOR    "Default editor"
 }
 
 setname() { ## Set name
-	chSetting ${SETTINGS_FILE} "PL_NAME" "\"${2}\""	
+	chSetting ${bpSettings} "BP_NAME" "\"${2}\""	
 }
 
 setemail() { ## Set email address
-	chSetting ${SETTINGS_FILE} "PL_EMAIL" "\"${2}\""	
+	chSetting ${bpSettings} "BP_EMAIL" "\"${2}\""	
+}
+
+seteditor() { ## Set default editor
+	chSetting ${bpSettings} "BP_EDITOR" "\"${2}\""	
 }
 
 setlic() { ## Set default license
-	chSetting ${SETTINGS_FILE} "PL_LICENSE" "\"${2}\""	
+	chSetting ${bpSettings} "BP_LICENSE" "\"${2}\""	
 }
+
+
 ##- 
 
 # Logging ---------------------------------------------------------
@@ -791,7 +803,7 @@ bpArguments=$#
 
 
 # Load configuration file settings
-loadSettings
+bpLoadSettings
 
 # execute prescript hook if existing
 if [ -n "$PREHOOK" ]; then
