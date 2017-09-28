@@ -44,22 +44,68 @@ scriptName=$(basename "$0")
 # User defined Settings
 #---------------------------------------------------------------------
 
-BP_DIR=bashplate_files
-BP_INSTALL_DIR=~/bin/${BP_DIR}
+#BP_DIR=bashplate_files
+BP_DIR=templates
+#BP_INSTALL_DIR=~/bin/${BP_DIR}
 
-if [ -e ${scriptPath}/BP ]; then
-  BP=1
-else
-  NEW=1
-fi
-
-#NEW=1
+#if [ -e ${scriptPath}/BP ]; then
+#  BP=1
+#else
+#  NEW=1
+#fi
+BP=1
+NEW=1
 
 #---------------------------------------------------------------------
 # User defined functions
 #---------------------------------------------------------------------
 
-##N- bashplate
+##N- Bashplates
+
+#
+# Create a new script
+# arg1 template file
+newScript() { 
+	echo -e "Creating new bashplate project"
+	read -p "Enter name of new scipt>" script
+	
+
+  if [ -e ${script} ]; then
+	  bpError "File "${E_BR_CYAN}${script}${E_END}" already exists"
+		return
+	else
+	  cp -rf ${scriptPath}/${BP_DIR}/${1} ${script}
+	fi
+	
+	read -p "Enter script descriptiont>" desc
+	read -p "Enter author>" author
+	
+	bpReplace ${script} "__NAME__" "${script}"
+	bpReplace ${script} "__DATE__" "${DATE}"
+	bpReplace ${script} "__LICENSE__" ""
+	bpReplace ${script} "__AUTHOR__"  "${author}"
+	bpReplace ${script} "__DESC__"    "${desc}"
+}
+
+new() { ##C NEW Create a new standard bashplate project
+#	echo -e "Creating new bashplate project"
+#	read -p "Enter name of new scipt>" sname
+#	cp -rf ${scriptPath}/bashplate_files/bashplate $sname
+	
+	newScript "bashplate"
+}
+
+news() { ##C NEW Create a new simple bashplate project
+#	echo -e "Creating new simple bashplate project"
+#	read -p "Enter name of new scipt>" sname
+#	cp -rf ${scriptPath}/bashplate_files/bashplate-simple $sname
+	newScript "bashplate-simple"
+}
+
+
+
+
+##N- Project
 
 clean() { ##C BP Remove leftover files 
   find . -name "*~" -delete
@@ -89,7 +135,6 @@ push() { ##C BP Push to GITHUB
   git push --progress
 } 
 
-
 #
 # arg1 install dir
 # arg2 symbolic link dir
@@ -106,59 +151,18 @@ bpInstall() {
 }
 
 
-install() { ##C BP Install bashplate on system
+
+install() { ##C INSTALL Install bashplate on system
   assertRoot
 	echo -e "Installing bashplates"
 	bpInstall /usr/local/bin/bashplate_files  /usr/local/bin/bp
 }
 
 
-install-local() { ##C BP Install bashplate localy for easy creating new scripts
+install-local() { ##C INSTALL Install bashplate localy for easy creating new scripts
   echo -e "Installing bashplates localy"
 	bpInstall ${BP_INSTALL_DIR} ~/bin/bp
 }
-
-#
-# Create a new script
-# arg1 template file
-newScript() { 
-	echo -e "Creating new bashplate project"
-	read -p "Enter name of new scipt>" script
-	
-
-  if [ -e ${script} ]; then
-	  bpError "File "${E_BR_CYAN}${script}${E_END}" already exists"
-		return
-	else
-	  cp -rf ${scriptPath}/bashplate_files/${1} ${script}
-	fi
-	
-	read -p "Enter script descriptiont>" desc
-	read -p "Enter author>" author
-	
-	bpReplace ${script} "__NAME__" "${script}"
-	bpReplace ${script} "__DATE__" "${DATE}"
-	bpReplace ${script} "__LICENSE__" ""
-	bpReplace ${script} "__AUTHOR__"  "${author}"
-	bpReplace ${script} "__DESC__"    "${desc}"
-}
-
-new() { ##C NEW Create a new standard bashplate project
-#	echo -e "Creating new bashplate project"
-#	read -p "Enter name of new scipt>" sname
-#	cp -rf ${scriptPath}/bashplate_files/bashplate $sname
-	
-	newScript "bashplate"
-}
-
-news() { ##C NEW Create a new simple bashplate project
-#	echo -e "Creating new simple bashplate project"
-#	read -p "Enter name of new scipt>" sname
-#	cp -rf ${scriptPath}/bashplate_files/bashplate-simple $sname
-	newScript "bashplate-simple"
-}
-
-
 
 
 
@@ -442,7 +446,7 @@ printSettings() { ## Print plate information
 	printVar PL_NAME      "Name:"
 	printVar PL_EMAIL     "Email:"
 	#printVar PL_LICENSE   "Default license:"
-	"printVar PL_EDITOR   "Default editor"
+	printVar PL_EDITOR   "Default editor"
 }
 
 setname() { ## Set name
