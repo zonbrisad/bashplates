@@ -8,7 +8,7 @@
 #  [Author] 
 #    Peter Malmberg <peter.malmberg@gmail.com>
 #
-#  [Licence] 
+#  [License] 
 #     MIT
 #    
 #---------------------------------------------------------------------
@@ -20,6 +20,7 @@
 #
 # Bashplates is available at:
 # https://github.com/zonbrisad/bashplates
+#---------------------------------------------------------------------
 #
 
 # Display commands as they are executed
@@ -44,21 +45,65 @@ scriptName=$(basename "$0")
 # User defined Settings
 #---------------------------------------------------------------------
 
-BP_DIR=bashplate_files
-BP_INSTALL_DIR=~/bin/${BP_DIR}
+#BP_DIR=bashplate_files
+BP_DIR=templates
+#BP_INSTALL_DIR=~/bin/${BP_DIR}
 
-if [ -e ${scriptPath}/BP ]; then
-  BP=1
-else
-  NEW=1
-fi
-
-#NEW=1
+#if [ -e ${scriptPath}/BP ]; then
+#  BP=1
+#else
+#  NEW=1
+#fi
+BP=1
+NEW=1
 
 #---------------------------------------------------------------------
 # User defined functions
 #---------------------------------------------------------------------
 
+##N- Bashplates
+
+#
+# Create a new script
+# arg1 template file
+newScript() { 
+	echo -e "Creating new bashplate project"
+	read -p "Enter name of new scipt>" script
+	
+
+  if [ -e ${script} ]; then
+	  bpError "File "${E_BR_CYAN}${script}${E_END}" already exists"
+		return
+	else
+	  cp -rf ${scriptPath}/${BP_DIR}/${1} ${script}
+	fi
+	
+	read -p "Enter script descriptiont>" desc
+	read -p "Enter author>" author
+	
+	bpReplace ${script} "__NAME__" "${script}"
+	bpReplace ${script} "__DATE__" "${DATE}"
+	bpReplace ${script} "__LICENSE__" ""
+	bpReplace ${script} "__AUTHOR__"  "${author}"
+	bpReplace ${script} "__DESC__"    "${desc}"
+}
+
+new() { ##C NEW Create a new standard bashplate project
+#	echo -e "Creating new bashplate project"
+#	read -p "Enter name of new scipt>" sname
+#	cp -rf ${scriptPath}/bashplate_files/bashplate $sname
+	
+	newScript "bashplate"
+}
+
+news() { ##C NEW Create a new simple bashplate project
+#	echo -e "Creating new simple bashplate project"
+#	read -p "Enter name of new scipt>" sname
+#	cp -rf ${scriptPath}/bashplate_files/bashplate-simple $sname
+	newScript "bashplate-simple"
+}
+
+##N- Project
 
 clean() { ##C BP Remove leftover files 
   find . -name "*~" -delete
@@ -88,7 +133,6 @@ push() { ##C BP Push to GITHUB
   git push --progress
 } 
 
-
 #
 # arg1 install dir
 # arg2 symbolic link dir
@@ -105,49 +149,17 @@ bpInstall() {
 }
 
 
-install() { ##C BP Install bashplate on system
+
+install() { ##C INSTALL Install bashplate on system
   assertRoot
 	echo -e "Installing bashplates"
 	bpInstall /usr/local/bin/bashplate_files  /usr/local/bin/bp
 }
 
 
-install-local() { ##C BP Install bashplate localy for easy creating new scripts
+install-local() { ##C INSTALL Install bashplate localy for easy creating new scripts
   echo -e "Installing bashplates localy"
 	bpInstall ${BP_INSTALL_DIR} ~/bin/bp
-}
-
-#
-# Create a new script
-# arg1 template file
-newScript() { 
-	echo -e "Creating new bashplate project"
-	read -p "Enter name of new scipt>" script
-	read -p "Enter script descriptiont>" desc
-	read -p "Enter author>" author
-	
-	cp -rf ${scriptPath}/bashplate_files/${1} ${script}
-	
-	bpReplace ${script} "__NAME__" "${script}"
-	bpReplace ${script} "__DATE__" "${DATE}"
-	bpReplace ${script} "__LICENSE__" ""
-	bpReplace ${script} "__AUTHOR__"  "${author}"
-	bpReplace ${script} "__DESC__"    "${desc}"
-}
-
-new() { ##C NEW Create a new standard bashplate project
-#	echo -e "Creating new bashplate project"
-#	read -p "Enter name of new scipt>" sname
-#	cp -rf ${scriptPath}/bashplate_files/bashplate $sname
-	
-	newScript "bashplate"
-}
-
-news() { ##C NEW Create a new simple bashplate project
-#	echo -e "Creating new simple bashplate project"
-#	read -p "Enter name of new scipt>" sname
-#	cp -rf ${scriptPath}/bashplate_files/bashplate-simple $sname
-	newScript "bashplate-simple"
 }
 
 
@@ -158,7 +170,7 @@ news() { ##C NEW Create a new simple bashplate project
 #---------------------------------------------------------------------
 
 # Script version info
-VERSION="1.02"
+VERSION="1.12beta"
 
 ##V Bashplate version
 BPVERSION="1.11"   
@@ -202,16 +214,14 @@ DEFAULT=help
 ##V Lock file (uncomment to use lock file feature )
 #LOCK_FILE=/tmp/${scriptName}.lock
 
-
 # Activate settings function (will create settings file when run)
 SETTINGS=1
 
 # Create settings file if non existent
 #CREATEPLSETTINGS=1
 
-SETTINGS_DIR=~/.config/bashplate
-SETTINGS_FILE=${SETTINGS_DIR}/settings.conf
-
+bpSettingsDir=~/.config/bashplates
+bpSettings=${bpSettingsDir}/bashplates.conf
 
 #--------------------------------------------------------------------- 
 # Signal traps
@@ -318,14 +328,14 @@ BP_C_INFO=$E_BR_CYAN
 BP_C_WARNING=$E_BR_YELLOW
 BP_C_ERROR=$E_BR_RED
 BP_C_CRITICAL=$E_ON_RED$E_WHITE
-BP_C_LINE=$E_GRAY
-BP_C_LINE_TEXT=$E_GRAY
+BP_C_LINE=$E_DARKGRAY
+BP_C_LINE_TEXT=$E_YELLOW
 
 # Exit codes 
 #
 BP_E_OK=0            # successful termination 
 
-##-
+
 
 # Print text with row
 #
@@ -354,12 +364,12 @@ bpTextLineC() { ##D Print text with adjusted line after with selectable colors
 }
 
 bpTextLine() { ##D Print text with line after
-  bpTextLineC "$1" "${C_LINE_TEXT}" "${C_LINE}"
+  bpTextLineC "$1" "${BP_C_LINE_TEXT}" "${BP_C_LINE}"
 }
 
 # Print a divider row
 bpLine() { ##D Print a line  
-  bpPrintLineC "" "${E_GRAY}" "${E_GRAY}" "" "-" 
+  bpPrintLineC "" "${BP_C_LINE}" "${BP_C_LINE}" "" "-" 
 }
 
 # Legacy function (do not use in new applications)
@@ -397,61 +407,68 @@ printVar() {
 
 # Settings file ------------------------------------------------------
 
-createSettings() { 
 
-  bpInfo "Creating new settings file. ${SETTINGS_FILE}" 
-	mkdir -p ${SETTINGS_DIR}
+bpAddSetting() {
+  echo "# "${3}    >> ${bpSettings}
+	echo ${1}"=\""${2}"\"" >> ${bpSettings}
+	echo >> ${bpSettings}
+}
+			
+bpCreateSettings() {
+			
+  echo "Creating new bashplates settings file. ${bpSettings}"
+	mkdir -p ${bpSettingsDir}
+					
+	echo "# " >> ${bpSettings}
+	echo "# Bashplates common settings" > ${bpSettings}
+	echo "# " >> ${bpSettings}
+	echo      >> ${bpSettings}
 	
-  echo "# Plate common settings" > ${SETTINGS_FILE}
-	echo "" >> ${SETTINGS_FILE}
-	echo "# Name of user"   >> ${SETTINGS_FILE}
-	echo "PL_NAME=\"AB\""    >> ${SETTINGS_FILE}
-	echo "" >> ${SETTINGS_FILE}
-	echo "# Email of user"  >> ${SETTINGS_FILE}
-	echo "PL_EMAIL=\"a@b\""  >> ${SETTINGS_FILE}
-	echo "" >> ${SETTINGS_FILE}
-	echo "# Default license for scripts"  >> ${SETTINGS_FILE}
-	echo "PL_LICENSE=\"a@b\""  >> ${SETTINGS_FILE}
-	echo "" >> ${SETTINGS_FILE}
-	echo "# Default editor"  >> ${SETTINGS_FILE}
-	echo "PL_EDITOR=\"jed\""  >> ${SETTINGS_FILE}
-	
-
+	bpAddSetting "BP_NAME"  "John Doe"        "Name of user"
+	bpAddSetting "BP_EMAIL" "JohnDoe@foo.bar" "Email of user"
+	bpAddSetting "BP_EDITOR" "vi"             "Default editor"
+	bpAddSetting "BP_LICENSE" "MIT"           "Default project license"
 }
 
-loadSettings() {
-  if [ -n "${SETTINGS}" ]; then
-    if [ -e ${SETTINGS_FILE} ]; then
-	    source ${SETTINGS_FILE}
+bpLoadSettings() {
+  if [ -n "${bpSettings}" ]; then
+	  if [ -e ${bpSettings} ]; then
+	    source ${bpSettings}
 	  else
-	      createSettings
-				source ${SETTINGS_FILE}
-	  fi
+		  bpCreateSettings
+			source ${bpSettings}
+		fi
 	fi
 }
-
+																														
+##N- Settings
 printSettings() { ## Print plate information
-
-	bpTextLine "Settings file"
-	printVar PL_NAME      "Name:"
-	printVar PL_EMAIL     "Email:"
-	printVar PL_EDITOR    "Editor:"
-	#printVar PL_LICENSE   "Default license:"
+	bpTextLine "Bashplates settings"
+	printVar BP_NAME      "Name:"
+	printVar BP_EMAIL     "Email:"
+	printVar BP_LICENSE   "Default license:"
+	printVar BP_EDITOR    "Default editor"
 	bpLine
 }
 
 setname() { ## Set name
-	chSetting ${SETTINGS_FILE} "PL_NAME" "\"${2}\""	
+	chSetting ${bpSettings} "BP_NAME" "\"${2}\""	
 }
 
 setemail() { ## Set email address
-	chSetting ${SETTINGS_FILE} "PL_EMAIL" "\"${2}\""	
+	chSetting ${bpSettings} "BP_EMAIL" "\"${2}\""	
+}
+
+seteditor() { ## Set default editor
+	chSetting ${bpSettings} "BP_EDITOR" "\"${2}\""	
 }
 
 setlic() { ## Set default license
-	chSetting ${SETTINGS_FILE} "PL_LICENSE" "\"${2}\""	
+	chSetting ${bpSettings} "BP_LICENSE" "\"${2}\""	
 }
 
+
+##-
 
 # Logging ---------------------------------------------------------
 
@@ -782,7 +799,7 @@ bpArguments=$#
 
 
 # Load configuration file settings
-loadSettings
+bpLoadSettings
 
 # execute prescript hook if existing
 if [ -n "$PREHOOK" ]; then

@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+#---------------------------------------------------------------------
+# Bashplate environment init script
+#
+#---------------------------------------------------------------------
+# Use:
+# Run this from .bashrc file.
+#
+# source pathToThisFile/bp_init
+#
+#
+
+
+#set -o xtrace   # Display commands as they are executed
+#set -o pipefail # Exit script when pipe fails
+
+# Directory where script is located
+scriptPath=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+#---------------------------------------------------------------------
+
+
+bpSettingsDir=~/.config/bashplates
+bpSettings=${bpSettingsDir}/bashplates.conf
+
+addSetting() {
+  echo "# "${3}    >> ${bpSettings}
+	echo ${1}"=\""${2}"\"" >> ${bpSettings}
+	echo >> ${bpSettings}
+}
+		
+createSettings() {
+		
+  echo "Creating new bashplates settings file. ${bpSettings}"
+	mkdir -p ${bpSettingsDir}
+	
+	echo "# " >> ${bpSettings}
+	echo "# Bashplates common settings" > ${bpSettings}
+	echo "# " >> ${bpSettings}
+	echo      >> ${bpSettings}
+			
+	addSetting "BP_NAME"  "John Doe"        "Name of user"
+	addSetting "BP_EMAIL" "JohnDoe@foo.bar" "Email of user"
+	addSetting "BP_EDITOR" "vi"             "Default editor"
+	addSetting "BP_LICENSE" "MIT"           "Default project license"
+}
+													
+bpLoadSettings() {
+  if [ -n "${bpSettings}" ]; then
+    if [ -e ${bpSettings} ]; then
+      source ${bpSettings}
+    else
+      createSettings
+      source ${bpSettings}
+    fi
+  fi
+	
+	export PB_NAME
+	export BP_EMAIL
+	export BP_EDITOR
+} 
+
+
+bpLoadSettings
+																			
+# Add bashplate dir to search path
+export PATH=${PATH}:${scriptPath}
+
+# Add variable pointing to bashplate dir
+export BP_PATH=${scriptPath}
+
+# Add alias 
+alias bpd='cd ${BP_PATH}'
+
+
+
+
