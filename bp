@@ -383,7 +383,8 @@ printLine() {
 # arg1 text for column 1
 # arg2 text for column 2
 printInfo() {  
-  printf "${E_BR_CYAN}%-20s${E_END} ${E_BR_GREEN}%s${E_END}\n" "$1" "$2"
+  printf "${E_CYAN}%-20s${E_END} ${E_GREEN}%s${E_END}\n" "$1" "$2"
+#	printf "${E_BR_CYAN}%-20s${E_END} ${E_BR_GREEN}%s${E_END}\n" "$1" "$2"
 }
 
 # Print a variable + text into two columns
