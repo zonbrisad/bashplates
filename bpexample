@@ -580,6 +580,8 @@ assertRoot() { ##D Assert that user is root
 }
 
 
+# Various  ---------------------------------------------------------
+
 assertNoLockFile() { ##D Assert that lockfile is not present
   if [ -n "$LOCK_FILE" ]; then 
     if [ -f "$LOCK_FILE" ]; then
