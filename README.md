@@ -3,7 +3,7 @@
 
 #### Author 
 Peter Malmberg  <peter.malmberg@gmail.com>
-#### Licence
+#### License
 MIT
 #### Description
 Bashplates is a bash scipt template to enabel quick development of
