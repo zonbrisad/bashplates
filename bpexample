@@ -246,7 +246,7 @@ rootTest() { ## Test assert root
 
 lockTest() { ## Lock file test
   assertNoLockFile
-  ./example lockTest	
+  ${scriptPath}/bpexample lockTest	
 }
 
 assertProgs() { ## Assert required programs test 
