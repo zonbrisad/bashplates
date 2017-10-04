@@ -77,22 +77,31 @@ errorTest() { ## Test of error messages
 
 print_bar() {
   echo -n " ["
-	for jx in `seq 1 $2`; do
+	for jx in $(seq 1 ${2}); do
 	  echo -n "="
 	done
-	for jx in `seq 1 $(expr $1 - $2)`; do
+	for jx in $(seq 1 $((${1} - ${2}))); do
 	  echo -n " "
 	done
 	echo  "]"   
 }
 
-bar() { ## print a testbar (ANSI) 
-  echo -en $E_HIDE
-  for i in `seq 1 30`;
-	do
+bar() { ## print a testbar (ANSI)
+  echo -en $E_HID
+  for i in {1..30}; do
 	  sleep 0.03
 		print_bar 30 $i
 		echo -e $E_RETURN $E_UP 
+	done
+  echo -e $E_SHOW
+}
+
+shade() { ## Shade demo (256 color terminal required)
+  echo -en $E_HID
+  for i in {232..255} {255..232} ; do
+	  sleep 0.05
+		printf "\x1b[38;5;%sm _____ Shading text _____ ${E_END}" "$i"
+		echo -e $E_RETURN
 	done
   echo -e $E_SHOW
 }
@@ -116,13 +125,27 @@ color-test() {
   echo -e "$1${E_ON_BLACK}$2 on BLACK${E_END}"
 }
 
-colorss=("A" "B" "C")
+#colorss=("A" "B" "C")
 
-color1() { ## Standard 16 colors and font attribute test
+color1() { ## Standard 16 colors 
   FCOLORS=( ${E_BLACK} ${E_RED} ${E_GREEN} ${E_YELLOW} ${E_BLUE} ${E_MAGENTA} ${E_CYAN} ${E_GRAY} ${E_DARKGRAY} ${E_BR_RED} ${E_BR_GREEN} ${E_BR_YELLOW} ${E_BR_BLUE} ${E_BR_MAGENTA} ${E_BR_CYAN} ${E_WHITE} )
   BCOLORS=( ${E_ON_BLACK} ${E_ON_RED} ${E_ON_GREEN} ${E_ON_YELLOW} ${E_ON_BLUE} ${E_ON_MAGENTA} ${E_ON_CYAN} ${E_ON_WHITE} )
 
-  	echo -e "\n\n"
+  FCOLORS2=( E_BLACK E_RED E_GREEN E_YELLOW E_BLUE E_MAGENTA E_CYAN E_GRAY E_DARKGRAY E_BR_RED E_BR_GREEN E_BR_YELLOW E_BR_BLUE E_BR_MAGENTA E_BR_CYAN E_WHITE )
+	BCOLORS2=( E_ON_BLACK E_ON_RED E_ON_GREEN E_ON_YELLOW E_ON_BLUE E_ON_MAGENTA E_ON_CYAN E_ON_WHITE )
+
+  echo
+  for fc in ${FCOLORS2[*]}; do
+	  eval "FG=\$$fc"
+		for bc in ${BCOLORS2[*]}; do
+		  eval "BG=\$$bc"
+      printf "${FG}${BG}%-15s${E_END}" $fc
+		done
+		echo
+	done
+
+  echo
+	return
   for fc in ${FCOLORS[*]}
 	do
 	  for bc in ${BCOLORS[*]}
@@ -132,57 +155,16 @@ color1() { ## Standard 16 colors and font attribute test
 			  echo ""
 	done
 	echo -e "\n\n"
-	
+}	
 
-
-  echo -e "${E_ATTR_UNDERLINE}Underline${E_END}"  	
+attr() { ## demonstrate font attributes
+  echo
+  echo -e "${E_ATTR_UNDERLINE}Underline${E_END}"
   echo -e "${E_ATTR_BOLD}Bold${E_END}"
   echo -e "${E_ATTR_BLINK}Blink${E_END}"
   echo -e "${E_ATTR_LOWI}Low Intensity${E_END}"
   echo -e "${E_ATTR_REVERSE}Reverse video${E_END}"
- 
-  echo -e "\n\n"
- 
-	exit;
-  echo -e "${E_RED}RED${E_END}"
-  echo -e "${E_GREEN}GREEN${E_END}"
-  echo -e "${E_YELLOW}YELLOW${E_END}"
-  echo -e "${E_BLUE}BLUE${E_END}"
-  echo -e "${E_MAGENTA}MAGENTA${E_END}"
-  echo -e "${E_CYAN}CYAN${E_END}"
-  echo -e "${E_GRAY}GRAY${E_END}"
-  echo -e "${E_DARKGRAY}DARKGRAY${E_END}"
-  echo -e "${E_BR_RED}Bright RED${E_END}"
-  echo -e "${E_BR_GREEN}Bright GREEN${E_END}"
-  echo -e "${E_BR_YELLOW}Bright YELLOW${E_END}"
-  echo -e "${E_BR_BLUE}Bright BLUE${E_END}"
-  echo -e "${E_BR_MAGENTA}Bright MAGENTA${E_END}"
-  echo -e "${E_BR_CYAN}Bright CYAN${E_END}"
-  echo -e "${E_WHITE}WHITE${E_END}"
-  
-  color-test "${E_BLACK}" "Black"
-	
-  color-test "${E_WHITE}" "White"
-  color-test "${E_GRAY}" "Gray"
-
-  color-test "${E_YELLOW}" "Yellow"
-  color-test "${E_BR_YELLOW}" "Yellow Bright"
-	
-  color-test "${E_RED}" "Red"
-  color-test "${E_BR_RED}" "Red Bright"
-	
-  color-test "${E_MAGENTA}" "Magenta"
-  color-test "${E_BR_MAGENTA}" "Magenta Bright"
-	
-  color-test "${E_CYAN}" "CYAN"
-  color-test "${E_BR_CYAN}" "CYAN Bright"
-
-  color-test "${E_BLUE}" "Blue"
-  color-test "${E_BR_BLUE}" "Blue Bright"
-	
-  color-test "${E_GREEN}" "Green"
-  color-test "${E_BR_GREEN}" "Green Bright"
-	
+  echo
 }
 
 color2() { ## Show example of all 256 colors
