@@ -230,6 +230,21 @@ smallFlag() {
 	echo -e "${FLAG_BLUE}      ${FLAG_YELLOW}  ${FLAG_BLUE}           ${E_END}"
 }
 
+largeFlag() { 
+	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+	echo -e "${FLAG_YELLOW}                                      ${E_END}"
+	echo -e "${FLAG_YELLOW}                                      ${E_END}"
+	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+}
+
 flag() { 
 	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
 	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
@@ -246,6 +261,8 @@ flags() { ## Print flag
 	flag
 	echo
 	smallFlag
+	echo
+	largeFlag
 	echo
 
 }
