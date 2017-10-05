@@ -164,7 +164,6 @@ install-local() { ##C INSTALL Install bashplate localy for easy creating new scr
 
 
 
-
 #--------------------------------------------------------------------- 
 # Bashplate settings
 #---------------------------------------------------------------------
@@ -384,7 +383,6 @@ printLine() {
 # arg2 text for column 2
 printInfo() {  
   printf "${E_CYAN}%-20s${E_END} ${E_GREEN}%s${E_END}\n" "$1" "$2"
-#	printf "${E_BR_CYAN}%-20s${E_END} ${E_BR_GREEN}%s${E_END}\n" "$1" "$2"
 }
 
 # Print a variable + text into two columns
@@ -399,6 +397,38 @@ printVar() {
     printf "${E_BR_CYAN}%-20s${E_END} ${E_BR_RED}N/A${E_END}\n" "$2"
   fi
 }
+
+
+# Create a directory if it does not exist
+bpMkDir() { ##D Create directory
+  if [ ! -d $1 ]; then
+	  bpInfo "Creating directory \"${1}\""
+		mkdir -p $1
+	fi
+}
+						
+bpLn() { ##D Create symbolic link
+  bpInfo "Creating link \"${2}\""
+	if [ ! -L $1 ]; then
+	  ln -s ${1} ${2}
+	fi
+}
+									 
+bpCp() { ##D Copy file(s)
+  bpInfo "Copying \"${1}\" to \"${2}\""
+	cp -rf $1 $2
+}
+
+bpMv() { ##D Move file(s)
+  bpInfo "Moving file \"${1}\" \"${2}\""
+	mv $1 $2
+}
+
+bpRm() {
+  bpInfo "Removing file \"${1}\""
+	rm -rf ${1}
+}
+																	 
 
 
 
@@ -563,7 +593,6 @@ assertRoot() { ##D Assert that user is root
   fi
 }
 
-
 # Various  ---------------------------------------------------------
 
 assertNoLockFile() { ##D Assert that lockfile is not present
@@ -656,7 +685,7 @@ printCondLine() {
   C=$(echo "$1" | sed -s 's/^.*##C-//' | awk '{print $1}')
   eval "D=\$$C"
   if [ -n "$D" ]; then
-     printLine
+     bpLine
   fi
 }
 
@@ -680,15 +709,17 @@ help() { ## Print this help information
   echo "$USAGE"
   echo -e "$DESC"
   echo 
+	
 #  printf "%-20s  %s\n" "Command" "Help"
-#  printLine
+#  bpLine
   IFS=$'\n'
   SC=$1
   #help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '##D' | grep -v '##V' | grep -v '\*##C' | grep -v '\*##C-' |  grep -v '\"##' |  grep -v '##N-//' | grep -v help_line | grep -v printLine)
   help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##N-//' -e 'help_line' -e   'printLine')
+#	echo -e $help_lines
   for help_line in ${help_lines[@]} ; do
     case "$help_line" in
-      *"##-"*)   printLine ;;
+      *"##-"*)   bpLine ;;
       *"##C-"*)  printCondLine       "$help_line" ;;
       *"##N-"*)  printNamedLine      "$help_line" ;;
       *"##CN-"*) printCondNamedLine  "$help_line" ;;
@@ -700,15 +731,23 @@ help() { ## Print this help information
   done 
 }
 
+
+
 ihelp() { ##D Print internal help information
-  printLine
+	bpLine
   IFS=$'\n'
   SC=$1
-  help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '\*"##[ A-Z]"\*' | grep -v help_line | grep -v printLine)
+  help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e ' printLine' )
+#  help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '\*"##D"\*' -e 'help_line' -e ' printLine' )
+#	echo $help_lines
+#	help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e 'help_line' -e ' printLine' )
+#	help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##N-//' -e 'help_line' -e   'printLine')
   for help_line in ${help_lines[@]}; do
+	  echo $help_line
     case "$help_line" in
       "##-")   printLine ;;
       *"##D"*) printCommand "$help_line" '##D' ;;
+			*"##C-"*)  printCondLine       "$help_line" ;;
       *)    
       ;;   
     esac
@@ -717,9 +756,12 @@ ihelp() { ##D Print internal help information
   printInfo "#" "Normal bash comment"
   printInfo "##" "Subcommand information comment (shown with help)"
   printInfo "##C" "Conditional subcommand comment (shown with help)"
-  printInfo "##-" "Generates a line at output (shown with help)"
-  printInfo "##d" "Internal function comment (shown ihelp)"
-  printLine
+  printInfo "##-" "Separator line (shown with help)"
+	printInfo "##C-" "Conditional separator line (shown with help)"
+	printInfo "##N-" "Named separator line (shown with help)"
+	printInfo "##CN-" "Conditional named separator line (shown with help)"
+  printInfo "##D" "Internal function comment (shown ihelp)"
+  bpLine
 }
 
 vhelp() { ##D Print internal variable information
@@ -729,7 +771,7 @@ vhelp() { ##D Print internal variable information
   for line in ${lines[@]}; do
     echo "$line"
 #    case $line in
-#      "##x") printLine ;;
+#      "##x") bpLine ;;
 #      *"##D"*) 
 #          printCommand $help_line '##D' ;;
 #      *)    
@@ -797,7 +839,6 @@ trap  signalHup  SIGHUP
 trap  signalTerm SIGTERM
 
 bpArguments=$#
-
 
 # Load configuration file settings
 bpLoadSettings

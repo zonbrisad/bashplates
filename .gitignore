@@ -1,9 +1,0 @@
-# 
-# Bashplates gitignore file
-#
-#
-
-# Normal rules
-*~
-*.old
-\#*#
