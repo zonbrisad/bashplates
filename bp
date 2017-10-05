@@ -105,19 +105,25 @@ news() { ##C NEW Create a new simple bashplate project
 
 ##N- Project
 
-clean() { ##C BP Remove leftover files 
+clean() { ## Remove leftover files 
+  cd ${scriptPath}
   find . -name "*~" -delete
 	
   # Remove untraced files
 	git clean -df
+	
+	cd -
 }
 
-commit() { ##C BP Commit project to repository
+commit() { ## Commit project to repository
+  cd ${scriptPath}
   git commit -a
 	git push --tags -a
+	cd -
 }
 
-tag() { ##C BP Make a new tag
+tag() { ## Make a new tag
+  cd ${scriptPath}
   # List existing tags
   git tag
 	
@@ -127,11 +133,22 @@ tag() { ##C BP Make a new tag
 	
 	# Tag revision
   git tag -a $tag -m "$desc"
+	cd -
 }
 
-push() { ##C BP Push to GITHUB
+push() { ## Push to GITHUB
+  cd ${scriptPath}
   git push --progress
+	cd -
 } 
+
+pull() { ## Pull bashplates from GITHUB
+  cd ${scriptPath}
+  git pull --progress
+	cd -
+} 
+
+
 
 #
 # arg1 install dir
