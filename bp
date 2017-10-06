@@ -352,7 +352,7 @@ BP_C_LINE_TEXT=$E_YELLOW
 BP_E_OK=0            # successful termination 
 
 
-
+##CN- IHELP Printing functions
 # Print text with row
 #
 # arg1 text to be printed
@@ -415,6 +415,7 @@ printVar() {
   fi
 }
 
+##CN- IHELP File
 
 # Create a directory if it does not exist
 bpMkDir() { ##D Create directory
@@ -569,6 +570,8 @@ mlog() {   ##C LOGFILE Monitor logfile
   fi
 }
 
+##CN- IHELP Message
+
 bpOk() { ##D Success message 
   bpLog "[ Ok ] $1"
   echo -e "[${BP_C_OK}Ok${E_END}] $1"
@@ -603,14 +606,15 @@ bpCritical() { ##D Critical error message
   bpExit
 }
 
+# Various  ---------------------------------------------------------
+
+##CN- IHELP Assert
 assertRoot() { ##D Assert that user is root
   if [ "$(whoami)" != root ]; then
     bpError "Must be root to use this command."
     bpExit
   fi
 }
-
-# Various  ---------------------------------------------------------
 
 assertNoLockFile() { ##D Assert that lockfile is not present
   if [ -n "$LOCK_FILE" ]; then 
@@ -700,6 +704,7 @@ printCondCommand() {
 printCondLine() {
   help_line=$1
   C=$(echo "$1" | sed -s 's/^.*##C-//' | awk '{print $1}')
+	echo $1
   eval "D=\$$C"
   if [ -n "$D" ]; then
      bpLine
@@ -726,14 +731,11 @@ help() { ## Print this help information
   echo "$USAGE"
   echo -e "$DESC"
   echo 
-	
 #  printf "%-20s  %s\n" "Command" "Help"
 #  bpLine
   IFS=$'\n'
   SC=$1
-  #help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '##D' | grep -v '##V' | grep -v '\*##C' | grep -v '\*##C-' |  grep -v '\"##' |  grep -v '##N-//' | grep -v help_line | grep -v printLine)
-  help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##N-//' -e 'help_line' -e   'printLine')
-#	echo -e $help_lines
+  help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##N-//' -e 'help_line' -e 'printLine')
   for help_line in ${help_lines[@]} ; do
     case "$help_line" in
       *"##-"*)   bpLine ;;
@@ -749,27 +751,25 @@ help() { ## Print this help information
 }
 
 
-
 ihelp() { ##D Print internal help information
-	bpLine
+  bpLine
   IFS=$'\n'
   SC=$1
-  help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e ' printLine' )
-#  help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '\*"##D"\*' -e 'help_line' -e ' printLine' )
-#	echo $help_lines
-#	help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e 'help_line' -e ' printLine' )
+	IHELP=1
+  help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e ' printLine' -e 'awk' -e 'printInfo')
 #	help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##N-//' -e 'help_line' -e   'printLine')
   for help_line in ${help_lines[@]}; do
-	  echo $help_line
     case "$help_line" in
-      "##-")   printLine ;;
-      *"##D"*) printCommand "$help_line" '##D' ;;
-			*"##C-"*)  printCondLine       "$help_line" ;;
+      "##-")    bpLine ;;
+      *"##D"*)  printCommand  "$help_line" '##D' ;;
+			*"##C-"*) printCondLine "$help_line" ;;
+			*"##CN-"*) printCondNamedLine  "$help_line" ;;
       *)    
       ;;   
     esac
   done 
 	
+  bpTextLine "Comments"
   printInfo "#" "Normal bash comment"
   printInfo "##" "Subcommand information comment (shown with help)"
   printInfo "##C" "Conditional subcommand comment (shown with help)"
