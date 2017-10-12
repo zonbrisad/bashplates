@@ -227,14 +227,19 @@ BP_C_INFO=$E_BR_CYAN
 BP_C_WARNING=$E_BR_YELLOW
 BP_C_ERROR=$E_BR_RED
 BP_C_CRITICAL=$E_ON_RED$E_WHITE
+
 BP_C_LINE=$E_DARKGRAY
 BP_C_LINE_TEXT=$E_YELLOW
+
+BP_C_COMMENT=$E_GREEN
+BP_C_ID=$E_CYAN
 
 # Exit codes 
 #
 BP_E_OK=0            # successful termination 
 
 
+##CN- IHELP Printing functions
 
 # Print text with row
 #
@@ -282,7 +287,7 @@ printLine() {
 # arg1 text for column 1
 # arg2 text for column 2
 printInfo() {  
-  printf "${E_BR_CYAN}%-20s${E_END} ${E_BR_GREEN}%s${E_END}\n" "$1" "$2"
+  printf "${BP_C_ID}%-24s${E_END} ${BP_C_COMMENT}%s${E_END}\n" "$1" "$2"
 }
 
 # Print a variable + text into two columns
@@ -294,8 +299,91 @@ printVar() {
   if [ "${!var}" ]; then
     printInfo "$2" "${!var}"
   else 
-    printf "${E_BR_CYAN}%-20s${E_END} ${E_BR_RED}N/A${E_END}\n" "$2"
+    printf "${BP_C_ID}%-24s${E_END} ${E_RED}N/A${E_END}\n" "$2"
   fi
+}
+
+##CN- IHELP File operations
+
+# Create a directory if it does not exist
+bpMkDir() { ##D Create directory
+  if [ ! -d $1 ]; then
+	  bpInfo "Creating directory \"${1}\""
+		mkdir -p $1
+	fi
+}
+						
+bpLn() { ##D Create symbolic link
+  bpInfo "Creating link \"${2}\""
+	if [ ! -L $1 ]; then
+	  ln -s ${1} ${2}
+	fi
+}
+									 
+bpCp() { ##D Copy file(s)
+  bpInfo "Copying \"${1}\" to \"${2}\""
+	cp -rf $1 $2
+}
+
+bpMv() { ##D Move file(s)
+  bpInfo "Moving file \"${1}\" \"${2}\""
+	mv $1 $2
+}
+
+bpRm() { ##D Remove file
+  bpInfo "Removing file \"${1}\""
+	rm -rf ${1}
+}
+																	 
+# Replace text in file
+#
+# arg1 file 
+# arg2 text to replace
+# arg3 new text
+bpReplace() {  ##D Replace text in file
+  sed -i -e "s/${2}/${3}/g"  $1
+}
+
+# Appends a line to a file if it is not present in that file.
+#
+# $1 file
+# $2 line to append
+#
+bpAppendIfNoSuchLine() { ##D Append a line if it does not exist in file
+  grep -q -F "$2" $1 || echo "$2" >> $1
+}
+	
+# Remove line in file containing a given string
+#
+# $1 file
+# $2 string
+#
+bpRemoveLineContaining() { ##D Remove line in file if it contains given string
+  grep -v $2 $1 > ${1}_tmp
+	mv -f ${1}_tmp ${1}
+}
+
+##CN- IHELP File
+
+#
+# Read from commandline
+#
+# $1  Question string
+# $2  Default value
+# return string read from cmdline/default if enter pressed
+#
+bpRead() { ##D Read from commandline
+  
+	if [ "${2}" == "" ]; then
+    read -p "${1} >" result
+	else
+	  read -p "${1} [$2] >" result
+		if [ "${result}" == "" ]; then
+		  result="${2}"
+		fi
+	fi
+	
+	echo "${result}"
 }
 
 
@@ -371,6 +459,8 @@ setlic() { ## Set default license
 
 # Logging ---------------------------------------------------------
 
+##CN- IHELP Log functions
+
 #
 # Function logging to file
 #
@@ -420,6 +510,8 @@ mlog() {   ##C LOGFILE Monitor logfile
   fi
 }
 
+##CN- IHELP Message
+
 bpOk() { ##D Success message 
   bpLog "[ Ok ] $1"
   echo -e "[${BP_C_OK}Ok${E_END}] $1"
@@ -454,15 +546,15 @@ bpCritical() { ##D Critical error message
   bpExit
 }
 
+# Various  ---------------------------------------------------------
+
+##CN- IHELP Assert
 assertRoot() { ##D Assert that user is root
   if [ "$(whoami)" != root ]; then
     bpError "Must be root to use this command."
     bpExit
   fi
 }
-
-
-# Various  ---------------------------------------------------------
 
 assertNoLockFile() { ##D Assert that lockfile is not present
   if [ -n "$LOCK_FILE" ]; then 
@@ -484,6 +576,8 @@ assertRequiredProgs() { ##D Assert that required programs are available on the s
     done
   fi
 }
+
+##CN- IHELP Help & info
 
 info() { ##D Show information about script
   bpTextLine "Script information"
@@ -521,16 +615,6 @@ chSetting() {
   sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" "$1"
 }
 
-# Replace text in file
-#
-# arg1 file 
-# arg2 text to replace
-# arg3 new text
-bpReplace() {  ##D Replace text in file
-  sed -i -e "s/${2}/${3}/g"  $1
-}
-	 
-
 printCommand() { 
   help_line=$1
   help_command=$(echo "$help_line" | sed -s 's/(.*//')
@@ -554,7 +638,7 @@ printCondLine() {
   C=$(echo "$1" | sed -s 's/^.*##C-//' | awk '{print $1}')
   eval "D=\$$C"
   if [ -n "$D" ]; then
-     printLine
+     bpLine
   fi
 }
 
@@ -562,7 +646,6 @@ printNamedLine() {
   name=$(echo "$1" | sed -e 's/^.*##N-//' -e 's/^[ \t]*//' )
   bpTextLine "$name"
 }
-
 
 printCondNamedLine() {
   help_line=$1
@@ -579,14 +662,13 @@ help() { ## Print this help information
   echo -e "$DESC"
   echo 
 #  printf "%-20s  %s\n" "Command" "Help"
-#  printLine
+#  bpLine
   IFS=$'\n'
   SC=$1
-  #help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '##D' | grep -v '##V' | grep -v '\*##C' | grep -v '\*##C-' |  grep -v '\"##' |  grep -v '##N-//' | grep -v help_line | grep -v printLine)
-  help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##N-//' -e 'help_line' -e   'printLine')
+  help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##N-//' -e 'help_line' -e 'printLine')
   for help_line in ${help_lines[@]} ; do
     case "$help_line" in
-      *"##-"*)   printLine ;;
+      *"##-"*)   bpLine ;;
       *"##C-"*)  printCondLine       "$help_line" ;;
       *"##N-"*)  printNamedLine      "$help_line" ;;
       *"##CN-"*) printCondNamedLine  "$help_line" ;;
@@ -599,47 +681,53 @@ help() { ## Print this help information
 }
 
 ihelp() { ##D Print internal help information
-  printLine
+  bpLine
   IFS=$'\n'
   SC=$1
-  help_lines=$(grep -h '##' "$0" | grep -v grep | grep -v '\*"##[ A-Z]"\*' | grep -v help_line | grep -v printLine)
+	
+  IHELP=1    # Force ihelp documentations
+  LOGFILE=1  # Force log documentation
+	
+  help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e ' printLine' -e 'awk' -e 'printInfo')
   for help_line in ${help_lines[@]}; do
     case "$help_line" in
-      "##-")   printLine ;;
-      *"##D"*) printCommand "$help_line" '##D' ;;
+#      "##-")    bpLine ;;
+      *"##D"*)  printCommand  "$help_line" '##D' ;;
+      *"##C-"*) printCondLine "$help_line" ;;
+      *"##CN-"*) printCondNamedLine  "$help_line" ;;
+      *"##C"*)   printCondCommand  "$help_line" ;;
       *)    
       ;;   
     esac
   done 
 	
+  bpTextLine "Comments"
   printInfo "#" "Normal bash comment"
   printInfo "##" "Subcommand information comment (shown with help)"
   printInfo "##C" "Conditional subcommand comment (shown with help)"
-  printInfo "##-" "Generates a line at output (shown with help)"
-  printInfo "##d" "Internal function comment (shown ihelp)"
-  printLine
+  printInfo "##-" "Separator line (shown with help)"
+  printInfo "##C-" "Conditional separator line (shown with help)"
+  printInfo "##N-" "Named separator line (shown with help)"
+  printInfo "##CN-" "Conditional named separator line (shown with help)"
+  printInfo "##D" "Internal function comment (shown ihelp)"
+  bpLine
 }
 
 vhelp() { ##D Print internal variable information
+  bpTextLine "Script variables"
+  echo
   IFS=$'\n'
-  lines=$(grep -A 1 '##V' "$0" | grep -v 'lines')
-  echo "$lines"
-  for line in ${lines[@]}; do
-    echo "$line"
-#    case $line in
-#      "##x") printLine ;;
-#      *"##D"*) 
-#          printCommand $help_line '##D' ;;
-#      *)    
-#      ;;   
-#    esac
+  help_lines=$( grep -v -e 'help_lines' -e 'help_line' "$0" | grep -A 1 '##V'   ) # | sed "s/--//" )
+  for line in ${help_lines[@]}; do
+    if [ $line == "--" ]; then
+      echo
+    else
+      help_line=$(echo ${line} | sed -u -e "s/##V[ ]/${BP_C_COMMENT}/i" -e "s/^.*=/${BP_C_ID}&${E_END}/i" -e "s/=/${E_END}=/" )
+      echo -e $help_line
+      echo -en $E_END
+  fi
   done 
-
-#  echo $lines
-}
-
-imeld() { ##D Run meld file compare with local installed bashplate
-  meld ${scriptPath}/${scriptName} ~/bin/bashplate_files/bashplate
+  echo
 }
 
 version() { ## Print version information
@@ -684,18 +772,27 @@ runCommand() {
 
 # Init magic variables
 #
+
+##V Current date
 DATE=$(date +"%Y-%m-%d")
+
+##V Current time
 TIME=$(date +"%H:%M:%S")
+
+##V Number of columns in terminal
 COLUMNS=$(tput cols)
+
+##V Number of lines in terminal
 LINES=$(tput lines)
+
 
 trap  signalQuit SIGQUIT
 trap  signalInt  SIGINT
 trap  signalHup  SIGHUP
 trap  signalTerm SIGTERM
 
+##V Number of arguments given to script
 bpArguments=$#
-
 
 # Load configuration file settings
 bpLoadSettings

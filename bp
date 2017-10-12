@@ -55,7 +55,7 @@ BP_DIR=templates
 #  NEW=1
 #fi
 BP=1
-NEW=1
+#NEW=1
 
 #---------------------------------------------------------------------
 # User defined functions
@@ -67,9 +67,12 @@ NEW=1
 # Create a new script
 # arg1 template file
 newScript() { 
+#  bpRead "Question no default"
+#	bpRead "Question with default" "Kalle"
+#	exit
 	echo -e "Creating new bashplate project"
-	read -p "Enter name of new scipt>" script
-	
+#	read -p "Enter name of new scipt>" script
+	script=$(bpRead "Enter name of new scipt")
 
   if [ -e ${script} ]; then
 	  bpError "File "${E_BR_CYAN}${script}${E_END}" already exists"
@@ -78,9 +81,13 @@ newScript() {
 	  cp -rf ${scriptPath}/${BP_DIR}/${1} ${script}
 	fi
 	
-	read -p "Enter script descriptiont>" desc
-	read -p "Enter author>" author
-	
+#	read -p "Enter script descriptiont>" desc
+#	read -p "Enter author>" author
+
+
+	desc=$(bpRead "Enter script description")
+	author=$(bpRead "Enter author" "${BP_NAME} <${BP_EMAIL}>" )
+
 	bpReplace ${script} "__NAME__" "${script}"
 	bpReplace ${script} "__DATE__" "${DATE}"
 	bpReplace ${script} "__LICENSE__" ""
@@ -88,7 +95,7 @@ newScript() {
 	bpReplace ${script} "__DESC__"    "${desc}"
 }
 
-new() { ##C NEW Create a new standard bashplate project
+new() { ## Create a new standard bashplate project
 #	echo -e "Creating new bashplate project"
 #	read -p "Enter name of new scipt>" sname
 #	cp -rf ${scriptPath}/bashplate_files/bashplate $sname
@@ -96,7 +103,7 @@ new() { ##C NEW Create a new standard bashplate project
 	newScript "bashplate"
 }
 
-news() { ##C NEW Create a new simple bashplate project
+news() { ## Create a new simple bashplate project
 #	echo -e "Creating new simple bashplate project"
 #	read -p "Enter name of new scipt>" sname
 #	cp -rf ${scriptPath}/bashplate_files/bashplate-simple $sname
@@ -139,46 +146,14 @@ tag() { ## Make a new tag
 push() { ## Push to GITHUB
   cd ${scriptPath}
   git push --progress
-	cd -
+  cd -
 } 
 
 pull() { ## Pull bashplates from GITHUB
   cd ${scriptPath}
   git pull --progress
-	cd -
+  cd -
 } 
-
-
-
-#
-# arg1 install dir
-# arg2 symbolic link dir
-#
-bpInstall() {
-
-	mkdir -p ${1}
-
-	cp -rf ${scriptPath}/bashplate* ${1}/.
-	cp -rf ${scriptPath}/bp ${1}/bp
-	
-	ln -fs ${1}/bp ${2}
-	rm -f ${1}/BP
-}
-
-
-
-install() { ##C INSTALL Install bashplate on system
-  assertRoot
-	echo -e "Installing bashplates"
-	bpInstall /usr/local/bin/bashplate_files  /usr/local/bin/bp
-}
-
-
-install-local() { ##C INSTALL Install bashplate localy for easy creating new scripts
-  echo -e "Installing bashplates localy"
-	bpInstall ${BP_INSTALL_DIR} ~/bin/bp
-}
-
 
 
 #--------------------------------------------------------------------- 
@@ -189,7 +164,7 @@ install-local() { ##C INSTALL Install bashplate localy for easy creating new scr
 VERSION="1.12beta"
 
 ##V Bashplate version
-BPVERSION="1.11"   
+BPVERSION="1.11"
 
 ##V Usage info
 USAGE="Usage: ${scriptName} command [option]" 
@@ -202,8 +177,11 @@ DESC="Bashplate project management script"
 
 ##V Logging options (uncomment to activate logging parameters)
 #LOG_INFO=1
+
 #LOG_WARNING=1
+
 #LOG_ERROR=1
+
 #LOG_CRITICAL=1
 
 ##V Default command (uncomment to use a default command )
@@ -344,8 +322,12 @@ BP_C_INFO=$E_BR_CYAN
 BP_C_WARNING=$E_BR_YELLOW
 BP_C_ERROR=$E_BR_RED
 BP_C_CRITICAL=$E_ON_RED$E_WHITE
+
 BP_C_LINE=$E_DARKGRAY
 BP_C_LINE_TEXT=$E_YELLOW
+
+BP_C_COMMENT=$E_GREEN
+BP_C_ID=$E_CYAN
 
 # Exit codes 
 #
@@ -353,6 +335,7 @@ BP_E_OK=0            # successful termination
 
 
 ##CN- IHELP Printing functions
+
 # Print text with row
 #
 # arg1 text to be printed
@@ -399,7 +382,7 @@ printLine() {
 # arg1 text for column 1
 # arg2 text for column 2
 printInfo() {  
-  printf "${E_CYAN}%-20s${E_END} ${E_GREEN}%s${E_END}\n" "$1" "$2"
+  printf "${BP_C_ID}%-24s${E_END} ${BP_C_COMMENT}%s${E_END}\n" "$1" "$2"
 }
 
 # Print a variable + text into two columns
@@ -411,11 +394,11 @@ printVar() {
   if [ "${!var}" ]; then
     printInfo "$2" "${!var}"
   else 
-    printf "${E_BR_CYAN}%-20s${E_END} ${E_BR_RED}N/A${E_END}\n" "$2"
+    printf "${BP_C_ID}%-24s${E_END} ${E_RED}N/A${E_END}\n" "$2"
   fi
 }
 
-##CN- IHELP File
+##CN- IHELP File operations
 
 # Create a directory if it does not exist
 bpMkDir() { ##D Create directory
@@ -442,11 +425,61 @@ bpMv() { ##D Move file(s)
 	mv $1 $2
 }
 
-bpRm() {
+bpRm() { ##D Remove file
   bpInfo "Removing file \"${1}\""
 	rm -rf ${1}
 }
 																	 
+# Replace text in file
+#
+# arg1 file 
+# arg2 text to replace
+# arg3 new text
+bpReplace() {  ##D Replace text in file
+  sed -i -e "s/${2}/${3}/g"  $1
+}
+
+# Appends a line to a file if it is not present in that file.
+#
+# $1 file
+# $2 line to append
+#
+bpAppendIfNoSuchLine() { ##D Append a line if it does not exist in file
+  grep -q -F "$2" $1 || echo "$2" >> $1
+}
+	
+# Remove line in file containing a given string
+#
+# $1 file
+# $2 string
+#
+bpRemoveLineContaining() { ##D Remove line in file if it contains given string
+  grep -v $2 $1 > ${1}_tmp
+	mv -f ${1}_tmp ${1}
+}
+
+##CN- IHELP File
+
+#
+# Read from commandline
+#
+# $1  Question string
+# $2  Default value
+# return string read from cmdline/default if enter pressed
+#
+bpRead() { ##D Read from commandline
+  
+	if [ "${2}" == "" ]; then
+    read -p "${1} >" result
+	else
+	  read -p "${1} [$2] >" result
+		if [ "${result}" == "" ]; then
+		  result="${2}"
+		fi
+	fi
+	
+	echo "${result}"
+}
 
 
 
@@ -520,6 +553,8 @@ setlic() { ## Set default license
 ##-
 
 # Logging ---------------------------------------------------------
+
+##CN- IHELP Log functions
 
 #
 # Function logging to file
@@ -637,6 +672,8 @@ assertRequiredProgs() { ##D Assert that required programs are available on the s
   fi
 }
 
+##CN- IHELP Help & info
+
 info() { ##D Show information about script
   bpTextLine "Script information"
   printVar scriptName      "Script name" 
@@ -673,35 +710,6 @@ chSetting() {
   sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" "$1"
 }
 
-# Replace text in file
-#
-# arg1 file 
-# arg2 text to replace
-# arg3 new text
-bpReplace() {  ##D Replace text in file
-  sed -i -e "s/${2}/${3}/g"  $1
-}
-
-# Appends a line to a file if it is not present in that file.
-#
-# $1 file
-# $2 line to append
-#
-bpAppendIfNoSuchLine() { ##D Append a line if it does not exist in file
-  grep -q -F "$2" $1 || echo "$2" >> $1
-}
-	
-# Remove line in file containing a given string
-#
-# $1 file
-# $2 string
-#
-bpRemoveLineContaining() { ##D Remove line in file if it contains given string
-  grep -v $2 $1 > ${1}_tmp
-	mv ${1}_tmp ${1}
-}
-		
-
 printCommand() { 
   help_line=$1
   help_command=$(echo "$help_line" | sed -s 's/(.*//')
@@ -733,7 +741,6 @@ printNamedLine() {
   name=$(echo "$1" | sed -e 's/^.*##N-//' -e 's/^[ \t]*//' )
   bpTextLine "$name"
 }
-
 
 printCondNamedLine() {
   help_line=$1
@@ -772,15 +779,18 @@ ihelp() { ##D Print internal help information
   bpLine
   IFS=$'\n'
   SC=$1
-	IHELP=1
+	
+  IHELP=1    # Force ihelp documentations
+  LOGFILE=1  # Force log documentation
+	
   help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e ' printLine' -e 'awk' -e 'printInfo')
-#	help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##N-//' -e 'help_line' -e   'printLine')
   for help_line in ${help_lines[@]}; do
     case "$help_line" in
 #      "##-")    bpLine ;;
       *"##D"*)  printCommand  "$help_line" '##D' ;;
-			*"##C-"*) printCondLine "$help_line" ;;
-			*"##CN-"*) printCondNamedLine  "$help_line" ;;
+      *"##C-"*) printCondLine "$help_line" ;;
+      *"##CN-"*) printCondNamedLine  "$help_line" ;;
+      *"##C"*)   printCondCommand  "$help_line" ;;
       *)    
       ;;   
     esac
@@ -791,33 +801,28 @@ ihelp() { ##D Print internal help information
   printInfo "##" "Subcommand information comment (shown with help)"
   printInfo "##C" "Conditional subcommand comment (shown with help)"
   printInfo "##-" "Separator line (shown with help)"
-	printInfo "##C-" "Conditional separator line (shown with help)"
-	printInfo "##N-" "Named separator line (shown with help)"
-	printInfo "##CN-" "Conditional named separator line (shown with help)"
+  printInfo "##C-" "Conditional separator line (shown with help)"
+  printInfo "##N-" "Named separator line (shown with help)"
+  printInfo "##CN-" "Conditional named separator line (shown with help)"
   printInfo "##D" "Internal function comment (shown ihelp)"
   bpLine
 }
 
 vhelp() { ##D Print internal variable information
+  bpTextLine "Script variables"
+  echo
   IFS=$'\n'
-  lines=$(grep -A 1 '##V' "$0" | grep -v 'lines')
-  echo "$lines"
-  for line in ${lines[@]}; do
-    echo "$line"
-#    case $line in
-#      "##x") bpLine ;;
-#      *"##D"*) 
-#          printCommand $help_line '##D' ;;
-#      *)    
-#      ;;   
-#    esac
+  help_lines=$( grep -v -e 'help_lines' -e 'help_line' "$0" | grep -A 1 '##V'   ) # | sed "s/--//" )
+  for line in ${help_lines[@]}; do
+    if [ $line == "--" ]; then
+      echo
+    else
+      help_line=$(echo ${line} | sed -u -e "s/##V[ ]/${BP_C_COMMENT}/i" -e "s/^.*=/${BP_C_ID}&${E_END}/i" -e "s/=/${E_END}=/" )
+      echo -e $help_line
+      echo -en $E_END
+  fi
   done 
-
-#  echo $lines
-}
-
-imeld() { ##D Run meld file compare with local installed bashplate
-  meld ${scriptPath}/${scriptName} ~/bin/bashplate_files/bashplate
+  echo
 }
 
 version() { ## Print version information
@@ -862,16 +867,26 @@ runCommand() {
 
 # Init magic variables
 #
+
+##V Current date
 DATE=$(date +"%Y-%m-%d")
+
+##V Current time
 TIME=$(date +"%H:%M:%S")
+
+##V Number of columns in terminal
 COLUMNS=$(tput cols)
+
+##V Number of lines in terminal
 LINES=$(tput lines)
+
 
 trap  signalQuit SIGQUIT
 trap  signalInt  SIGINT
 trap  signalHup  SIGHUP
 trap  signalTerm SIGTERM
 
+##V Number of arguments given to script
 bpArguments=$#
 
 # Load configuration file settings

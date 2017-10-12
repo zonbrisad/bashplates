@@ -27,9 +27,11 @@ subcommandbased shellscripts.
 ## Built in commands
 - help    - Show help information about user define subcommands + some internal commands
 - ihelp   - Help information about internal commands
+- vhelp   - Help information about internal variables
 - log     - View log file
+- mlog    - View log file live
 - version - Show version information
-- info    - show various script information (for debug use)
+- info    - show various script information 
  
 ## Documentation
 
@@ -65,13 +67,6 @@ myCommand() { ##C MYVAR Command description
 
 ## Installation
 
-Bashplates can be installed on your system to enable rapid creation of
-new scripts. 
-There are two install options.
-- install
-- install-local
-
-
 ### Download
 
 Get bashplates from github with the following command.
@@ -80,32 +75,15 @@ Get bashplates from github with the following command.
 $ git clone https://github.com/zonbrisad/bashplates.git
 ```
 
+### Setting up environment
 
-### Local installation
-
-Local installation will install bp on your personal useraccount. It is
-convenient if you do not have root access on the machine you are
-installing it on.
-
-```bash
-$ cd bashplates
-$ ./bp install-local
-```
-
-Make sure that ~/bin is in the path.
-
-
-### System wide installation
-
-This option will install bp system wide. Bp will in this way be
-available to all users. Requires root access. 
+In order to use Bashplate the enivronment needs to be setup properly.
+This is done by "sourcing" the bp_init script. For convenience
+call the bp_init script in your .bashrc file.
 
 ```bash
-$ cd bashplates
-$ sudo ./bp install
+$ source path_to_bashplates/bp_init
 ```
-
-Make sure that /usr/local/bin is in the path.
 
 
 ## Create new script
@@ -126,11 +104,8 @@ $ bp new
 
 # TODO
 - Add verbose option
-- Add variable documentation option.
 - Use logrotate for logs
 - Mail feature
-- Remove option
-
 
 # References and tutorials
 
