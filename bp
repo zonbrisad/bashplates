@@ -681,7 +681,26 @@ chSetting() {
 bpReplace() {  ##D Replace text in file
   sed -i -e "s/${2}/${3}/g"  $1
 }
-	 
+
+# Appends a line to a file if it is not present in that file.
+#
+# $1 file
+# $2 line to append
+#
+bpAppendIfNoSuchLine() { ##D Append a line if it does not exist in file
+  grep -q -F "$2" $1 || echo "$2" >> $1
+}
+	
+# Remove line in file containing a given string
+#
+# $1 file
+# $2 string
+#
+bpRemoveLineContaining() { ##D Remove line in file if it contains given string
+  grep -v $2 $1 > ${1}_tmp
+	mv ${1}_tmp ${1}
+}
+		
 
 printCommand() { 
   help_line=$1
@@ -704,7 +723,6 @@ printCondCommand() {
 printCondLine() {
   help_line=$1
   C=$(echo "$1" | sed -s 's/^.*##C-//' | awk '{print $1}')
-	echo $1
   eval "D=\$$C"
   if [ -n "$D" ]; then
      bpLine
@@ -750,7 +768,6 @@ help() { ## Print this help information
   done 
 }
 
-
 ihelp() { ##D Print internal help information
   bpLine
   IFS=$'\n'
@@ -760,7 +777,7 @@ ihelp() { ##D Print internal help information
 #	help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##N-//' -e 'help_line' -e   'printLine')
   for help_line in ${help_lines[@]}; do
     case "$help_line" in
-      "##-")    bpLine ;;
+#      "##-")    bpLine ;;
       *"##D"*)  printCommand  "$help_line" '##D' ;;
 			*"##C-"*) printCondLine "$help_line" ;;
 			*"##CN-"*) printCondNamedLine  "$help_line" ;;

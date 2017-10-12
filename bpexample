@@ -230,6 +230,16 @@ smallFlag() {
 	echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_END}"
 }
 
+mediumFlag() { 
+	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
+	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
+	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
+	echo -e "${FLAG_YELLOW}                         ${E_END}"
+	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
+	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
+	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
+}
+
 largeFlag() { 
 	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
 	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
@@ -245,24 +255,34 @@ largeFlag() {
 	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
 }
 
-flag() { 
-	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
-	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
-	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
-	echo -e "${FLAG_YELLOW}                         ${E_END}"
-	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
-	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
-	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
+hugeFlag() { 
+	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+	echo -e "${FLAG_YELLOW}                                               ${E_END}"
+	echo -e "${FLAG_YELLOW}                                               ${E_END}"
+	echo -e "${FLAG_YELLOW}                                               ${E_END}"	
+	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
 }
 
 
-flags() { ## Print flag
+flags() { ## Print swedish flags
   echo
-	flag
-	echo
 	smallFlag
+  echo
+	mediumFlag
 	echo
 	largeFlag
+	echo
+	hugeFlag
 	echo
 
 }
@@ -300,21 +320,21 @@ appendTest() { ## Testing append line to file function
   rm -f append
 	touch append
 	
-  appendIfNoSuchLine "append" "Line to append1"
-	appendIfNoSuchLine "append" "Line to append2"
-	appendIfNoSuchLine "append" "Line to append3"
+  bpAppendIfNoSuchLine "append" "Line to append1"
+	bpAppendIfNoSuchLine "append" "Line to append2"
+	bpAppendIfNoSuchLine "append" "Line to append3"
 	
 	echo "File first time"
 	cat append
 
-  appendIfNoSuchLine "append" "Line to append1"
-	appendIfNoSuchLine "append" "Line to append2"
-	appendIfNoSuchLine "append" "Line to append3"
+  bpAppendIfNoSuchLine "append" "Line to append1"
+	bpAppendIfNoSuchLine "append" "Line to append2"
+	bpAppendIfNoSuchLine "append" "Line to append3"
 
   echo -e "\nFile second time"
 	cat append
 
-  removeLineContaining "append" "append2"
+  bpRemoveLineContaining "append" "append2"
   echo -e "\nFile third time"
 	cat append
   
@@ -791,7 +811,7 @@ bpReplace() {  ##D Replace text in file
 # $1 file
 # $2 line to append
 #
-appendIfNoSuchLine() { ##D Append a line if it does not exist in file
+bpAppendIfNoSuchLine() { ##D Append a line if it does not exist in file
   grep -q -F "$2" $1 || echo "$2" >> $1
 }
 	
@@ -800,8 +820,9 @@ appendIfNoSuchLine() { ##D Append a line if it does not exist in file
 # $1 file
 # $2 string
 #
-removeLineContaining() { ##D Remove line in file if it contains given string
-  grep -v $2 $1 > $1
+bpRemoveLineContaining() { ##D Remove line in file if it contains given string
+  grep -v $2 $1 > ${1}_tmp
+	mv ${1}_tmp ${1}
 }
 		
 
