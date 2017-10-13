@@ -209,13 +209,14 @@ DEFAULT=help
 #LOCK_FILE=/tmp/${scriptName}.lock
 
 # Activate settings function (will create settings file when run)
-SETTINGS=1
+bpSettingsDir=~/.config/bashplates
+bpSettings=${bpSettingsDir}/bashplates.conf
+
+#SETTINGS=1
 
 # Create settings file if non existent
 #CREATEPLSETTINGS=1
 
-bpSettingsDir=~/.config/bashplates
-bpSettings=${bpSettingsDir}/bashplates.conf
 
 #--------------------------------------------------------------------- 
 # Signal traps
@@ -687,6 +688,8 @@ info() { ##D Show information about script
   printInfo "PID" $$  
   printVar DATE "Date" 
   printVar TIME "Time"
+	
+  printVar bpSettings       "Bashplate settings file"	
 	
   if [ -n "${INFOHOOK}" ]; then
     bpTextLine "App. information"
