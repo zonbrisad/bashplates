@@ -391,13 +391,14 @@ REQUIRED_PROGRAMS=(ls nisse)
 #LOCK_FILE=/tmp/${scriptName}.lock
 
 # Activate settings function (will create settings file when run)
-SETTINGS=1
+BPSETTINGS=1
+
+bpSettingsDir=~/.config/bashplates
+bpSettingsFile=${bpSettingsDir}/bashplates.conf
 
 # Create settings file if non existent
 #CREATEPLSETTINGS=1
 
-bpSettingsDir=~/.config/bashplates
-bpSettings=${bpSettingsDir}/bashplates.conf
 
 #--------------------------------------------------------------------- 
 # Signal traps
@@ -526,10 +527,10 @@ BP_E_OK=0            # successful termination
 # arg4 middle character
 # arg5 line character
 bpPrintLineC() { ##D Print text with adjusted line after with selectable colors
-  len1=${#1}
-  len4=${#4}
+  len1="${#1}"
+  len4="${#4}"
 	
-  echo -en ${2}${1}${4}${3}
+  echo -en "${2}${1}${4}${3}"
   l=$((${COLUMNS} - ${len1} - ${len4} - 3 ))
   seq -s${5} ${l}|tr -d '[:digit:]'
   echo -en ${E_END} 
@@ -580,45 +581,68 @@ printVar() {
   fi
 }
 
-##CN- IHELP File
+##CN- IHELP File operations
 
 # Create a directory if it does not exist
+#
+# $1 Directory to be created
+#
 bpMkDir() { ##D Create directory
-  if [ ! -d $1 ]; then
+  if [ ! -d "$1" ]; then
 	  bpInfo "Creating directory \"${1}\""
-		mkdir -p $1
+		mkdir -p "$1"
 	fi
 }
-						
+
+#
+# $1 
+# $2
+#
 bpLn() { ##D Create symbolic link
   bpInfo "Creating link \"${2}\""
-	if [ ! -L $1 ]; then
-	  ln -s ${1} ${2}
+	if [ ! -L "$1" ]; then
+	  ln -s "${1}" "${2}"
 	fi
 }
-									 
+
+# 
+# Copy file(s)
+# 
+# $1 file(s) to be copied
+# $2 destination
+#
 bpCp() { ##D Copy file(s)
   bpInfo "Copying \"${1}\" to \"${2}\""
-	cp -rf $1 $2
+	cp -rf "$1" "$2"
 }
 
+#
+# Move file(s)
+#
+# $1 file(s) to be moved
+# $2 destination
 bpMv() { ##D Move file(s)
   bpInfo "Moving file \"${1}\" \"${2}\""
-	mv $1 $2
+	mv "$1" "$2"
 }
 
+# 
+# Remove file(s)
+# 
+# $1 file(s) to be removed
+#
 bpRm() { ##D Remove file
   bpInfo "Removing file \"${1}\""
-	rm -rf ${1}
+	rm -rf "${1}"
 }
 																	 
 # Replace text in file
 #
-# arg1 file 
-# arg2 text to replace
-# arg3 new text
+# $1 file 
+# $2 text to replace
+# $3 new text
 bpReplace() {  ##D Replace text in file
-  sed -i -e "s/${2}/${3}/g"  $1
+  sed -i -e "s/${2}/${3}/g"  "$1"
 }
 
 # Appends a line to a file if it is not present in that file.
@@ -627,7 +651,7 @@ bpReplace() {  ##D Replace text in file
 # $2 line to append
 #
 bpAppendIfNoSuchLine() { ##D Append a line if it does not exist in file
-  grep -q -F "$2" $1 || echo "$2" >> $1
+  grep -q -F "$2" "$1" || echo "$2" >> "$1"
 }
 	
 # Remove line in file containing a given string
@@ -636,10 +660,50 @@ bpAppendIfNoSuchLine() { ##D Append a line if it does not exist in file
 # $2 string
 #
 bpRemoveLineContaining() { ##D Remove line in file if it contains given string
-  grep -v $2 $1 > ${1}_tmp
-	mv -f ${1}_tmp ${1}
+  grep -v "$2" "$1" > "${1}_tmp"
+	mv -f "${1}_tmp" "${1}"
 }
-		
+
+#
+# Check if string exists in file
+#
+# $1 file
+# $2 string
+# return 1 for true, 0 for false
+#
+bpStrExist() { ##D Check if string exist in file
+  grep -q -F "$2" "$1" 
+	if [ $? == "0" ]; then
+	  echo "1"
+	else
+	  echo "0"
+	fi
+}
+
+##CN- IHELP Input
+
+#
+# Read from commandline
+#
+# $1  Question string
+# $2  Default value
+# return string read from cmdline/default if enter pressed
+#
+bpRead() { ##D Read from commandline
+  
+	if [ "${2}" == "" ]; then
+    read -p "${1} >" result
+	else
+	  read -p "${1} [$2] >" result
+		if [ "${result}" == "" ]; then
+		  result="${2}"
+		fi
+	fi
+	
+	echo "${result}"
+}
+
+
 
 #--------------------------------------------------------------------- 
 # 
@@ -647,42 +711,70 @@ bpRemoveLineContaining() { ##D Remove line in file if it contains given string
 
 # Settings file ------------------------------------------------------
 
+##CN- BPSETTINGS Settings
 
-bpAddSetting() {
-  echo "# "${3}    >> ${bpSettings}
-	echo ${1}"=\""${2}"\"" >> ${bpSettings}
-	echo >> ${bpSettings}
+bpAddSetting() { 
+
+  # Check if setting exist in file
+  S=$(bpStrExist $bpSettingsFile "${1}" )
+
+	if [ "${S}" == "0" ]; then
+		echo "# "${3}    >>  ${bpSettingsFile}
+    echo "${1}=\"${2}\"" >> ${bpSettingsFile}
+	  echo >> ${bpSettingsFile}
+  fi
 }
-			
-bpCreateSettings() {
-			
-  echo "Creating new bashplates settings file. ${bpSettings}"
-	mkdir -p ${bpSettingsDir}
-					
-	echo "# " >> ${bpSettings}
-	echo "# Bashplates common settings" > ${bpSettings}
-	echo "# " >> ${bpSettings}
-	echo      >> ${bpSettings}
-	
+
+bpAddSettings() { 
 	bpAddSetting "BP_NAME"  "John Doe"        "Name of user"
 	bpAddSetting "BP_EMAIL" "JohnDoe@foo.bar" "Email of user"
 	bpAddSetting "BP_EDITOR" "vi"             "Default editor"
 	bpAddSetting "BP_LICENSE" "MIT"           "Default project license"
 }
 
+# Change setting in config file (key value pair)
+#
+# arg1 config file
+# arg2 setting to change
+# arg3 new value for setting
+#
+chSetting() {  
+  SETTING="$2"
+  VAL="$3"
+	
+	S=$(bpStrExist "${1}" "${2}" )
+	if [ "${S}" == "0" ]; then
+	  bpAddSettings
+	fi
+  sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" "$1"
+}
+			
+bpCreateSettings() {
+			
+  echo "Creating new bashplates settings file. ${bpSettingsFile}"
+	bpMkDir ${bpSettingsDir}
+					
+	echo "# " >> ${bpSettingsFile}
+	echo "# Bashplates common settings" > ${bpSettingsFile}
+	echo "# " >> ${bpSettingsFile}
+	echo      >> ${bpSettingsFile}
+	
+	bpAddSettings
+}
+
 bpLoadSettings() {
-  if [ -n "${bpSettings}" ]; then
-	  if [ -e ${bpSettings} ]; then
-	    source ${bpSettings}
+  if [ -n "${bpSettingsFile}" ]; then
+	  if [ -e "${bpSettingsFile}" ]; then
+	    source "${bpSettingsFile}"
 	  else
 		  bpCreateSettings
-			source ${bpSettings}
+			source "${bpSettingsFile}"
 		fi
 	fi
 }
 																														
-##N- Settings
-printSettings() { ## Print plate information
+
+printSettings() { ##C BPSETTINGS Print plate information
 	bpTextLine "Bashplates settings"
 	printVar BP_NAME      "Name:"
 	printVar BP_EMAIL     "Email:"
@@ -691,20 +783,20 @@ printSettings() { ## Print plate information
 	bpLine
 }
 
-setname() { ## Set name
-	chSetting ${bpSettings} "BP_NAME" "\"${2}\""	
+setname() { ##C BPSETTINGS Set name
+	chSetting "${bpSettingsFile}" "BP_NAME" "\"${2}\""	
 }
 
-setemail() { ## Set email address
-	chSetting ${bpSettings} "BP_EMAIL" "\"${2}\""	
+setemail() { ##C BPSETTINGS Set email address
+	chSetting "${bpSettingsFile}" "BP_EMAIL" "\"${2}\""	
 }
 
-seteditor() { ## Set default editor
-	chSetting ${bpSettings} "BP_EDITOR" "\"${2}\""	
+seteditor() { ##C BPSETTINGS Set default editor
+	chSetting "${bpSettingsFile}" "BP_EDITOR" "\"${2}\""	
 }
 
-setlic() { ## Set default license
-	chSetting ${bpSettings} "BP_LICENSE" "\"${2}\""	
+setlic() { ##C BPSETTINGS Set default license
+	chSetting "${bpSettingsFile}" "BP_LICENSE" "\"${2}\""	
 }
 
 
@@ -729,7 +821,7 @@ bpLog() { ##D Log to file command
 
 log() { ##C LOGFILE View logfile
   if [ -n "$LOGFILE" ]; then
-    if [ -f ${LOGFILE} ]; then  # Check that logfile exists
+    if [ -f "${LOGFILE}" ]; then  # Check that logfile exists
 	
       D=$(sed -r -e "s|\[Info\]|\[\\${BP_C_INFO}Info\\${E_END}\]|"  \
             -e "s|\[Warn\]|\[\\${BP_C_WARNING}Warn\\${E_END}\]|"  \
@@ -837,12 +929,13 @@ info() { ##D Show information about script
   printVar scriptName      "Script name" 
   printVar scriptPath      "Script path" 
   printVar VERSION         "Script version" 
-  printVar BPVERSION       "Template version" 
+  printVar BPVERSION       "Template version"
+	printVar bpSettingsFile  "Bashplate settings file"
   printVar LOGFILE         "Log file" 
   printVar LOCK_FILE       "Lock file" 
-  printVar DEFAULT         "Default function" 
+  printVar DEFAULTCMD         "Default function" 
   printVar "REQUIRED_PROGRAMS" "Dependencies"
-  printInfo "PID" $$  
+  printInfo "PID" "$$"  
   printVar DATE "Date" 
   printVar TIME "Time"
 	
@@ -850,23 +943,13 @@ info() { ##D Show information about script
     bpTextLine "App. information"
     ${INFOHOOK}
   fi
+	printSettings
 }
 
 check() { ##D Make a shellcheck
   shellcheck "$0"
 }
 
-# Change setting in config file (key value pair)
-#
-# arg1 config file
-# arg2 setting to change
-# arg3 new value for setting
-#
-chSetting() { 
-  SETTING="$2"
-  VAL="$3"
-  sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" "$1"
-}
 
 printCommand() { 
   help_line=$1
@@ -876,7 +959,7 @@ printCommand() {
 }
 
 printCondCommand() {
-  help_line=$1
+  help_line="$1"
   C=$(echo "$1" | sed -s 's/^.*##C//' | awk '{print $1}')
   eval "D=\$$C"
   if [ -n "$D" ]; then
@@ -887,7 +970,7 @@ printCondCommand() {
 }
 
 printCondLine() {
-  help_line=$1
+  help_line="$1"
   C=$(echo "$1" | sed -s 's/^.*##C-//' | awk '{print $1}')
   eval "D=\$$C"
   if [ -n "$D" ]; then
@@ -901,7 +984,7 @@ printNamedLine() {
 }
 
 printCondNamedLine() {
-  help_line=$1
+  help_line="$1"
   C=$(echo "$1" | sed -s 's/^.*##CN-//' | awk '{print $1}')
 	name=$(echo "$help_line" | sed -e 's/^.*'"$C"'//' -e 's/^[ \t]*//' )
   eval "D=\$$C"
@@ -917,7 +1000,7 @@ help() { ## Print this help information
 #  printf "%-20s  %s\n" "Command" "Help"
 #  bpLine
   IFS=$'\n'
-  SC=$1
+  SC="$1"
   help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##N-//' -e 'help_line' -e 'printLine')
   for help_line in ${help_lines[@]} ; do
     case "$help_line" in
@@ -933,11 +1016,22 @@ help() { ## Print this help information
   done 
 }
 
-ihelp() { ##D Print internal help information
-  bpLine
+ihelp() { ##D Print internal help information  
+
+  # Singe command documentation
+  if [ "$2" != "" ]; then
+	  echo
+	  bpTextLine "$2"
+		echo
+		grep --no-filename -B 10 "$0" -e "${2}()" | grep "#" | grep -v "##"
+		bpLine
+		exit
+	fi
+
   IFS=$'\n'
-  SC=$1
-	
+  SC="$1"
+
+  bpLine
   IHELP=1    # Force ihelp documentations
   LOGFILE=1  # Force log documentation
 	
@@ -972,12 +1066,12 @@ vhelp() { ##D Print internal variable information
   IFS=$'\n'
   help_lines=$( grep -v -e 'help_lines' -e 'help_line' "$0" | grep -A 1 '##V'   ) # | sed "s/--//" )
   for line in ${help_lines[@]}; do
-    if [ $line == "--" ]; then
+    if [ "$line" == "--" ]; then
       echo
     else
       help_line=$(echo ${line} | sed -u -e "s/##V[ ]/${BP_C_COMMENT}/i" -e "s/^.*=/${BP_C_ID}&${E_END}/i" -e "s/=/${E_END}=/" )
-      echo -e $help_line
-      echo -en $E_END
+      echo -e "$help_line"
+      echo -en "$E_END"
   fi
   done 
   echo
@@ -992,8 +1086,8 @@ runCommand() {
   if [ "$bpArguments" -eq 0 ]; then
    
     # check for a default command
-    if [ -n "$DEFAULT" ]; then
-      $DEFAULT "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
+    if [ -n "$DEFAULTCMD" ]; then
+      "$DEFAULTCMD" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
       bpExit
     fi
     bpErrorExit "No command given"
@@ -1007,15 +1101,15 @@ runCommand() {
       
       # execute pre command hook  if existing
       if [ -n "$PRECMDHOOK" ]; then
-        ${PRECMDHOOK}
+        "${PRECMDHOOK}"
       fi
       
       # execute command
-      ${command} "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
+      "${command}" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
       
       # execute post command hook  if existing
       if [ -n "$POSTCMDHOOK" ]; then
-        ${POSTCMDHOOK}
+        "${POSTCMDHOOK}"
       fi      
       bpExit
     fi

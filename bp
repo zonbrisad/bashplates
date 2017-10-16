@@ -65,28 +65,22 @@ BP=1
 
 #
 # Create a new script
-# arg1 template file
+# $1 template file
+#
 newScript() { 
-#  bpRead "Question no default"
-#	bpRead "Question with default" "Kalle"
-#	exit
+
 	echo -e "Creating new bashplate project"
-#	read -p "Enter name of new scipt>" script
 	script=$(bpRead "Enter name of new scipt")
 
   if [ -e ${script} ]; then
 	  bpError "File "${E_BR_CYAN}${script}${E_END}" already exists"
 		return
-	else
-	  cp -rf ${scriptPath}/${BP_DIR}/${1} ${script}
-	fi
+  fi
 	
-#	read -p "Enter script descriptiont>" desc
-#	read -p "Enter author>" author
-
-
 	desc=$(bpRead "Enter script description")
 	author=$(bpRead "Enter author" "${BP_NAME} <${BP_EMAIL}>" )
+	
+	bpCp  ${scriptPath}/${BP_DIR}/${1} ${script}
 
 	bpReplace ${script} "__NAME__" "${script}"
 	bpReplace ${script} "__DATE__" "${DATE}"
@@ -96,17 +90,10 @@ newScript() {
 }
 
 new() { ## Create a new standard bashplate project
-#	echo -e "Creating new bashplate project"
-#	read -p "Enter name of new scipt>" sname
-#	cp -rf ${scriptPath}/bashplate_files/bashplate $sname
-	
 	newScript "bashplate"
 }
 
 news() { ## Create a new simple bashplate project
-#	echo -e "Creating new simple bashplate project"
-#	read -p "Enter name of new scipt>" sname
-#	cp -rf ${scriptPath}/bashplate_files/bashplate-simple $sname
 	newScript "bashplate-simple"
 }
 
@@ -139,7 +126,7 @@ tag() { ## Make a new tag
 	read -p "Description: " desc
 	
 	# Tag revision
-  git tag -a $tag -m "$desc"
+  git tag -a "$tag" -m "$desc"
 	cd -
 }
 
@@ -173,14 +160,14 @@ USAGE="Usage: ${scriptName} command [option]"
 DESC="Bashplate project management script"
 
 ##V logfile (uncomment to use logfile)
-#LOGFILE=${scriptPath}/${scriptName}.log
+LOGFILE=${scriptPath}/${scriptName}.log
 
 ##V Logging options (uncomment to activate logging parameters)
-#LOG_INFO=1
+LOG_INFO=1
 
 #LOG_WARNING=1
 
-#LOG_ERROR=1
+LOG_ERROR=1
 
 #LOG_CRITICAL=1
 
