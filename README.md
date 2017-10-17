@@ -6,7 +6,7 @@ Peter Malmberg  <peter.malmberg@gmail.com>
 #### License
 MIT
 #### Description
-Bashplates is a bash scipt template to enabel quick development of
+Bashplates is a bashscript template generator to enable rappid development of
 subcommandbased shellscripts.
 
 ## Features
@@ -24,6 +24,61 @@ subcommandbased shellscripts.
 - Execution hooks
 - default function
 
+
+## Installation
+
+### Download
+
+Get bashplates from github with the following command.
+
+```bash
+$ git clone https://github.com/zonbrisad/bashplates.git
+```
+
+### Setting up environment
+
+In order to use Bashplate the enivronment needs to be setup properly.
+This is done by "sourcing" the `bp_init` script located in the project directory. For convenience
+simply call the `bp_init` script in your .bashrc file.
+
+```bash
+$ source path_to_bashplates/bp_init
+```
+
+If everything is setup correctly test it by entering the `bp` command.
+```bash
+$ bp
+```
+
+
+### Bashplate settings
+Bashplates does have some configuration settings. To view these settings use the `bp info` command as below.
+
+```bash
+$ bp info
+```
+
+Set your personal like below.
+
+```bash
+$ bp setname "John Doe"
+$ bp setemail "john.doe@foo.bar"
+```
+
+## Getting started
+
+### bp command
+The bp command is the main command that is used for creating new scripts, make sure it is working. Se Install section if not.
+
+### Create new script
+
+To create a new script type the command bellow.  The new script will
+be created in the directory you are currently standing in.
+
+```bash
+$ bp new
+```
+
 ## Built in commands
 - help    - Show help information about user define subcommands + some internal commands
 - ihelp   - Help information about internal commands
@@ -39,7 +94,6 @@ BP has a very simple tag based documentation feature that is acivated
 when invoking `scriptname help` subcommand. It will output formated list of all subcommands
 and a short description of their function.
  
-
 ### Documentation tags
 - *##*    Documentation tag for userdefined function
 - ##D   Documentation tag for internal functions
@@ -65,35 +119,6 @@ myCommand() { ##C MYVAR Command description
 }
 ```
 
-## Installation
-
-### Download
-
-Get bashplates from github with the following command.
-
-```bash
-$ git clone https://github.com/zonbrisad/bashplates.git
-```
-
-### Setting up environment
-
-In order to use Bashplate the enivronment needs to be setup properly.
-This is done by "sourcing" the bp_init script. For convenience
-call the bp_init script in your .bashrc file.
-
-```bash
-$ source path_to_bashplates/bp_init
-```
-
-
-## Create new script
-
-To create a new script type the command bellow.  The new script will
-be created in the directory you are currently standing in.
-
-```bash
-$ bp new
-```
 
 # Files
  - `example  ` example bashplate script
