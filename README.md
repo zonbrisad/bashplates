@@ -51,13 +51,6 @@ $ bp
 ```
 
 ![alt text][bp]
-![xxxx][bp]
-[alt text][bp]
-
-[bp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp.png "bp"
-[bp-ihelp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-ihelp.png "bp ihelp"
-[bp-ihelp-cmd]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-ihelp-cmd.png "bp ihelp bpRead"
-[bp-vhelp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-vhelp.png "bp vhelp"
 
 
 ### Bashplate settings
@@ -66,6 +59,7 @@ Bashplates does have some configuration settings. To view these settings use the
 ```bash
 $ bp info
 ```
+![alt text][bp-info]
 
 Set your personal like below.
 
@@ -130,8 +124,8 @@ myCommand() { ##C MYVAR Command description
 
 
 # Files
- - `example  ` example bashplate script
- - `bashplate` bashplate template
+ - `bpexample  ` example bashplate script
+ - `templates/bashplate` bashplate template
  - `bp`        bashplate project management script
  - `history.txt` history file 
  - `README.md` this documentation
@@ -153,6 +147,16 @@ myCommand() { ##C MYVAR Command description
 # Example scripts
 
 [Simple bash shell script template](https://gist.github.com/KylePDavis/3901321)
+
+
+
+[bp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp.png "bp"
+[bp-ihelp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-ihelp.png "bp ihelp"
+[bp-ihelp-cmd]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-ihelp-cmd.png "bp ihelp bpRead"
+[bp-vhelp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-vhelp.png "bp vhelp"
+[bp-info]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-info.png "bp info"
+
+
 
 [BOILERPLATE SHELL SCRIPT TEMPLATE](http://natelandau.com/boilerplate-shell-script-template/)
 
