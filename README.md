@@ -49,10 +49,15 @@ If everything is setup correctly test it by entering the `bp` command.
 ```bash
 $ bp
 ```
-Reference-style: 
-![alt text][bp]
 
-[bp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp.png "bp command"
+![alt text][bp]
+![xxxx][bp]
+[alt text][bp]
+
+[bp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp.png "bp"
+[bp-ihelp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-ihelp.png "bp ihelp"
+[bp-ihelp-cmd]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-ihelp-cmd.png "bp ihelp bpRead"
+[bp-vhelp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-vhelp.png "bp vhelp"
 
 
 ### Bashplate settings
