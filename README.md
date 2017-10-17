@@ -52,7 +52,7 @@ $ bp
 Reference-style: 
 ![alt text][bp]
 
-[bp]: https://github.com/zonbrisad/bashplates/doc/bp.png "bp command"
+[bp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp.png "bp command"
 
 
 ### Bashplate settings
