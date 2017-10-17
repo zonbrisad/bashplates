@@ -53,6 +53,17 @@ scriptName=$(basename "$0")
 
 ##N- Bashplate tests
 
+print() { ## Examples of print functions
+  echo "Example of $E_GREEN bpLine $E_END"
+	bpLine
+	echo "Example of $E_GREEN bpTextLine $E_END"
+	bpTextLine "Kalle"
+	echo "Example of $E_GREEN printInfo $E_END"
+	printInfo "Kalle" "desc"
+	
+	
+}
+
 
 
 tlTest() { ## Test textline
@@ -358,7 +369,7 @@ USAGE="Usage: ${scriptName} command [option]"
 DESC="This script demonstrates some of the features of the bashplate template."
 
 ##V logfile (uncomment to use logfile)
-LOGFILE=${scriptPath}/${scriptName}.log
+#LOGFILE=${scriptPath}/${scriptName}.log
 
 ##V Logging options (uncomment to activate logging parameters)
 LOG_INFO=1
@@ -367,7 +378,7 @@ LOG_ERROR=1
 LOG_CRITICAL=1
 
 ##V Default command (uncomment to use a default command )
-DEFAULT=help
+DEFAULTCMD=help
 
 ##V Pre script hook, execute this function before every command
 #PREHOOK=prefunc
