@@ -49,6 +49,10 @@ If everything is setup correctly test it by entering the `bp` command.
 ```bash
 $ bp
 ```
+Reference-style: 
+![alt text][bp]
+
+[bp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp.png "bp command"
 
 
 ### Bashplate settings
