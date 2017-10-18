@@ -415,9 +415,9 @@ bpStrExist() { ##D Check if string exist in file
 bpRead() { ##D Read from commandline
   
 	if [ "${2}" == "" ]; then
-    read -pr "${1} >" result
+    read -erp "${1} >" result
 	else
-	  read -pr "${1} [$2] >" result
+	  read -erp "${1} [$2] >" result
 		if [ "${result}" == "" ]; then
 		  result="${2}"
 		fi

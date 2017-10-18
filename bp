@@ -70,14 +70,14 @@ BP=1
 newScript() { 
 
 	echo -e "Creating new bashplate project"
-	script=$(bpRead "Enter name of new scipt")
+	script=$(bpRead "Enter name of new script" "")
 
   if [ -e "${script}" ]; then
 	  bpError "File ${E_BR_CYAN}${script}${E_END} already exists"
 		return
   fi
 	
-	desc=$(bpRead "Enter script description")
+	desc=$(bpRead "Enter script description" "" )
 	author=$(bpRead "Enter author" "${BP_NAME} <${BP_EMAIL}>" )
 	
 	bpCp  "${scriptPath}"/"${BP_DIR}"/"${1}" "${script}"
@@ -498,9 +498,9 @@ bpStrExist() { ##D Check if string exist in file
 bpRead() { ##D Read from commandline
   
 	if [ "${2}" == "" ]; then
-    read -pr "${1} >" result
+    read -erp "${1} >" result
 	else
-	  read -pr "${1} [$2] >" result
+	  read -erp "${1} [$2] >" result
 		if [ "${result}" == "" ]; then
 		  result="${2}"
 		fi
