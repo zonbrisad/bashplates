@@ -87,6 +87,7 @@ errorTest() { ## Test of error messages
 }
 
 print_bar() {
+
   echo -n " ["
 	for jx in $(seq 1 ${2}); do
 	  echo -n "="
@@ -98,7 +99,7 @@ print_bar() {
 }
 
 bar() { ## print a testbar (ANSI)
-  echo -en $E_HID
+  echo -en $E_HIDE
   for i in {1..30}; do
 	  sleep 0.03
 		print_bar 30 $i
