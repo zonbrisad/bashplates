@@ -746,7 +746,7 @@ info() { ##D Show information about script
   printVar scriptPath      "Script path" 
   printVar VERSION         "Script version" 
   printVar BPVERSION       "Template version"
-	printVar bpSettingsFile  "Bashplate settings file"
+  printVar bpSettingsFile  "Bashplate settings file"
   printVar LOGFILE         "Log file" 
   printVar LOCK_FILE       "Lock file" 
   printVar DEFAULTCMD         "Default function" 
