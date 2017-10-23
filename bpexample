@@ -95,14 +95,14 @@ print_bar() {
 	for jx in $(seq 1 $((${1} - ${2}))); do
 	  echo -n " "
 	done
-	echo  "]"   
+	echo  "] ${2}"   
 }
 
 bar() { ## print a testbar (ANSI)
   echo -en $E_HIDE
-  for i in {1..30}; do
+  for i in {1..60}; do
 	  sleep 0.03
-		print_bar 30 $i
+		print_bar 60 $i
 		echo -e $E_RETURN $E_UP 
 	done
   echo -e $E_SHOW
