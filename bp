@@ -537,6 +537,7 @@ bpAddSettings() {
 	bpAddSetting "BP_EMAIL" "JohnDoe@foo.bar" "Email of user"
 	bpAddSetting "BP_EDITOR" "vi"             "Default editor"
 	bpAddSetting "BP_LICENSE" "MIT"           "Default project license"
+	bpAddSetting "BP_ORG"     "ACME"          "Default organisation"
 }
 
 # Change setting in config file (key value pair)
@@ -586,6 +587,7 @@ printSettings() { ##C BPSETTINGS Print plate information
 	printVar BP_EMAIL     "Email:"
 	printVar BP_LICENSE   "Default license:"
 	printVar BP_EDITOR    "Default editor"
+	printVar BP_ORG       "Default organisation"
 	bpLine
 }
 
@@ -603,6 +605,10 @@ seteditor() { ##C BPSETTINGS Set default editor
 
 setlic() { ##C BPSETTINGS Set default license
 	chSetting "${bpSettingsFile}" "BP_LICENSE" "\"${2}\""	
+}
+
+setorg() { ##C BPSETTINGS Set default organisation
+	chSetting "${bpSettingsFile}" "BP_ORG" "\"${2}\""	
 }
 
 

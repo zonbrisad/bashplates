@@ -43,6 +43,7 @@ createSettings() {
 	addSetting "BP_EMAIL" "JohnDoe@foo.bar" "Email of user"
 	addSetting "BP_EDITOR" "vi"             "Default editor"
 	addSetting "BP_LICENSE" "MIT"           "Default project license"
+	addSetting "BP_ORG"     "ACME"          "Default organisation"
 }
 													
 bpLoadSettings() {
@@ -55,9 +56,11 @@ bpLoadSettings() {
     fi
   fi
 	
-	export PB_NAME
+	export BP_NAME
 	export BP_EMAIL
 	export BP_EDITOR
+	export BP_LICENSE
+	export BP_ORG
 } 
 
 
