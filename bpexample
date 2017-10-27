@@ -60,8 +60,7 @@ print() { ## Examples of print functions
 	bpTextLine "Kalle"
 	echo "Example of $E_GREEN printInfo $E_END"
 	printInfo "Kalle" "desc"
-	
-	
+		
 }
 
 
