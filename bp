@@ -420,7 +420,7 @@ bpLn() { ##D Create symbolic link
 #
 bpCp() { ##D Copy file(s)
   bpInfo "Copying \"${1}\" to \"${2}\""
-	cp -rf "$1" "$2"
+	cp -rf $*
 }
 
 #
