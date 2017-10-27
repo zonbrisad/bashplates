@@ -115,7 +115,7 @@ clean() { ## Remove leftover files
 commit() { ## Commit project to repository
   cd "${scriptPath}"
   git commit -a
-  git push --tags -a
+  #git push --tags -a
   cd - || bpExit
 }
 
