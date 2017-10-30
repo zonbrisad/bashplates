@@ -524,10 +524,10 @@ bpAddSetting() {
   # Check if setting exist in file
   S=$(bpStrExist $bpSettingsFile "${1}" )
 
-	if [ "${S}" == "0" ]; then
-		echo "# ${3}"    >>  ${bpSettingsFile}
+  if [ "${S}" == "0" ]; then
+    echo "# ${3}"    >>  ${bpSettingsFile}
     echo "${1}=\"${2}\"" >> ${bpSettingsFile}
-	  echo >> ${bpSettingsFile}
+    echo >> ${bpSettingsFile}
   fi
 }
 
@@ -833,7 +833,7 @@ help() { ## Print this help information
   IFS=$'\n'
   SC="$1"
   help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##N-//' -e 'help_line' -e 'printLine')
-	for help_line in ${help_lines} ; do
+  for help_line in ${help_lines} ; do
     case "$help_line" in
       *"##-"*)   bpLine ;;
       *"##C-"*)  printCondLine       "$help_line" ;;
