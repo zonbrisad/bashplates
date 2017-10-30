@@ -386,6 +386,16 @@ opttest() { ## Options testing
 }
 
 
+aVeryLongCommandTestCommand() { ## Testing truncation of long command strings
+  echo
+}
+
+ICMD=10
+inactiveCommand() { ##C ICMD Test of inactive command
+  echo
+}
+
+
 #--------------------------------------------------------------------- 
 # Bashplate settings
 #---------------------------------------------------------------------
@@ -611,7 +621,22 @@ printLine() {
 # arg1 text for column 1
 # arg2 text for column 2
 printInfo() {
-  printf "${BP_C_ID}  %-24s${E_END} ${BP_C_COMMENT}%s${E_END}\n" "$1" "$2"
+#  printf "${BP_C_ID}  %-24s${E_END} ${BP_C_COMMENT}%s${E_END}\n" "$1" "$2"
+	printf "${BP_C_ID}  %-24.24s${E_END} ${BP_C_COMMENT}%s${E_END}\n" "$1" "$2"
+}
+
+#
+# $1 cmd color
+# $2 desc color
+# $3 cmd
+# $4 desc
+printInfoGeneric() {
+	printf "${1}  %-24.24s${E_END} ${2}%s${E_END}\n" "$3" "$4"
+}
+
+printInfoA() {
+#  printf "${BP_C_ID}  %-24s${E_END} ${BP_C_COMMENT}%s${E_END}\n" "$1" "$2"
+  printInfoGeneric "${E_DARKGRAY}" "${BP_C_COMMENT}" "$1" "$2"
 }
 
 # Print a variable + text into two columns
@@ -623,7 +648,7 @@ printVar() {
   if [ "${!var}" ]; then
     printInfo "$2" "${!var}"
   else
-    printf "${BP_C_ID}  %-24s${E_END} ${E_RED}N/A${E_END}\n" "$2"
+    printf "${BP_C_ID}  %-24.24s${E_END} ${E_RED}N/A${E_END}\n" "$2"
   fi
 }
 
@@ -1036,9 +1061,14 @@ printCondCommand() {
   C=$(echo "$1" | sed -s 's/^.*##C//' | awk '{print $1}')
   eval "D=\$$C"
   if [ -n "$D" ]; then
+#	  echo $D
     help_command=$(echo "$help_line" | sed -s 's/(.*//')
     help_info=$(echo "$help_line" | sed -s 's/^.*'"$C"'//')
-    printInfo "$help_command" "$help_info"
+		if [ "${D}" -eq 10 ]; then
+		  printInfoA "$help_command" "$help_info"
+		else
+      printInfo "$help_command" "$help_info"
+		fi
   fi
 }
 
