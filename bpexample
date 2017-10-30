@@ -358,6 +358,10 @@ flags() { ## Print swedish flags
 
 ##N- Experiments
 
+arg() { ##A Integer argument test
+  bpTextLine "Integer argument"
+}
+
 opttest() { ## Options testing
   echo $1 $2 $3 
 	echo $*
@@ -607,7 +611,7 @@ printLine() {
 # arg1 text for column 1
 # arg2 text for column 2
 printInfo() {
-  printf "${BP_C_ID}%-24s${E_END} ${BP_C_COMMENT}%s${E_END}\n" "$1" "$2"
+  printf "${BP_C_ID}  %-24s${E_END} ${BP_C_COMMENT}%s${E_END}\n" "$1" "$2"
 }
 
 # Print a variable + text into two columns
@@ -619,7 +623,7 @@ printVar() {
   if [ "${!var}" ]; then
     printInfo "$2" "${!var}"
   else
-    printf "${BP_C_ID}%-24s${E_END} ${E_RED}N/A${E_END}\n" "$2"
+    printf "${BP_C_ID}  %-24s${E_END} ${E_RED}N/A${E_END}\n" "$2"
   fi
 }
 
@@ -768,11 +772,11 @@ bpAddSetting() {
 }
 
 bpAddSettings() { 
-	bpAddSetting "BP_NAME"  "John Doe"        "Name of user"
-	bpAddSetting "BP_EMAIL" "JohnDoe@foo.bar" "Email of user"
-	bpAddSetting "BP_EDITOR" "vi"             "Default editor"
-	bpAddSetting "BP_LICENSE" "MIT"           "Default project license"
-	bpAddSetting "BP_ORG"     "ACME"          "Default organisation"
+  bpAddSetting "BP_NAME"  "John Doe"        "Name of user"
+  bpAddSetting "BP_EMAIL" "JohnDoe@foo.bar" "Email of user"
+  bpAddSetting "BP_EDITOR" "vi"             "Default editor"
+  bpAddSetting "BP_LICENSE" "MIT"           "Default project license"
+  bpAddSetting "BP_ORG"     "ACME"          "Default organisation"
 }
 
 # Change setting in config file (key value pair)
@@ -817,33 +821,33 @@ bpLoadSettings() {
 }
 
 printSettings() { ##C BPSETTINGS Print plate information
-	bpTextLine "Bashplates settings"
-	printVar BP_NAME      "Name:"
-	printVar BP_EMAIL     "Email:"
-	printVar BP_LICENSE   "Default license:"
-	printVar BP_EDITOR    "Default editor"
-	printVar BP_ORG       "Default organisation"
-	bpLine
+  bpTextLine "Bashplates settings"
+  printVar BP_NAME      "Name:"
+  printVar BP_EMAIL     "Email:"
+  printVar BP_LICENSE   "Default license:"
+  printVar BP_EDITOR    "Default editor"
+  printVar BP_ORG       "Default organisation"
+  bpLine
 }
 
 setname() { ##C BPSETTINGS Set name
-	chSetting "${bpSettingsFile}" "BP_NAME" "\"${2}\""	
+  chSetting "${bpSettingsFile}" "BP_NAME" "\"${2}\""	
 }
 
 setemail() { ##C BPSETTINGS Set email address
-	chSetting "${bpSettingsFile}" "BP_EMAIL" "\"${2}\""	
+  chSetting "${bpSettingsFile}" "BP_EMAIL" "\"${2}\""	
 }
 
 seteditor() { ##C BPSETTINGS Set default editor
-	chSetting "${bpSettingsFile}" "BP_EDITOR" "\"${2}\""	
+  chSetting "${bpSettingsFile}" "BP_EDITOR" "\"${2}\""	
 }
 
 setlic() { ##C BPSETTINGS Set default license
-	chSetting "${bpSettingsFile}" "BP_LICENSE" "\"${2}\""	
+  chSetting "${bpSettingsFile}" "BP_LICENSE" "\"${2}\""	
 }
 
 setorg() { ##C BPSETTINGS Set default organisation
-	chSetting "${bpSettingsFile}" "BP_ORG" "\"${2}\""	
+  chSetting "${bpSettingsFile}" "BP_ORG" "\"${2}\""	
 }
 
 
@@ -928,7 +932,7 @@ mlog() {   ##C LOGFILE Monitor logfile
 bpOk() { ##D Success message
   if [ -n "$LOG_OK" ]; then
     bpLogOk "$1"
-	fi	
+  fi	
   echo -e "[${BP_C_OK}Ok${E_END}] $1"
 }
 
@@ -1076,6 +1080,7 @@ help() { ## Print this help information
       *"##N-"*)  printNamedLine      "$help_line" ;;
       *"##CN-"*) printCondNamedLine  "$help_line" ;;
       *"##C"*)   printCondCommand    "$help_line" ;;
+      *"##A"*)   echo "Int arg"      ;;
       *"##"*)    printCommand        "$help_line" '##' ;;
       *)
       ;;
