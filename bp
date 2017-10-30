@@ -371,7 +371,7 @@ printLine() {
 # arg1 text for column 1
 # arg2 text for column 2
 printInfo() {
-  printf "${BP_C_ID}%-24s${E_END} ${BP_C_COMMENT}%s${E_END}\n" "$1" "$2"
+  printf "${BP_C_ID}  %-24s${E_END} ${BP_C_COMMENT}%s${E_END}\n" "$1" "$2"
 }
 
 # Print a variable + text into two columns
@@ -383,7 +383,7 @@ printVar() {
   if [ "${!var}" ]; then
     printInfo "$2" "${!var}"
   else
-    printf "${BP_C_ID}%-24s${E_END} ${E_RED}N/A${E_END}\n" "$2"
+    printf "${BP_C_ID}  %-24s${E_END} ${E_RED}N/A${E_END}\n" "$2"
   fi
 }
 
