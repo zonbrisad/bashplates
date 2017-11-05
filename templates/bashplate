@@ -7,15 +7,15 @@
 #  [Description]
 #    __DESC__
 #
-#  [Author] 
+#  [Author]
 #    __AUTHOR__
 #
 #  [Date]
 #    __DATE__
 #
-#  [License] 
+#  [License]
 #    __LICENSE__
-#    
+#
 #---------------------------------------------------------------------
 # [Bashplates]
 # This script is generated from bashplates template generator.
@@ -365,8 +365,19 @@ bpRm() { ##D Remove file
 # $1 file 
 # $2 text to replace
 # $3 new text
+#
 bpReplace() {  ##D Replace text in file
   sed -i -e "s/${2}/${3}/g"  "$1"
+}
+
+# Replace entire line matching pattern
+#
+# $1 file 
+# $2 pattern matching line
+# $3 new text
+#
+bpReplaceLine() {  ##D Replace text in file
+	sed -i -e "0,/${2}/s/${2}.*/${3}/" "${1}"
 }
 
 # Appends a line to a file if it is not present in that file.
@@ -442,10 +453,10 @@ bpAddSetting() {
   # Check if setting exist in file
   S=$(bpStrExist $bpSettingsFile "${1}" )
 
-	if [ "${S}" == "0" ]; then
-		echo "# ${3}"    >>  ${bpSettingsFile}
+  if [ "${S}" == "0" ]; then
+    echo "# ${3}"    >>  ${bpSettingsFile}
     echo "${1}=\"${2}\"" >> ${bpSettingsFile}
-	  echo >> ${bpSettingsFile}
+    echo >> ${bpSettingsFile}
   fi
 }
 
@@ -755,7 +766,7 @@ help() { ## Print this help information
   IFS=$'\n'
   SC="$1"
   help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##N-//' -e 'help_line' -e 'printLine')
-	for help_line in ${help_lines} ; do
+  for help_line in ${help_lines} ; do
     case "$help_line" in
       *"##-"*)   bpLine ;;
       *"##C-"*)  printCondLine       "$help_line" ;;

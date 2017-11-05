@@ -8,6 +8,9 @@
 #  [Author]
 #    Peter Malmberg <peter.malmberg@gmail.com>
 #
+#  [Date]
+#    2016-xx-xx
+#
 #  [License]
 #     MIT
 #
@@ -447,8 +450,19 @@ bpRm() { ##D Remove file
 # $1 file 
 # $2 text to replace
 # $3 new text
+#
 bpReplace() {  ##D Replace text in file
   sed -i -e "s/${2}/${3}/g"  "$1"
+}
+
+# Replace entire line matching pattern
+#
+# $1 file 
+# $2 pattern matching line
+# $3 new text
+#
+bpReplaceLine() {  ##D Replace text in file
+	sed -i -e "0,/${2}/s/${2}.*/${3}/" "${1}"
 }
 
 # Appends a line to a file if it is not present in that file.
