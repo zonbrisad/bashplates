@@ -123,6 +123,7 @@ myCommand() { ##C MYVAR Command description
 ```
 
 ## Log
+
 BP has an inbuilt log feature. 
 
 ### Activate log feature
@@ -131,7 +132,6 @@ Edit script and uncomment the LOGFILE variable. Also uncomment the
 different log source you want to log.
 
 ```bash
-myCommand() { ##C MYVAR Command description
 ##V logfile (uncomment to use logfile)
 #LOGFILE=${scriptPath}/${scriptName}.log
 
@@ -140,7 +140,6 @@ myCommand() { ##C MYVAR Command description
 #LOG_WARNING=1
 #LOG_ERROR=1
 #LOG_CRITICAL=1
-}
 ```
 
 ### Usage
@@ -152,7 +151,6 @@ bpLogInfo     "logmsg"
 bpLogWarning  "logmsg"
 bpLogError    "logmsg"
 bpLogCritical "logmsg"
-}
 ```
 
 It is also possible to log via the following commands. In additiont to
@@ -184,7 +182,6 @@ To montor the logfile simply enter the "mlog" command.
 
 ```bash
   bpexample mlog
-}
 ```
 
 # Files
@@ -219,7 +216,7 @@ To montor the logfile simply enter the "mlog" command.
 [bp-ihelp-cmd]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-ihelp-cmd.png "bp ihelp bpRead"
 [bp-vhelp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-vhelp.png "bp vhelp"
 [bp-info]:  https://github.com/zonbrisad/bashplates/raw/master/doc/bp-info.png "bp info"
-[bp-log]:   https://github.com/zonbrisad/bashplates/raw/master/doc/bp-info.png "bp log"
+[bp-log]:https://github.com/zonbrisad/bashplates/raw/master/doc/bp-log.png "bp log"
 
 
 
