@@ -1064,11 +1064,11 @@ printCondCommand() {
 #	  echo $D
     help_command=$(echo "$help_line" | sed -s 's/(.*//')
     help_info=$(echo "$help_line" | sed -s 's/^.*'"$C"'//')
-		if [ "${D}" -eq 10 ]; then
-		  printInfoA "$help_command" "$help_info"
-		else
+#		if [ "${D}" -eq 10 ]; then
+#		  printInfoA "$help_command" "$help_info"
+#		else
       printInfo "$help_command" "$help_info"
-		fi
+#		fi
   fi
 }
 
@@ -1110,7 +1110,7 @@ help() { ## Print this help information
       *"##N-"*)  printNamedLine      "$help_line" ;;
       *"##CN-"*) printCondNamedLine  "$help_line" ;;
       *"##C"*)   printCondCommand    "$help_line" ;;
-      *"##A"*)   echo "Int arg"      ;;
+#      *"##A"*)   echo "Int arg"      ;;
       *"##"*)    printCommand        "$help_line" '##' ;;
       *)
       ;;

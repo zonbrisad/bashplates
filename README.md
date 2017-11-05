@@ -122,6 +122,70 @@ myCommand() { ##C MYVAR Command description
 }
 ```
 
+## Log
+BP has an inbuilt log feature. 
+
+### Activate log feature
+
+Edit script and uncomment the LOGFILE variable. Also uncomment the
+different log source you want to log.
+
+```bash
+myCommand() { ##C MYVAR Command description
+##V logfile (uncomment to use logfile)
+#LOGFILE=${scriptPath}/${scriptName}.log
+
+##V Logging options (uncomment to activate logging parameters)
+#LOG_INFO=1
+#LOG_WARNING=1
+#LOG_ERROR=1
+#LOG_CRITICAL=1
+}
+```
+
+### Usage
+
+To log a message to file use any of the commands below. 
+```bash
+bpLogOk       "logmsg"
+bpLogInfo     "logmsg"
+bpLogWarning  "logmsg"
+bpLogError    "logmsg"
+bpLogCritical "logmsg"
+}
+```
+
+It is also possible to log via the following commands. In additiont to
+log a message to a logfile these commands will also print the message
+on the terminal.
+
+```bash
+bpOk       "logmsg"
+bpInfo     "logmsg"
+bpWarning  "logmsg"
+bpError    "logmsg"
+bpCritical "logmsg"
+```
+						
+### View log
+
+There is a builtin log view command that will colorize output for
+easier interpretation.
+
+```bash
+  bpexample log
+```
+![alt text][bp-log]
+
+
+### Monitor log
+
+To montor the logfile simply enter the "mlog" command.
+
+```bash
+  bpexample mlog
+}
+```
 
 # Files
  - `bpexample  ` example bashplate script
@@ -154,7 +218,8 @@ myCommand() { ##C MYVAR Command description
 [bp-ihelp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-ihelp.png "bp ihelp"
 [bp-ihelp-cmd]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-ihelp-cmd.png "bp ihelp bpRead"
 [bp-vhelp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-vhelp.png "bp vhelp"
-[bp-info]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-info.png "bp info"
+[bp-info]:  https://github.com/zonbrisad/bashplates/raw/master/doc/bp-info.png "bp info"
+[bp-log]:   https://github.com/zonbrisad/bashplates/raw/master/doc/bp-info.png "bp log"
 
 
 
