@@ -358,6 +358,42 @@ flags() { ## Print swedish flags
 
 ##N- Experiments
 
+#
+# Read integer from commandline
+#
+# $1  Question string
+# $2  Default value
+# $3  min value
+# $4  max value
+# return string read from cmdline/default if enter pressed
+#
+bpReadInt() { ##D Read integer from commandline
+  while true; do
+	  if [ "${2}" == "" ]; then
+      read -erp "${1} ($3-$4) >" result
+			if [ "${result}" == "" ]; then
+			  result=$(($3 - 1))
+			fi
+  	else
+	    read -erp "${1} ($3-$4) [$2] >" result
+		  if [ "${result}" == "" ]; then
+		    result="${2}"
+  		fi
+	  fi
+    if [ $((result)) -ge $3 ] && [ $((result)) -le $4 ]; then
+	    break
+  	fi
+  done
+	echo "${result}"
+}
+
+int() {  ## Test integer read
+  x=$(bpReadInt "Värde" "12" "0" "100")
+	echo $x
+	x=$(bpReadInt "Värde" "" "0" "100")
+	echo $x
+}
+
 arg() { ##A Integer argument test
   bpTextLine "Integer argument"
 }
