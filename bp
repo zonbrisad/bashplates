@@ -462,7 +462,7 @@ bpReplace() {  ##D Replace text in file
 # $3 new text
 #
 bpReplaceLine() {  ##D Replace entire line in file
-	sed -i -e "0,/${2}/s/${2}.*/${3}/" "${1}"
+  sed -i -e "0,/${2}/s/${2}.*/${3}/" "${1}"
 }
 
 # Appends a line to a file if it is not present in that file.
@@ -590,7 +590,7 @@ bpAddSettings() {
 chSetting() {  
   SETTING="$2"
   VAL="$3"
-	
+  
   S=$(bpStrExist "${1}" "${2}" )
   if [ "${S}" == "0" ]; then
     bpAddSettings
@@ -599,10 +599,9 @@ chSetting() {
 }
 
 bpCreateSettings() {
-			
   echo "Creating new bashplates settings file. ${bpSettingsFile}"
   bpMkDir ${bpSettingsDir}
-					
+          
   echo "# " >> ${bpSettingsFile}
   echo "# Bashplates common settings" > ${bpSettingsFile}
   echo "# " >> ${bpSettingsFile}
@@ -633,23 +632,23 @@ printSettings() { ##C BPSETTINGS Print plate information
 }
 
 setname() { ##C BPSETTINGS Set name
-  chSetting "${bpSettingsFile}" "BP_NAME" "\"${2}\""	
+  chSetting "${bpSettingsFile}" "BP_NAME" "\"${2}\""  
 }
 
 setemail() { ##C BPSETTINGS Set email address
-  chSetting "${bpSettingsFile}" "BP_EMAIL" "\"${2}\""	
+  chSetting "${bpSettingsFile}" "BP_EMAIL" "\"${2}\""  
 }
 
 seteditor() { ##C BPSETTINGS Set default editor
-  chSetting "${bpSettingsFile}" "BP_EDITOR" "\"${2}\""	
+  chSetting "${bpSettingsFile}" "BP_EDITOR" "\"${2}\""  
 }
 
 setlic() { ##C BPSETTINGS Set default license
-  chSetting "${bpSettingsFile}" "BP_LICENSE" "\"${2}\""	
+  chSetting "${bpSettingsFile}" "BP_LICENSE" "\"${2}\""  
 }
 
 setorg() { ##C BPSETTINGS Set default organisation
-  chSetting "${bpSettingsFile}" "BP_ORG" "\"${2}\""	
+  chSetting "${bpSettingsFile}" "BP_ORG" "\"${2}\""  
 }
 
 
@@ -722,7 +721,7 @@ mlog() {   ##C LOGFILE Monitor logfile
             -e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
             -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|"
 
-		fi
+    fi
   else
     bpInfo "Logging is not activated"
     exit
@@ -734,7 +733,7 @@ mlog() {   ##C LOGFILE Monitor logfile
 bpOk() { ##D Success message
   if [ -n "$LOG_OK" ]; then
     bpLogOk "$1"
-  fi	
+  fi  
   echo -e "[${BP_C_OK}Ok${E_END}] $1"
 }
 
@@ -819,7 +818,7 @@ info() { ##D Show information about script
     bpTextLine "App. information"
     ${INFOHOOK}
   fi
-	printSettings
+  printSettings
 }
 
 check() { ##D Make a shellcheck
@@ -861,7 +860,7 @@ printNamedLine() {
 printCondNamedLine() {
   help_line="$1"
   C=$(echo "$1" | sed -s 's/^.*##CN-//' | awk '{print $1}')
-	name=$(echo "$help_line" | sed -e 's/^.*'"$C"'//' -e 's/^[ \t]*//' )
+  name=$(echo "$help_line" | sed -e 's/^.*'"$C"'//' -e 's/^[ \t]*//' )
   eval "D=\$$C"
   if [ -n "$D" ]; then
     bpTextLine "$name"

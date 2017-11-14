@@ -55,22 +55,22 @@ scriptName=$(basename "$0")
 
 logtest() { ## Test of log function
   bpRm "${LOGFILE}"
-	bpLogInfo "Some information log"
-	bpLogWarning "Oh no a warning"
-	bpLogError "F#\$ck"
-	bpLogCritical "SNAFU"
-	bpLogOk "Ahh"
-	log
+  bpLogInfo "Some information log"
+  bpLogWarning "Oh no a warning"
+  bpLogError "F#\$ck"
+  bpLogCritical "SNAFU"
+  bpLogOk "Ahh"
+  log
 }
 
 print() { ## Examples of print functions
   echo "Example of $E_GREEN bpLine $E_END"
-	bpLine
-	echo "Example of $E_GREEN bpTextLine $E_END"
-	bpTextLine "Kalle"
-	echo "Example of $E_GREEN printInfo $E_END"
-	printInfo "Kalle" "desc"
-		
+  bpLine
+  echo "Example of $E_GREEN bpTextLine $E_END"
+  bpTextLine "Kalle"
+  echo "Example of $E_GREEN printInfo $E_END"
+  printInfo "Kalle" "desc"
+    
 }
 
 traptest() { ## Trap signal test
@@ -78,14 +78,14 @@ traptest() { ## Trap signal test
 }
 
 tltest() { ## Test textline
-	bpTextLineC "Green" ${E_BR_GREEN} ${E_GREEN} "_"
-	bpTextLineC "Magenta" ${E_BR_MAGENTA} ${E_MAGENTA} "_"
-	bpTextLineC "Blue" ${E_BR_BLUE} ${E_BLUE} "_"
-	bpTextLineC "Red" ${E_BR_RED} ${E_RED} "_"
-	bpTextLineC "Yellow" ${E_BR_YELLOW} ${E_YELLOW} "_"
-	bpTextLineC "Cyan" ${E_BR_CYAN} ${E_CYAN} "_"
-	bpTextLineC "White" ${E_WHITE} ${E_GRAY} "_"
-	bpTextLine "Standard colors"
+  bpTextLineC "Green" ${E_BR_GREEN} ${E_GREEN} "_"
+  bpTextLineC "Magenta" ${E_BR_MAGENTA} ${E_MAGENTA} "_"
+  bpTextLineC "Blue" ${E_BR_BLUE} ${E_BLUE} "_"
+  bpTextLineC "Red" ${E_BR_RED} ${E_RED} "_"
+  bpTextLineC "Yellow" ${E_BR_YELLOW} ${E_YELLOW} "_"
+  bpTextLineC "Cyan" ${E_BR_CYAN} ${E_CYAN} "_"
+  bpTextLineC "White" ${E_WHITE} ${E_GRAY} "_"
+  bpTextLine "Standard colors"
 }
 
 
@@ -96,7 +96,7 @@ roottest() { ## Test assert root
 
 locktest() { ## Lock file test
   assertNoLockFile
-  ${scriptPath}/bpexample locktest	
+  ${scriptPath}/bpexample locktest  
 }
 
 assertProgs() { ## Assert required programs test 
@@ -112,42 +112,42 @@ postfunc() {
 }
 
 infoHook() {
-	printVar "Test1"       "Information test1"
-	printVar "Test2"       "Information test2"
+  printVar "Test1"       "Information test1"
+  printVar "Test2"       "Information test2"
 }
 
 
 appendTest() { ## Testing append line to file function
   rm -f append
-	touch append
-	
+  touch append
+  
   bpAppendIfNoSuchLine "append" "Line to append1"
-	bpAppendIfNoSuchLine "append" "Line to append2"
-	bpAppendIfNoSuchLine "append" "Line to append3"
-	
-	echo "File first time"
-	cat append
+  bpAppendIfNoSuchLine "append" "Line to append2"
+  bpAppendIfNoSuchLine "append" "Line to append3"
+  
+  echo "File first time"
+  cat append
 
   bpAppendIfNoSuchLine "append" "Line to append1"
-	bpAppendIfNoSuchLine "append" "Line to append2"
-	bpAppendIfNoSuchLine "append" "Line to append3"
+  bpAppendIfNoSuchLine "append" "Line to append2"
+  bpAppendIfNoSuchLine "append" "Line to append3"
 
   echo -e "\nFile second time"
-	cat append
+  cat append
 
   bpRemoveLineContaining "append" "append2"
   echo -e "\nFile third time"
-	cat append
+  cat append
   
 
 }
 
 errorTest() { ## Test of error messages
   echo $LOGFILE
-	bpInfo "Info test"
+  bpInfo "Info test"
   bpWarning "Warning test"
-	bpError "Error test"
-	bpCritical "Critical test"
+  bpError "Error test"
+  bpCritical "Critical test"
 }
 
 
@@ -156,38 +156,39 @@ errorTest() { ## Test of error messages
 print_bar() {
 
   echo -n " ["
-	for jx in $(seq 1 ${2}); do
-	  echo -n "="
-	done
-	for jx in $(seq 1 $((${1} - ${2}))); do
-	  echo -n " "
-	done
-	echo  "] ${2}"   
+  for jx in $(seq 1 ${2}); do
+    echo -n "="
+  done
+  for jx in $(seq 1 $((${1} - ${2}))); do
+    echo -n " "
+  done
+  echo  "] ${2}"   
 }
 
 bar() { ## print a testbar (ANSI)
   bpTextLine "Bar test"
   echo -en $E_HIDE
   for i in {1..60}; do
-	  sleep 0.03
-		print_bar 60 $i
-		echo -e $E_RETURN $E_UP 
-	done
+    sleep 0.03
+    print_bar 60 $i
+    echo -e $E_RETURN $E_UP 
+  done
   echo -e $E_SHOW
 }
 
 shade() { ## Shade demo (256 color terminal required)
+  echo -en '\033]1 Kalle \007'
   echo
   bpTextLine "B/W shading"
-	echo
-	echo
-	echo -e $E_RETURN
+  echo
+  echo
+  echo -e $E_RETURN
   echo -en $E_HID
   for i in {232..255} {255..232} ; do
-	  sleep 0.05
-		printf "\x1b[38;5;%sm _____ Shading text _____ ${E_END}" "$i"
-		echo -e $E_RETURN
-	done
+    sleep 0.05
+    printf "\x1b[38;5;%sm _____ Shading text _____ ${E_END}" "$i"
+    echo -e $E_RETURN
+  done
   echo -e $E_SHOW
 }
 
@@ -209,79 +210,79 @@ color1() { ## Standard 16 colors
   BCOLORS=( ${E_ON_BLACK} ${E_ON_RED} ${E_ON_GREEN} ${E_ON_YELLOW} ${E_ON_BLUE} ${E_ON_MAGENTA} ${E_ON_CYAN} ${E_ON_WHITE} )
 
   FCOLORS2=( E_BLACK E_RED E_GREEN E_YELLOW E_BLUE E_MAGENTA E_CYAN E_GRAY E_DARKGRAY E_BR_RED E_BR_GREEN E_BR_YELLOW E_BR_BLUE E_BR_MAGENTA E_BR_CYAN E_WHITE )
-	BCOLORS2=( E_ON_BLACK E_ON_RED E_ON_GREEN E_ON_YELLOW E_ON_BLUE E_ON_MAGENTA E_ON_CYAN E_ON_WHITE )
+  BCOLORS2=( E_ON_BLACK E_ON_RED E_ON_GREEN E_ON_YELLOW E_ON_BLUE E_ON_MAGENTA E_ON_CYAN E_ON_WHITE )
 
   echo
   bpTextLine "16 color map"
   for fc in ${FCOLORS2[*]}; do
-	  eval "FG=\$$fc"
-		for bc in ${BCOLORS2[*]}; do
-		  eval "BG=\$$bc"
+    eval "FG=\$$fc"
+    for bc in ${BCOLORS2[*]}; do
+      eval "BG=\$$bc"
       printf "${FG}${BG}%-12s${E_END}" $fc
-		done
-		echo
-	done
+    done
+    echo
+  done
 
   echo
-	return
+  return
   for fc in ${FCOLORS[*]}
-	do
-	  for bc in ${BCOLORS[*]}
-		do
-		  echo  -en "${fc}${bc}   XXXX   ${E_END}"
-		done
-			  echo ""
-	done
-	echo -e "\n\n"
-}	
+  do
+    for bc in ${BCOLORS[*]}
+    do
+      echo  -en "${fc}${bc}   XXXX   ${E_END}"
+    done
+        echo ""
+  done
+  echo -e "\n\n"
+}  
 
 color2() { ## Show example of all 256 colors
-	
+  
   echo
-	bpTextLine "256 Colors foreground"
-	echo
-	for i in {0..231} ; do
-	  printf "\x1b[38;5;%sm  %3d  ${E_END} " "$i" "$i"
-	  if (( i == 7 )) || (( i == 15 )) || ((( i > 15 )) && (( (i-15) % 6 == 0 ))); then
-		  echo
-			
-			if (( i == 15)); then
-			  echo
-			fi
-	  fi
-	done
-	
-	echo
-	for i in {232..255} ; do
-	  printf "\x1b[38;5;%sm %3d ${E_END}" "$i" "$i"
-	  if (( i == 243 )); then 
-	    echo
-	  fi
-	done
+  bpTextLine "256 Colors foreground"
+  echo
+  for i in {0..231} ; do
+    printf "\x1b[38;5;%sm  %3d  ${E_END} " "$i" "$i"
+    if (( i == 7 )) || (( i == 15 )) || ((( i > 15 )) && (( (i-15) % 6 == 0 ))); then
+      echo
+      
+      if (( i == 15)); then
+        echo
+      fi
+    fi
+  done
+  
+  echo
+  for i in {232..255} ; do
+    printf "\x1b[38;5;%sm %3d ${E_END}" "$i" "$i"
+    if (( i == 243 )); then 
+      echo
+    fi
+  done
   echo -e "\n"
 
 
   echo
-	bpTextLine "256 Colors background"
-	echo
-	for i in {0..231} ; do
-	  printf "\x1b[48;5;%sm  %3d  ${E_END} " "$i" "$i"
-	  if (( i == 7 )) || (( i == 15 )) || ((( i > 15 )) && (( (i-15) % 6 == 0 ))); then
-		  echo
-			
-			if (( i == 15)); then
-			  echo
-			fi
-	  fi
-	done
-	
-	echo
-	for i in {232..255} ; do
-	  printf "\x1b[48;5;%sm %3d ${E_END}" "$i" "$i"
-	  if (( i == 243 )); then 
-	    echo
-	  fi
-	done
+  bpTextLine "256 Colors background"
+  echo
+  for i in {0..231} ; do
+    printf "\x1b[48;5;%sm  %3d  ${E_END} " "$i" "$i"
+    if (( i == 7 )) || (( i == 15 )) || ((( i > 15 )) && (( (i-15) % 6 == 0 ))); then
+      echo
+      
+      if (( i == 15)); then
+        echo
+      fi
+    fi
+  done
+  
+  echo
+  for i in {232..255} ; do
+    printf "\x1b[48;5;%sm %3d ${E_END}" "$i" "$i"
+    if (( i == 243 )); then 
+      echo
+    fi
+  done
   echo -e "\n"
 }
 
@@ -292,66 +293,66 @@ FLAG_YELLOW="\x1b[48;5;226m"
 
 smallFlag() {
   echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_END}"
-	echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_END}"
-	echo -e "${FLAG_YELLOW}                 ${E_END}"
-	echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_END}"
-	echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_END}"
+  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_END}"
+  echo -e "${FLAG_YELLOW}                 ${E_END}"
+  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_END}"
+  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_END}"
 }
 
 mediumFlag() { 
-	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
-	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
-	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
-	echo -e "${FLAG_YELLOW}                         ${E_END}"
-	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
-	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
-	echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
+  echo -e "${FLAG_YELLOW}                         ${E_END}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
 }
 
 largeFlag() { 
-	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
-	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
-	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
-	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
-	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
-	echo -e "${FLAG_YELLOW}                                      ${E_END}"
-	echo -e "${FLAG_YELLOW}                                      ${E_END}"
-	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
-	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
-	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
-	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
-	echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+  echo -e "${FLAG_YELLOW}                                      ${E_END}"
+  echo -e "${FLAG_YELLOW}                                      ${E_END}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
 }
 
 hugeFlag() { 
-	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-	echo -e "${FLAG_YELLOW}                                               ${E_END}"
-	echo -e "${FLAG_YELLOW}                                               ${E_END}"
-	echo -e "${FLAG_YELLOW}                                               ${E_END}"	
-	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-	echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+  echo -e "${FLAG_YELLOW}                                               ${E_END}"
+  echo -e "${FLAG_YELLOW}                                               ${E_END}"
+  echo -e "${FLAG_YELLOW}                                               ${E_END}"  
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
 }
 
 
 flags() { ## Print swedish flags
   echo
-	smallFlag
+  smallFlag
   echo
-	mediumFlag
-	echo
-	largeFlag
-	echo
-	hugeFlag
-	echo
+  mediumFlag
+  echo
+  largeFlag
+  echo
+  hugeFlag
+  echo
 
 }
 
@@ -361,16 +362,16 @@ flags() { ## Print swedish flags
 
 readstr() {  ## Test string read from cmdline
   x=$(bpRead "Enter a string" "Default value" )
-	echo "You entered \"$x\""
-	x=$(bpRead "Just press enter" "Default value" )
-	echo "You entered \"$x\""
+  echo "You entered \"$x\""
+  x=$(bpRead "Just press enter" "Default value" )
+  echo "You entered \"$x\""
 }
 
 readint() {  ## Test integer read from cmdline
   x=$(bpReadInt "Enter value" "12" "0" "100")
-	echo "You entered \"$x\""
-	x=$(bpReadInt "Just press enter" "45" "0" "100")
-	echo "You entered \"$x\""
+  echo "You entered \"$x\""
+  x=$(bpReadInt "Just press enter" "45" "0" "100")
+  echo "You entered \"$x\""
 }
 
 
@@ -383,24 +384,24 @@ arg() { ##A Integer argument test
 
 opttest() { ## Options testing
   echo $1 $2 $3 
-	echo $*
+  echo $*
   bpTextLine "Option testing"
   while getopts ":a:" opt; do
-	echo $opt
-	  case $opt in
-	    a)
-	      echo "-a was triggered, Parameter: $OPTARG" >&2
-	    ;;
-	    \?)
-	      echo "Invalid option: -$OPTARG" >&2
-	      exit 1
-	    ;;
-	  :)
-	    echo "Option -$OPTARG requires an argument." >&2
-	    exit 1
-	  ;;
-	  esac
-	done
+  echo $opt
+    case $opt in
+      a)
+        echo "-a was triggered, Parameter: $OPTARG" >&2
+      ;;
+      \?)
+        echo "Invalid option: -$OPTARG" >&2
+        exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+    ;;
+    esac
+  done
 
 }
 
@@ -414,6 +415,25 @@ inactiveCommand() { ##C ICMD Test of inactive command
   echo
 }
 
+
+view() {  ## View example
+  
+  # Singe command documentation
+  if [ "$2" != "" ]; then
+    echo
+    bpTextLine "$2"
+    echo
+    grep --no-filename -A 20  "$0" -e "${2}()" | grep -B 20 -m 1 -x "}" 
+    bpLine
+    exit
+  fi
+#  echo
+} #asdf
+
+
+ct() { ## Clear tabs from script
+  sed -i -e 's/\t/  /g' "${scriptPath}/${scriptName}"
+}
 
 #--------------------------------------------------------------------- 
 # Bashplate settings
@@ -641,7 +661,7 @@ printLine() {
 # arg2 text for column 2
 printInfo() {
 #  printf "${BP_C_ID}  %-24s${E_END} ${BP_C_COMMENT}%s${E_END}\n" "$1" "$2"
-	printf "${BP_C_ID}  %-24.24s${E_END} ${BP_C_COMMENT}%s${E_END}\n" "$1" "$2"
+  printf "${BP_C_ID}  %-24.24s${E_END} ${BP_C_COMMENT}%s${E_END}\n" "$1" "$2"
 }
 
 #
@@ -650,7 +670,7 @@ printInfo() {
 # $3 cmd
 # $4 desc
 printInfoGeneric() {
-	printf "${1}  %-24.24s${E_END} ${2}%s${E_END}\n" "$3" "$4"
+  printf "${1}  %-24.24s${E_END} ${2}%s${E_END}\n" "$3" "$4"
 }
 
 printInfoA() {
@@ -743,7 +763,7 @@ bpReplace() {  ##D Replace text in file
 # $3 new text
 #
 bpReplaceLine() {  ##D Replace entire line in file
-	sed -i -e "0,/${2}/s/${2}.*/${3}/" "${1}"
+  sed -i -e "0,/${2}/s/${2}.*/${3}/" "${1}"
 }
 
 # Appends a line to a file if it is not present in that file.
@@ -871,7 +891,7 @@ bpAddSettings() {
 chSetting() {  
   SETTING="$2"
   VAL="$3"
-	
+  
   S=$(bpStrExist "${1}" "${2}" )
   if [ "${S}" == "0" ]; then
     bpAddSettings
@@ -880,10 +900,9 @@ chSetting() {
 }
 
 bpCreateSettings() {
-			
   echo "Creating new bashplates settings file. ${bpSettingsFile}"
   bpMkDir ${bpSettingsDir}
-					
+          
   echo "# " >> ${bpSettingsFile}
   echo "# Bashplates common settings" > ${bpSettingsFile}
   echo "# " >> ${bpSettingsFile}
@@ -914,23 +933,23 @@ printSettings() { ##C BPSETTINGS Print plate information
 }
 
 setname() { ##C BPSETTINGS Set name
-  chSetting "${bpSettingsFile}" "BP_NAME" "\"${2}\""	
+  chSetting "${bpSettingsFile}" "BP_NAME" "\"${2}\""  
 }
 
 setemail() { ##C BPSETTINGS Set email address
-  chSetting "${bpSettingsFile}" "BP_EMAIL" "\"${2}\""	
+  chSetting "${bpSettingsFile}" "BP_EMAIL" "\"${2}\""  
 }
 
 seteditor() { ##C BPSETTINGS Set default editor
-  chSetting "${bpSettingsFile}" "BP_EDITOR" "\"${2}\""	
+  chSetting "${bpSettingsFile}" "BP_EDITOR" "\"${2}\""  
 }
 
 setlic() { ##C BPSETTINGS Set default license
-  chSetting "${bpSettingsFile}" "BP_LICENSE" "\"${2}\""	
+  chSetting "${bpSettingsFile}" "BP_LICENSE" "\"${2}\""  
 }
 
 setorg() { ##C BPSETTINGS Set default organisation
-  chSetting "${bpSettingsFile}" "BP_ORG" "\"${2}\""	
+  chSetting "${bpSettingsFile}" "BP_ORG" "\"${2}\""  
 }
 
 
@@ -1003,7 +1022,7 @@ mlog() {   ##C LOGFILE Monitor logfile
             -e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
             -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|"
 
-		fi
+    fi
   else
     bpInfo "Logging is not activated"
     exit
@@ -1015,7 +1034,7 @@ mlog() {   ##C LOGFILE Monitor logfile
 bpOk() { ##D Success message
   if [ -n "$LOG_OK" ]; then
     bpLogOk "$1"
-  fi	
+  fi  
   echo -e "[${BP_C_OK}Ok${E_END}] $1"
 }
 
@@ -1100,7 +1119,7 @@ info() { ##D Show information about script
     bpTextLine "App. information"
     ${INFOHOOK}
   fi
-	printSettings
+  printSettings
 }
 
 check() { ##D Make a shellcheck
@@ -1119,14 +1138,14 @@ printCondCommand() {
   C=$(echo "$1" | sed -s 's/^.*##C//' | awk '{print $1}')
   eval "D=\$$C"
   if [ -n "$D" ]; then
-#	  echo $D
+#    echo $D
     help_command=$(echo "$help_line" | sed -s 's/(.*//')
     help_info=$(echo "$help_line" | sed -s 's/^.*'"$C"'//')
-#		if [ "${D}" -eq 10 ]; then
-#		  printInfoA "$help_command" "$help_info"
-#		else
+#    if [ "${D}" -eq 10 ]; then
+#      printInfoA "$help_command" "$help_info"
+#    else
       printInfo "$help_command" "$help_info"
-#		fi
+#    fi
   fi
 }
 
@@ -1147,7 +1166,7 @@ printNamedLine() {
 printCondNamedLine() {
   help_line="$1"
   C=$(echo "$1" | sed -s 's/^.*##CN-//' | awk '{print $1}')
-	name=$(echo "$help_line" | sed -e 's/^.*'"$C"'//' -e 's/^[ \t]*//' )
+  name=$(echo "$help_line" | sed -e 's/^.*'"$C"'//' -e 's/^[ \t]*//' )
   eval "D=\$$C"
   if [ -n "$D" ]; then
     bpTextLine "$name"
