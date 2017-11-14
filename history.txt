@@ -1,12 +1,19 @@
 Version 1.x
   - Adding simple template
   - Added info hook
-	- removed command help print output
-	- corrected colors on documentation lines
 	- Added settings file function
 	- Added mlog command
+	- Added bpRead and bpReadInt commands
+	- Added bpReplaceLine command
+	- removed command help print output
+	- corrected colors on documentation lines
 	- Fixed sed color printout
   - Check for existing file when creating new script
+	- Added indented command printout
+	- New "subdued" colorscheme
+	- Fixed bpCp
+	- Improved documentation with screenshots
+	
 
 Version 1.11
 	- Added install feature
