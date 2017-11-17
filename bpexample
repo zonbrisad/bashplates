@@ -342,6 +342,34 @@ hugeFlag() {
   echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
 }
 
+FLAG_RED=$'\e[41m'         # Red
+FLAG_WHITE=$'\e[47m'       # White
+
+norwayFlag() { 
+  
+#  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_END}"
+#  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_END}"
+#  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_END}"
+	echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_END}"
+	echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_END}"
+	echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_END}"
+  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_END}"
+  echo -e "${FLAG_WHITE}           ${FLAG_BLUE}    ${FLAG_WHITE}                       ${E_END}"
+  echo -e "${FLAG_BLUE}                                      ${E_END}"
+  echo -e "${FLAG_BLUE}                                      ${E_END}"
+	echo -e "${FLAG_WHITE}           ${FLAG_BLUE}    ${FLAG_WHITE}                       ${E_END}"
+	echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_END}"
+	echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_END}"
+	echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_END}"
+  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_END}"
+
+#  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_END}"
+#  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_END}"
+#  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_END}"
+#  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_END}"
+#  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_END}"
+}
+
 
 flags() { ## Print swedish flags
   echo
@@ -353,7 +381,8 @@ flags() { ## Print swedish flags
   echo
   hugeFlag
   echo
-
+#  norwayFlag
+#	echo
 }
 
 
@@ -416,24 +445,89 @@ inactiveCommand() { ##C ICMD Test of inactive command
 }
 
 
-view() {  ## View example
-  
-  # Singe command documentation
-  if [ "$2" != "" ]; then
-    echo
-    bpTextLine "$2"
-    echo
-    grep --no-filename -A 20  "$0" -e "${2}()" | grep -B 20 -m 1 -x "}" 
-    bpLine
-    exit
-  fi
-#  echo
-} #asdf
 
 
 ct() { ## Clear tabs from script
   sed -i -e 's/\t/  /g' "${scriptPath}/${scriptName}"
 }
+
+# Directory where to store archives
+ARCHIVEDIR="archive"
+BACKUP_DIR="backup"
+OUTDIR="output"
+BUILDDIR="build"
+
+#TARGET="kalle"
+#
+# Archive makeplate project
+#
+# $1 Target name
+# 
+archive() { ## Make a tar archive of the source code
+	DT=$(date +"%Y%m%d-%H%M%S")
+	bpMkDir ${ARCHIVEDIR}
+	tar -cvzf ${ARCHIVEDIR}/${1}_${DT}.tar.gz *  \
+		--exclude=${ARCHIVEDIR} \
+		--exclude=${BACKUP_DIR} \
+		--exclude=${OUTDIR}     \
+		--exclude=${BUILDDIR}   \
+		--exclude='*.a'      \
+		--exclude='*.o'      \
+		--exclude='*.ko'     \
+		--exclude='*.obj'    \
+		--exclude='*.a'      \
+		--exclude='*.la'     \
+		--exclude='*.lo'     \
+		--exclude='*.slo'    \
+		--exclude='*.lib'    \
+		--exclude='*.so'     \
+		--exclude='*.so*'    \
+		--exclude='.dep'     \
+		--exclude='.svn'     \
+		--exclude='.git'     \
+		--exclude='*.elf'    \
+		--exclude='*.hex'    \
+		--exclude='*.bin'    \
+		--exclude='*.exe'    \
+		--exclude='*.sym'    \
+		--exclude='*.lss'    \
+		--exclude='*.map'    \
+		--exclude='*.app'    \
+		--exclude='*.i*86'   \
+		--exclude='*.x86_64' \
+		--exclude='*~'       \
+		--exclude="*.old"    \
+		--exclude="*.tmp"    
+}
+
+
+
+# Max number of backups
+BACKUPS=100
+
+backup() { ## Make an incremental backup
+	bpMkDir ${BACKUP_DIR}
+  # remove oldest backup
+	bpRm  ${BACKUP_DIR}/backup_${BACKUPS}
+  # rotate backups 
+	for ((x=${BACKUPS};x>0;x--)); do                 
+	  bdir=${BACKUP_DIR}/backup_$((${x} - 1)) ;    
+	  # check if directory exist before renameing  it 
+	  if [ -d ${bdir} ]; then                        
+	    mv -f ${bdir}  ${BACKUP_DIR}/backup_${x} ;  
+	  fi ;                                            
+	done 
+  rsync --archive                 \
+	      --delete                  \
+				--relative                \
+				--exclude=${BACKUP_DIR}   \
+				--exclude=${ARCHIVEDIR}   \
+				--exclude=${OUTDIR}       \
+				--link-dest=${PWD}/${BACKUP_DIR}/backup_1 \
+				.                      \
+				${BACKUP_DIR}/backup_0 
+}
+
 
 #--------------------------------------------------------------------- 
 # Bashplate settings
@@ -1088,7 +1182,7 @@ assertNoLockFile() { ##D Assert that lockfile is not present
   fi
 }
 
-assertRequiredProgs() { ##D Assert that required programs are available on the system
+assertRequiredProgs() { ##D Assert that required programs are available on the system (deprecated)
   if [ -n "${REQUIRED_PROGRAMS}" ]; then
     for p in ${REQUIRED_PROGRAMS}; do
       hash "$p" 2>&- || \
@@ -1098,33 +1192,30 @@ assertRequiredProgs() { ##D Assert that required programs are available on the s
   fi
 }
 
-##CN- IHELP Help & info
-
-info() { ##D Show information about script
-  bpTextLine "Script information"
-  printVar scriptName      "Script name" 
-  printVar scriptPath      "Script path" 
-  printVar VERSION         "Script version" 
-  printVar BPVERSION       "Template version"
-  printVar bpSettingsFile  "Bashplate settings file"
-  printVar LOGFILE         "Log file" 
-  printVar LOCK_FILE       "Lock file" 
-  printVar DEFAULTCMD         "Default function" 
-  printVar "REQUIRED_PROGRAMS" "Dependencies"
-  printInfo "PID" "$$"  
-  printVar DATE "Date" 
-  printVar TIME "Time"
-
-  if [ -n "${INFOHOOK}" ]; then
-    bpTextLine "App. information"
-    ${INFOHOOK}
-  fi
-  printSettings
+#
+# $1 string list of programs that are required
+#
+assertProgs() { ##D Assert that required programs are available on the system
+  things=$1
+  e=0
+  for thing in ${things[@]} ;do
+		hash "$thing" 2>&- || \
+		  { bpError "Required program \"$thing\" not found."; e=1; }
+	done
+	if [ $e -eq 1 ]; then
+	  exit 1
+	fi
 }
+
+##CN- IHELP Debug/Controll
 
 check() { ##D Make a shellcheck
+  assertProgs "shellcheck"
   shellcheck "$0"
 }
+
+
+##CN- IHELP Help & info
 
 printCommand() {
   help_line=$1
@@ -1239,7 +1330,42 @@ ihelp() { ##D Print internal help information
   bpLine
 }
 
-vhelp() { ##D Print internal variable information
+iinfo() { ##D Show information about script
+  bpTextLine "Script information"
+  printVar scriptName      "Script name" 
+  printVar scriptPath      "Script path" 
+  printVar VERSION         "Script version" 
+  printVar BPVERSION       "Template version"
+  printVar bpSettingsFile  "Bashplate settings file"
+  printVar LOGFILE         "Log file" 
+  printVar LOCK_FILE       "Lock file" 
+  printVar DEFAULTCMD         "Default function" 
+  printVar "REQUIRED_PROGRAMS" "Dependencies"
+  printInfo "PID" "$$"  
+  printVar DATE "Date" 
+  printVar TIME "Time"
+
+  if [ -n "${INFOHOOK}" ]; then
+    bpTextLine "App. information"
+    ${INFOHOOK}
+  fi
+  printSettings
+}
+
+iview() {  ##D View example
+  
+  # Singe command documentation
+  if [ "$2" != "" ]; then
+    echo
+    bpTextLine "$2"
+    echo
+    grep --no-filename -A 20  "$0" -e "${2}()" | grep -B 20 -m 1 -x "}" 
+    bpLine
+    exit
+  fi
+}
+
+ivars() { ##D Print internal variables
   bpTextLine "Script variables"
   echo
   IFS=$'\n'
