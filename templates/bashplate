@@ -40,10 +40,10 @@
 # Exit script when pipe fails
 set -o pipefail
 
-# Directory where script is located
+##V Directory where script is located
 scriptPath=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-# Name of script
+##V Name of script
 scriptName=$(basename "$0")
 
 #---------------------------------------------------------------------
@@ -67,7 +67,7 @@ funk() { ## Description of funktion 1
 # Bashplate settings
 #---------------------------------------------------------------------
 
-# Script version info
+##V Script version info
 VERSION="0.0"
 
 ##V Bashplate version
@@ -149,6 +149,7 @@ signalTerm() {
 
 bpCleanUp() { ##D Cleanup function
   rm -f "$LOCK_FILE"    # remove Lock file
+  echo -e ${E_SHOW}     # Turn on cursor if turned of
 }
 
 bpExit() { ##D Function for safely exiting script
@@ -250,6 +251,7 @@ BP_E_OK=0            # successful termination
 # arg3 line color
 # arg4 middle character
 # arg5 line character
+#
 bpPrintLineC() { ##D Print text with adjusted line after with selectable colors
   len1="${#1}"
   len4="${#4}"
@@ -265,6 +267,7 @@ bpPrintLineC() { ##D Print text with adjusted line after with selectable colors
 # arg1 text to be printed
 # arg2 text color
 # arg3 line color
+#
 bpTextLineC() { ##D Print text with adjusted line after with selectable colors
   bpPrintLineC "$1" "$2" "$3" " " "-"
 }
@@ -274,13 +277,26 @@ bpTextLine() { ##D Print text with line after
 }
 
 # Print a divider row
+#
 bpLine() { ##D Print a line
   bpPrintLineC "" "${BP_C_LINE}" "${BP_C_LINE}" "" "-"
 }
 
 # Legacy function (do not use in new applications)
+#
 printLine() {
   bpLine
+}
+
+# Generic command/description printout function
+# 
+# $1 command color
+# $2 description color
+# $3 command text
+# $4 desccription text
+#
+bpPrintInfoGeneric() {
+  printf "${1}  %-24.24s${E_END} ${2}%s${E_END}\n" "$3" "$4"
 }
 
 
@@ -288,18 +304,23 @@ printLine() {
 #
 # arg1 text for column 1
 # arg2 text for column 2
-printInfo() {
-  printf "${BP_C_ID}  %-24s${E_END} ${BP_C_COMMENT}%s${E_END}\n" "$1" "$2"
+#
+bpPrintInfo() {
+  bpPrintInfoGeneric "${BP_C_ID}" "${BP_C_COMMENT}" "$1" "$2"
+}
+
+bpPrintInfoAlt() {
+  bpPrintInfoGeneric "${E_DARKGRAY}" "${BP_C_COMMENT}" "$1" "$2"
 }
 
 # Print a variable + text into two columns
 #
 # arg1 variable for column 1
 # arg2 text for column 2
-printVar() {
+bpPrintVar() {
   var="$1"
   if [ "${!var}" ]; then
-    printInfo "$2" "${!var}"
+    bpPrintInfo "$2" "${!var}"
   else
     printf "${BP_C_ID}  %-24s${E_END} ${E_RED}N/A${E_END}\n" "$2"
   fi
@@ -538,11 +559,11 @@ bpLoadSettings() {
 
 printSettings() { ##C BPSETTINGS Print plate information
   bpTextLine "Bashplates settings"
-  printVar BP_NAME      "Name:"
-  printVar BP_EMAIL     "Email:"
-  printVar BP_LICENSE   "Default license:"
-  printVar BP_EDITOR    "Default editor"
-  printVar BP_ORG       "Default organisation"
+  bpPrintVar BP_NAME      "Name:"
+  bpPrintVar BP_EMAIL     "Email:"
+  bpPrintVar BP_LICENSE   "Default license:"
+  bpPrintVar BP_EDITOR    "Default editor"
+  bpPrintVar BP_ORG       "Default organisation"
   bpLine
 }
 
@@ -702,7 +723,7 @@ assertNoLockFile() { ##D Assert that lockfile is not present
   fi
 }
 
-assertRequiredProgs() { ##D Assert that required programs are available on the system
+assertRequiredProgs() { ##D Assert that required programs are available on the system (deprecated)
   if [ -n "${REQUIRED_PROGRAMS}" ]; then
     for p in ${REQUIRED_PROGRAMS}; do
       hash "$p" 2>&- || \
@@ -712,39 +733,36 @@ assertRequiredProgs() { ##D Assert that required programs are available on the s
   fi
 }
 
-##CN- IHELP Help & info
-
-info() { ##D Show information about script
-  bpTextLine "Script information"
-  printVar scriptName      "Script name" 
-  printVar scriptPath      "Script path" 
-  printVar VERSION         "Script version" 
-  printVar BPVERSION       "Template version"
-  printVar bpSettingsFile  "Bashplate settings file"
-  printVar LOGFILE         "Log file" 
-  printVar LOCK_FILE       "Lock file" 
-  printVar DEFAULTCMD         "Default function" 
-  printVar "REQUIRED_PROGRAMS" "Dependencies"
-  printInfo "PID" "$$"  
-  printVar DATE "Date" 
-  printVar TIME "Time"
-
-  if [ -n "${INFOHOOK}" ]; then
-    bpTextLine "App. information"
-    ${INFOHOOK}
+#
+# $1 string list of programs that are required
+#
+assertProgs() { ##D Assert that required programs are available on the system
+  things=$1
+  e=0
+  for thing in ${things[@]} ;do
+    hash "$thing" 2>&- || \
+      { bpError "Required program \"$thing\" not found."; e=1; }
+  done
+  if [ $e -eq 1 ]; then
+    exit 1
   fi
-  printSettings
 }
 
-check() { ##D Make a shellcheck
+##CN- IHELP Debug/Controll
+
+icheck() { ##D Make a shellcheck
+  assertProgs "shellcheck"
   shellcheck "$0"
 }
+
+
+##CN- IHELP Help & info
 
 printCommand() {
   help_line=$1
   help_command=$(echo "$help_line" | sed -s 's/(.*//')
   help_info=$(echo "$help_line" | sed -s 's/^.*'"$2"'//')
-  printInfo "$help_command" "$help_info"
+  bpPrintInfo "$help_command" "$help_info"
 }
 
 printCondCommand() {
@@ -754,7 +772,23 @@ printCondCommand() {
   if [ -n "$D" ]; then
     help_command=$(echo "$help_line" | sed -s 's/(.*//')
     help_info=$(echo "$help_line" | sed -s 's/^.*'"$C"'//')
-    printInfo "$help_command" "$help_info"
+    bpPrintInfo "$help_command" "$help_info"
+  fi
+}
+
+printCondCommandV() {
+  help_line="$1"
+  C=$(echo "$1" | sed -s 's/^.*##CV//' | awk '{print $1}')
+  
+  eval "D=\$$C"
+  
+  help_command=$(echo "$help_line" | sed -s 's/(.*//')
+  help_info=$(echo "$help_line" | sed -s 's/^.*'"$C"'//')
+
+  if [ -n "$D" ]; then
+    bpPrintInfo "$help_command" "$help_info"
+  else
+    bpPrintInfoAlt "$help_command" "$help_info"
   fi
 }
 
@@ -795,6 +829,7 @@ help() { ## Print this help information
       *"##C-"*)  printCondLine       "$help_line" ;;
       *"##N-"*)  printNamedLine      "$help_line" ;;
       *"##CN-"*) printCondNamedLine  "$help_line" ;;
+      *"##CV"*)  printCondCommandV    "$help_line" ;;
       *"##C"*)   printCondCommand    "$help_line" ;;
       *"##"*)    printCommand        "$help_line" '##' ;;
       *)
@@ -822,7 +857,7 @@ ihelp() { ##D Print internal help information
   IHELP=1    # Force ihelp documentations
   LOGFILE=1  # Force log documentation
 
-  help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e ' printLine' -e 'awk' -e 'printInfo')
+  help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e ' printLine' -e 'awk' -e 'bpPrintInfo')
   for help_line in ${help_lines} ; do
     case "$help_line" in
 #      "##-")    bpLine ;;
@@ -836,18 +871,53 @@ ihelp() { ##D Print internal help information
   done
 
   bpTextLine "Comments"
-  printInfo "#" "Normal bash comment"
-  printInfo "##" "Subcommand information comment (shown with help)"
-  printInfo "##C" "Conditional subcommand comment (shown with help)"
-  printInfo "##-" "Separator line (shown with help)"
-  printInfo "##C-" "Conditional separator line (shown with help)"
-  printInfo "##N-" "Named separator line (shown with help)"
-  printInfo "##CN-" "Conditional named separator line (shown with help)"
-  printInfo "##D" "Internal function comment (shown ihelp)"
+  bpPrintInfo "#" "Normal bash comment"
+  bpPrintInfo "##" "Subcommand information comment (shown with help)"
+  bpPrintInfo "##C" "Conditional subcommand comment (shown with help)"
+  bpPrintInfo "##-" "Separator line (shown with help)"
+  bpPrintInfo "##C-" "Conditional separator line (shown with help)"
+  bpPrintInfo "##N-" "Named separator line (shown with help)"
+  bpPrintInfo "##CN-" "Conditional named separator line (shown with help)"
+  bpPrintInfo "##D" "Internal function comment (shown ihelp)"
   bpLine
 }
 
-vhelp() { ##D Print internal variable information
+iinfo() { ##D Show information about script
+  bpTextLine "Script information"
+  bpPrintVar scriptName      "Script name" 
+  bpPrintVar scriptPath      "Script path" 
+  bpPrintVar VERSION         "Script version" 
+  bpPrintVar BPVERSION       "Template version"
+  bpPrintVar bpSettingsFile  "Bashplate settings file"
+  bpPrintVar LOGFILE         "Log file" 
+  bpPrintVar LOCK_FILE       "Lock file" 
+  bpPrintVar DEFAULTCMD         "Default function" 
+  bpPrintVar "REQUIRED_PROGRAMS" "Dependencies"
+  bpPrintInfo "PID" "$$"  
+  bpPrintVar DATE "Date" 
+  bpPrintVar TIME "Time"
+
+  if [ -n "${INFOHOOK}" ]; then
+    bpTextLine "App. information"
+    ${INFOHOOK}
+  fi
+  printSettings
+}
+
+iview() {  ##D View example
+  
+  # Singe command documentation
+  if [ "$2" != "" ]; then
+    echo
+    bpTextLine "$2"
+    echo
+    grep --no-filename -A 20  "$0" -e "${2}()" | grep -B 20 -m 1 -x "}" 
+    bpLine
+    exit
+  fi
+}
+
+ivars() { ##D Print internal variables
   bpTextLine "Script variables"
   echo
   IFS=$'\n'
@@ -888,15 +958,35 @@ runCommand() {
 
       # execute pre command hook  if existing
       if [ -n "$PRECMDHOOK" ]; then
-        "${PRECMDHOOK}"
+        "${PRECMDHOOK}" "$command"
       fi
 
-      # execute command
-      "${command}" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
-      
+      # Check if command is conditional
+      if [[ $( grep "${command}()" "$0" ) = *"##C"* ]]; then  
+
+        # Check if condition is true and then execute else printout error message
+        C=$( grep "${command}()" "$0"  | sed -s 's/^.*##C.//' | awk '{print $1}' )
+        if [ -n "$C" ]; then
+    eval "D=\$$C"
+
+          if [ -n "$D" ]; then
+            # execute command
+            "${command}" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
+          else
+            bpError "Command \"$command\" not available right now."
+          fi
+        else
+          bpError "Command \"$command\" is conditional, but is missing conditional variable"
+
+  fi
+      else 
+        # command is not conditional, execute
+  "${command}" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"        
+      fi
+
       # execute post command hook  if existing
       if [ -n "$POSTCMDHOOK" ]; then
-        "${POSTCMDHOOK}"
+        "${POSTCMDHOOK}" "$command"
       fi      
       bpExit
     fi
