@@ -392,6 +392,12 @@ flash() { ## Flash screen
 	 done;
 }
 
+E_RGB=$'\e[0;36m'         # RGB
+rgb() { ## Many colors
+  echo -e "\e[0;38;2;123;132;123m AA"
+	echo -e "\e[0;38;2;123;132;240m AA"
+	echo -e "\e[0;38;2;12;13;10m AA"
+}
 
 ##N- Read tests
 
