@@ -177,7 +177,7 @@ preCmdHook() {
 
 postCmdHook() {
   if [ "$1" == "postcmd" ]; then
-    echo "This is the precmdhook"
+    echo "This is the postmdhook"
   fi
 }
 
@@ -353,6 +353,10 @@ color2() { ## Show example of all 256 colors
 }
 
 
+color3() { ## Color test
+  echo -e "[${E_BLACK}${E_ON_RED}Error${E_END}] ${E_BR_RED}Error text${E_END}"
+	echo -e "[${E_WHITE}${E_ON_YELLOW}Warning${E_END}] ${E_BR_YELLOW}Warning text${E_END}"
+}
 
 FLAG_BLUE="\x1b[48;5;20m"
 FLAG_YELLOW="\x1b[48;5;226m"
@@ -473,9 +477,6 @@ readint() {  ## Test integer read from cmdline
 
 ##N- Experiments
 
-bpColorizeFile() {
-  echo "${E_CYAN}$(dirname $1)/${E_BR_CYAN}$(basename $1)${E_END}"
-}
 
 fileTest() { ## Test colorization of filename
   F="/use/local/var/log/messages"
@@ -634,7 +635,7 @@ backup() { ## Make an incremental backup
 }
 
 
-#--------------------------------------------------------------------- 
+#---------------------------------------------------------------------
 # Bashplate settings
 #---------------------------------------------------------------------
 
@@ -660,6 +661,26 @@ LOG_WARNING=1
 LOG_ERROR=1
 LOG_CRITICAL=1
 
+##V Programs that are required to run the script (uncomment to use)
+REQUIRED_PROGRAMS=(ls nisse)
+
+##V Lock file (uncomment to use lock file feature )
+LOCK_FILE=/tmp/${scriptName}.lock
+
+# Activate settings function (will create settings file when run)
+BPSETTINGS=1
+
+bpSettingsDir=~/.config/bashplates
+bpSettingsFile=${bpSettingsDir}/bashplates.conf
+
+# Create settings file if non existent
+#CREATEPLSETTINGS=1
+
+
+#---------------------------------------------------------------------
+# Bashplate Hooks
+#---------------------------------------------------------------------
+
 ##V Default command (uncomment to use a default command )
 DEFAULTCMD=help
 
@@ -677,22 +698,6 @@ POSTCMDHOOK=postCmdHook
 
 ##V Function to be executed after information command
 INFOHOOK=infoHook
-
-##V Programs that are required to run the script (uncomment to use)
-REQUIRED_PROGRAMS=(ls nisse)
-
-##V Lock file (uncomment to use lock file feature )
-LOCK_FILE=/tmp/${scriptName}.lock
-
-# Activate settings function (will create settings file when run)
-BPSETTINGS=1
-
-bpSettingsDir=~/.config/bashplates
-bpSettingsFile=${bpSettingsDir}/bashplates.conf
-
-# Create settings file if non existent
-#CREATEPLSETTINGS=1
-
 
 #---------------------------------------------------------------------
 # Signal traps
@@ -794,18 +799,18 @@ E_SHOW=$'\e[?25h'          # Show cursor
 
 E_END=$'\e[m'              # Clear Attributes
 
-# Internal bashplate colors
+# Default Bashplate colortheme
 BP_C_OK=$E_BR_GREEN
 BP_C_INFO=$E_BR_CYAN
 BP_C_WARNING=$E_BR_YELLOW
 BP_C_ERROR=$E_BR_RED
 BP_C_CRITICAL=$E_ON_RED$E_WHITE
-
 BP_C_LINE=$E_DARKGRAY
 BP_C_LINE_TEXT=$E_YELLOW
-
 BP_C_COMMENT=$E_GREEN
 BP_C_ID=$E_CYAN
+BP_C_FILENAME=$E_BR_GREEN
+BP_C_PATH=$E_GREEN
 
 # Exit codes
 #
@@ -885,16 +890,36 @@ bpPrintInfoAlt() {
 
 # Print a variable + text into two columns
 #
-# arg1 variable for column 1
-# arg2 text for column 2
+# $1 variable for column 1
+# $2 text for column 2
+# $3 optional text form column 1
+#
 bpPrintVar() {
-  var="$1"
+  var="$1"			
   if [ "${!var}" ]; then
-    bpPrintInfo "$2" "${!var}"
+    if [ ! -z "$3" ]; then
+      X=${3}
+    else 
+      X="${!var}"
+    fi
+    bpPrintInfo "$2" "${X}"
   else
     printf "${BP_C_ID}  %-24s${E_END} ${E_RED}N/A${E_END}\n" "$2"
   fi
 }
+
+
+# Colorize string with filename
+#
+# $1 string with filename to colorize
+# ret colorized string
+#
+bpColorizeFile() { ##D Colorize string with filename
+  if [ ! -z "$1" ]; then
+    echo "${BP_C_PATH}$(dirname $1)/${BP_C_FILENAME}$(basename $1)${E_END}"
+  fi
+}
+
 
 ##CN- IHELP File operations
 
@@ -1455,13 +1480,12 @@ ihelp() { ##D Print internal help information
 
 iinfo() { ##D Show information about script
   bpTextLine "Script information"
-  bpPrintVar scriptName      "Script name" 
-  bpPrintVar scriptPath      "Script path" 
+  bpPrintVar scriptName      "Script" $( bpColorizeFile "${scriptPath}/${scriptName}" )
   bpPrintVar VERSION         "Script version" 
   bpPrintVar BPVERSION       "Template version"
-  bpPrintVar bpSettingsFile  "Bashplate settings file"
-  bpPrintVar LOGFILE         "Log file" 
-  bpPrintVar LOCK_FILE       "Lock file" 
+  bpPrintVar bpSettingsFile  "Bashplate settings file" $( bpColorizeFile "${bpSettingsFile}" )
+  bpPrintVar LOGFILE         "Log file"  $( bpColorizeFile "${LOGFILE}" )
+  bpPrintVar LOCK_FILE       "Lock file" $( bpColorizeFile "${LOCK_FILE}" )
   bpPrintVar DEFAULTCMD         "Default function" 
   bpPrintVar "REQUIRED_PROGRAMS" "Dependencies"
   bpPrintInfo "PID" "$$"  
@@ -1526,7 +1550,6 @@ runCommand() {
     command=$(echo "$line" | sed -s 's/(.*//')
     if [ "$command" == "$1" ]; then
 
-
       # execute pre command hook  if existing
       if [ -n "$PRECMDHOOK" ]; then
         "${PRECMDHOOK}" "$command"
@@ -1538,7 +1561,7 @@ runCommand() {
         # Check if condition is true and then execute else printout error message
         C=$( grep "${command}()" "$0"  | sed -s 's/^.*##C.//' | awk '{print $1}' )
         if [ -n "$C" ]; then
-    eval "D=\$$C"
+          eval "D=\$$C"
 
           if [ -n "$D" ]; then
             # execute command
@@ -1548,11 +1571,10 @@ runCommand() {
           fi
         else
           bpError "Command \"$command\" is conditional, but is missing conditional variable"
-
-  fi
+        fi
       else 
         # command is not conditional, execute
-  "${command}" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"        
+        "${command}" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"        
       fi
 
       # execute post command hook  if existing
