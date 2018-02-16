@@ -13,6 +13,11 @@ Version 1.x
 	- New "subdued" colorscheme
 	- Fixed bpCp
 	- Improved documentation with screenshots
+	- added bpFilterEscape
+	- added bpColorizeFile
+	- refactoring 
+	- command hooks now supply command as argument 1
+	
 	
 
 Version 1.11
