@@ -84,13 +84,38 @@ $ bp new
 
 ## Built in commands
 - help    - Show help information about user define subcommands + some internal commands
-- ihelp   - Help information about internal commands
-- vhelp   - Help information about internal variables
 - log     - View log file
 - mlog    - View log file live
 - version - Show version information
 - info    - show various script information 
- 
+
+## Internal(i) commands
+All bashplates based scripts have four internal "hidden" commands who all start with
+the letter i. These commands are always hidden to the user and are
+there as a help to the developer of the script. The commands are `ihelp` `iinfo` `iview` `ivars`.
+
+### ihelp
+`ihelp` is by far the most important internal command. It reveals all
+internal commands and all internal functions. 
+
+```bash
+$ bp ihelp bpRead
+```
+
+### iinfo
+`iinfo` presents various information about the script
+
+### `iview`
+`iview` 
+
+### ivars
+List all internal variables.
+
+
+## Examples
+Included in the package is an example command `bpexample`. 
+
+
 ## Documentation
 
 BP has a very simple tag based documentation feature that is acivated 

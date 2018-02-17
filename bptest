@@ -2,19 +2,19 @@
 # shellcheck disable=2034
 #---------------------------------------------------------------------
 #
-#  __NAME__
+#  bptest
 #
 #  [Description]
-#    __DESC__
+#    Code test for bashplates
 #
 #  [Author]
-#    __AUTHOR__
+#    Peter Malmberg <peter.malmberg@gmail.com>
 #
 #  [Date]
-#    __DATE__
+#    2018-02-16
 #
 #  [License]
-#    __LICENSE__
+#    
 #
 #---------------------------------------------------------------------
 # [Bashplates]

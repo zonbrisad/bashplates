@@ -2,19 +2,19 @@
 # shellcheck disable=2034
 #---------------------------------------------------------------------
 #
-#  __NAME__
+#  bpcolor
 #
 #  [Description]
-#    __DESC__
+#    Test for different colorschemes
 #
 #  [Author]
-#    __AUTHOR__
+#    Peter Malmberg <peter.malmberg@gmail.com>
 #
 #  [Date]
-#    __DATE__
+#    2018-02-15
 #
 #  [License]
-#    __LICENSE__
+#    
 #
 #---------------------------------------------------------------------
 # [Bashplates]
@@ -55,11 +55,60 @@ scriptName=$(basename "$0")
 # User defined functions
 #---------------------------------------------------------------------
 
-##N- My functions
+##N- Color themes
 
-funk() { ## Description of funktion 1 
-  bpInfo "Funk"
+printExample() {
+	echo
+	bpTextLine "$1"
+	echo
+	bpInfo "Some information log"
+  bpWarning "Oh no a warning"
+  bpError "F#\$ck"
+  bpOk "Ahh"
+  echo 
+	bpLine
+  echo 
+	bpPrintInfo "bpPrintInfo" "Output from bpPrintInfo"
+	bpPrintInfo "bpColorizeFile" "$( bpColorizeFile /usr/local/bin/stolle )"  
+	bpPrintVar  bpPrintVar "bpPrintVar"
+	iinfo
+	echo
+	bpLine
+	echo
+	echo
 }
+
+
+def() { ## Default colorscheme
+  printExample "Default colorscheme"
+}
+
+
+alt1() { ## Alternative 1 colorscheme
+  BP_C_OK=$E_BR_GREEN
+  BP_C_INFO=$E_BR_CYAN
+  BP_C_WARNING=$E_BR_YELLOW
+  BP_C_ERROR=$E_BR_RED
+  BP_C_CRITICAL=$E_ON_RED$E_WHITE
+  BP_C_LINE=$E_DARKGRAY
+  BP_C_LINE_TEXT=$E_YELLOW
+  BP_C_COMMENT=$E_CYAN
+  BP_C_ID=$E_GREEN
+  BP_C_FILENAME=$E_BR_CYAN
+  BP_C_PATH=$E_CYAN
+  
+  printExample "Alternative 1 colorscheme"
+}
+
+
+
+all() { ## Print all colorschmes
+  def
+	
+	alt1
+
+}
+
 
 
 
@@ -153,12 +202,9 @@ signalTerm() {
 
 bpCleanUp() { ##D Cleanup function
   rm -f "$LOCK_FILE"    # remove Lock file
-  echo -e "${E_SHOW}"     # Turn on cursor if turned of
+  echo -e ${E_SHOW}     # Turn on cursor if turned of
 }
 
-#
-# $1 exit code, if not given exit code is 0=SUCCESS
-#
 bpExit() { ##D Function for safely exiting script
   bpCleanUp
 
@@ -167,19 +213,14 @@ bpExit() { ##D Function for safely exiting script
      ${POSTHOOK}
   fi
 
-  # Check if argument is given
-  if [ -z "$1" ]; then
-    exit "0"  # Success
-  else
-    exit "$1"
-  fi
-
+  exit
 }
 
 bpErrorExit() {  ##D Safely exit script with a error
+  #echo -e "${BP_C_ERROR}${1}${E_END}"
   bpError "${1}"
   bpCleanUp
-  exit "1"
+  exit
 }
 
 #---------------------------------------------------------------------
@@ -362,7 +403,7 @@ bpColorizeFile() { ##D Colorize string with filename
 # arg1 string to be filtered
 #
 bpFilterEscape() { ##D Filter escape characters from string
-  echo "$1" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
+  echo $1 | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
 }
 	
 
@@ -398,7 +439,7 @@ bpLn() { ##D Create symbolic link
 #
 bpCp() { ##D Copy file(s)
   bpInfo "Copying \"${1}\" to \"${2}\""
-  cp -rf "$@"
+  cp -rf $*
 }
 
 #
@@ -468,8 +509,8 @@ bpRemoveLineContaining() { ##D Remove line in file if it contains given string
 # return 1 for true, 0 for false
 #
 bpStrExist() { ##D Check if string exist in file
-  
-  if grep -q -F "$2" "$1" ; then
+  grep -q -F "$2" "$1" 
+  if [ $? == "0" ]; then
     echo "1"
   else
     echo "0"
@@ -521,7 +562,7 @@ bpReadInt() { ##D Read integer from commandline
         result="${2}"
       fi
     fi
-    if [ $((result)) -ge "$3" ] && [ $((result)) -le "$4" ]; then
+    if [ $((result)) -ge $3 ] && [ $((result)) -le $4 ]; then
       break
     fi
   done
@@ -543,9 +584,9 @@ bpAddSetting() {
   S=$(bpStrExist "${1}" "${2}" )
 
   if [ "${S}" == "0" ]; then
-    echo "# ${4}"    >>  "${1}"
-    echo "${2}=\"${3}\"" >> "${1}"
-    echo >> "${1}"
+    echo "# ${4}"    >>  ${1}
+    echo "${2}=\"${3}\"" >> ${1}
+    echo >> ${1}
   fi
 }
 
@@ -643,7 +684,7 @@ bpLog() { ##D Log to file command
   # check for LOGFILE variable
   if [ -n "$LOGFILE" ]; then
     ts=$(date +"%Y-%m-%d %H:%M:%S")
-    bpFilterEscape "$ts $1"  >> "${LOGFILE}"
+    echo $( bpFilterEscape "$ts $1" ) >> "${LOGFILE}"
   fi
 }
 
@@ -682,7 +723,7 @@ log() { ##C LOGFILE View logfile
     fi
   else
     bpInfo "Logging is not activated"
-    bpExit
+    exit
   fi
 }
 
@@ -700,7 +741,7 @@ mlog() {   ##C LOGFILE Monitor logfile
     fi
   else
     bpInfo "Logging is not activated"
-    bpExit
+    exit
   fi
 }
 
@@ -745,47 +786,53 @@ bpCritical() { ##D Critical error message
 # Various  ---------------------------------------------------------
 
 ##CN- IHELP Assert
-
-bpAssertRoot() { ##D Assert that user is root
+assertRoot() { ##D Assert that user is root
   if [ "$(whoami)" != root ]; then
     bpError "Must be root to use this command."
-    bpExit "1"
+    bpExit
   fi
 }
 
-bpAssertNoLockFile() { ##D Assert that lockfile is not present
+assertNoLockFile() { ##D Assert that lockfile is not present
   if [ -n "$LOCK_FILE" ]; then
     if [ -f "$LOCK_FILE" ]; then
+      #echo -e "${BP_C_ERROR}Script is already running. (${LOCK_FILE})${E_END} "
       bpError "Script is already running. (${LOCK_FILE})"
-      exit  "1" # do not use bpExit because lock file belongs to prexsisting process
+      exit  # do not use bpExit because lock belongs to other process
     fi
     touch "$LOCK_FILE"
   fi
 }
 
-bpAssertRequiredProgs() { # Assert that required programs are available on the system (deprecated)
-	bpAssertProgs "${REQUIRED_PROGRAMS[@]}"
+assertRequiredProgs() { ##D Assert that required programs are available on the system (deprecated)
+  if [ -n "${REQUIRED_PROGRAMS}" ]; then
+    for p in ${REQUIRED_PROGRAMS}; do
+      hash "$p" 2>&- || \
+        { bpError "Required program \"$p\" not found."; exit 1; }
+#      { echo -e >&2 "${BP_C_ERROR}Required program \"$p\" not found.${E_END}"; exit 1; }
+    done
+  fi
 }
 
 #
 # $1 string list of programs that are required
 #
-bpAssertProgs() { ##D Assert that required programs are available on the system
-  things=("$@")
+assertProgs() { ##D Assert that required programs are available on the system
+  things=$1
   e=0
-  for thing in "${things[@]}" ;do
+  for thing in ${things[@]} ;do
     hash "$thing" 2>&- || \
       { bpError "Required program \"$thing\" not found."; e=1; }
   done
   if [ $e -eq 1 ]; then
-    bpExit 1
+    exit 1
   fi
 }
 
 ##CN- IHELP Debug/Controll
 
 icheck() { ##D Make a shellcheck
-  bpAssertProgs "shellcheck"
+  assertProgs "shellcheck"
   shellcheck "$0"
 }
 
@@ -881,7 +928,7 @@ ihelp() { ##D Print internal help information
     echo
     grep --no-filename -B 10 "$0" -e "${2}()" | grep "#" | grep -v "##"
     bpLine
-    bpExit
+    exit
   fi
 
   IFS=$'\n'
@@ -918,13 +965,14 @@ ihelp() { ##D Print internal help information
 
 iinfo() { ##D Show information about script
   bpTextLine "Script information"
-  bpPrintVar scriptName      "Script" "$( bpColorizeFile ${scriptPath}/${scriptName} )"
+  bpPrintVar scriptName      "Script" $( bpColorizeFile "${scriptPath}/${scriptName}" )
   bpPrintVar VERSION         "Script version" 
   bpPrintVar BPVERSION       "Template version"
-  bpPrintVar bpSettingsFile  "Bashplate settings file" "$( bpColorizeFile ${bpSettingsFile} )"
-  bpPrintVar LOGFILE         "Log file"  "$( bpColorizeFile ${LOGFILE} )"
-  bpPrintVar LOCK_FILE       "Lock file" "$( bpColorizeFile ${LOCK_FILE} )"
+  bpPrintVar bpSettingsFile  "Bashplate settings file" $( bpColorizeFile "${bpSettingsFile}" )
+  bpPrintVar LOGFILE         "Log file"  $( bpColorizeFile "${LOGFILE}" )
+  bpPrintVar LOCK_FILE       "Lock file" $( bpColorizeFile "${LOCK_FILE}" )
   bpPrintVar DEFAULTCMD         "Default function" 
+  bpPrintVar "REQUIRED_PROGRAMS" "Dependencies"
   bpPrintInfo "PID" "$$"  
   bpPrintVar DATE "Date" 
   bpPrintVar TIME "Time"
@@ -945,7 +993,7 @@ iview() {  ##D View example
     echo
     grep --no-filename -A 20  "$0" -e "${2}()" | grep -B 20 -m 1 -x "}" 
     bpLine
-    bpExit
+    exit
   fi
 }
 
