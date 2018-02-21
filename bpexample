@@ -503,6 +503,48 @@ readint() {  ## Test integer read from cmdline
 
 ##N- Experiments
 
+#
+# Ask yes/no question
+#
+# $1 question text
+# $2 result variable name
+#
+# TODO: remove result variable, return status instead 
+#
+bpQuestionDy() {  ##D Ask yes/no question default yes 
+  local __result=$2
+	  while true; do
+		#   read -rp "${1}"" [Y/n]>" yn
+		yn=$( bpRead "${1} [Y/n]" )
+		case "$yn" in
+		  [Yy]* ) eval "$__result"='y'; break;;
+			[Nn]* ) eval "$__result"='n'; break;;
+			""    ) eval "$__result"='y'; break;;
+			* ) echo "Please answer yes or no.";;
+		esac
+	done
+}
+
+bpReadYN() {  ##D Ask yes/no question default yes 
+#  local __result=$2
+	  while true; do
+		#   read -rp "${1}"" [Y/n]>" yn
+		yn=$( bpRead "${1} [Y/n]" )
+		case "$yn" in
+		  [Yy]* ) return 1; break;;
+			[Nn]* ) return 0; break;;
+			""    ) return 1; break;;
+			* ) echo "Please answer yes or no.";;
+		esac
+	done
+}
+	
+readyn() { ## Read Yes/No question from cmdline
+  bpReadYN "Ja eller nej?"
+	echo "$?"
+}
+																					
+
 
 fileTest() { ## Test colorization of filename
   F="/use/local/var/log/messages"

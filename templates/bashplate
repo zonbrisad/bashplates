@@ -357,7 +357,7 @@ bpColorizeFile() { ##D Colorize string with filename
 
 
 #
-# arg1 string to be filtered
+# $1 string to be filtered
 #
 bpFilterEscape() { ##D Filter escape characters from string
   echo "$1" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
@@ -365,6 +365,13 @@ bpFilterEscape() { ##D Filter escape characters from string
 	
 
 ##CN- IHELP File operations
+
+#
+# $1 directory to change to
+#
+bpCd() { ##D Safe cd function (exits on fail)
+  cd "$1" || bpExit "Failed to cd to [$1]"
+}
 
 # Create a directory if it does not exist
 #
