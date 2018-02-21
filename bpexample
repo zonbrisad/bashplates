@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck disable=2034
+# shellcheck disable=1090
 #---------------------------------------------------------------------
 #
 #  [Description]
@@ -85,17 +86,17 @@ print() { ## Bashplate text output function examples
 }
 
 traptest() { ## Trap signal test
-  read -p "Press CTRL-C" -t 30
+  read -pr "Press CTRL-C" -t 30
 }
 
 tltest() { ## Test textline
-  bpTextLineC "Green" ${E_BR_GREEN} ${E_GREEN} "_"
-  bpTextLineC "Magenta" ${E_BR_MAGENTA} ${E_MAGENTA} "_"
-  bpTextLineC "Blue" ${E_BR_BLUE} ${E_BLUE} "_"
-  bpTextLineC "Red" ${E_BR_RED} ${E_RED} "_"
-  bpTextLineC "Yellow" ${E_BR_YELLOW} ${E_YELLOW} "_"
-  bpTextLineC "Cyan" ${E_BR_CYAN} ${E_CYAN} "_"
-  bpTextLineC "White" ${E_WHITE} ${E_GRAY} "_"
+  bpTextLineC "Green" "${E_BR_GREEN}" "${E_GREEN}" "_"
+  bpTextLineC "Magenta" "${E_BR_MAGENTA}" "${E_MAGENTA}" "_"
+  bpTextLineC "Blue" "${E_BR_BLUE}" "${E_BLUE}" "_"
+  bpTextLineC "Red" "${E_BR_RED}" "${E_RED}" "_"
+  bpTextLineC "Yellow" "${E_BR_YELLOW}" "${E_YELLOW}" "_"
+  bpTextLineC "Cyan" "${E_BR_CYAN}" "${E_CYAN}" "_"
+  bpTextLineC "White" "${E_WHITE}" "${E_GRAY}" "_"
   bpTextLine "Standard colors"
 }
 
@@ -107,7 +108,7 @@ roottest() { ## Test assert root
 
 locktest() { ## Lock file test
   bpAssertNoLockFile
-  ${scriptPath}/bpexample locktest  
+  "${scriptPath}/bpexample" locktest  
 }
 
 assertProgs() { ## Assert required programs test 
@@ -154,7 +155,7 @@ appendTest() { ## Testing append line to file function
 }
 
 errorTest() { ## Test of error messages
-  echo $LOGFILE
+  echo "$LOGFILE"
   bpInfo "Info test"
   bpWarning "Warning test"
   bpError "Error test"
@@ -189,7 +190,7 @@ postCmdHook() {
 pipe() { ## pipe example
   stdin=$(cat)
 	bpInfo "The follwing text was \"piped\" to the script"
-	echo -e $stdin
+	echo -e "$stdin"
 }
 
 ##N- Some fun
@@ -206,7 +207,7 @@ print_spinner() {
 
   XX=("|" "/" "-" "\\")
   if [ -n "$SPINNER" ]; then
-    SPINNER=$(($SPINNER + 1))
+    SPINNER=$(( SPINNER + 1))
     if [ $SPINNER -gt 3 ]; then
       SPINNER=0
     fi
@@ -214,26 +215,40 @@ print_spinner() {
     SPINNER=0
   fi
   echo " ${XX[$SPINNER]} $1"
-  echo -e $E_RETURN $E_UP
-#  echo $SPINNER
+  echo -e "$E_RETURN $E_UP"
 }
 
 
 spinner() { ## Spinner example
-#  bpElapsedTime
-  echo $E_HIDE
+  echo "$E_HIDE"
   for i in {1..100}; do
     print_spinner "Processing... $(bpElapsedTime)"
     sleep 0.1
   done
-  echo -e ${E_SHOW}
-#  bpElapsedTime
+  echo -e "${E_SHOW}"
+}
+
+bpWait() { ##D Wait for n seconds
+  echo "${E_HIDE}"
+  a=0
+	tmp=${SECONDS}
+  while [ "$a" -lt "$1" ]; do
+	  a=$(( SECONDS - tmp ))
+	  print_spinner "Waiting... $a"
+		sleep 0.1
+	done
+	echo -e "${E_SHOW}"
+}
+
+
+wait() { ## Wait for n seconds
+  bpWait "$2"
 }
 
 print_bar() {
 
   echo -n " ["
-  for jx in $(seq 1 ${2}); do
+  for jx in $(seq 1 "${2}"); do
     echo -n "="
   done
   for jx in $(seq 1 $((${1} - ${2}))); do
@@ -244,13 +259,13 @@ print_bar() {
 
 bar() { ## print a testbar (ANSI)
   bpTextLine "Bar test"
-  echo -en $E_HIDE
+  echo -en "$E_HIDE"
   for i in {1..60}; do
     sleep 0.03
     print_bar 60 $i
-    echo -e $E_RETURN $E_UP
+    echo -e "$E_RETURN $E_UP"
   done
-  echo -e $E_SHOW
+  echo -e "$E_SHOW"
 }
 
 shade() { ## Shade demo (256 color terminal required)
@@ -259,14 +274,14 @@ shade() { ## Shade demo (256 color terminal required)
   bpTextLine "B/W shading"
   echo
   echo
-  echo -e $E_RETURN
-  echo -en $E_HID
+  echo -e "$E_RETURN"
+  echo -en "$E_HIDE"
   for i in {232..255} {255..232} ; do
     sleep 0.05
     printf "\x1b[38;5;%sm _____ Shading text _____ ${E_END}" "$i"
-    echo -e $E_RETURN
+    echo -e "$E_RETURN"
   done
-  echo -e $E_SHOW
+  echo -e "$E_SHOW"
 }
 
 
@@ -295,7 +310,7 @@ color1() { ## Standard 16 colors
     eval "FG=\$$fc"
     for bc in ${BCOLORS2[*]}; do
       eval "BG=\$$bc"
-      printf "${FG}${BG}%-12s${E_END}" $fc
+      printf "${FG}${BG}%-12s${E_END}" "$fc"
     done
     echo
   done
@@ -320,7 +335,7 @@ color2() { ## Show example of all 256 colors
   echo
   for i in {0..231} ; do
     printf "\x1b[38;5;%sm  %3d  ${E_END} " "$i" "$i"
-    if (( i == 7 )) || (( i == 15 )) || ((( i > 15 )) && (( (i-15) % 6 == 0 ))); then
+    if (( i == 7 )) || (( i == 15 )) || ( (( i > 15 )) && (( (i-15) % 6 == 0 )) ); then
       echo
       
       if (( i == 15)); then
@@ -344,7 +359,7 @@ color2() { ## Show example of all 256 colors
   echo
   for i in {0..231} ; do
     printf "\x1b[48;5;%sm  %3d  ${E_END} " "$i" "$i"
-    if (( i == 7 )) || (( i == 15 )) || ((( i > 15 )) && (( (i-15) % 6 == 0 ))); then
+    if (( i == 7 )) || (( i == 15 )) || ( (( i > 15 )) && (( (i-15) % 6 == 0 )) ); then
       echo
       
       if (( i == 15)); then
@@ -514,15 +529,15 @@ bpInString() {
 inString() { ## String contains test
   A="Hello world"
   
-  if [ $( bpInString "HelloX" $A ) = "1" ]; then
+  if [ "$( bpInString HelloX "$A" )" = "1" ]; then
 #  if  $( bpInString "Hello" "$A" ) ; then
     echo "A"
   else
     echo "B"
   fi
   
-  echo $( bpInString "Hello" $A )
-  echo $( bpInString "Kalle" $A )
+  bpInString "Hello" "$A"
+  bpInString "Kalle" "$A" 
 }
 
 arg() { ##A Integer argument test
@@ -530,11 +545,11 @@ arg() { ##A Integer argument test
 }
 
 opttest() { ## Options testing
-  echo $1 $2 $3 
-  echo $*
+  echo "$1" "$2" "$3" 
+  echo "$*"
   bpTextLine "Option testing"
   while getopts ":a:" opt; do
-  echo $opt
+  echo "$opt"
     case $opt in
       a)
         echo "-a was triggered, Parameter: $OPTARG" >&2
@@ -583,7 +598,7 @@ BUILDDIR="build"
 archive() { ## Make a tar archive of the source code
   DT=$(date +"%Y%m%d-%H%M%S")
   bpMkDir ${ARCHIVEDIR}
-  tar -cvzf ${ARCHIVEDIR}/${1}_${DT}.tar.gz *  \
+  tar -cvzf "${ARCHIVEDIR}/${1}_${DT}.tar.gz" ./*  \
     --exclude=${ARCHIVEDIR} \
     --exclude=${BACKUP_DIR} \
     --exclude=${OUTDIR}     \
@@ -627,8 +642,8 @@ backup() { ## Make an incremental backup
   # remove oldest backup
   bpRm  ${BACKUP_DIR}/backup_${BACKUPS}
   # rotate backups 
-  for ((x=${BACKUPS};x>0;x--)); do                 
-    bdir=${BACKUP_DIR}/backup_$((${x} - 1)) ;    
+  for ((x=BACKUPS;x>0;x--)); do                 
+    bdir=${BACKUP_DIR}/backup_$(( x - 1 )) ;    
     # check if directory exist before renameing  it 
     if [ -d ${bdir} ]; then                        
       mv -f ${bdir}  ${BACKUP_DIR}/backup_${x} ;  
@@ -640,7 +655,7 @@ backup() { ## Make an incremental backup
         --exclude=${BACKUP_DIR}   \
         --exclude=${ARCHIVEDIR}   \
         --exclude=${OUTDIR}       \
-        --link-dest=${PWD}/${BACKUP_DIR}/backup_1 \
+        --link-dest="${PWD}/${BACKUP_DIR}/backup_1" \
         .                      \
         ${BACKUP_DIR}/backup_0 
 }
@@ -932,7 +947,7 @@ bpPrintVar() {
 #
 bpColorizeFile() { ##D Colorize string with filename
   if [ ! -z "$1" ]; then
-    echo "${BP_C_PATH}$(dirname $1)/${BP_C_FILENAME}$(basename $1)${E_END}"
+    echo "${BP_C_PATH}$(dirname "$1")/${BP_C_FILENAME}$(basename "$1")${E_END}"
   fi
 }
 
@@ -1122,9 +1137,11 @@ bpAddSetting() {
   S=$(bpStrExist "${1}" "${2}" )
 
   if [ "${S}" == "0" ]; then
-    echo "# ${4}"    >>  "${1}"
-    echo "${2}=\"${3}\"" >> "${1}"
-    echo >> "${1}"
+    {
+      echo "# ${4}" 
+      echo "${2}=\"${3}\"" 
+      echo 
+    } >> "${1}"
   fi
 }
 
@@ -1498,16 +1515,16 @@ ihelp() { ##D Print internal help information
 
 iinfo() { ##D Show information about script
   bpTextLine "Script information"
-  bpPrintVar scriptName      "Script" "$( bpColorizeFile ${scriptPath}/${scriptName} )"
-  bpPrintVar VERSION         "Script version" 
-  bpPrintVar BPVERSION       "Template version"
-  bpPrintVar bpSettingsFile  "Bashplate settings file" "$( bpColorizeFile ${bpSettingsFile} )"
-  bpPrintVar LOGFILE         "Log file"  "$( bpColorizeFile ${LOGFILE} )"
-  bpPrintVar LOCK_FILE       "Lock file" "$( bpColorizeFile ${LOCK_FILE} )"
-  bpPrintVar DEFAULTCMD         "Default function" 
+  bpPrintVar "scriptName"      "Script" "$( bpColorizeFile "${scriptPath}/${scriptName}" )"
+  bpPrintVar "VERSION"         "Script version" 
+  bpPrintVar "BPVERSION"       "Template version"
+  bpPrintVar "bpSettingsFile"  "Bashplate settings file" "$( bpColorizeFile ${bpSettingsFile} )"
+  bpPrintVar "LOGFILE"         "Log file"  "$( bpColorizeFile "${LOGFILE}" )"
+  bpPrintVar "LOCK_FILE"       "Lock file" "$( bpColorizeFile "${LOCK_FILE}" )"
+  bpPrintVar "DEFAULTCMD"      "Default function" 
   bpPrintInfo "PID" "$$"  
-  bpPrintVar DATE "Date" 
-  bpPrintVar TIME "Time"
+  bpPrintVar "DATE" "Date" 
+  bpPrintVar "TIME" "Time"
 
   if [ -n "${INFOHOOK}" ]; then
     bpTextLine "App. information"

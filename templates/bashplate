@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck disable=2034
+# shellcheck disable=1090
 #---------------------------------------------------------------------
 #
 #  __NAME__
@@ -89,9 +90,6 @@ LOG_INFO=1
 LOG_WARNING=1
 LOG_ERROR=1
 LOG_CRITICAL=1
-
-##V Programs that are required to run the script (uncomment to use)
-#REQUIRED_PROGRAMS=(ls mv kalle)
 
 ##V Lock file (uncomment to use lock file feature )
 #LOCK_FILE=/tmp/${scriptName}.lock
@@ -353,7 +351,7 @@ bpPrintVar() {
 #
 bpColorizeFile() { ##D Colorize string with filename
   if [ ! -z "$1" ]; then
-    echo "${BP_C_PATH}$(dirname $1)/${BP_C_FILENAME}$(basename $1)${E_END}"
+    echo "${BP_C_PATH}$(dirname "$1")/${BP_C_FILENAME}$(basename "$1")${E_END}"
   fi
 }
 
@@ -543,9 +541,11 @@ bpAddSetting() {
   S=$(bpStrExist "${1}" "${2}" )
 
   if [ "${S}" == "0" ]; then
-    echo "# ${4}"    >>  "${1}"
-    echo "${2}=\"${3}\"" >> "${1}"
-    echo >> "${1}"
+    {
+      echo "# ${4}" 
+      echo "${2}=\"${3}\"" 
+      echo 
+    } >> "${1}"
   fi
 }
 
@@ -918,16 +918,16 @@ ihelp() { ##D Print internal help information
 
 iinfo() { ##D Show information about script
   bpTextLine "Script information"
-  bpPrintVar scriptName      "Script" "$( bpColorizeFile ${scriptPath}/${scriptName} )"
-  bpPrintVar VERSION         "Script version" 
-  bpPrintVar BPVERSION       "Template version"
-  bpPrintVar bpSettingsFile  "Bashplate settings file" "$( bpColorizeFile ${bpSettingsFile} )"
-  bpPrintVar LOGFILE         "Log file"  "$( bpColorizeFile ${LOGFILE} )"
-  bpPrintVar LOCK_FILE       "Lock file" "$( bpColorizeFile ${LOCK_FILE} )"
-  bpPrintVar DEFAULTCMD         "Default function" 
+  bpPrintVar "scriptName"      "Script" "$( bpColorizeFile "${scriptPath}/${scriptName}" )"
+  bpPrintVar "VERSION"         "Script version" 
+  bpPrintVar "BPVERSION"       "Template version"
+  bpPrintVar "bpSettingsFile"  "Bashplate settings file" "$( bpColorizeFile ${bpSettingsFile} )"
+  bpPrintVar "LOGFILE"         "Log file"  "$( bpColorizeFile "${LOGFILE}" )"
+  bpPrintVar "LOCK_FILE"       "Lock file" "$( bpColorizeFile "${LOCK_FILE}" )"
+  bpPrintVar "DEFAULTCMD"      "Default function" 
   bpPrintInfo "PID" "$$"  
-  bpPrintVar DATE "Date" 
-  bpPrintVar TIME "Time"
+  bpPrintVar "DATE" "Date" 
+  bpPrintVar "TIME" "Time"
 
   if [ -n "${INFOHOOK}" ]; then
     bpTextLine "App. information"
