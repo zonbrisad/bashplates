@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck disable=2034
+# shellcheck disable=1090
 #---------------------------------------------------------------------
 #
 #  bp
@@ -106,26 +107,28 @@ news() { ## Create a new simple bashplate project
 
 ##N- Project management (git)
 
+
+
 clean() { ## Remove leftover files 
-  cd "${scriptPath}"
+  bpCd "${scriptPath}"
 
   find . -name "*~"     -delete
   find . -name "*.orig" -delete
 
   # Remove untraced files
   git clean -df
-  cd -
+  bpCd -
 }
 
 commit() { ## Commit project to repository
-  cd "${scriptPath}"
+  bpCd "${scriptPath}"
   git commit -a
   #git push --tags -a
-  cd - || bpExit
+  bpCd - 
 }
 
 tag() { ## Make a new tag
-  cd "${scriptPath}"
+  bpCd "${scriptPath}"
   # List existing tags
   git tag
 
@@ -136,19 +139,19 @@ tag() { ## Make a new tag
 
   # Tag revision
   git tag -a "$tag" -m "$desc"
-  cd - || bpExit
+  bpCd - 
 }
 
 push() { ## Push to GITHUB
-  cd "${scriptPath}"
+  bpCd "${scriptPath}"
   git push --progress
-  cd - || bpExit
+  bpCd - 
 } 
 
 pull() { ## Pull bashplates from GITHUB
-  cd "${scriptPath}"
+  bpCd "${scriptPath}"
   git pull --progress
-  cd - || bpExit
+  bpCd - 
 } 
 
 #---------------------------------------------------------------------
@@ -437,13 +440,13 @@ bpPrintVar() {
 #
 bpColorizeFile() { ##D Colorize string with filename
   if [ ! -z "$1" ]; then
-    echo "${BP_C_PATH}$(dirname $1)/${BP_C_FILENAME}$(basename $1)${E_END}"
+    echo "${BP_C_PATH}$(dirname "$1")/${BP_C_FILENAME}$(basename "$1")${E_END}"
   fi
 }
 
 
 #
-# arg1 string to be filtered
+# $1 string to be filtered
 #
 bpFilterEscape() { ##D Filter escape characters from string
   echo "$1" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
@@ -451,6 +454,13 @@ bpFilterEscape() { ##D Filter escape characters from string
 	
 
 ##CN- IHELP File operations
+
+#
+# $1 directory to change to
+#
+bpCd() { ##D Safe cd function (exits on fail)
+  cd "$1" || bpExit "Failed to cd to [$1]"
+}
 
 # Create a directory if it does not exist
 #
@@ -627,9 +637,11 @@ bpAddSetting() {
   S=$(bpStrExist "${1}" "${2}" )
 
   if [ "${S}" == "0" ]; then
-    echo "# ${4}"    >>  "${1}"
-    echo "${2}=\"${3}\"" >> "${1}"
-    echo >> "${1}"
+    {
+      echo "# ${4}" 
+      echo "${2}=\"${3}\"" 
+      echo 
+    } >> "${1}"
   fi
 }
 
@@ -1002,16 +1014,16 @@ ihelp() { ##D Print internal help information
 
 iinfo() { ##D Show information about script
   bpTextLine "Script information"
-  bpPrintVar scriptName      "Script" "$( bpColorizeFile ${scriptPath}/${scriptName} )"
-  bpPrintVar VERSION         "Script version" 
-  bpPrintVar BPVERSION       "Template version"
-  bpPrintVar bpSettingsFile  "Bashplate settings file" "$( bpColorizeFile ${bpSettingsFile} )"
-  bpPrintVar LOGFILE         "Log file"  "$( bpColorizeFile ${LOGFILE} )"
-  bpPrintVar LOCK_FILE       "Lock file" "$( bpColorizeFile ${LOCK_FILE} )"
-  bpPrintVar DEFAULTCMD         "Default function" 
+  bpPrintVar "scriptName"      "Script" "$( bpColorizeFile "${scriptPath}/${scriptName}" )"
+  bpPrintVar "VERSION"         "Script version" 
+  bpPrintVar "BPVERSION"       "Template version"
+  bpPrintVar "bpSettingsFile"  "Bashplate settings file" "$( bpColorizeFile ${bpSettingsFile} )"
+  bpPrintVar "LOGFILE"         "Log file"  "$( bpColorizeFile "${LOGFILE}" )"
+  bpPrintVar "LOCK_FILE"       "Lock file" "$( bpColorizeFile "${LOCK_FILE}" )"
+  bpPrintVar "DEFAULTCMD"      "Default function" 
   bpPrintInfo "PID" "$$"  
-  bpPrintVar DATE "Date" 
-  bpPrintVar TIME "Time"
+  bpPrintVar "DATE" "Date" 
+  bpPrintVar "TIME" "Time"
 
   if [ -n "${INFOHOOK}" ]; then
     bpTextLine "App. information"
