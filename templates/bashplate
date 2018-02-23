@@ -41,12 +41,6 @@
 # Exit script when pipe fails
 set -o pipefail
 
-##V Directory where script is located
-scriptPath=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-
-##V Name of script
-scriptName=$(basename "$0")
-
 #---------------------------------------------------------------------
 # User defined Settings
 #---------------------------------------------------------------------
@@ -75,14 +69,14 @@ VERSION="0.0"
 BPVERSION="1.11"
 
 ##V Usage info
-USAGE="Usage: ${scriptName} command [option]"
+USAGE="Usage: ${BPSCRIPTNAME} command [option]"
 
 # Description text
 DESC="Bashplate is a bash script template to ease development of\n\
 command style shellscripts"
 
 ##V logfile (uncomment to use logfile)
-#LOGFILE=${scriptPath}/${scriptName}.log
+#LOGFILE=${BPSCRIPTPATH}/${BPSCRIPTNAME}.log
 
 ##V Logging options (uncomment to activate logging parameters)
 LOG_OK=1
@@ -92,7 +86,7 @@ LOG_ERROR=1
 LOG_CRITICAL=1
 
 ##V Lock file (uncomment to use lock file feature )
-#LOCK_FILE=/tmp/${scriptName}.lock
+#LOCK_FILE=/tmp/${BPSCRIPTNAME}.lock
 
 # Activate settings function (will create settings file when run)
 #BPSETTINGS=1
@@ -149,6 +143,8 @@ signalTerm() {
   bpCleanUp
 }
 
+##CN- IHELP Exit and cleanup
+
 bpCleanUp() { ##D Cleanup function
   rm -f "$LOCK_FILE"    # remove Lock file
   echo -e "${E_SHOW}"     # Turn on cursor if turned of
@@ -167,7 +163,7 @@ bpExit() { ##D Function for safely exiting script
 
   # Check if argument is given
   if [ -z "$1" ]; then
-    exit "0"  # Success
+    exit 0   # Success
   else
     exit "$1"
   fi
@@ -177,16 +173,15 @@ bpExit() { ##D Function for safely exiting script
 bpErrorExit() {  ##D Safely exit script with a error
   bpError "${1}"
   bpCleanUp
-  exit "1"
+  exit 1
 }
 
 #---------------------------------------------------------------------
-# Bashplate internal functions
+# Terminal codes
 #---------------------------------------------------------------------
 
 # ANSI foreground colors codes
 #
-
 E_BLACK=$'\e[0;30m'        # Black
 E_RED=$'\e[0;31m'          # Red
 E_GREEN=$'\e[0;32m'        # Green
@@ -252,6 +247,10 @@ BP_C_PATH=$E_GREEN
 BP_E_OK=0            # successful termination
 
 
+#---------------------------------------------------------------------
+# Bashplate internal functions
+#---------------------------------------------------------------------
+
 ##CN- IHELP Printing functions
 
 # Print text with row
@@ -267,7 +266,7 @@ bpPrintLineC() { ##D Print text with adjusted line after with selectable colors
   len4="${#4}"
 
   echo -en "${2}${1}${4}${3}"
-  l=$((COLUMNS - len1 - len4 - 3 ))
+  l=$((BPCOLUMNS - len1 - len4 - 3 ))
   seq -s"${5}" "${l}"|tr -d '[:digit:]'
   echo -en ${E_END} 
 }
@@ -531,6 +530,48 @@ bpReadInt() { ##D Read integer from commandline
     fi
   done
   echo "${result}"
+}
+
+
+#
+# $1 question text
+# $2 default answer 0 = yes, 1 = no
+# return 0 = Yes, 1=No
+#
+bpReadYN() {  ##D Ask yes/no question generic 
+	while true; do
+	
+	  if [ "$2" -eq 1 ]; then 
+		  yn=$( bpRead "${1} [y/N]" )	    
+		else
+  		yn=$( bpRead "${1} [Y/n]" )
+		fi
+	
+    case "$yn" in
+		  [Yy]* ) return 0;  break;;
+		  [Nn]* ) return 1;  break;;
+		  ""    ) return "$2"; break;;
+		  * ) echo "Please answer yes or no.";;
+		esac
+	done
+}
+
+#
+# $1 Question text
+# return 0 = Yes, 1=No
+#
+bpReadY() { ##D Ask yes/no question default yes
+  bpReadYN "$1" 0
+	return $?
+}
+
+#
+# $1 Question text
+# return 0 = Yes, 1=No
+#
+bpReadN() { ##D Ask yes/no question default no
+  bpReadYN "$1" 1
+	return $?
 }
 
 
@@ -894,7 +935,7 @@ ihelp() { ##D Print internal help information
   IFS=$'\n'
   SC="$1"
 
-  bpLine
+#  bpLine
   IHELP=1    # Force ihelp documentations
   LOGFILE=1  # Force log documentation
 
@@ -925,7 +966,7 @@ ihelp() { ##D Print internal help information
 
 iinfo() { ##D Show information about script
   bpTextLine "Script information"
-  bpPrintVar "scriptName"      "Script" "$( bpColorizeFile "${scriptPath}/${scriptName}" )"
+  bpPrintVar "BPSCRIPTNAME"    "Script" "$( bpColorizeFile "${BPSCRIPTPATH}/${BPSCRIPTNAME}" )"
   bpPrintVar "VERSION"         "Script version" 
   bpPrintVar "BPVERSION"       "Template version"
   bpPrintVar "bpSettingsFile"  "Bashplate settings file" "$( bpColorizeFile ${bpSettingsFile} )"
@@ -933,8 +974,8 @@ iinfo() { ##D Show information about script
   bpPrintVar "LOCK_FILE"       "Lock file" "$( bpColorizeFile "${LOCK_FILE}" )"
   bpPrintVar "DEFAULTCMD"      "Default function" 
   bpPrintInfo "PID" "$$"  
-  bpPrintVar "DATE" "Date" 
-  bpPrintVar "TIME" "Time"
+  bpPrintVar "BPDATE" "Date" 
+  bpPrintVar "BPTIME" "Time"
 
   if [ -n "${INFOHOOK}" ]; then
     bpTextLine "App. information"
@@ -979,7 +1020,7 @@ version() { ## Print version information
 
 # Runs a function in this file as a command
 runCommand() {
-  if [ "$bpArguments" -eq 0 ]; then
+  if [ "$BPARGUMENTS" -eq 0 ]; then
 
     # check for a default command
     if [ -n "$DEFAULTCMD" ]; then
@@ -1031,29 +1072,44 @@ runCommand() {
   bpErrorExit "Command \"$1\" not found"
 }
 
-# Init magic variables
-#
+#---------------------------------------------------------------------
+# Initiate internal variables
+#---------------------------------------------------------------------
+
+##V Directory where script is located
+BPSCRIPTPATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+##V Name of script
+BPSCRIPTNAME=$(basename "$0")
+
+##V Number of arguments given to script
+BPARGUMENTS=$#
 
 ##V Current date
-DATE=$(date +"%Y-%m-%d")
+BPDATE=$(date +"%Y-%m-%d")
 
 ##V Current time
-TIME=$(date +"%H:%M:%S")
+BPTIME=$(date +"%H:%M:%S")
 
 ##V Number of columns in terminal
-COLUMNS=$(tput cols)
+BPCOLUMNS=$(tput cols)
 
 ##V Number of lines in terminal
-LINES=$(tput lines)
+BPLINES=$(tput lines)
 
+
+#---------------------------------------------------------------------
+# Setup signals
+#---------------------------------------------------------------------
 
 trap  signalQuit SIGQUIT
 trap  signalInt  SIGINT
 trap  signalHup  SIGHUP
 trap  signalTerm SIGTERM
 
-##V Number of arguments given to script
-bpArguments=$#
+#---------------------------------------------------------------------
+# Load settings and execute script handler
+#---------------------------------------------------------------------
 
 # Load configuration file settings
 bpLoadSettings

@@ -17,6 +17,8 @@ Version 1.x
 	- added bpColorizeFile
 	- refactoring 
 	- command hooks now supply command as argument 1
+	- added read yes no wuestions
+	- added bpCd function
 	
 	
 
