@@ -108,7 +108,7 @@ clean() { ## Remove leftover files
   find . -name "*.orig" -delete
 
   # Remove untraced files
-  git clean -df
+  git clean -df -e *.log
   bpCd -
 }
 
