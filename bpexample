@@ -669,6 +669,8 @@ backup() { ## Make an incremental backup
 # Bashplate settings
 #---------------------------------------------------------------------
 
+bpInitSettings() { 
+
 ##V Script version info
 VERSION="1.05"
 
@@ -703,7 +705,7 @@ bpSettingsFile=${bpSettingsDir}/bashplates.conf
 # Create settings file if non existent
 #CREATEPLSETTINGS=1
 
-
+}
 #---------------------------------------------------------------------
 # Bashplate Hooks
 #---------------------------------------------------------------------
@@ -1705,8 +1707,12 @@ BPCOLUMNS=$(tput cols)
 BPLINES=$(tput lines)
 
 
+# Initiate bashplate settings
+bpInitSettings
+
+
 #---------------------------------------------------------------------
-# Setup signals
+# Setup signal traps
 #---------------------------------------------------------------------
 
 trap  signalQuit SIGQUIT
