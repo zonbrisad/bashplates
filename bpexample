@@ -32,6 +32,7 @@
 #set -o xtrace
 # Display shell input lines as they are read
 #set -v
+set -o errtrace
 
 # Exit script when a command fails. Append ||true if error is expected
 #set -o errexit # || true
@@ -170,13 +171,13 @@ postcmd() { ## Test postCmdHook
 
 preCmdHook() {
   if [ "$1" == "precmd" ]; then
-    echo "This is the precmdhook"
+    bpOk "This is the precmdhook"
   fi
 }
 
 postCmdHook() {
   if [ "$1" == "postcmd" ]; then
-    echo "This is the postmdhook"
+    bpOk "This is the postmdhook"
   fi
 }
 
@@ -677,6 +678,26 @@ backup() { ## Make an incremental backup
 }
 
 
+
+bpCallStack() { ## CS
+  bpTextLine "Call stack"
+  local frame=0
+	while caller $frame; do
+	  ((frame++));
+	done
+	echo "$*"
+	bpLine
+	exit 1
+}
+
+##N- BASH Documentation
+
+vars() { ## Vars
+  #echo
+	false
+}
+
+
 #---------------------------------------------------------------------
 # Bashplate settings
 #---------------------------------------------------------------------
@@ -765,6 +786,17 @@ signalQuit() {
 signalTerm() {
   echo "Term"
   bpCleanUp
+}
+
+signalErr() {
+    
+  echo "Trace error Row: $1  Function: $2"
+	bpCallStack
+	bpExit 1
+}
+
+signalDbg() {
+  echo "Debug Row: $1  Function: $2"
 }
 
 ##CN- IHELP Exit and cleanup
@@ -1708,7 +1740,7 @@ bpRunCommand() {
 
           if [ -n "$D" ]; then
             # execute command
-            "${command}" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
+            "${command}" "$@" 
           else
             bpError "Command \"$command\" not available right now."
           fi
@@ -1717,7 +1749,7 @@ bpRunCommand() {
         fi
       else 
         # command is not conditional, execute
-        "${command}" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"        
+        "${command}" "$@"
       fi
 
       # execute post command hook  if existing
@@ -1768,6 +1800,9 @@ trap  signalQuit SIGQUIT
 trap  signalInt  SIGINT
 trap  signalHup  SIGHUP
 trap  signalTerm SIGTERM
+trap  'signalErr ${FUNCNAME} ${LINENO}' ERR
+
+#trap  'signalDbg ${FUNCNAME} ${LINENO}' DEBUG
 
 #---------------------------------------------------------------------
 # Load settings and execute script handler
@@ -1778,11 +1813,11 @@ bpLoadSettings
 
 # execute prescript hook if existing
 if [ -n "$PREHOOK" ]; then
-  ${PREHOOK} "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
+  ${PREHOOK} "$@"
 fi
 
 # Run command parser
-bpRunCommand "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
+bpRunCommand "$@"
 
 # Exit cleanly
 bpExit

@@ -52,8 +52,8 @@ set -o pipefail
 
 ##N- My functions
 
-funk() { ## Description of funktion 1 
-  bpInfo "Funk"
+myfunk() { ## Description of my funktion 
+  bpInfo "My function"
 }
 
 
