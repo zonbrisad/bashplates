@@ -80,7 +80,8 @@ print() { ## Bashplate text output function examples
 }
 
 traptest() { ## Trap signal test
-  read -pr "Press CTRL-C" -t 30
+  TRAPTEST=1
+	bpRead "Press CTRL-C" 
 }
 
 tltest() { ## Test textline
@@ -97,7 +98,7 @@ tltest() { ## Test textline
 
 roottest() { ## Test assert root
   bpAssertRoot
-  echo "Great you are root"
+  bpOk "Great you are root"
 }
 
 locktest() { ## Lock file test
@@ -744,6 +745,10 @@ INFOHOOK=infoHook
 #---------------------------------------------------------------------
 
 signalInt() {
+  if [ -n "$TRAPTEST" ]; then
+    echo
+    bpOk "This text is printed from signal \"trap\" sigint."
+  fi
   bpCleanUp
   exit "$BP_E_OK"
 }
@@ -762,7 +767,7 @@ signalTerm() {
   bpCleanUp
 }
 
-##N-C IHELP Exit and cleanup
+##CN- IHELP Exit and cleanup
 
 bpCleanUp() { ##D Cleanup function
   rm -f "$LOCK_FILE"    # remove Lock file
@@ -875,7 +880,7 @@ BP_E_OK=0            # successful termination
 # Bashplate internal functions
 #---------------------------------------------------------------------
 
-##N-C IHELP Printing functions
+##CN- IHELP Printing functions
 
 # Print text with row
 #
@@ -987,7 +992,7 @@ bpFilterEscape() { ##D Filter escape characters from string
 }
   
 
-##N-C IHELP File operations
+##CN- IHELP File operations
 
 #
 # $1 directory to change to
@@ -1104,7 +1109,7 @@ bpStrExist() { ##D Check if string exist in file
   fi
 }
 
-##N-C IHELP Input
+##CN- IHELP Input
 
 #
 # Read string from commandline
@@ -1205,7 +1210,7 @@ bpReadN() { ##D Ask yes/no question default no
 
 # Settings file ------------------------------------------------------
 
-##N-C BPSETTINGS Settings
+##CN- BPSETTINGS Settings
 
 bpAddSetting() { 
 
@@ -1304,7 +1309,7 @@ setorg() { ##C BPSETTINGS Set default organisation
 
 # Logging ---------------------------------------------------------
 
-##N-C IHELP Log functions
+##CN- IHELP Log functions
 
 #
 # Function logging to file
@@ -1376,7 +1381,7 @@ mlog() {   ##C LOGFILE Monitor logfile
   fi
 }
 
-##N-C IHELP Message
+##CN- IHELP Message
 
 bpOk() { ##D Success message
   if [ -n "$LOG_OK" ]; then
@@ -1416,7 +1421,7 @@ bpCritical() { ##D Critical error message
 
 # Various  ---------------------------------------------------------
 
-##N-C IHELP Assert
+##CN- IHELP Assert
 
 bpAssertRoot() { ##D Assert that user is root
   if [ "$(whoami)" != root ]; then
@@ -1454,7 +1459,7 @@ bpAssertProgs() { ##D Assert that required programs are available on the system
   fi
 }
 
-##N-C IHELP Debug/Controll
+##CN- IHELP Debug/Controll
 
 icheck() { ##D Make a shellcheck
   bpAssertProgs "shellcheck"
@@ -1465,7 +1470,7 @@ irt() { ##D Remove tabs from script
   sed -i -e 's/\t/  /g' "${BPSCRIPTPATH}/${BPSCRIPTNAME}"
 }
 
-##N-C IHELP Help & info
+##CN- IHELP Help & info
 
 printCommand() {
   help_line=$1
@@ -1503,7 +1508,7 @@ printCondCommandV() {
 
 printCondLine() {
   help_line="$1"
-  C=$(echo "$1" | sed -s 's/^.*##-C//' | awk '{print $1}')
+  C=$(echo "$1" | sed -s 's/^.*##C-//' | awk '{print $1}')
   eval "D=\$$C"
   if [ -n "$D" ]; then
      bpLine
@@ -1517,7 +1522,7 @@ printNamedLine() {
 
 printCondNamedLine() {
   help_line="$1"
-  C=$(echo "$1" | sed -s 's/^.*##N-C//' | awk '{print $1}')
+  C=$(echo "$1" | sed -s 's/^.*##CN-//' | awk '{print $1}')
   name=$(echo "$help_line" | sed -e 's/^.*'"$C"'//' -e 's/^[ \t]*//' )
   eval "D=\$$C"
   if [ -n "$D" ]; then
@@ -1531,13 +1536,13 @@ help() { ## Print this help information
   echo 
   IFS=$'\n'
   SC="$1"
-  help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##-C' -e '\"##' -e '##N-//' -e 'help_line' -e 'printLine')
+  help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##N-//' -e 'help_line' -e 'printLine')
   for help_line in ${help_lines} ; do
     case "$help_line" in
       *"##-"*)   bpLine ;;
-      *"##-C"*)  printCondLine       "$help_line" ;;
+      *"##C-"*)  printCondLine       "$help_line" ;;
       *"##N-"*)  printNamedLine      "$help_line" ;;
-      *"##N-C"*) printCondNamedLine  "$help_line" ;;
+      *"##CN-"*) printCondNamedLine  "$help_line" ;;
       *"##CV"*)  printCondCommandV    "$help_line" ;;
       *"##C"*)   printCondCommand    "$help_line" ;;
 #      *"##A"*)   echo "Int arg"      ;;
@@ -1572,8 +1577,8 @@ ihelp() { ##D Print internal help information
     case "$help_line" in
 #      "##-")    bpLine ;;
       *"##D"*)  printCommand  "$help_line" '##D' ;;
-      *"##-C"*) printCondLine "$help_line" ;;
-      *"##N-C"*) printCondNamedLine  "$help_line" ;;
+      *"##C-"*) printCondLine "$help_line" ;;
+      *"##CN-"*) printCondNamedLine  "$help_line" ;;
       *"##C"*)   printCondCommand  "$help_line" ;;
       *)
       ;;
@@ -1585,9 +1590,9 @@ ihelp() { ##D Print internal help information
   bpPrintInfo "##" "Subcommand information comment (shown with help)"
   bpPrintInfo "##C" "Conditional subcommand comment (shown with help)"
   bpPrintInfo "##-" "Separator line (shown with help)"
-  bpPrintInfo "##-C" "Conditional separator line (shown with help)"
+  bpPrintInfo "##C-" "Conditional separator line (shown with help)"
   bpPrintInfo "##N-" "Named separator line (shown with help)"
-  bpPrintInfo "##N-C" "Conditional named separator line (shown with help)"
+  bpPrintInfo "##CN-" "Conditional named separator line (shown with help)"
   bpPrintInfo "##D" "Internal function comment (shown ihelp)"
   bpLine
 }
