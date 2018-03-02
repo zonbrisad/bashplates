@@ -32,6 +32,7 @@
 #set -o xtrace
 # Display shell input lines as they are read
 #set -v
+set -o errtrace
 
 # Exit script when a command fails. Append ||true if error is expected
 #set -o errexit # || true
@@ -80,7 +81,8 @@ print() { ## Bashplate text output function examples
 }
 
 traptest() { ## Trap signal test
-  read -pr "Press CTRL-C" -t 30
+  TRAPTEST=1
+	bpRead "Press CTRL-C" 
 }
 
 tltest() { ## Test textline
@@ -97,7 +99,7 @@ tltest() { ## Test textline
 
 roottest() { ## Test assert root
   bpAssertRoot
-  echo "Great you are root"
+  bpOk "Great you are root"
 }
 
 locktest() { ## Lock file test
@@ -169,13 +171,13 @@ postcmd() { ## Test postCmdHook
 
 preCmdHook() {
   if [ "$1" == "precmd" ]; then
-    echo "This is the precmdhook"
+    bpOk "This is the precmdhook"
   fi
 }
 
 postCmdHook() {
   if [ "$1" == "postcmd" ]; then
-    echo "This is the postmdhook"
+    bpOk "This is the postmdhook"
   fi
 }
 
@@ -183,8 +185,8 @@ postCmdHook() {
 
 pipe() { ## pipe example
   stdin=$(cat)
-	bpInfo "The follwing text was \"piped\" to the script"
-	echo -e "$stdin"
+  bpInfo "The follwing text was \"piped\" to the script"
+  echo -e "$stdin"
 }
 
 ##N- Some fun
@@ -226,13 +228,13 @@ spinner() { ## Spinner example
 bpWait() { ##D Wait for n seconds
   echo "${E_HIDE}"
   a=0
-	tmp=${SECONDS}
+  tmp=${SECONDS}
   while [ "$a" -lt "$1" ]; do
-	  a=$(( SECONDS - tmp ))
-	  print_spinner "Waiting... $a"
-		sleep 0.1
-	done
-	echo -e "${E_SHOW}"
+    a=$(( SECONDS - tmp ))
+    print_spinner "Waiting... $a"
+    sleep 0.1
+  done
+  echo -e "${E_SHOW}"
 }
 
 
@@ -376,7 +378,7 @@ color2() { ## Show example of all 256 colors
 
 color3() { ## Color test
   echo -e "[${E_BLACK}${E_ON_RED}Error${E_END}] ${E_BR_RED}Error text${E_END}"
-	echo -e "[${E_WHITE}${E_ON_YELLOW}Warning${E_END}] ${E_BR_YELLOW}Warning text${E_END}"
+  echo -e "[${E_WHITE}${E_ON_YELLOW}Warning${E_END}] ${E_BR_YELLOW}Warning text${E_END}"
 }
 
 FLAG_BLUE="\x1b[48;5;20m"
@@ -508,21 +510,35 @@ readint() {  ## Test integer read from cmdline
 
 readyn() { ## Test Yes/No question from cmdline 
   if bpReadY "Default yes"; then
-	  echo "YES"
-	else
-	  echo "NO"
-	fi
+    echo "YES"
+  else
+    echo "NO"
+  fi
 
   if bpReadN "Default no"; then
-	  echo "YES"
-	else
-	  echo "NO"
-	fi
+    echo "YES"
+  else
+    echo "NO"
+  fi
 }
 
 
 ##N- Experiments
-																		 
+     
+bpDo() { ##D Execute command
+  if $1 ; then
+	  bpOk "Ok"
+	else
+	  bpError "Command $1 failed"
+	fi
+	
+}
+
+ex() { ## Ex
+  bpDo ls
+	bpDo sl
+}
+		 
 fileTest() { ## Test colorization of filename
   F="/use/local/var/log/messages"
   echo -n "The filename $(bpColorizeFile $F) is colorized."
@@ -596,9 +612,6 @@ inactiveCommand() { ##CV ICMD Inactive command test
 
 
 
-ct() { ## Clear tabs from script
-  sed -i -e 's/\t/  /g' "${BPSCRIPTPATH}/${BPSCRIPTNAME}"
-}
 
 # Directory where to store archives
 ARCHIVEDIR="archive"
@@ -678,6 +691,26 @@ backup() { ## Make an incremental backup
 }
 
 
+
+bpCallStack() { ## CS
+  bpTextLine "Call stack"
+  local frame=0
+	while caller $frame; do
+	  ((frame++));
+	done
+	echo "$*"
+	bpLine
+	exit 1
+}
+
+##N- BASH Documentation
+
+vars() { ## Vars
+  #echo
+	false
+}
+
+
 #---------------------------------------------------------------------
 # Bashplate settings
 #---------------------------------------------------------------------
@@ -746,6 +779,10 @@ INFOHOOK=infoHook
 #---------------------------------------------------------------------
 
 signalInt() {
+  if [ -n "$TRAPTEST" ]; then
+    echo
+    bpOk "This text is printed from signal \"trap\" sigint."
+  fi
   bpCleanUp
   exit "$BP_E_OK"
 }
@@ -764,7 +801,18 @@ signalTerm() {
   bpCleanUp
 }
 
-##N-C IHELP Exit and cleanup
+signalErr() {
+    
+  echo "Trace error Row: $1  Function: $2"
+	bpCallStack
+	bpExit 1
+}
+
+signalDbg() {
+  echo "Debug Row: $1  Function: $2"
+}
+
+##CN- IHELP Exit and cleanup
 
 bpCleanUp() { ##D Cleanup function
   rm -f "$LOCK_FILE"    # remove Lock file
@@ -858,21 +906,26 @@ BP_C_ERROR=$E_BR_RED
 BP_C_CRITICAL=$E_ON_RED$E_WHITE
 BP_C_LINE=$E_DARKGRAY
 BP_C_LINE_TEXT=$E_YELLOW
-BP_C_COMMENT=$E_GREEN
+BP_C_DESCRIPTION=$E_GREEN
 BP_C_ID=$E_CYAN
 BP_C_FILENAME=$E_BR_GREEN
 BP_C_PATH=$E_GREEN
+
+# Shellscript colorize colors
+BP_C_RESERVED=$E_RED
+BP_C_COMMENT=$E_CYAN
+BP_C_STRING=$E_GREEN
+BP_C_VAR=$E_BR_YELLOW
 
 # Exit codes
 #
 BP_E_OK=0            # successful termination
 
-
 #---------------------------------------------------------------------
 # Bashplate internal functions
 #---------------------------------------------------------------------
 
-##N-C IHELP Printing functions
+##CN- IHELP Printing functions
 
 # Print text with row
 #
@@ -936,11 +989,11 @@ bpPrintInfoGeneric() {
 # arg2 text for column 2
 #
 bpPrintInfo() {
-  bpPrintInfoGeneric "${BP_C_ID}" "${BP_C_COMMENT}" "$1" "$2"
+  bpPrintInfoGeneric "${BP_C_ID}" "${BP_C_DESCRIPTION}" "$1" "$2"
 }
 
 bpPrintInfoAlt() {
-  bpPrintInfoGeneric "${E_DARKGRAY}" "${BP_C_COMMENT}" "$1" "$2"
+  bpPrintInfoGeneric "${E_DARKGRAY}" "${BP_C_DESCRIPTION}" "$1" "$2"
 }
 
 # Print a variable + text into two columns
@@ -950,7 +1003,7 @@ bpPrintInfoAlt() {
 # $3 optional text form column 1
 #
 bpPrintVar() {
-  var="$1"			
+  var="$1"      
   if [ "${!var}" ]; then
     if [ ! -z "$3" ]; then
       X=${3}
@@ -982,9 +1035,9 @@ bpColorizeFile() { ##D Colorize string with filename
 bpFilterEscape() { ##D Filter escape characters from string
   echo "$1" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
 }
-	
+  
 
-##N-C IHELP File operations
+##CN- IHELP File operations
 
 #
 # $1 directory to change to
@@ -1101,7 +1154,7 @@ bpStrExist() { ##D Check if string exist in file
   fi
 }
 
-##N-C IHELP Input
+##CN- IHELP Input
 
 #
 # Read string from commandline
@@ -1160,21 +1213,21 @@ bpReadInt() { ##D Read integer from commandline
 # return 0 = Yes, 1=No
 #
 bpReadYN() {  ##D Ask yes/no question generic 
-	while true; do
-	
-	  if [ "$2" -eq 1 ]; then 
-		  yn=$( bpRead "${1} [y/N]" )	    
-		else
-  		yn=$( bpRead "${1} [Y/n]" )
-		fi
-	
+  while true; do
+  
+    if [ "$2" -eq 1 ]; then 
+      yn=$( bpRead "${1} [y/N]" )      
+    else
+      yn=$( bpRead "${1} [Y/n]" )
+    fi
+  
     case "$yn" in
-		  [Yy]* ) return 0;  break;;
-		  [Nn]* ) return 1;  break;;
-		  ""    ) return "$2"; break;;
-		  * ) echo "Please answer yes or no.";;
-		esac
-	done
+      [Yy]* ) return 0;  break;;
+      [Nn]* ) return 1;  break;;
+      ""    ) return "$2"; break;;
+      * ) echo "Please answer yes or no.";;
+    esac
+  done
 }
 
 #
@@ -1183,7 +1236,7 @@ bpReadYN() {  ##D Ask yes/no question generic
 #
 bpReadY() { ##D Ask yes/no question default yes
   bpReadYN "$1" 0
-	return $?
+  return $?
 }
 
 #
@@ -1192,7 +1245,7 @@ bpReadY() { ##D Ask yes/no question default yes
 #
 bpReadN() { ##D Ask yes/no question default no
   bpReadYN "$1" 1
-	return $?
+  return $?
 }
 
 
@@ -1202,7 +1255,7 @@ bpReadN() { ##D Ask yes/no question default no
 
 # Settings file ------------------------------------------------------
 
-##N-C BPSETTINGS Settings
+##CN- BPSETTINGS Settings
 
 bpAddSetting() { 
 
@@ -1301,7 +1354,7 @@ setorg() { ##C BPSETTINGS Set default organisation
 
 # Logging ---------------------------------------------------------
 
-##N-C IHELP Log functions
+##CN- IHELP Log functions
 
 #
 # Function logging to file
@@ -1373,7 +1426,7 @@ mlog() {   ##C LOGFILE Monitor logfile
   fi
 }
 
-##N-C IHELP Message
+##CN- IHELP Message
 
 bpOk() { ##D Success message
   if [ -n "$LOG_OK" ]; then
@@ -1413,7 +1466,7 @@ bpCritical() { ##D Critical error message
 
 # Various  ---------------------------------------------------------
 
-##N-C IHELP Assert
+##CN- IHELP Assert
 
 bpAssertRoot() { ##D Assert that user is root
   if [ "$(whoami)" != root ]; then
@@ -1433,7 +1486,7 @@ bpAssertNoLockFile() { ##D Assert that lockfile is not present
 }
 
 bpAssertRequiredProgs() { # Assert that required programs are available on the system (deprecated)
-	bpAssertProgs "${REQUIRED_PROGRAMS[@]}"
+  bpAssertProgs "${REQUIRED_PROGRAMS[@]}"
 }
 
 #
@@ -1451,15 +1504,18 @@ bpAssertProgs() { ##D Assert that required programs are available on the system
   fi
 }
 
-##N-C IHELP Debug/Controll
+##CN- IHELP Debug/Controll
 
 icheck() { ##D Make a shellcheck
   bpAssertProgs "shellcheck"
   shellcheck "$0"
 }
 
+irt() { ##D Remove tabs from script
+  sed -i -e 's/\t/  /g' "${BPSCRIPTPATH}/${BPSCRIPTNAME}"
+}
 
-##N-C IHELP Help & info
+##CN- IHELP Help & info
 
 printCommand() {
   help_line=$1
@@ -1497,7 +1553,7 @@ printCondCommandV() {
 
 printCondLine() {
   help_line="$1"
-  C=$(echo "$1" | sed -s 's/^.*##-C//' | awk '{print $1}')
+  C=$(echo "$1" | sed -s 's/^.*##C-//' | awk '{print $1}')
   eval "D=\$$C"
   if [ -n "$D" ]; then
      bpLine
@@ -1511,7 +1567,7 @@ printNamedLine() {
 
 printCondNamedLine() {
   help_line="$1"
-  C=$(echo "$1" | sed -s 's/^.*##N-C//' | awk '{print $1}')
+  C=$(echo "$1" | sed -s 's/^.*##CN-//' | awk '{print $1}')
   name=$(echo "$help_line" | sed -e 's/^.*'"$C"'//' -e 's/^[ \t]*//' )
   eval "D=\$$C"
   if [ -n "$D" ]; then
@@ -1525,13 +1581,13 @@ help() { ## Print this help information
   echo 
   IFS=$'\n'
   SC="$1"
-  help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##-C' -e '\"##' -e '##N-//' -e 'help_line' -e 'printLine')
+  help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##N-//' -e 'help_line' -e 'printLine')
   for help_line in ${help_lines} ; do
     case "$help_line" in
       *"##-"*)   bpLine ;;
-      *"##-C"*)  printCondLine       "$help_line" ;;
+      *"##C-"*)  printCondLine       "$help_line" ;;
       *"##N-"*)  printNamedLine      "$help_line" ;;
-      *"##N-C"*) printCondNamedLine  "$help_line" ;;
+      *"##CN-"*) printCondNamedLine  "$help_line" ;;
       *"##CV"*)  printCondCommandV    "$help_line" ;;
       *"##C"*)   printCondCommand    "$help_line" ;;
 #      *"##A"*)   echo "Int arg"      ;;
@@ -1566,8 +1622,8 @@ ihelp() { ##D Print internal help information
     case "$help_line" in
 #      "##-")    bpLine ;;
       *"##D"*)  printCommand  "$help_line" '##D' ;;
-      *"##-C"*) printCondLine "$help_line" ;;
-      *"##N-C"*) printCondNamedLine  "$help_line" ;;
+      *"##C-"*) printCondLine "$help_line" ;;
+      *"##CN-"*) printCondNamedLine  "$help_line" ;;
       *"##C"*)   printCondCommand  "$help_line" ;;
       *)
       ;;
@@ -1579,9 +1635,9 @@ ihelp() { ##D Print internal help information
   bpPrintInfo "##" "Subcommand information comment (shown with help)"
   bpPrintInfo "##C" "Conditional subcommand comment (shown with help)"
   bpPrintInfo "##-" "Separator line (shown with help)"
-  bpPrintInfo "##-C" "Conditional separator line (shown with help)"
+  bpPrintInfo "##C-" "Conditional separator line (shown with help)"
   bpPrintInfo "##N-" "Named separator line (shown with help)"
-  bpPrintInfo "##N-C" "Conditional named separator line (shown with help)"
+  bpPrintInfo "##CN-" "Conditional named separator line (shown with help)"
   bpPrintInfo "##D" "Internal function comment (shown ihelp)"
   bpLine
 }
@@ -1606,14 +1662,39 @@ iinfo() { ##D Show information about script
   printSettings
 }
 
+#
 iview() {  ##D View example
-  
+#  VF='s/\$[{]?[a-zA-Z0-9_]*[}]?/'"\\${BP_C_VAR}&\\${E_END}/" 
   # Singe command documentation
   if [ "$2" != "" ]; then
     echo
     bpTextLine "$2"
     echo
-    grep --no-filename -A 20  "$0" -e "${2}()" | grep -B 20 -m 1 -x "}" 
+    grep --no-filename -A 60  "$0" -e "${2}()" | grep -B 60 -m 1 -x "}" | \
+      sed -r -e "s/#.*/\\${BP_C_COMMENT}&\\${E_END}/"          \
+             -e "s/\<echo\>/\\${BP_C_RESERVED}&\\${E_END}/"    \
+             -e "s/\<if\>/\\${BP_C_RESERVED}&\\${E_END}/"      \
+             -e "s/\<then\>/\\${BP_C_RESERVED}&\\${E_END}/"    \
+             -e "s/\<else\>/\\${BP_C_RESERVED}&\\${E_END}/"    \
+             -e "s/\<fi\>/\\${BP_C_RESERVED}&\\${E_END}/"      \
+             -e "s/\<do\>/\\${BP_C_RESERVED}&\\${E_END}/"      \
+             -e "s/\<done\>/\\${BP_C_RESERVED}&\\${E_END}/"    \
+             -e "s/\<elif\>/\\${BP_C_RESERVED}&\\${E_END}/"    \
+             -e "s/\<case\>/\\${BP_C_RESERVED}&\\${E_END}/"    \
+             -e "s/\<esac\>/\\${BP_C_RESERVED}&\\${E_END}/"    \
+             -e "s/\<for\>/\\${BP_C_RESERVED}&\\${E_END}/"     \
+             -e "s/\<in\>/\\${BP_C_RESERVED}&\\${E_END}/"      \
+             -e "s/\<select\>/\\${BP_C_RESERVED}&\\${E_END}/"  \
+             -e "s/\<time\>/\\${BP_C_RESERVED}&\\${E_END}/"    \
+             -e "s/\<until\>/\\${BP_C_RESERVED}&\\${E_END}/"   \
+             -e "s/\<select\>/\\${BP_C_RESERVED}&\\${E_END}/"  \
+             -e "s/\<eval\>/\\${BP_C_RESERVED}&\\${E_END}/"  \
+             -e "s/\".*\"/\\${BP_C_STRING}&\\${E_END}/"        \
+             -e "s/[^=]*=/${BP_C_VAR}&\\${E_END}/"        \
+#             -e $VF
+#             -e 's/\$[{]?[a-zA-Z0-9]*[}]?/XXX/'
+#             -e 's/$?/'"\\${BP_C_VAR}&\\${E_END}/" \
+ #            -e "s/\<while\>/\\${BP_C_RESERVED}&\\${E_END}/"    \             
     bpLine
     bpExit
   fi
@@ -1628,7 +1709,7 @@ ivars() { ##D Print internal variables
     if [ "$line" == "--" ]; then
       echo
     else
-      help_line=$(echo "${line}" | sed -u -e "s/##V[ ]/${BP_C_COMMENT}/i" -e "s/^.*=/${BP_C_ID}&${E_END}/i" -e "s/=/${E_END}=/" )
+      help_line=$(echo "${line}" | sed -u -e "s/##V[ ]/${BP_C_DESCRIPTION}/i" -e "s/^.*=/${BP_C_ID}&${E_END}/i" -e "s/=/${E_END}=/" )
       echo -e "$help_line"
       echo -en "$E_END"
   fi
@@ -1641,7 +1722,7 @@ version() { ## Print version information
 }
 
 # Runs a function in this file as a command
-runCommand() {
+bpRunCommand() {
   if [ "$BPARGUMENTS" -eq 0 ]; then
 
     # check for a default command
@@ -1672,7 +1753,7 @@ runCommand() {
 
           if [ -n "$D" ]; then
             # execute command
-            "${command}" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
+            "${command}" "$@" 
           else
             bpError "Command \"$command\" not available right now."
           fi
@@ -1681,7 +1762,7 @@ runCommand() {
         fi
       else 
         # command is not conditional, execute
-        "${command}" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"        
+        "${command}" "$@"
       fi
 
       # execute post command hook  if existing
@@ -1732,6 +1813,9 @@ trap  signalQuit SIGQUIT
 trap  signalInt  SIGINT
 trap  signalHup  SIGHUP
 trap  signalTerm SIGTERM
+trap  'signalErr ${FUNCNAME} ${LINENO}' ERR
+
+#trap  'signalDbg ${FUNCNAME} ${LINENO}' DEBUG
 
 #---------------------------------------------------------------------
 # Load settings and execute script handler
@@ -1742,11 +1826,11 @@ bpLoadSettings
 
 # execute prescript hook if existing
 if [ -n "$PREHOOK" ]; then
-  ${PREHOOK} "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
+  ${PREHOOK} "$@"
 fi
 
 # Run command parser
-runCommand "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
+bpRunCommand "$@"
 
 # Exit cleanly
 bpExit
