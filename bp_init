@@ -39,11 +39,12 @@ createSettings() {
 	echo "# " >> ${bpSettings}
 	echo      >> ${bpSettings}
 			
-	addSetting "BP_NAME"  "John Doe"        "Name of user"
-	addSetting "BP_EMAIL" "JohnDoe@foo.bar" "Email of user"
-	addSetting "BP_EDITOR" "vi"             "Default editor"
-	addSetting "BP_LICENSE" "MIT"           "Default project license"
-	addSetting "BP_ORG"     "ACME"          "Default organisation"
+	addSetting "BP_NAME"    "John Doe"        "Name of user"
+	addSetting "BP_EMAIL"   "JohnDoe@foo.bar" "Email of user"
+	addSetting "BP_EDITOR"  "vi"              "Default editor"
+	addSetting "BP_LICENSE" "MIT"             "Default project license"
+	addSetting "BP_ORG"     "ACME"            "Default organisation"
+	addSetting "BP_DIFF"    "meld"            "Default diff program"
 }
 													
 bpLoadSettings() {
@@ -61,6 +62,7 @@ bpLoadSettings() {
 	export BP_EDITOR
 	export BP_LICENSE
 	export BP_ORG
+	export BP_PATH
 } 
 
 

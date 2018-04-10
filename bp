@@ -45,17 +45,12 @@ set -o pipefail
 # User defined Settings
 #---------------------------------------------------------------------
 
-#BP_DIR=bashplate_files
 BP_DIR=templates
-#BP_INSTALL_DIR=~/bin/${BP_DIR}
 
-#if [ -e ${BPSCRIPTPATH}/BP ]; then
-#  BP=1
-#else
-#  NEW=1
-#fi
-BP=1
-#NEW=1
+
+#basicPkgs=(         \
+#  "shellcheck"      \   
+#)
 
 #---------------------------------------------------------------------
 # User defined functions
@@ -99,9 +94,35 @@ news() { ## Create a new simple bashplate project
   newScript "bashplate-simple"
 }
 
+#BP_DIFF
+##N- Tools
+dl() { ## Make diff with latest bashtemplate
+  meld ${BPSCRIPTPATH}/templates/bashplate  $2
+}
+
+##N- Setup
+
+#
+# Installs array of packages
+# 
+# arg 1  array of packages
+#
+installG() {
+  # first update all packages
+	apt-get update
+		
+ 	# install all packages in list
+	for pkg in ${@}; do
+	  apt-get -y install ${pkg}
+	done
+}
+							
+tools() {   ## Install development tools like git svn
+  assertRoot
+	installG ${develToolsPkgs[@]}
+}
+
 ##N- Project management (git)
-
-
 
 clean() { ## Remove leftover files 
   bpCd "${BPSCRIPTPATH}"
@@ -135,22 +156,27 @@ tag() { ## Make a new tag
   bpCd - 
 }
 
-push() { ## Push to GITHUB
+push() { ## Push project to GITHUB
   bpCd "${BPSCRIPTPATH}"
   git push --progress
   bpCd - 
 } 
 
-pull() { ## Pull bashplates from GITHUB
+pull() { ## Pull project from GITHUB
   bpCd "${BPSCRIPTPATH}"
   git pull --progress
   bpCd - 
 } 
 
+
+updatesettings() { ## Update settings
+  bpAddSettings 
+	bpChSetting "${bpSettingsFile}" "BP_PATH" "${BPSCRIPTPATH}"
+}
+
 #---------------------------------------------------------------------
 # Bashplate settings
 #---------------------------------------------------------------------
-
 bpInitSettings() { 
 
 ##V Script version info
@@ -692,12 +718,15 @@ bpAddSetting() {
   fi
 }
 
-bpAddSettings() { 
+bpAddSettings() {
   bpAddSetting $bpSettingsFile "BP_NAME"    "John Doe"        "Name of user"
   bpAddSetting $bpSettingsFile "BP_EMAIL"   "JohnDoe@foo.bar" "Email of user"
   bpAddSetting $bpSettingsFile "BP_EDITOR"  "vi"              "Default editor"
   bpAddSetting $bpSettingsFile "BP_LICENSE" "MIT"             "Default project license"
   bpAddSetting $bpSettingsFile "BP_ORG"     "ACME"            "Default organisation"
+	bpAddSetting $bpSettingsFile "BP_DIFF"    "meld"            "Default diff program"
+	
+	bpAddSetting $bpSettingsFile "BP_PATH"    "${BPSCRIPTPATH}" "Path to Bashplates directory"
 }
 
 # Change setting in config file (key value pair)
@@ -747,11 +776,12 @@ printSettings() { ##C BPSETTINGS Print plate information
   bpPrintVar BP_LICENSE   "Default license:"
   bpPrintVar BP_EDITOR    "Default editor"
   bpPrintVar BP_ORG       "Default organisation"
+	bpPrintVar BP_DIFF      "Default diff program"
   bpLine
 }
 
 setname() { ##C BPSETTINGS Set name
-  bpChSetting "${bpSettingsFile}" "BP_NAME" "\"${2}\""  
+  bpChSetting "${bpSettingsFile}" "BP_NAME" "\"${2}\""
 }
 
 setemail() { ##C BPSETTINGS Set email address
@@ -768,6 +798,10 @@ setlic() { ##C BPSETTINGS Set default license
 
 setorg() { ##C BPSETTINGS Set default organisation
   bpChSetting "${bpSettingsFile}" "BP_ORG" "\"${2}\""  
+}
+
+setdiff() { ##C BPSETTINGS Set default organisation
+  bpChSetting "${bpSettingsFile}" "BP_DIFF" "\"${2}\""  
 }
 
 

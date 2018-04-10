@@ -524,7 +524,71 @@ readyn() { ## Test Yes/No question from cmdline
 
 
 ##N- Experiments
-     
+
+bpShow() {
+  for a in {1..6}; do 
+	  echo -e "${E_RED}$1${E_END}"
+		sleep 0.3
+		echo -e "${E_UP}${E_RETURN}"
+		echo -e "${E_BR_RED}$1${E_END}"
+		sleep 0.3
+		echo -e "${E_UP}${E_RETURN}"
+#		echo -e "${E_RETURN}"
+				
+	done
+}
+
+blink() { ## Test
+  bpShow "Blinking message"
+}
+
+
+listfiles() { ## list files
+  for file in ./*
+	do
+	  echo $file
+	  if [ -L $file ]; then
+		echo "A"
+		else
+		echo "B"
+		fi
+	done
+}
+
+#
+# $1 Number of iterations
+# $2 Command to execute
+#
+bpRepeat() { ##D Repeat command n times
+ local i max
+ max=$1; shift;
+ for ((i=1; i <= max ; i++)); do  # --> C-like syntax
+   eval "$@";
+ done
+
+}
+
+repeat() { ## Test repeat 
+  bpRepeat 10 "ls ; sleep 1"
+}
+
+
+#
+# $1 Text to set as title
+#
+bpTitle() { ##D Set terminal window title
+  case "$TERM" in
+    *term* | rxvt)
+	    echo -en  "\e]0;$*\a" ;;
+	  *)  ;;
+  esac
+}
+
+title() { ## Set title
+  bpTitle "Kalle"
+	bpWait 10
+}
+
 bpDo() { ##D Execute command
   if $1 ; then
 	  bpOk "Ok"
@@ -690,24 +754,63 @@ backup() { ## Make an incremental backup
         ${BACKUP_DIR}/backup_0 
 }
 
+#XXX=-e 's/[0-9]*/\\${BP_C_VALUE}&\\${E_END}/' \
 
 
-bpCallStack() { ## CS
-  bpTextLine "Call stack"
-  local frame=0
-	while caller $frame; do
-	  ((frame++));
-	done
-	echo "$*"
-	bpLine
-	exit 1
+f() { ## Create an error
+  false
 }
 
 ##N- BASH Documentation
 
 vars() { ## Vars
   #echo
-	false
+	bpTextLine "Conditions"
+	
+	bpPrintInfo "[ -z STRING ]" "Empty string"
+	bpPrintInfo "[ -n STRING ]" "Not empty string"
+	bpPrintInfo "[ NUM -eq NUM ]" "Equal"
+	bpPrintInfo "[ NUM -ne NUM ]" "Not equal"
+	bpPrintInfo "[ NUM -lt NUM ]" "Less than"
+	bpPrintInfo "[ NUM -le NUM ]" "Less than or equal"
+	bpPrintInfo "[ NUM -gt NUM ]" "Greater than"
+	bpPrintInfo "[ NUM -ge NUM ]" "Greater than or equal"
+	bpPrintInfo "[[ STRING =~ STRING ]]" "Regexp"
+	bpPrintInfo "(( NUM < NUM ))" "Numeric conditions"
+	bpPrintInfo "[ -o noclobber ]" "If OPTIONNAME is enabled"
+	bpPrintInfo "[ ! EXPR ]" "Not"
+	bpPrintInfo "[ X ] && [ Y ]" "And"
+	bpPrintInfo "[ X ] || [ Y ]" "Or"
+	
+	bpTextLine "File conditions"
+  bpPrintInfo "[ -e FILE ]" "File exists"
+	bpPrintInfo "[ -f FILE ]" "Is regular file"
+	bpPrintInfo "[ -d FILE ]" "Is directory"
+	bpPrintInfo "[ -h FILE ]" "Is symlink"
+	bpPrintInfo "[ -r FILE ]" "Is readble"
+	bpPrintInfo "[ -w FILE ]" "Is writable"
+	bpPrintInfo "[ -x FILE ]" "Is executable"
+	bpPrintInfo "[ -s FILE ]" "Size>0"
+	
+	bpPrintInfo "[ -S FILE ]" "Is socket"
+	bpPrintInfo "[ -g FILE ]" "sgid bit set"
+	bpPrintInfo "[ -u FILE ]" "suid bit set"
+
+  bpPrintInfo "[ FILE1 -nt FILE2 ]" "1 is more recent than 2"
+	bpPrintInfo "[ FILE1 -ot FILE2 ]" "2 is more recent than 1"
+	bpPrintInfo "[ FILE1 -ef FILE2 ]" "Same files"
+
+  bpTextLine "Arguments"
+  bpPrintInfo '$#' "Number of arguments"
+  bpPrintInfo '$*' "All arguments"
+  bpPrintInfo '$@' "All arguments, starting from first"
+  bpPrintInfo '$1' "First argument"
+
+  bpPrintInfo '$?' "Exit status of last task"
+	bpPrintInfo '$!' "PID of last background task"
+	bpPrintInfo '$$' "PID of shell"
+
+  bpLine
 }
 
 
@@ -802,17 +905,30 @@ signalTerm() {
 }
 
 signalErr() {
-    
-  echo "Trace error Row: $1  Function: $2"
+  echo
+  echo
+  bpError "Trace error Row: $2  Function: $1"
+	echo
 	bpCallStack
 	bpExit 1
 }
 
 signalDbg() {
-  echo "Debug Row: $1  Function: $2"
+  echo "Debug Row: $2  Function: $1"
 }
 
 ##CN- IHELP Exit and cleanup
+
+bpCallStack() { ##D Print out BASH call stack
+  bpTextLine "Call stack"
+	echo
+  local frame=0
+	while caller $frame | sed -r -e "s/[0-9]*/${BP_C_VALUE}&${E_END}/"   ; do
+	  ((frame++));
+	done
+	echo "$*"
+	bpLine
+}
 
 bpCleanUp() { ##D Cleanup function
   rm -f "$LOCK_FILE"    # remove Lock file
@@ -915,6 +1031,7 @@ BP_C_PATH=$E_GREEN
 BP_C_RESERVED=$E_RED
 BP_C_COMMENT=$E_CYAN
 BP_C_STRING=$E_GREEN
+BP_C_VALUE=$E_BR_YELLOW
 BP_C_VAR=$E_BR_YELLOW
 
 # Exit codes
@@ -1671,7 +1788,7 @@ iview() {  ##D View example
     bpTextLine "$2"
     echo
     grep --no-filename -A 60  "$0" -e "${2}()" | grep -B 60 -m 1 -x "}" | \
-      sed -r -e "s/#.*/\\${BP_C_COMMENT}&\\${E_END}/"          \
+      sed  -e "s/#.*/\\${BP_C_COMMENT}&\\${E_END}/"          \
              -e "s/\<echo\>/\\${BP_C_RESERVED}&\\${E_END}/"    \
              -e "s/\<if\>/\\${BP_C_RESERVED}&\\${E_END}/"      \
              -e "s/\<then\>/\\${BP_C_RESERVED}&\\${E_END}/"    \
@@ -1689,12 +1806,14 @@ iview() {  ##D View example
              -e "s/\<until\>/\\${BP_C_RESERVED}&\\${E_END}/"   \
              -e "s/\<select\>/\\${BP_C_RESERVED}&\\${E_END}/"  \
              -e "s/\<eval\>/\\${BP_C_RESERVED}&\\${E_END}/"  \
+						 -e "s/\<break\>/\\${BP_C_RESERVED}&\\${E_END}/"  \
+             -e "s/\<while\>/\\${BP_C_RESERVED}&\\${E_END}/"    \
              -e "s/\".*\"/\\${BP_C_STRING}&\\${E_END}/"        \
-             -e "s/[^=]*=/${BP_C_VAR}&\\${E_END}/"        \
+             -e "s/\([^=]*\)=/${BP_C_VAR}\1\\${E_END}=/"        \
 #             -e $VF
 #             -e 's/\$[{]?[a-zA-Z0-9]*[}]?/XXX/'
 #             -e 's/$?/'"\\${BP_C_VAR}&\\${E_END}/" \
- #            -e "s/\<while\>/\\${BP_C_RESERVED}&\\${E_END}/"    \             
+
     bpLine
     bpExit
   fi
