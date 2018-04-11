@@ -94,8 +94,15 @@ news() { ## Create a new simple bashplate project
   newScript "bashplate-simple"
 }
 
+
+##N- Bashrc
+initrc() { ## Init .bashrc 
+  echo "K"
+}
+
 #BP_DIFF
 ##N- Tools
+
 dl() { ## Make diff with latest bashtemplate
   meld ${BPSCRIPTPATH}/templates/bashplate  $2
 }
@@ -207,7 +214,10 @@ LOCK_FILE=/tmp/${BPSCRIPTNAME}.lock
 # Activate settings function (will create settings file when run)
 BPSETTINGS=1
 
+##V Settings directory
 bpSettingsDir=~/.config/bashplates
+
+##V Settings file
 bpSettingsFile=${bpSettingsDir}/bashplates.conf
 
 # Create settings file if non existent
@@ -748,7 +758,10 @@ bpChSetting() {
 
 bpCreateSettings() {
   echo "Creating new bashplates settings file. ${bpSettingsFile}"
-  bpMkDir ${bpSettingsDir}
+  bpMkDir "${bpSettingsDir}"
+	bpMkDir "${bpSettingsDir}/path"
+	bpMkDir "${bpSettingsDir}/modules"
+	
           
   echo "# " >> ${bpSettingsFile}
   echo "# Bashplates common settings" > ${bpSettingsFile}
@@ -767,6 +780,10 @@ bpLoadSettings() {
       source "${bpSettingsFile}"
     fi
   fi
+}
+
+initSettings() { ##C BPINIT Initiate settins directory
+  echo init  
 }
 
 printSettings() { ##C BPSETTINGS Print plate information
@@ -1034,6 +1051,11 @@ help() { ## Print this help information
   echo "$USAGE"
   echo -e "$DESC"
   echo 
+	
+	if [ ! -e "${bpSettingsDir}" ] && [ -n "${BPSETTINGS}" ]; then
+    BPINIT=1	
+  fi
+	
   IFS=$'\n'
   SC="$1"
   help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##N-//' -e 'help_line' -e 'printLine')

@@ -526,7 +526,7 @@ readyn() { ## Test Yes/No question from cmdline
 ##N- Experiments
 
 bpShow() {
-  for a in {1..6}; do 
+  for a in {1..10}; do 
 	  echo -e "${E_RED}$1${E_END}"
 		sleep 0.3
 		echo -e "${E_UP}${E_RETURN}"
