@@ -96,6 +96,16 @@ news() { ## Create a new simple bashplate project
 
 
 ##N- Bashrc
+
+addpath() { ## Add dir to PATH variable
+  echo
+}
+
+addmodule() { ## Add init script to 
+  echo
+}
+
+
 initrc() { ## Init .bashrc 
   echo "K"
 }
