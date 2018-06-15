@@ -352,7 +352,7 @@ color2() { ## Show example of all 256 colors
 
 
   echo
-  bpTextLine "256 Colors background"
+  bpTextLine "256 Colors ackground"
   echo
   for i in {0..231} ; do
     printf "\x1b[48;5;%sm  %3d  ${E_END} " "$i" "$i"
@@ -754,6 +754,11 @@ backup() { ## Make an incremental backup
         ${BACKUP_DIR}/backup_0 
 }
 
+
+backupfile() { ## Backup file
+  bpBackup $2
+}
+
 #XXX=-e 's/[0-9]*/\\${BP_C_VALUE}&\\${E_END}/' \
 
 
@@ -765,40 +770,40 @@ f() { ## Create an error
 
 vars() { ## Vars
   #echo
-	bpTextLine "Conditions"
+  bpTextLine "Conditions"
 	
-	bpPrintInfo "[ -z STRING ]" "Empty string"
-	bpPrintInfo "[ -n STRING ]" "Not empty string"
-	bpPrintInfo "[ NUM -eq NUM ]" "Equal"
-	bpPrintInfo "[ NUM -ne NUM ]" "Not equal"
-	bpPrintInfo "[ NUM -lt NUM ]" "Less than"
-	bpPrintInfo "[ NUM -le NUM ]" "Less than or equal"
-	bpPrintInfo "[ NUM -gt NUM ]" "Greater than"
-	bpPrintInfo "[ NUM -ge NUM ]" "Greater than or equal"
-	bpPrintInfo "[[ STRING =~ STRING ]]" "Regexp"
-	bpPrintInfo "(( NUM < NUM ))" "Numeric conditions"
-	bpPrintInfo "[ -o noclobber ]" "If OPTIONNAME is enabled"
-	bpPrintInfo "[ ! EXPR ]" "Not"
-	bpPrintInfo "[ X ] && [ Y ]" "And"
-	bpPrintInfo "[ X ] || [ Y ]" "Or"
+  bpPrintInfo "[ -z STRING ]" "Empty string"
+  bpPrintInfo "[ -n STRING ]" "Not empty string"
+  bpPrintInfo "[ NUM -eq NUM ]" "Equal"
+  bpPrintInfo "[ NUM -ne NUM ]" "Not equal"
+  bpPrintInfo "[ NUM -lt NUM ]" "Less than"
+  bpPrintInfo "[ NUM -le NUM ]" "Less than or equal"
+  bpPrintInfo "[ NUM -gt NUM ]" "Greater than"
+  bpPrintInfo "[ NUM -ge NUM ]" "Greater than or equal"
+  bpPrintInfo "[[ STRING =~ STRING ]]" "Regexp"
+  bpPrintInfo "(( NUM < NUM ))" "Numeric conditions"
+  bpPrintInfo "[ -o noclobber ]" "If OPTIONNAME is enabled"
+  bpPrintInfo "[ ! EXPR ]" "Not"
+  bpPrintInfo "[ X ] && [ Y ]" "And"
+  bpPrintInfo "[ X ] || [ Y ]" "Or"
 	
-	bpTextLine "File conditions"
+  bpTextLine "File conditions"
   bpPrintInfo "[ -e FILE ]" "File exists"
-	bpPrintInfo "[ -f FILE ]" "Is regular file"
-	bpPrintInfo "[ -d FILE ]" "Is directory"
-	bpPrintInfo "[ -h FILE ]" "Is symlink"
-	bpPrintInfo "[ -r FILE ]" "Is readble"
-	bpPrintInfo "[ -w FILE ]" "Is writable"
-	bpPrintInfo "[ -x FILE ]" "Is executable"
-	bpPrintInfo "[ -s FILE ]" "Size>0"
+  bpPrintInfo "[ -f FILE ]" "Is regular file"
+  bpPrintInfo "[ -d FILE ]" "Is directory"
+  bpPrintInfo "[ -h FILE ]" "Is symlink"
+  bpPrintInfo "[ -r FILE ]" "Is readble"
+  bpPrintInfo "[ -w FILE ]" "Is writable"
+  bpPrintInfo "[ -x FILE ]" "Is executable"
+  bpPrintInfo "[ -s FILE ]" "Size>0"
 	
-	bpPrintInfo "[ -S FILE ]" "Is socket"
-	bpPrintInfo "[ -g FILE ]" "sgid bit set"
-	bpPrintInfo "[ -u FILE ]" "suid bit set"
+  bpPrintInfo "[ -S FILE ]" "Is socket"
+  bpPrintInfo "[ -g FILE ]" "sgid bit set"
+  bpPrintInfo "[ -u FILE ]" "suid bit set"
 
   bpPrintInfo "[ FILE1 -nt FILE2 ]" "1 is more recent than 2"
-	bpPrintInfo "[ FILE1 -ot FILE2 ]" "2 is more recent than 1"
-	bpPrintInfo "[ FILE1 -ef FILE2 ]" "Same files"
+  bpPrintInfo "[ FILE1 -ot FILE2 ]" "2 is more recent than 1"
+  bpPrintInfo "[ FILE1 -ef FILE2 ]" "Same files"
 
   bpTextLine "Arguments"
   bpPrintInfo '$#' "Number of arguments"
@@ -807,17 +812,15 @@ vars() { ## Vars
   bpPrintInfo '$1' "First argument"
 
   bpPrintInfo '$?' "Exit status of last task"
-	bpPrintInfo '$!' "PID of last background task"
-	bpPrintInfo '$$' "PID of shell"
+  bpPrintInfo '$!' "PID of last background task"
+  bpPrintInfo '$$' "PID of shell"
 
   bpLine
 }
 
-
 #---------------------------------------------------------------------
 # Bashplate settings
 #---------------------------------------------------------------------
-
 bpInitSettings() { 
 
 ##V Script version info
@@ -853,6 +856,9 @@ bpSettingsFile=${bpSettingsDir}/bashplates.conf
 
 # Create settings file if non existent
 #CREATEPLSETTINGS=1
+
+##V Edit file command (uncomment to enable)
+BP_EDIT=1
 
 }
 #---------------------------------------------------------------------
@@ -908,9 +914,9 @@ signalErr() {
   echo
   echo
   bpError "Trace error Row: $2  Function: $1"
-	echo
-	bpCallStack
-	bpExit 1
+  echo
+  bpCallStack
+  bpExit 1
 }
 
 signalDbg() {
@@ -921,13 +927,13 @@ signalDbg() {
 
 bpCallStack() { ##D Print out BASH call stack
   bpTextLine "Call stack"
-	echo
+  echo
   local frame=0
-	while caller $frame | sed -r -e "s/[0-9]*/${BP_C_VALUE}&${E_END}/"   ; do
-	  ((frame++));
-	done
-	echo "$*"
-	bpLine
+  while caller $frame | sed -r -e "s/[0-9]*/${BP_C_VALUE}&${E_END}/"   ; do
+    ((frame++));
+  done
+  echo "$*"
+  bpLine
 }
 
 bpCleanUp() { ##D Cleanup function
@@ -1216,6 +1222,18 @@ bpRm() { ##D Remove file
   rm -rf "${1}"
 }
 
+
+# 
+# Make backup of file
+#
+# $1 file to be backed up
+#
+bpBackup() { ##D Make backup of file
+  BF="${1}_$(date +"%Y%m%d")-$(date +"%H%M%S").bak"
+  bpInfo "Backing up file \"$1\" to \"${BF}\""
+  cp -rf "$1" "${BF}" 
+}
+
 # Replace text in file
 #
 # $1 file 
@@ -1388,12 +1406,14 @@ bpAddSetting() {
   fi
 }
 
-bpAddSettings() { 
+bpAddSettings() {
   bpAddSetting $bpSettingsFile "BP_NAME"    "John Doe"        "Name of user"
   bpAddSetting $bpSettingsFile "BP_EMAIL"   "JohnDoe@foo.bar" "Email of user"
   bpAddSetting $bpSettingsFile "BP_EDITOR"  "vi"              "Default editor"
   bpAddSetting $bpSettingsFile "BP_LICENSE" "MIT"             "Default project license"
   bpAddSetting $bpSettingsFile "BP_ORG"     "ACME"            "Default organisation"
+  bpAddSetting $bpSettingsFile "BP_DIFF"    "meld"            "Default diff program"	
+  bpAddSetting $bpSettingsFile "BP_PATH"    "${BPSCRIPTPATH}" "Path to Bashplates directory"
 }
 
 # Change setting in config file (key value pair)
@@ -1443,11 +1463,12 @@ printSettings() { ##C BPSETTINGS Print plate information
   bpPrintVar BP_LICENSE   "Default license:"
   bpPrintVar BP_EDITOR    "Default editor"
   bpPrintVar BP_ORG       "Default organisation"
+  bpPrintVar BP_DIFF      "Default diff program"
   bpLine
 }
 
 setname() { ##C BPSETTINGS Set name
-  bpChSetting "${bpSettingsFile}" "BP_NAME" "\"${2}\""  
+  bpChSetting "${bpSettingsFile}" "BP_NAME" "\"${2}\""
 }
 
 setemail() { ##C BPSETTINGS Set email address
@@ -1466,6 +1487,13 @@ setorg() { ##C BPSETTINGS Set default organisation
   bpChSetting "${bpSettingsFile}" "BP_ORG" "\"${2}\""  
 }
 
+setdiff() { ##C BPSETTINGS Set default organisation
+  bpChSetting "${bpSettingsFile}" "BP_DIFF" "\"${2}\""  
+}
+
+ed() { ##C BP_EDIT Open this file with standard editor
+  ${BP_EDITOR} $0
+}
 
 ##-
 
@@ -1806,7 +1834,7 @@ iview() {  ##D View example
              -e "s/\<until\>/\\${BP_C_RESERVED}&\\${E_END}/"   \
              -e "s/\<select\>/\\${BP_C_RESERVED}&\\${E_END}/"  \
              -e "s/\<eval\>/\\${BP_C_RESERVED}&\\${E_END}/"  \
-						 -e "s/\<break\>/\\${BP_C_RESERVED}&\\${E_END}/"  \
+             -e "s/\<break\>/\\${BP_C_RESERVED}&\\${E_END}/"  \
              -e "s/\<while\>/\\${BP_C_RESERVED}&\\${E_END}/"    \
              -e "s/\".*\"/\\${BP_C_STRING}&\\${E_END}/"        \
              -e "s/\([^=]*\)=/${BP_C_VAR}\1\\${E_END}=/"        \
@@ -1852,11 +1880,13 @@ bpRunCommand() {
     bpErrorExit "No command given"
   fi
 
-  funks=$(grep "##" "$0" | grep -v grep | grep -v help_line)
-  for line in ${funks}; do
-    command=$(echo "$line" | sed -s 's/(.*//')
-    if [ "$command" == "$1" ]; then
-
+  if [ "$( type -t $1 )" = "function" ]; then # Check if subcommand is declared as function
+  
+  #funks=$(grep "##" "$0" | grep -v grep | grep -v help_line)
+  #for line in ${funks}; do
+   # command=$(echo "$line" | sed -s 's/(.*//')
+    #if [ "$command" == "$1" ]; then
+      command=$1
       # execute pre command hook  if existing
       if [ -n "$PRECMDHOOK" ]; then
         "${PRECMDHOOK}" "$command"
@@ -1889,9 +1919,11 @@ bpRunCommand() {
         "${POSTCMDHOOK}" "$command"
       fi      
       bpExit
-    fi
-  done
-  bpErrorExit "Command \"$1\" not found"
+    #fi
+  #done
+  else
+    bpErrorExit "Command \"$1\" not found"
+  fi
 }
 
 #---------------------------------------------------------------------

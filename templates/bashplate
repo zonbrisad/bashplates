@@ -61,7 +61,6 @@ myfunk() { ## Description of my funktion
 #---------------------------------------------------------------------
 # Bashplate settings
 #---------------------------------------------------------------------
-
 bpInitSettings() { 
 
 ##V Script version info
@@ -71,14 +70,14 @@ VERSION="0.0"
 BPVERSION="1.11"
 
 ##V Usage info
-USAGE="Usage: ${BPSCRIPTNAME} command [option]"
+USAGE="Usage: ${BP_SCRIPT_NAME} command [option]"
 
 # Description text
 DESC="Bashplate is a bash script template to ease development of\n\
 command style shellscripts"
 
 ##V logfile (uncomment to use logfile)
-#LOGFILE=${BPSCRIPTPATH}/${BPSCRIPTNAME}.log
+#LOGFILE=${BP_SCRIPT_PATH}/${BP_SCRIPT_NAME}.log
 
 ##V Logging options (uncomment to activate logging parameters)
 LOG_OK=1
@@ -88,16 +87,16 @@ LOG_ERROR=1
 LOG_CRITICAL=1
 
 ##V Lock file (uncomment to use lock file feature )
-#LOCK_FILE=/tmp/${BPSCRIPTNAME}.lock
+#LOCK_FILE=/tmp/${BP_SCRIPT_NAME}.lock
 
 # Activate settings function (will create settings file when run)
 #BPSETTINGS=1
 
-bpSettingsDir=~/.config/bashplates
-bpSettingsFile=${bpSettingsDir}/bashplates.conf
-
 # Create settings file if non existent
 #CREATEPLSETTINGS=1
+
+##V Edit file command (uncomment to enable)
+BP_EDIT=1
 
 }
 #---------------------------------------------------------------------
@@ -273,7 +272,7 @@ bpPrintLineC() { ##D Print text with adjusted line after with selectable colors
   len4="${#4}"
 
   echo -en "${2}${1}${4}${3}"
-  l=$((BPCOLUMNS - len1 - len4 - 3 ))
+  l=$((BP_COLUMNS - len1 - len4 - 3 ))
   seq -s"${5}" "${l}"|tr -d '[:digit:]'
   echo -en ${E_END} 
 }
@@ -604,12 +603,14 @@ bpAddSetting() {
   fi
 }
 
-bpAddSettings() { 
-  bpAddSetting $bpSettingsFile "BP_NAME"    "John Doe"        "Name of user"
-  bpAddSetting $bpSettingsFile "BP_EMAIL"   "JohnDoe@foo.bar" "Email of user"
-  bpAddSetting $bpSettingsFile "BP_EDITOR"  "vi"              "Default editor"
-  bpAddSetting $bpSettingsFile "BP_LICENSE" "MIT"             "Default project license"
-  bpAddSetting $bpSettingsFile "BP_ORG"     "ACME"            "Default organisation"
+bpAddSettings() {
+  bpAddSetting $BP_SETTINGS_FILE "BP_NAME"    "John Doe"        "Name of user"
+  bpAddSetting $BP_SETTINGS_FILE "BP_EMAIL"   "JohnDoe@foo.bar" "Email of user"
+  bpAddSetting $BP_SETTINGS_FILE "BP_EDITOR"  "vi"              "Default editor"
+  bpAddSetting $BP_SETTINGS_FILE "BP_LICENSE" "MIT"             "Default project license"
+  bpAddSetting $BP_SETTINGS_FILE "BP_ORG"     "ACME"            "Default organisation"
+  bpAddSetting $BP_SETTINGS_FILE "BP_DIFF"    "meld"            "Default diff program"	
+  bpAddSetting $BP_SETTINGS_FILE "BP_PATH"    "${BP_SCRIPT_PATH}" "Path to Bashplates directory"
 }
 
 # Change setting in config file (key value pair)
@@ -630,24 +631,26 @@ bpChSetting() {
 }
 
 bpCreateSettings() {
-  echo "Creating new bashplates settings file. ${bpSettingsFile}"
-  bpMkDir ${bpSettingsDir}
+  echo "Creating new bashplates settings file. ${BP_SETTINGS_FILE}"
+  bpMkDir "${BP_SETTINGS_DIR}"
+  bpMkDir "${BP_SETTINGS_PATHS}"
+  bpMkDir "${BP_SETTINGS_MODULES}"
           
-  echo "# " >> ${bpSettingsFile}
-  echo "# Bashplates common settings" > ${bpSettingsFile}
-  echo "# " >> ${bpSettingsFile}
-  echo      >> ${bpSettingsFile}
+  echo "# " >> ${BP_SETTINGS_FILE}
+  echo "# Bashplates common settings" > ${BP_SETTINGS_FILE}
+  echo "# " >> ${BP_SETTINGS_FILE}
+  echo      >> ${BP_SETTINGS_FILE}
 
   bpAddSettings
 }
 
 bpLoadSettings() {
-  if [ -n "${bpSettingsFile}" ]; then
-    if [ -e "${bpSettingsFile}" ]; then
-      source "${bpSettingsFile}"
+  if [ -n "${BP_SETTINGS_FILE}" ]; then
+    if [ -e "${BP_SETTINGS_FILE}" ]; then
+      source "${BP_SETTINGS_FILE}"
     else
       bpCreateSettings
-      source "${bpSettingsFile}"
+      source "${BP_SETTINGS_FILE}"
     fi
   fi
 }
@@ -659,29 +662,37 @@ printSettings() { ##C BPSETTINGS Print plate information
   bpPrintVar BP_LICENSE   "Default license:"
   bpPrintVar BP_EDITOR    "Default editor"
   bpPrintVar BP_ORG       "Default organisation"
+  bpPrintVar BP_DIFF      "Default diff program"
   bpLine
 }
 
 setname() { ##C BPSETTINGS Set name
-  bpChSetting "${bpSettingsFile}" "BP_NAME" "\"${2}\""  
+  bpChSetting "${BP_SETTINGS_FILE}" "BP_NAME" "\"${2}\""
 }
 
 setemail() { ##C BPSETTINGS Set email address
-  bpChSetting "${bpSettingsFile}" "BP_EMAIL" "\"${2}\""  
+  bpChSetting "${BP_SETTINGS_FILE}" "BP_EMAIL" "\"${2}\""  
 }
 
 seteditor() { ##C BPSETTINGS Set default editor
-  bpChSetting "${bpSettingsFile}" "BP_EDITOR" "\"${2}\""  
+  bpChSetting "${BP_SETTINGS_FILE}" "BP_EDITOR" "\"${2}\""  
 }
 
 setlic() { ##C BPSETTINGS Set default license
-  bpChSetting "${bpSettingsFile}" "BP_LICENSE" "\"${2}\""  
+  bpChSetting "${BP_SETTINGS_FILE}" "BP_LICENSE" "\"${2}\""  
 }
 
 setorg() { ##C BPSETTINGS Set default organisation
-  bpChSetting "${bpSettingsFile}" "BP_ORG" "\"${2}\""  
+  bpChSetting "${BP_SETTINGS_FILE}" "BP_ORG" "\"${2}\""  
 }
 
+setdiff() { ##C BPSETTINGS Set default organisation
+  bpChSetting "${BP_SETTINGS_FILE}" "BP_DIFF" "\"${2}\""  
+}
+
+ed() { ##C BP_EDIT Open this file with standard editor
+  ${BP_EDITOR} $0
+}
 
 ##-
 
@@ -845,7 +856,7 @@ icheck() { ##D Make a shellcheck
 }
 
 irt() { ##D Remove tabs from script
-  sed -i -e 's/\t/  /g' "${BPSCRIPTPATH}/${BPSCRIPTNAME}"
+  sed -i -e 's/\t/  /g' "${BP_SCRIPT_PATH}/${BP_SCRIPT_NAME}"
 }
 
 ##CN- IHELP Help & info
@@ -976,16 +987,16 @@ ihelp() { ##D Print internal help information
 
 iinfo() { ##D Show information about script
   bpTextLine "Script information"
-  bpPrintVar "BPSCRIPTNAME"    "Script" "$( bpColorizeFile "${BPSCRIPTPATH}/${BPSCRIPTNAME}" )"
+  bpPrintVar "BP_SCRIPT_NAME"    "Script" "$( bpColorizeFile "${BP_SCRIPT_PATH}/${BP_SCRIPT_NAME}" )"
   bpPrintVar "VERSION"         "Script version" 
   bpPrintVar "BPVERSION"       "Template version"
-  bpPrintVar "bpSettingsFile"  "Bashplate settings file" "$( bpColorizeFile ${bpSettingsFile} )"
+  bpPrintVar "BP_SETTINGS_FILE"  "Bashplate settings file" "$( bpColorizeFile ${BP_SETTINGS_FILE} )"
   bpPrintVar "LOGFILE"         "Log file"  "$( bpColorizeFile "${LOGFILE}" )"
   bpPrintVar "LOCK_FILE"       "Lock file" "$( bpColorizeFile "${LOCK_FILE}" )"
   bpPrintVar "DEFAULTCMD"      "Default function" 
   bpPrintInfo "PID" "$$"  
-  bpPrintVar "BPDATE" "Date" 
-  bpPrintVar "BPTIME" "Time"
+  bpPrintVar "BP_DATE" "Date" 
+  bpPrintVar "BP_TIME" "Time"
 
   if [ -n "${INFOHOOK}" ]; then
     bpTextLine "App. information"
@@ -1055,7 +1066,7 @@ version() { ## Print version information
 
 # Runs a function in this file as a command
 bpRunCommand() {
-  if [ "$BPARGUMENTS" -eq 0 ]; then
+  if [ "$BP_ARGUMENTS" -eq 0 ]; then
 
     # check for a default command
     if [ -n "$DEFAULTCMD" ]; then
@@ -1112,30 +1123,40 @@ bpRunCommand() {
 #---------------------------------------------------------------------
 
 ##V Directory where script is located
-BPSCRIPTPATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+BP_SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 ##V Name of script
-BPSCRIPTNAME=$(basename "$0")
+BP_SCRIPT_NAME=$(basename "$0")
 
 ##V Number of arguments given to script
-BPARGUMENTS=$#
+BP_ARGUMENTS=$#
 
 ##V Current date
-BPDATE=$(date +"%Y-%m-%d")
+BP_DATE=$(date +"%Y-%m-%d")
 
 ##V Current time
-BPTIME=$(date +"%H:%M:%S")
+BP_TIME=$(date +"%H:%M:%S")
 
 ##V Number of columns in terminal
-BPCOLUMNS=$(tput cols)
+BP_COLUMNS=$(tput cols)
 
 ##V Number of lines in terminal
-BPLINES=$(tput lines)
+BP_LINES=$(tput lines)
 
+##V Settings directory
+BP_SETTINGS_DIR=~/.config/bashplates
+
+##V Settings file
+BP_SETTINGS_FILE=${BP_SETTINGS_DIR}/bashplates.conf
+
+##V System Path's
+BP_SETTINGS_PATH="${BP_SETTINGS_DIR}/path"
+
+##V Links to modules
+BP_SETTINGS_MODULES="${BP_SETTINGS_DIR}/modules"
 
 # Initiate bashplate settings
 bpInitSettings
-
 
 #---------------------------------------------------------------------
 # Setup signal traps
