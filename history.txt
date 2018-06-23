@@ -32,7 +32,6 @@ Version 1.11
 	- internal namechanges
 	- new documentation tags
 	
-
 Version 1.09
   - Added postfunc
 	- Added prefunc
@@ -42,7 +41,6 @@ Version 1.09
 Version 1.08
  - Added ##D internal documentation tag
  - Added ##C conditional documentation tag
-
 
 Version 1.07
  - Added line separator(##-) feature for help command
