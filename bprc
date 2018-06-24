@@ -59,20 +59,16 @@ initrc() { ## Init .bashrc
 ##N- Paths
 
 lsp() { ## List paths
-  for p in ${BP_SETTINGS_PATH}/*; do
+  for p in ${BP_SETTINGS_PATHS}/*; do
     echo  "A: $( readlink ${p} )"
   done
 }
 
 addpath() { ## Add dir to PATH variable
-#  ln -s "$1"
-#  bpLn() { ##D Create symbolic link
   ll=$( echo "$2" | sed -e 's/\//_/g' )
-
   bpInfo "Adding PATH \"${2}\""
   if [ ! -L "$2" ]; then
-#    ln -s "${2}" "${BP_SETTINGS_PATH}/${2}"
-     ln -s "${2}" "${BP_SETTINGS_PATH}/${ll}"
+     ln -s "${2}" "${BP_SETTINGS_PATHS}/${ll}"
   fi
 }
 
@@ -89,30 +85,26 @@ lsm() { ## List modules
 }
 
 addmodule() { ## Add init script to
-  m=$( realpath "${2}" )
-  if [ ! -L "$m" ]; then
-    ln -s "$m" "${BP_SETTINGS_MODULES}/."
-  fi
+  bpAddModule "${2}"
 }
 
-rmmodule() {  ## Remove module
+rmmodule() { ## Remove module
   bpRm "${BP_SETTINGS_MODULES}/${2}"
 }
 
 
-##N- Bash settings
+##N- Bashplates settings
 
-initsettings() { ## Init settings
-  echo
+initsettings() { ## Init bashplates settings
+  bpCreateSettings
 }
 
 rmsettings() { ## Remove all bashplate settings
-  bpWarning "This operation will remove all your bashplate settings!"
+  bpWarning "This operation will remove all your bashplate settings on user \"$USER\"!"
   if bpReadN "Are you sure?" ; then
 		bpRm "${BP_SETTINGS_DIR}"
 	fi
 }
-
 
 #---------------------------------------------------------------------
 # Bashplate settings
@@ -698,16 +690,18 @@ bpChSetting() {
 }
 
 bpCreateSettings() {
-  echo "Creating new bashplates settings file. ${BP_SETTINGS_FILE}"
+  bpInfo "Creating new bashplates settings. $( bpColorizeFile ${BP_SETTINGS_FILE} )"
   bpMkDir "${BP_SETTINGS_DIR}"
   bpMkDir "${BP_SETTINGS_PATHS}"
   bpMkDir "${BP_SETTINGS_MODULES}"
-          
-  echo "# " >> ${BP_SETTINGS_FILE}
-  echo "# Bashplates common settings" > ${BP_SETTINGS_FILE}
-  echo "# " >> ${BP_SETTINGS_FILE}
-  echo      >> ${BP_SETTINGS_FILE}
-
+  
+  # if file does not exist add header
+  if [ ! -e ${BP_SETTINGS_FILE} ]; then
+    echo "# " >> ${BP_SETTINGS_FILE}
+    echo "# Bashplates common settings" > ${BP_SETTINGS_FILE}
+    echo "# " >> ${BP_SETTINGS_FILE}
+    echo      >> ${BP_SETTINGS_FILE}
+  fi
   bpAddSettings
 }
 
@@ -757,16 +751,48 @@ setdiff() { ##C BPSETTINGS Set default organisation
   bpChSetting "${BP_SETTINGS_FILE}" "BP_DIFF" "\"${2}\""  
 }
 
+##CN- IHELP Bashrc path/module handling
 
-##-
+bpLsPaths() { ##D List paths
+  for p in ${BP_SETTINGS_PATHS}/*; do
+    echo  "A: $( readlink ${p} )"
+  done
+}
 
-ed() { ##C BP_EDIT Open this file with standard editor
-  if [ -n "$BP_EDITOR" ]; then
-    ${BP_EDITOR} $0
-  else
-    bpError "BP_EDITOR variable not set, can't open script file"
+bpAddPath() { ##D Add dir to PATH variable
+  ll=$( echo "${1}" | sed -e 's/\//_/g' )
+
+  bpInfo "Adding PATH \"${2}\""
+  if [ ! -L "$1" ]; then
+     ln -s "${1}" "${BP_SETTINGS_PATHS}/${ll}"
   fi
 }
+
+bpRmPath() { ##D Remove path
+  bpRm "${BP_SETTINGS_PATHS}/${1}"
+}
+
+bpLsModules() { ##D List modules
+  for p in ${BP_SETTINGS_MODULES}/*; do
+    echo  "A: $( readlink ${p} )"
+  done
+}
+
+bpAddModule() { ##D Add init script to
+  m=$( realpath "${1}" )
+  if [ ! -L "$m" ]; then
+	  rm -f "${BP_SETTINGS_MODULES}/$(basename $m)"
+    ln -s "$m" "${BP_SETTINGS_MODULES}/."
+		bpInfo "Adding module $(bpColorizeFile $m)"
+  fi
+}
+
+bpRmModules() { ##D Remove module
+  bpRm "${BP_SETTINGS_MODULES}/${1}"
+}
+
+
+##-
 
 
 # Logging ---------------------------------------------------------
@@ -831,7 +857,7 @@ mlog() {   ##C LOGFILE Monitor logfile
       tail -f "${LOGFILE}" | sed -r -e "s|\[Info\]|\[\\${BP_C_INFO}Info\\${E_END}\]|"  \
             -e "s|\[Warn\]|\[\\${BP_C_WARNING}Warn\\${E_END}\]|"  \
             -e "s|\[Erro\]|\[\\${BP_C_ERROR}Erro\\${E_END}\]|"    \
-            -e "s|\[ Ok \]|\[\\${BP_C_OK}Erro\\${E_END}\]|"    \
+            -e "s|\[ Ok \]|\[\\${BP_C_OK} Ok \\${E_END}\]|"    \
             -e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
             -e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
             -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|"
@@ -996,6 +1022,11 @@ help() { ## Print this help information
   echo "$USAGE"
   echo -e "$DESC"
   echo 
+	
+  if [ ! -e "${BP_SETTINGS_DIR}" ] && [ -n "${BP_SETTINGS}" ]; then
+    BPINIT=1	
+  fi
+	
   IFS=$'\n'
   SC="$1"
   help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##D' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##N-//' -e 'help_line' -e 'printLine')
@@ -1135,6 +1166,16 @@ ivars() { ##D Print internal variables
   echo
 }
 
+ied() { ##D Open this file with standard editor
+  if [ -n "$BP_EDITOR" ]; then
+    ${BP_EDITOR} $0
+  else
+    bpError "BP_EDITOR variable not set, can't open script file"
+  fi
+}
+
+
+
 version() { ## Print version information
   echo "$VERSION"
 }
@@ -1222,7 +1263,7 @@ BP_SETTINGS_DIR=~/.config/bashplates
 BP_SETTINGS_FILE=${BP_SETTINGS_DIR}/bashplates.conf
 
 ##V System Path's
-BP_SETTINGS_PATH="${BP_SETTINGS_DIR}/path"
+BP_SETTINGS_PATHS="${BP_SETTINGS_DIR}/path"
 
 ##V Links to modules
 BP_SETTINGS_MODULES="${BP_SETTINGS_DIR}/modules"
