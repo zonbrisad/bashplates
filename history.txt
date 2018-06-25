@@ -1,27 +1,30 @@
-Version 1.x
+Version 1.12
   - Adding simple template
   - Added info hook
+	- Added pre/post help hook
+	- Added command as argument to cmd hooks
 	- Added settings file function
 	- Added mlog command
 	- Added bpRead and bpReadInt commands
 	- Added bpReplaceLine command
+	- Added bpFilterEscape
+	- Added bpColorizeFile
+	- Added bpColorizeUrl
+	- Added read yes no wuestions
+	- Added bpCd function
+	- Added ied command
+	- Added indented command printout
 	- removed command help print output
 	- corrected colors on documentation lines
 	- Fixed sed color printout
   - Check for existing file when creating new script
-	- Added indented command printout
 	- New "subdued" colorscheme
-	- Fixed bpCp
 	- Improved documentation with screenshots
-	- added bpFilterEscape
-	- added bpColorizeFile
-	- refactoring 
-	- command hooks now supply command as argument 1
-	- added read yes no wuestions
-	- added bpCd function
-	- Performance improvment of command execution
-	- ed command
-	- Change variable names for clearity
+	- Improvmed performance of command execution
+	- Changed variable names for clearity
+	- Changed names of hooks
+	- Changed documentation tags
+	- refactoring	
 	
 
 Version 1.11
