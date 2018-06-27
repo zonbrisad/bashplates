@@ -191,6 +191,10 @@ pipe() { ## pipe example
 
 ##N- Some fun
 
+x() { ## XX
+  echo "[ ${E_RED}***${E_BR_RED}*${E_RED}**${E_END} ]"
+}
+
 bpElapsedTime() { ## Return elapsed time
   #dt=$((etime - stime))
   dt=$SECONDS        # total time elapsed in seconds
