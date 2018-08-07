@@ -15,10 +15,9 @@
 #set -o pipefail # Exit script when pipe fails
 
 # Directory where script is located
-scriptPath=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+BP_SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 #---------------------------------------------------------------------
-
 
 bpSettingsDir=~/.config/bashplates
 bpSettings=${bpSettingsDir}/bashplates.conf
@@ -69,14 +68,15 @@ bpLoadSettings() {
 bpLoadSettings
 																			
 # Add bashplate dir to search path
-export PATH=${PATH}:${scriptPath}
+export PATH=${PATH}:${BP_SCRIPT_PATH}
 
 # Add variable pointing to bashplate dir
-export BP_PATH=${scriptPath}
+export BP_PATH=${BP_SCRIPT_PATH}
 
-# Add alias 
-alias bpd='cd ${BP_PATH}'
+# Add alias for quick access to bashplate dir
+alias bpd='cd ${BP_SCRIPT_PATH}'
 
-
+# Indicated that initscript was run
+export BP_INIT_RUN=1
 
 
