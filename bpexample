@@ -349,7 +349,7 @@ color2() { ##D Show example of all 256 colors
 
 
   echo
-  bpTextLine "256 Colors ackground"
+  bpTextLine "256 Colors background"
   echo
   for i in {0..231} ; do
     printf "\x1b[48;5;%sm  %3d  ${E_END} " "$i" "$i"

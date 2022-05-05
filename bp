@@ -536,10 +536,10 @@ bpFilterEscape() { ##I Filter escape characters from string
 bpRun() { ##I Execute command
   if [ -e "$1" ]; then
     ${1}
-		return 0
+    return 0
   else
     bpError "Could not execute $1, file does not exist!"
-		return 1
+    return 1
   fi
 }
 
@@ -568,7 +568,7 @@ bpMkDir() { ##I Create directory
 bpLn() { ##I Create symbolic link
   bpInfo "Creating link \"${2}\""
   if [ ! -L "$1" ]; then
-    ln -s "${1}" "${2}"
+    ln -sf "${1}" "${2}"
   fi
 }
 
@@ -878,37 +878,11 @@ setdiff() { ##C BP_SETTINGS Set default organisation
   bpChSetting "${BP_SETTINGS_FILE}" "BP_DIFF" "\"${2}\""  
 }
 
-##- Bashrc path/module handling
+##C- IHELP Bashrc path/module handling
 
-
-lspath() { ##D List paths
-  bpLsLinks "${BP_SETTINGS_PATHS}"
-}
-
-addpath() { ##D Add path
-  bpAddPath $2
-}
-
-lsmodules() { ##D List modules
-  bpLsLinks "${BP_SETTINGS_MODULES}"
-}
-
-addmodule() { ##D Add module
-  bpAddModule $2
-}
-
-rmmodule() { ##D Remove module
-  bpRmModule $2
-}
-
-
-
-#
-# $1 Directory to search
-#
-bpLsLinks() { ##I List symbolic links in a directory
-  for p in $(find "$1" -type l); do
-    echo "$( readlink ${p} )"
+bpLsPaths() { ##I List paths
+  for p in ${BP_SETTINGS_PATHS}/*; do
+    echo  "A: $( readlink ${p} )"
   done
 }
 
@@ -926,11 +900,12 @@ bpAddLink() { ##I Add symbolic link to dir
 # $1 directory to add to path
 #
 bpAddPath() { ##I Add dir to PATH variable
-  # Replace / with _
   ll=$( echo "${1}" | sed -e 's/\//_/g' )
+
+  bpInfo "Adding PATH \"${2}\""
   if [ ! -L "$1" ]; then
      ln -s "${1}" "${BP_SETTINGS_PATHS}/${ll}"
-		 bpInfo "Adding PATH \"${2}\""
+     bpInfo "Adding PATH \"${2}\""
   fi
 }
 
@@ -938,12 +913,18 @@ bpRmPath() { ##I Remove path
   bpRm "${BP_SETTINGS_PATHS}/${1}"
 }
 
+bpLsModules() { ##I List modules
+  for p in ${BP_SETTINGS_MODULES}/*; do
+    echo  "A: $( readlink ${p} )"
+  done
+}
+
 bpAddModule() { ##I Add init script to
   m=$( realpath "${1}" )
   if [ ! -L "$m" ]; then
-	  rm -f "${BP_SETTINGS_MODULES}/$(basename $m)"
+    rm -f "${BP_SETTINGS_MODULES}/$(basename $m)"
     ln -s "$m" "${BP_SETTINGS_MODULES}/."
-		bpInfo "Adding module $(bpColorizeFile $m)"
+    bpInfo "Adding module $(bpColorizeFile $m)"
   fi
 }
 
