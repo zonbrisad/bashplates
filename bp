@@ -874,7 +874,7 @@ setorg() { ##C BP_SETTINGS Set default organisation
   bpChSetting "${BP_SETTINGS_FILE}" "BP_ORG" "\"${2}\""  
 }
 
-setdiff() { ##C BP_SETTINGS Set default organisation
+setdiff() { ##C BP_SETTINGS Set default diff program
   bpChSetting "${BP_SETTINGS_FILE}" "BP_DIFF" "\"${2}\""  
 }
 
