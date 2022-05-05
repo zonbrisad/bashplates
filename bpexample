@@ -763,60 +763,6 @@ f() { ##D Create an error
   false
 }
 
-##- BASH Documentation
-
-doc() { ##D Some BASH documentation
-  #echo
-  bpTextLine "String tests"
-	bpPrintInfo '[ "$STR1" == "$STR2" ]' "Strings equal"
-	bpPrintInfo '[ "$STR1" != "$STR2" ]' "Strings not equal"
-  bpPrintInfo "[ -z STRING ]" "Empty string"
-  bpPrintInfo "[ -n STRING ]" "Not empty string (string exists)"
-  bpPrintInfo "[[ STRING =~ STRING ]]" "Regexp"	
-	bpTextLine "Numerical tests"
-  bpPrintInfo "[ NUM -eq NUM ]" "Equal"
-  bpPrintInfo "[ NUM -ne NUM ]" "Not equal"
-  bpPrintInfo "[ NUM -lt NUM ]" "Less than"
-  bpPrintInfo "[ NUM -le NUM ]" "Less than or equal"
-  bpPrintInfo "[ NUM -gt NUM ]" "Greater than"
-  bpPrintInfo "[ NUM -ge NUM ]" "Greater than or equal"
-  bpPrintInfo "(( NUM < NUM ))" "Numeric conditions"
-  bpTextLine "Logical tests"
-  bpPrintInfo "[ ! EXPR ]" "Not"
-  bpPrintInfo "[ X ] && [ Y ]" "And"
-  bpPrintInfo "[ X ] || [ Y ]" "Or"
-	bpTextLine "Other tests"
-	bpPrintInfo "[ -o noclobber ]" "If OPTIONNAME is enabled"
-  bpTextLine "File conditions"
-  bpPrintInfo "[ -e FILE ]" "File exists"
-  bpPrintInfo "[ -f FILE ]" "Is regular file"
-  bpPrintInfo "[ -d FILE ]" "Is directory"
-  bpPrintInfo "[ -h FILE ]" "Is symlink"
-  bpPrintInfo "[ -r FILE ]" "Is readble"
-  bpPrintInfo "[ -w FILE ]" "Is writable"
-  bpPrintInfo "[ -x FILE ]" "Is executable"
-  bpPrintInfo "[ -s FILE ]" "Size>0"
-	
-  bpPrintInfo "[ -S FILE ]" "Is socket"
-  bpPrintInfo "[ -g FILE ]" "sgid bit set"
-  bpPrintInfo "[ -u FILE ]" "suid bit set"
-
-  bpPrintInfo "[ FILE1 -nt FILE2 ]" "1 is more recent than 2"
-  bpPrintInfo "[ FILE1 -ot FILE2 ]" "2 is more recent than 1"
-  bpPrintInfo "[ FILE1 -ef FILE2 ]" "Same files"
-
-  bpTextLine "Arguments"
-  bpPrintInfo '$#' "Number of arguments"
-  bpPrintInfo '$*' "All arguments"
-  bpPrintInfo '$@' "All arguments, starting from first"
-  bpPrintInfo '$1' "First argument"
-
-  bpPrintInfo '$?' "Exit status of last task"
-  bpPrintInfo '$!' "PID of last background task"
-  bpPrintInfo '$$' "PID of shell"
-
-  bpLine
-}
 
 #---------------------------------------------------------------------
 # Bashplate settings

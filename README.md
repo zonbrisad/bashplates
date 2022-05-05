@@ -17,12 +17,13 @@ subcommandbased shellscripts.
 - Check if root user
 - Check for required installed programs
 - lock file feature
-- Trap handling
+- Signal trap handling
 - Cleanup handling
 - ANSI Color codes
 - Numerous internal variables setup on default
 - Execution hooks
 - default function
+- Selfcontained, no external dependencies other than linux system
 
 
 ## Installation
