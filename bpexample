@@ -74,8 +74,10 @@ print() { ##D Bashplate text output function examples
     
   echo -e "\nExample of $E_GREEN bpColorizeFile $E_END"
   F="/use/local/var/log/messages"
-  echo -n "The filename $(bpColorizeFile $F) is colorized."
+  echo -e "The filename $(bpColorizeFile $F) is colorized."
 
+  echo -e "\nExample of $E_GREEN bpColorizeUrl $E_END"
+  echo -n " $(bpColorizeUrl https://github.com/zonbrisad/bashplates )"
   echo
 }
 
@@ -322,7 +324,7 @@ color1() { ##D Standard 16 colors
   echo -e "\n\n"
 }  
 
-color2() { ##D Show example of all 256 colors
+color3() { ##D Show example of all 256 colors
   
   echo
   bpTextLine "256 Colors foreground"
@@ -355,7 +357,6 @@ color2() { ##D Show example of all 256 colors
     printf "\x1b[48;5;%sm  %3d  ${E_END} " "$i" "$i"
     if (( i == 7 )) || (( i == 15 )) || ( (( i > 15 )) && (( (i-15) % 6 == 0 )) ); then
       echo
-      
       if (( i == 15)); then
         echo
       fi
@@ -373,10 +374,13 @@ color2() { ##D Show example of all 256 colors
 }
 
 
-color3() { ##D Color test
-  echo -e "[${E_BLACK}${E_ON_RED}Error${E_END}] ${E_BR_RED}Error text${E_END}"
-  echo -e "[${E_WHITE}${E_ON_YELLOW}Warning${E_END}] ${E_BR_YELLOW}Warning text${E_END}"
-}
+
+
+
+#color3() { ##D Color test
+#  echo -e "[${E_BLACK}${E_ON_RED}Error${E_END}] ${E_BR_RED}Error text${E_END}"
+#  echo -e "[${E_WHITE}${E_ON_YELLOW}Warning${E_END}] ${E_BR_YELLOW}Warning text${E_END}"
+#}
 
 FLAG_BLUE="\x1b[48;5;20m"
 FLAG_YELLOW="\x1b[48;5;226m"
@@ -776,7 +780,7 @@ APP_VERSION="1.05"
 APP_USAGE="Usage: ${BP_SCRIPT_NAME} command [option]"
 
 ##V Description text
-APP_DESC="This script demonstrates some of the features of the bashplate template."
+APP_DESC="This script contains some examples of how to use bashplates."
 
 ##V logfile (uncomment to use logfile)
 APP_LOGFILE=${BP_SCRIPT_PATH}/${BP_SCRIPT_NAME}.log

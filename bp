@@ -90,11 +90,6 @@ news() { ##D Create a new simple bashplate project
 }
 
 
-##- Tools
-
-dl() { ##D Make diff with latest bashtemplate
-  meld ${BP_SCRIPT_PATH}/templates/bashplate  $2
-}
 
 ##- Setup
 
@@ -103,9 +98,18 @@ bp_install() { ##D Install bashplates init
 }
 
 
-##- Project management (git)
+BP_DEV=1
 
-clean() { ##D Remove leftover files 
+##C- BP_DEV Tools
+
+dl() { ##C BP_DEV Make diff with latest bashtemplate
+  meld ${BP_SCRIPT_PATH}/templates/bashplate  $2
+}
+
+
+##C- BP_DEV Project management (git)
+
+clean() { ##C BP_DEV Remove leftover files
   bpCd "${BP_SCRIPT_PATH}"
 
   find . -name "*~"     -delete
@@ -116,14 +120,14 @@ clean() { ##D Remove leftover files
   bpCd -
 }
 
-commit() { ##D Commit project to repository
+commit() { ##C BP_DEV Commit project to repository
   bpCd "${BP_SCRIPT_PATH}"
   git commit -a
   #git push --tags -a
   bpCd - 
 }
 
-tag() { ##D Make a new tag
+tag() { ##C BP_DEV Make a new tag
   bpCd "${BP_SCRIPT_PATH}"
   # List existing tags
   git tag
@@ -137,17 +141,18 @@ tag() { ##D Make a new tag
   bpCd - 
 }
 
-push() { ##D Push project to GITHUB
+push() { ##C BP_DEV Push project to GITHUB
   bpCd "${BP_SCRIPT_PATH}"
   git push --progress
   bpCd - 
 } 
 
-pull() { ##D Pull project from GITHUB
+pull() { ##C BP_DEV Pull project from GITHUB
   bpCd "${BP_SCRIPT_PATH}"
   git pull --progress
   bpCd - 
 } 
+
 
 bp_phh() {
   if [ ! -n "${BP_INIT_RUN}" ]; then
