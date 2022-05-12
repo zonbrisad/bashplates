@@ -46,6 +46,8 @@ BP_DIR=templates
 
 BP_MOD=$BP_SETTINGS_MODULES="${BP_SETTINGS_DIR}/modules"
 #BP_LINK=$
+
+BP_DEV=1
 }
 #---------------------------------------------------------------------
 # User defined functions
@@ -89,18 +91,22 @@ news() { ##D Create a new simple bashplate project
   newScript "bashplate-simple"
 }
 
-
-
 ##- Setup
 
 bp_install() { ##D Install bashplates init
   bpAddModule ${BP_SCRIPT_PATH}/bp_init
 }
 
-
-BP_DEV=1
-
 ##C- BP_DEV Tools
+
+et() { ##C BP_DEV Edit bashplate main template
+  if [ -n "$BP_EDITOR" ]; then
+    ${BP_EDITOR} ${BP_SCRIPT_PATH}/templates/bashplate
+  else
+    bpError "BP_EDITOR variable not set, can't open file ${BP_SCRIPT_PATH}/templates/bashplate"
+  fi
+  
+}
 
 dl() { ##C BP_DEV Make diff with latest bashtemplate
   meld ${BP_SCRIPT_PATH}/templates/bashplate  $2

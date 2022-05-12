@@ -41,8 +41,7 @@ set -o pipefail
 # User defined Settings
 #---------------------------------------------------------------------
 bpUserSettings() {
-
-
+  :
 }
 #---------------------------------------------------------------------
 # User defined functions
@@ -51,7 +50,7 @@ bpUserSettings() {
 ##- My functions
 
 myfunk() { ##D Description of my funktion 
-  bpInfo "My function"
+  :
 }
 
 
