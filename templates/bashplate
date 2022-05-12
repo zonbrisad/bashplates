@@ -67,8 +67,7 @@ APP_VERSION="1.00"
 APP_USAGE="Usage: ${BP_SCRIPT_NAME} command [option]"
 
 ##V Description text
-APP_DESC="Bashplate is a bash script template to ease development of\n\
-command style shellscripts"
+APP_DESC="Description goes here"
 
 ##V logfile (uncomment to use logfile)
 #APP_LOGFILE=${BP_SCRIPT_PATH}/${BP_SCRIPT_NAME}.log

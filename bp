@@ -97,23 +97,31 @@ bp_install() { ##D Install bashplates init
   bpAddModule ${BP_SCRIPT_PATH}/bp_init
 }
 
-##C- BP_DEV Tools
+##C- BP_DEV Development (for developers only)
 
-et() { ##C BP_DEV Edit bashplate main template
+et() { ##C BP_DEV Edit bashplate template
   if [ -n "$BP_EDITOR" ]; then
     ${BP_EDITOR} ${BP_SCRIPT_PATH}/templates/bashplate
   else
     bpError "BP_EDITOR variable not set, can't open file ${BP_SCRIPT_PATH}/templates/bashplate"
-  fi
-  
+  fi  
 }
+
+est() { ##C BP_DEV Edit simple bashplate template
+  if [ -n "$BP_EDITOR" ]; then
+    ${BP_EDITOR} ${BP_SCRIPT_PATH}/templates/bashplate-simple
+  else
+    bpError "BP_EDITOR variable not set, can't open file ${BP_SCRIPT_PATH}/templates/bashplate-simple"
+  fi  
+}
+
 
 dl() { ##C BP_DEV Make diff with latest bashtemplate
   meld ${BP_SCRIPT_PATH}/templates/bashplate  $2
 }
 
 
-##C- BP_DEV Project management (git)
+##C- BP_DEV Project management (git) (for developers only)
 
 clean() { ##C BP_DEV Remove leftover files
   bpCd "${BP_SCRIPT_PATH}"
@@ -236,7 +244,7 @@ APP_VERSION="1.05"
 APP_USAGE="Usage: ${BP_SCRIPT_NAME} command [option]"
 
 ##V Description text
-APP_DESC="This script demonstrates some of the features of the bashplate template."
+APP_DESC="Generate bash scripts from templates"
 
 ##V logfile (uncomment to use logfile)
 APP_LOGFILE=${BP_SCRIPT_PATH}/${BP_SCRIPT_NAME}.log
