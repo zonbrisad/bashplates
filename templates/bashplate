@@ -666,7 +666,7 @@ bpAddSetting() {
 bpAddSettings() {
   bpAddSetting $BP_SETTINGS_FILE "BP_NAME"    "John Doe"          "Name of user"
   bpAddSetting $BP_SETTINGS_FILE "BP_EMAIL"   "JohnDoe@foo.bar"   "Email of user"
-  bpAddSetting $BP_SETTINGS_FILE "BP_EDITOR"  "vi"                "Default editor"
+  bpAddSetting $BP_SETTINGS_FILE "BP_EDITOR"  "nano"              "Default editor"
   bpAddSetting $BP_SETTINGS_FILE "BP_LICENSE" "MIT"               "Default project license"
   bpAddSetting $BP_SETTINGS_FILE "BP_ORG"     "ACME"              "Default organisation"
   bpAddSetting $BP_SETTINGS_FILE "BP_DIFF"    "meld"              "Default diff program"	
