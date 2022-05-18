@@ -465,6 +465,7 @@ norwayFlag() {
 }
 
 
+
 flags() { ##D Print swedish flags
   echo
   smallFlag
@@ -478,6 +479,44 @@ flags() { ##D Print swedish flags
 #  norwayFlag
 #  echo
 }
+
+
+fret() {
+  sleep 0.1
+  echo $E_RETURN $E_UP $E_UP $E_UP $E_UP $E_UP $E_UP $E_UP
+  mediumFlag
+
+}
+
+fadeflag() { ##D Fade flag 
+
+
+	FLAG_BLUE="\x1b[48;5;16m"
+  FLAG_YELLOW="\x1b[48;5;58m"
+	mediumFlag
+	FLAG_BLUE="\x1b[48;5;17m"
+  FLAG_YELLOW="\x1b[48;5;94m"
+	fret
+	FLAG_BLUE="\x1b[48;5;18m"
+  FLAG_YELLOW="\x1b[48;5;142m"
+	fret
+	FLAG_BLUE="\x1b[48;5;19m"
+  FLAG_YELLOW="\x1b[48;5;178m"
+	fret
+	FLAG_BLUE="\x1b[48;5;20m"
+  FLAG_YELLOW="\x1b[48;5;220m"
+	fret
+	FLAG_BLUE="\x1b[48;5;21m"
+  FLAG_YELLOW="\x1b[48;5;226m"
+	fret
+	
+	echo $E_DOWN $E_DOWN $E_DOWN $E_DOWN $E_DOWN
+
+	
+
+
+}
+
 
 flash() { ##D Flash screen
   while true; do 
