@@ -49,7 +49,9 @@ bpUserSettings() {
 
 ##- My functions
 
-
+MODULE_NAME="Name"
+MODULE_VER=0.1
+MODULE_LINK="www.github.com"
 
 ###BPModulebegin###
 
@@ -70,7 +72,15 @@ mod() { ##D Get module
  # sed  -n '/###BPModulebegin###/,/###BPModuleend###/p' $0
 }
 
-
+info() { ##D Get module information 
+  bpTextLine "Module information"
+	bpPrintInfo "Name" "$MODULE_NAME"
+	bpPrintInfo "Version" "$MODULE_VERSION"
+	bpPrintInfo "Link"    "$MODULE_LINK"
+	bpPrintInfo
+	bpPrintInfo
+	bpLine
+}
 
 #---------------------------------------------------------------------
 # Bashplate settings
