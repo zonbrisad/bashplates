@@ -45,7 +45,6 @@ set -o pipefail
 # User defined Settings
 #---------------------------------------------------------------------
 bpUserSettings() {
-
   :
 }
 #---------------------------------------------------------------------
@@ -55,7 +54,7 @@ bpUserSettings() {
 ##- Bashrc
 
 initrc() { ##D Init .bashrc 
-  echo "K"
+  :
 }
 
 ##- Paths

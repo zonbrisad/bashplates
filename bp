@@ -91,6 +91,25 @@ news() { ##D Create a new simple bashplate project
   newScript "bashplate-simple"
 }
 
+
+# 
+# $1 File to import
+#
+bpImport() { ## Import file into variable
+  if [ -f $1 ]; then
+	  cat $1
+	else
+	:
+	fi
+	
+}
+
+
+newm() { ##C BP_DEV Create a new bashplate module (experimental)
+  m=$( bpImport ${BP_SCRIPT_PATH}/templates/bpmodule )
+	echo $m
+}
+
 ##- Setup
 
 bp_install() { ##D Install bashplates init
