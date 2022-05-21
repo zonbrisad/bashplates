@@ -52,39 +52,39 @@ bpUserSettings() {
 # Bashplate modules
 #--------------------------------------------------------------------- 
 
-MODULE_NAME="Module1"
-MODULE_VER=0.1
-MODULE_LINK="www.github.com"
-MODULE_DESC="This is test module 1"
+ADDON_NAME="Addon1"
+ADDON_VER=0.1
+ADDON_LINK="www.github.com"
+ADDON_DESC="This is test addon 1"
 
-###BPModulebegin###
+###BPAddonbegin###
 
 
 
-###BPModuleend###
+###BPAddonend###
 
 getname() { ##D Get module name
-  echo "${MODULE_NAME}"  
+  echo "${ADDON_NAME}"  
 }
 
 getversion() { ##D Get module version
-  echo "${MODULE_VERSION}"  
+  echo "${ADDON_VERSION}"  
 }
 
 getdesc() { ##D Get module description
-  echo "${MODULE_DESC}"
+  echo "${ADDON_DESC}"
 } 
 
 getmodule() { ##D Get module
-  cat $0 | grep -A 1000 -m 1 "###BPModulebegin###" | grep -B 1000 -m 1 "###BPModuleend###" | grep -v "###BPModulebegin###" | grep -v  "###BPModuleend###"
+  cat $0 | grep -A 1000 -m 1 "###BPAddonbegin###" | grep -B 1000 -m 1 "###BPAddonend###" | grep -v "###BPAddonbegin###" | grep -v  "###BPAddonend###"
 }
 
 info() { ##D Get module information 
-  bpTextLine "Module information"
-  bpPrintInfo "Name" "$MODULE_NAME"
-  bpPrintInfo "Description" "$MODULE_DESC"
-  bpPrintInfo "Version" "$MODULE_VER"
-  bpPrintInfo "Link"    "$MODULE_LINK"
+  bpTextLine "Addon information"
+  bpPrintInfo "Name" "$ADDON_NAME"
+  bpPrintInfo "Description" "$ADDON_DESC"
+  bpPrintInfo "Version" "$ADDON_VER"
+  bpPrintInfo "Link"    "$ADDON_LINK"
   bpLine
 }
 

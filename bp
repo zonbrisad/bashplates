@@ -44,9 +44,11 @@ bpUserSettings() {
 
 BP_DIR=templates
 BP_TEMPLATES=${BP_SCRIPT_PATH}/${BP_DIR}
+BP_ADDONS="${BP_SCRIPT_PATH}/modules"
+#$BP_SETTINGS_MODULES="${BP_SETTINGS_DIR}/modules"
 
 
-BP_MOD=$BP_SETTINGS_MODULES="${BP_SETTINGS_DIR}/modules"
+
 #BP_LINK=$
 
 BP_PREAMBLE="#!/usr/bin/env bash"
@@ -100,8 +102,14 @@ bpAppend() { ##D Append file to file
 #
 newScript() { 
   t=$3
-  script=$(bpRead "Enter name of new ${t}" "")
-
+  name=$(bpRead "Enter name of new ${t}" "")
+	
+	if [ "$3" == "addon" ]; then
+	  script="${name}.bpaddon"
+	else
+	  script="${name}"
+	fi
+	
   if [ -e "${script}" ]; then
     bpError "File ${E_BR_CYAN}${script}${E_END} already exists"
     return
@@ -114,32 +122,18 @@ newScript() {
   echo "$( bpImport $BP_HEADER )"  >> ${script}
   cat  "${BP_TEMPLATES}/$1"        >> ${script}
 	chmod +x ${script}
+	
+  if [ "$3" == "addon" ]; then
+		bpInsert "${script}" "#__MODULES__" "$( bpaddon getaddontemp )"
+	fi
 
-
-  bpReplace "${script}" "__NAME__"    "${script}"
+  bpReplace "${script}" "__NAME__"    "${name}"
   bpReplace "${script}" "__DATE__"    "${BP_DATE}"
   bpReplace "${script}" "__LICENSE__" "${BP_LICENSE}"
   bpReplace "${script}" "__AUTHOR__"  "${author}"
   bpReplace "${script}" "__DESC__"    "${desc}"
-	
-	if [ "$3" == "module" ]; then
-		 bpInsert "${script}" "#__MODULES__" "$( bpmodule getmodmod )"
-	fi
-		
+			
 	bpOk "Created file $script"
-}
-
-
-
-#
-# $1 file to create
-# $2 template file
-#
-ns() {
-  echo "${BP_PREAMBLE}"            >| $1
-  echo "$( bpImport $BP_HEADER )"  >> $1
-  cat  "${BP_TEMPLATES}/$2"        >> $1
-	chmod +x $1
 }
 
 new() { ##D Create a new standard bashplate project
@@ -150,21 +144,44 @@ news() { ##D Create a new simple bashplate project
   newScript "bashplate-simple" "" "script"
 }
 
-##- Modules
+##- Addons
 
-newm() { ##C BP_DEV Create a new bashplate module (experimental)
-#  ns "a" "bashplate"
-	newScript "bashplate" "" "module"
-# 	m=$( ${BP_SCRIPT_PATH}/bpmodule getmodmod )
-#	newScript "bashplate" "${m}"
-#	bpInsert "${BP_SCRIPT_PATH}/${BP_DIR}/bashplate" "__MY_FUNCTIONS__" "${m}"
+newa() { ##C BP_DEV Create a new bashplate addon (experimental)
+  newScript "bashplate" "" "addon"
 }
 
-lm() { ##D List modules
+la() { ##D List addons
+  bpTextLine "Addons"
   for f in ${BP_SCRIPT_PATH}/modules/* ; do
-	  echo -e  "${f}"
+    bpPrintInfo "$( ${f} getname )"  "$( ${f} getdesc )"
   done
+	bpLine
 }
+
+aa() { ##D Add addon
+  :
+}
+
+ia() { ##D Install addon
+  :
+}
+
+ea() { ##D Edit addon
+
+  if [ ! -n "$BP_EDITOR" ]; then
+    bpError "BP_EDITOR variable not set, can't open addon"
+		bpExit
+  fi
+
+  if [ ! -f "${BP_ADDONS}/$2" ]; then
+    bpError "Addon $2 does not exist, can't open addon"
+		bpExit
+  fi
+
+  ${BP_EDITOR} ${BP_ADDONS}/$2 
+	
+}
+
 
 ##- Setup
 
@@ -602,7 +619,7 @@ bpPrintInfoGeneric() {
 # arg1 text for column 1
 # arg2 text for column 2
 #
-bpPrintInfo() {
+bpPrintInfo() { ##I Print information pair 
   bpPrintInfoGeneric "${BP_C_ID}" "${BP_C_DESCRIPTION}" "$1" "$2"
 }
 
@@ -616,7 +633,7 @@ bpPrintInfoAlt() {
 # $2 text for column 2
 # $3 optional text form column 1
 #
-bpPrintVar() {
+bpPrintVar() { ##I Print variable value and description
   var="$1"      
   if [ "${!var}" ]; then
     if [ ! -z "$3" ]; then
