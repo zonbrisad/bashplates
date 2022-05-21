@@ -44,10 +44,7 @@ bpUserSettings() {
 
 BP_DIR=templates
 BP_TEMPLATES=${BP_SCRIPT_PATH}/${BP_DIR}
-BP_ADDONS="${BP_SCRIPT_PATH}/modules"
-#$BP_SETTINGS_MODULES="${BP_SETTINGS_DIR}/modules"
-
-
+BP_ADDONS="${BP_SCRIPT_PATH}/addons"
 
 #BP_LINK=$
 
@@ -152,7 +149,7 @@ newa() { ##C BP_DEV Create a new bashplate addon (experimental)
 
 la() { ##D List addons
   bpTextLine "Addons"
-  for f in ${BP_SCRIPT_PATH}/modules/* ; do
+  for f in ${BP_ADDONS}/* ; do
     bpPrintInfo "$( ${f} getname )"  "$( ${f} getdesc )"
   done
 	bpLine
@@ -167,21 +164,8 @@ ia() { ##D Install addon
 }
 
 ea() { ##D Edit addon
-
-  if [ ! -n "$BP_EDITOR" ]; then
-    bpError "BP_EDITOR variable not set, can't open addon"
-		bpExit
-  fi
-
-  if [ ! -f "${BP_ADDONS}/$2" ]; then
-    bpError "Addon $2 does not exist, can't open addon"
-		bpExit
-  fi
-
-  ${BP_EDITOR} ${BP_ADDONS}/$2 
-	
+  bpEdit ${BP_ADDONS}/${2}.bpaddon	
 }
-
 
 ##- Setup
 
@@ -191,22 +175,18 @@ bp_install() { ##D Install bashplates init
 
 ##C- BP_DEV Development (for developers only)
 
+
 et() { ##C BP_DEV Edit bashplate template
-  if [ -n "$BP_EDITOR" ]; then
-    ${BP_EDITOR} ${BP_SCRIPT_PATH}/templates/bashplate
-  else
-    bpError "BP_EDITOR variable not set, can't open file ${BP_SCRIPT_PATH}/templates/bashplate"
-  fi  
+  bpEdit ${BP_SCRIPT_PATH}/templates/bashplate
 }
 
 est() { ##C BP_DEV Edit simple bashplate template
-  if [ -n "$BP_EDITOR" ]; then
-    ${BP_EDITOR} ${BP_SCRIPT_PATH}/templates/bashplate-simple
-  else
-    bpError "BP_EDITOR variable not set, can't open file ${BP_SCRIPT_PATH}/templates/bashplate-simple"
-  fi  
+  bpEdit ${BP_SCRIPT_PATH}/templates/bashplate-simple
 }
 
+eh() { ##C BP_DEV Edit header template
+  bpEdit ${BP_SCRIPT_PATH}/templates/header
+}
 
 dl() { ##C BP_DEV Make diff with latest bashtemplate
   meld ${BP_SCRIPT_PATH}/templates/bashplate  $2
@@ -824,6 +804,17 @@ bpStrExist() { ##I Check if string exist in file
     echo "1"
   else
     echo "0"
+  fi
+}
+
+#
+# $1 file to open in editor
+#
+bpEdit() { ##I Open file in default editor (BP_EDIT must be set)
+  if [ -n "$BP_EDITOR" ]; then
+    ${BP_EDITOR} "${1}"
+  else
+    bpError "BP_EDITOR variable not set, can't open file ${1}"
   fi
 }
 
@@ -1447,11 +1438,7 @@ ivars() { ##I Print internal variables
 }
 
 ied() { ##I Open this file with standard editor
-  if [ -n "$BP_EDITOR" ]; then
-    ${BP_EDITOR} $0
-  else
-    bpError "BP_EDITOR variable not set, can't open script file"
-  fi
+  bpEdit $0
 }
 
 
