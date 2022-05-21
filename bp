@@ -55,6 +55,18 @@ BP_DEV=1
 
 ##- Bashplates
 
+# 
+# $1 File to import
+#
+bpImport() { ## Import file into variable
+  if [ -f $1 ]; then
+	  cat $1
+	else
+	:
+	fi
+	
+}
+
 #
 # Create a new script
 #
@@ -81,33 +93,55 @@ newScript() {
   bpReplace "${script}" "__LICENSE__" "${BP_LICENSE}"
   bpReplace "${script}" "__AUTHOR__"  "${author}"
   bpReplace "${script}" "__DESC__"    "${desc}"
+	
+	bpReplace "${script}" "__MY_FUNCTIONS__" "${2}" 
 }
 
 new() { ##D Create a new standard bashplate project
-  newScript "bashplate"
+  newScript "bashplate" ""
 }
 
 news() { ##D Create a new simple bashplate project
-  newScript "bashplate-simple"
+  newScript "bashplate-simple" ""
 }
 
+##- Modules
 
-# 
-# $1 File to import
+
 #
-bpImport() { ## Import file into variable
-  if [ -f $1 ]; then
-	  cat $1
-	else
-	:
-	fi
+# $1 file
+# $2 match
+# $3 text to insert
+#
+bpInsert() { ##D Insert text into file
+  #b=$( cat $1 | grep -B 10000 "${2}" )  #| grep -v "${2}" )
+#	cat $1 | grep -B 10000 "${2}"  > u #| grep -v "${2}" )
 	
-}
+	a=$( cat "$1" | grep -A 10000 "$2" | grep -v "$2" )
+	b=$( cat "$1" | grep -B 10000 "$2" | grep -v "$2" )
 
+  m=$( ${BP_SCRIPT_PATH}/bpmodule getmodmod )
+ 
+#  echo "$b" "$3" "$a" > f
+  printf "%s %s %s" "$b" "${m}" "$a" > e
+
+}
 
 newm() { ##C BP_DEV Create a new bashplate module (experimental)
-  m=$( bpImport ${BP_SCRIPT_PATH}/templates/bpmodule )
-	echo $m
+  #m=$( bpImport ${BP_SCRIPT_PATH}/templates/bpmodule )
+ 	m=$( ${BP_SCRIPT_PATH}/bpmodule getmodmod )
+#	newScript "bashplate" "${m}"
+	bpInsert "${BP_SCRIPT_PATH}/${BP_DIR}/bashplate" "__MY_FUNCTIONS__" "${m}"
+
+#  echo  "$m"	
+	
+ 	
+}
+
+lm() { ##D List modules
+  for f in ${BP_SCRIPT_PATH}/modules/* ; do
+	  echo -e  "${f}"
+  done
 }
 
 ##- Setup

@@ -49,6 +49,8 @@ bpUserSettings() {
 
 ##- My functions
 
+####BPModTemplateBegin####
+
 MODULE_NAME="Name"
 MODULE_VER=0.1
 MODULE_LINK="www.github.com"
@@ -67,20 +69,34 @@ a() {
 
 mod() { ##D Get module
   cat $0 | grep -A 1000 -m 1 "###BPModulebegin###" | grep -B 1000 -m 1 "###BPModuleend###" | grep -v "###BPModulebegin###" | grep -v  "###BPModuleend###"
-#  awk '/###BPModulebegin###/,/###BPModuleend###/ {print}' $0
-#  awk '/###BPModulebegin###/,/###BPModuleend###/' $0
- # sed  -n '/###BPModulebegin###/,/###BPModuleend###/p' $0
 }
 
 info() { ##D Get module information 
   bpTextLine "Module information"
-	bpPrintInfo "Name" "$MODULE_NAME"
-	bpPrintInfo "Version" "$MODULE_VERSION"
-	bpPrintInfo "Link"    "$MODULE_LINK"
-	bpPrintInfo
-	bpPrintInfo
-	bpLine
+  bpPrintInfo "Name" "$MODULE_NAME"
+  bpPrintInfo "Version" "$MODULE_VERSION"
+  bpPrintInfo "Link"    "$MODULE_LINK"
+  bpPrintInfo
+  bpPrintInfo
+  bpLine
 }
+
+
+#
+# $1 start match
+# $2 ending match
+#
+bpGetSection() { ##
+  cat "$1" | grep -A 1000 -m 1 "$2" | grep -B 1000 -m 1 "$3" | grep -v "$2" | grep -v  "$3"
+}
+
+####BPModTemplateEnd#### 
+
+getmodmod() { ##D Get module template
+#  cat $0 | grep -A 1000 -m 1 "####BPModTemplateBegin####" | grep -B 1000 -m 1 "####BPModTemplateEnd####" | grep -v "####BPModTemplateBegin####" | grep -v  "####BPModTemplateEnd####"
+	bpGetSection "${0}" "####BPModTemplateBegin####" "####BPModTemplateEnd####" 
+}
+
 
 #---------------------------------------------------------------------
 # Bashplate settings
