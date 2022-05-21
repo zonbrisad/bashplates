@@ -237,7 +237,7 @@ pull() { ##C BP_DEV Pull project from GITHUB
 } 
 
 
-bp_phh() {
+bp_phh() { 
   if [ ! -n "${BP_INIT_RUN}" ]; then
     bpWarning "Make sure to do load bp_init ( source $(realpath bp_init) )" 
 		echo
@@ -302,11 +302,8 @@ doc() { ##D Some BASH documentation
 	bpPrintInfo '>>' "append to file"
 	bpPrintInfo '>|' "overwrite file"
 	bpPrintInfo '2&>1' "stderr to stdout"
-
-
   bpLine
 }
-
 
 #---------------------------------------------------------------------
 # Bashplate settings
@@ -606,21 +603,21 @@ bpPrintInfoAlt() {
 
 # Print a variable + text into two columns
 #
-# $1 variable for column 1
-# $2 text for column 2
-# $3 optional text form column 1
+# $1 text for column 1
+# $2 variable for column 2
+# $3 optional text form column 2
 #
 bpPrintVar() { ##I Print variable value and description
-  var="$1"      
+  var="$2"      
   if [ "${!var}" ]; then
     if [ ! -z "$3" ]; then
       X=${3}
     else 
       X="${!var}"
     fi
-    bpPrintInfo "$2" "${X}"
+    bpPrintInfo "$1" "${X}"
   else
-    printf "${BP_C_ID}  %-24s${E_END} ${E_RED}N/A${E_END}\n" "$2"
+    printf "${BP_C_ID}  %-24s${E_END} ${E_RED}N/A${E_END}\n" "$1"
   fi
 }
 
@@ -990,12 +987,12 @@ bpLoadSettings() {
 
 settings() { ##C BP_CONF Print bashplate settings
   bpTextLine "Bashplates settings"
-  bpPrintVar BP_NAME      "Name:"
-  bpPrintVar BP_EMAIL     "Email:"
-  bpPrintVar BP_LICENSE   "Default license:"
-  bpPrintVar BP_EDITOR    "Default editor"
-  bpPrintVar BP_ORG       "Default organisation"
-  bpPrintVar BP_DIFF      "Default diff program"
+  bpPrintVar "Name:"                BP_NAME 
+  bpPrintVar "Email:"               BP_EMAIL
+  bpPrintVar "Default license:"     BP_LICENSE
+  bpPrintVar "Default editor"       BP_EDITOR
+  bpPrintVar "Default organisation" BP_ORG
+  bpPrintVar "Default diff program" BP_DIFF
   bpLine
 }
 
@@ -1358,18 +1355,18 @@ ihelp() { ##I Print internal help information
 
 iinfo() { ##I Show information about script
   bpTextLine "Script information"
-  bpPrintVar "BP_NAME"     "Script" "$( bpColorizeFile "${BP_DIR}/${BP_NAME}" )"
-  bpPrintVar "APP_VERSION"        "Script version" 
-  bpPrintVar "BP_VERSION"         "Template version"
-  bpPrintVar "BP_SETTINGS"   "Bashplate settings file" "$( bpColorizeFile ${BP_SETTINGS} )"
-  bpPrintVar "APP_LOGFILE"        "Log file"  "$( bpColorizeFile "${APP_LOGFILE}" )"
-  bpPrintVar "APP_LOCK_FILE"      "Lock file" "$( bpColorizeFile "${APP_LOCK_FILE}" )"
-  bpPrintVar "DEFAULT_CMD_HOOK"   "Default function" 
-  bpPrintInfo "PID" "$$"  
-  bpPrintVar "BP_DATE"            "Date" 
-  bpPrintVar "BP_TIME"            "Time"
-  bpPrintVar "BP_COLUMNS"         "Character columns"
-  bpPrintVar "BP_LINES"           "Character lines"
+  bpPrintVar "Script" BP_NAME "$( bpColorizeFile "${BP_DIR}/${BP_NAME}" )"
+  bpPrintVar "Script version" APP_VERSION
+  bpPrintVar "Template version" BP_VERSION 
+  bpPrintVar "Bashplate settings file" BP_SETTINGS "$( bpColorizeFile ${BP_SETTINGS} )"
+  bpPrintVar "Log file" APP_LOGFILE  "$( bpColorizeFile "${APP_LOGFILE}" )"
+  bpPrintVar "Lock file"  APP_LOCK_FILE  "$( bpColorizeFile "${APP_LOCK_FILE}" )"
+  bpPrintVar "Default function" DEFAULT_CMD_HOOK
+  bpPrintInfo "PID"  $$   
+  bpPrintVar "Date" BP_DATE
+  bpPrintVar "Time" BP_TIME
+  bpPrintVar "Character columns" BP_COLUMNS 
+  bpPrintVar "Character lines" BP_LINES
 
   if [ -n "${POST_INFO_HOOK}" ]; then
     bpTextLine "App. information"
