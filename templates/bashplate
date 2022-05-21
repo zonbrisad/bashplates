@@ -166,7 +166,6 @@ bpCallStack() { ##I Print out BASH call stack
 
 bpCleanUp() { ##I Cleanup function
   rm -f "$APP_LOCK_FILE"    # remove Lock file
-  echo -e "${E_SHOW}"     # Turn on cursor if turned of
 }
 
 #

@@ -87,13 +87,12 @@ info() { ##D Get module information
 # $2 ending match
 #
 bpGetSection() { ##
-  cat "$1" | grep -A 1000 -m 1 "$2" | grep -B 1000 -m 1 "$3" | grep -v "$2" | grep -v  "$3"
+  cat "$1" | grep -A 1000 -m 1 "$2" | grep -B 1000 -m 1 "$3" | grep -v "$2" | grep -v  "$3" | sed -r "s/\x1b\[([0-9]{1,2}(;[0-9]{1,2})?)?m//g"
 }
 
 ####BPModTemplateEnd#### 
 
 getmodmod() { ##D Get module template
-#  cat $0 | grep -A 1000 -m 1 "####BPModTemplateBegin####" | grep -B 1000 -m 1 "####BPModTemplateEnd####" | grep -v "####BPModTemplateBegin####" | grep -v  "####BPModTemplateEnd####"
 	bpGetSection "${0}" "####BPModTemplateBegin####" "####BPModTemplateEnd####" 
 }
 
@@ -208,7 +207,6 @@ bpCallStack() { ##I Print out BASH call stack
 
 bpCleanUp() { ##I Cleanup function
   rm -f "$APP_LOCK_FILE"    # remove Lock file
-  echo -e "${E_SHOW}"     # Turn on cursor if turned of
 }
 
 #
@@ -224,9 +222,11 @@ bpExit() { ##I Function for safely exiting script
 
   # Check if argument is given
   if [ -z "$1" ]; then
-    exit 0   # Success
+   : 
+	 #    exit 0   # Success
   else
-    exit "$1"
+    : 
+#   exit "$1"
   fi
 
 }
