@@ -72,7 +72,7 @@ bpImport() { ## Import file into variable
 # $2 match
 # $3 text to insert
 #
-bpInsert() { ##D Insert text into file
+bpInsert() { ##I Insert text into file
 	a=$( cat "$1" | grep -A 10000 "$2" | grep -v "$2" )
 	b=$( cat "$1" | grep -B 10000 "$2" | grep -v "$2" )
  
@@ -83,7 +83,7 @@ bpInsert() { ##D Insert text into file
 # $1 source file
 # $2 destination file
 #
-bpAppend() { ##D Append file to file
+bpAppend() { ##I Append file to file
   cat $1 >> $2
 }
 
