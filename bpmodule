@@ -6,7 +6,7 @@
 #  bpmodule
 #
 #  [Description]
-#    Bashplates module test
+#    Bashplates module generator
 #
 #  [Author]
 #    Peter Malmberg <peter.malmberg@gmail.com>
@@ -47,7 +47,7 @@ bpUserSettings() {
 # User defined functions
 #---------------------------------------------------------------------
 
-##- My functions
+##- Module
 
 ####BPModTemplateBegin####
 
@@ -62,8 +62,6 @@ movvar="xxx"
 a() {
   :
 }
-
-
 
 ###BPModuleend###
 
@@ -80,7 +78,6 @@ info() { ##D Get module information
   bpPrintInfo
   bpLine
 }
-
 
 #
 # $1 start match
@@ -109,7 +106,7 @@ APP_VERSION="1.00"
 APP_USAGE="Usage: ${BP_SCRIPT_NAME} command [option]"
 
 ##V Description text
-APP_DESC="Description goes here"
+APP_DESC="Bashplates module template"
 
 ##V logfile (uncomment to use logfile)
 #APP_LOGFILE=${BP_SCRIPT_PATH}/${BP_SCRIPT_NAME}.log

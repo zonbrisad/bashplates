@@ -43,9 +43,14 @@ set -o pipefail
 bpUserSettings() {
 
 BP_DIR=templates
+BP_TEMPLATES=${BP_SCRIPT_PATH}/${BP_DIR}
+
 
 BP_MOD=$BP_SETTINGS_MODULES="${BP_SETTINGS_DIR}/modules"
 #BP_LINK=$
+
+BP_PREAMBLE="#!/usr/bin/env bash"
+BP_HEADER=${BP_TEMPLATES}/header
 
 BP_DEV=1
 }
@@ -62,51 +67,9 @@ bpImport() { ## Import file into variable
   if [ -f $1 ]; then
 	  cat $1
 	else
-	:
-	fi
-	
+	  :
+	fi	
 }
-
-#
-# Create a new script
-#
-# $1 template file
-#
-newScript() { 
-  echo -e "Creating new bashplate project"
-  script=$(bpRead "Enter name of new script" "")
-
-  if [ -e "${script}" ]; then
-    bpError "File ${E_BR_CYAN}${script}${E_END} already exists"
-    return
-  else
-    cp -rf "${BP_SCRIPT_PATH}/${BP_DIR}/${1}" "${script}"
-  fi
-
-  desc=$(bpRead "Enter script description")
-  author=$(bpRead "Enter author" "${BP_NAME} <${BP_EMAIL}>" )
-  
-  bpCp  "${BP_SCRIPT_PATH}"/"${BP_DIR}"/"${1}" "${script}"
-
-  bpReplace "${script}" "__NAME__"    "${script}"
-  bpReplace "${script}" "__DATE__"    "${BP_DATE}"
-  bpReplace "${script}" "__LICENSE__" "${BP_LICENSE}"
-  bpReplace "${script}" "__AUTHOR__"  "${author}"
-  bpReplace "${script}" "__DESC__"    "${desc}"
-	
-	bpReplace "${script}" "__MY_FUNCTIONS__" "${2}" 
-}
-
-new() { ##D Create a new standard bashplate project
-  newScript "bashplate" ""
-}
-
-news() { ##D Create a new simple bashplate project
-  newScript "bashplate-simple" ""
-}
-
-##- Modules
-
 
 #
 # $1 file
@@ -114,25 +77,87 @@ news() { ##D Create a new simple bashplate project
 # $3 text to insert
 #
 bpInsert() { ##D Insert text into file
-  #b=$( cat $1 | grep -B 10000 "${2}" )  #| grep -v "${2}" )
-#	cat $1 | grep -B 10000 "${2}"  > u #| grep -v "${2}" )
-	
 	a=$( cat "$1" | grep -A 10000 "$2" | grep -v "$2" )
 	b=$( cat "$1" | grep -B 10000 "$2" | grep -v "$2" )
-
-  m=$( ${BP_SCRIPT_PATH}/bpmodule getmodmod )
  
-  echo "$b" "$3" "$a" 
-#  printf "%s %s %s" "$b" "${m}" "$a" 
-
+  echo "$b" "$3" "$a"  >| $1
 }
 
+#
+# $1 source file
+# $2 destination file
+#
+bpAppend() { ##D Append file to file
+  cat $1 >> $2
+}
+
+#
+# Create a new script
+#
+# $1 template file
+# $2
+# $3 type
+#
+newScript() { 
+  t=$3
+  script=$(bpRead "Enter name of new ${t}" "")
+
+  if [ -e "${script}" ]; then
+    bpError "File ${E_BR_CYAN}${script}${E_END} already exists"
+    return
+  fi
+   	
+  desc=$(bpRead "Enter description" )
+  author=$(bpRead "Enter author" "${BP_NAME} <${BP_EMAIL}>" )
+	
+	echo "${BP_PREAMBLE}"            >| ${script}
+  echo "$( bpImport $BP_HEADER )"  >> ${script}
+  cat  "${BP_TEMPLATES}/$1"        >> ${script}
+	chmod +x ${script}
+
+
+  bpReplace "${script}" "__NAME__"    "${script}"
+  bpReplace "${script}" "__DATE__"    "${BP_DATE}"
+  bpReplace "${script}" "__LICENSE__" "${BP_LICENSE}"
+  bpReplace "${script}" "__AUTHOR__"  "${author}"
+  bpReplace "${script}" "__DESC__"    "${desc}"
+	
+	if [ "$3" == "module" ]; then
+		 bpInsert "${script}" "#__MODULES__" "$( bpmodule getmodmod )"
+	fi
+		
+	bpOk "Created file $script"
+}
+
+
+
+#
+# $1 file to create
+# $2 template file
+#
+ns() {
+  echo "${BP_PREAMBLE}"            >| $1
+  echo "$( bpImport $BP_HEADER )"  >> $1
+  cat  "${BP_TEMPLATES}/$2"        >> $1
+	chmod +x $1
+}
+
+new() { ##D Create a new standard bashplate project
+  newScript "bashplate" "" "script"
+}
+
+news() { ##D Create a new simple bashplate project
+  newScript "bashplate-simple" "" "script"
+}
+
+##- Modules
+
 newm() { ##C BP_DEV Create a new bashplate module (experimental)
-  #m=$( bpImport ${BP_SCRIPT_PATH}/templates/bpmodule )
- 	m=$( ${BP_SCRIPT_PATH}/bpmodule getmodmod )
+#  ns "a" "bashplate"
+	newScript "bashplate" "" "module"
+# 	m=$( ${BP_SCRIPT_PATH}/bpmodule getmodmod )
 #	newScript "bashplate" "${m}"
-	bpInsert "${BP_SCRIPT_PATH}/${BP_DIR}/bashplate" "__MY_FUNCTIONS__" "${m}"
-	 	
+#	bpInsert "${BP_SCRIPT_PATH}/${BP_DIR}/bashplate" "__MY_FUNCTIONS__" "${m}"
 }
 
 lm() { ##D List modules
@@ -277,6 +302,13 @@ doc() { ##D Some BASH documentation
   bpPrintInfo '$?' "Exit status of last task"
   bpPrintInfo '$!' "PID of last background task"
   bpPrintInfo '$$' "PID of shell"
+	
+	bpTextLine "Redirect"
+	bpPrintInfo '>' "write to file"
+	bpPrintInfo '>>' "append to file"
+	bpPrintInfo '>|' "overwrite file"
+	bpPrintInfo '2&>1' "stderr to stdout"
+
 
   bpLine
 }
@@ -311,6 +343,9 @@ BP_LOG_CRITICAL=1
 
 ##V Activate settings function (will create settings file when run)
 BP_SETTINGS=1
+
+#BP_HELP_CMD
+#BP_VERSION_CMD
 
 }
 #---------------------------------------------------------------------
@@ -516,7 +551,7 @@ bpPrintLineC() { ##I Print text with adjusted line after with selectable colors
   len4="${#4}"
 
   echo -en "${2}${1}${4}${3}"
-  l=$((BP_COLUMNS - len1 - len4  ))
+  l=$(( BP_COLUMNS - len1 - len4  ))
   seq -s"${5}" "${l}"|tr -d '[:digit:]'
   echo -en ${E_END} 
 }
@@ -1241,21 +1276,7 @@ printCondNamedLine() {
   fi
 }
 
-# 
-# $1 hook
-# Warning: does not work, do not use
-#
-bpExecHook() { 
-  bpInfo  "Executing hook $1"
-  eval "hook=\$$1"
-  if [ -n "$hook" ]; then
-    "$hook" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" 
-    return 0
-  fi
-  return 1
-}
-
-help() { ##D Print this help information
+help() { ##D Print help information
   echo "$APP_USAGE"
   echo -e "$APP_DESC"
   echo 
@@ -1415,7 +1436,6 @@ ied() { ##I Open this file with standard editor
     bpError "BP_EDITOR variable not set, can't open script file"
   fi
 }
-
 
 
 version() { ##D Print version information
