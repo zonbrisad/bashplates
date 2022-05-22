@@ -10,6 +10,8 @@ Bashplates is a bashscript template generator to enable rappid development of
 subcommandbased shellscripts.
 
 ## Features
+
+
 - Handler for commands
 - Built in Documantation handling of commands (help command)
 - logfile function
@@ -23,10 +25,10 @@ subcommandbased shellscripts.
 - Numerous internal variables setup on default
 - Execution hooks
 - default function
-- Selfcontained, no external dependencies other than linux system
+- Selfcontained
+- Few external dependencies (grep, sed, awk, date, tail, tput)
 
-
-## Installation
+## Download and Installation
 
 ### Download
 
@@ -36,7 +38,7 @@ Get bashplates from github with the following command.
 $ git clone https://github.com/zonbrisad/bashplates.git
 ```
 
-### Setting up environment
+### Installation
 
 In order to use Bashplate the enivronment needs to be setup properly.
 This is done by "sourcing" the `bp_init` script located in the project directory. For convenience

@@ -1294,8 +1294,7 @@ bpRemoveLineContaining() { ##I Remove line in file if it contains given string
 # $2 string
 # return 1 for true, 0 for false
 #
-bpStrExist() { ##I Check if string exist in file
-  
+bpStrExist() { ##I Check if string exist in file  
   if grep -q -F "$2" "$1" ; then
     echo "1"
   else
@@ -1306,12 +1305,21 @@ bpStrExist() { ##I Check if string exist in file
 #
 # $1 file to open in editor
 #
-bpEdit() { ##I Open file in default editor (BP_EDIT must be set)
+bpEdit() { ##I Open file in default editor (BP_EDIT variable must be set)
   if [ -n "$BP_EDITOR" ]; then
     ${BP_EDITOR} "${1}"
   else
     bpError "BP_EDITOR variable not set, can't open file ${1}"
   fi
+}
+
+# 
+# $1 file
+# $2 start marker
+# $3 end marker
+#
+bpGetSection() { ##I Get section of file between two markers
+  cat "$1" | grep -A 10000 -m 1 "$2" | grep -B 10000 -m 1 "$3" | grep -v "$2" | grep -v "$3"
 }
 
 ##C- IHELP Input
@@ -1323,7 +1331,7 @@ bpEdit() { ##I Open file in default editor (BP_EDIT must be set)
 # $2  Default value
 # return string read from cmdline/default if enter pressed
 #
-bpRead() { ##I Read from commandline
+bpRead() { ##I Read string from commandline
 
   if [ "${2}" == "" ]; then
     read -erp "${1} >" result
