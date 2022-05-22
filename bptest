@@ -161,19 +161,19 @@ tf() { ##D Test file manipulation functions
 bpInitSettings() { 
 
 ##V Script version info
-APP_VERSION="1.05"
+BP_VERSION="1.05"
 
 ##V Usage info
-APP_USAGE="Usage: ${BP_NAME} command [option]"
+BP_USAGE="Usage: ${BP_NAME} command [option]"
 
 ##V Description text
-APP_DESC="Generate bash scripts from templates"
+BP_DESC="Generate bash scripts from templates"
 
 ##V logfile (uncomment to use logfile)
-APP_LOGFILE=${BP_DIR}/${BP_NAME}.log
+BP_LOGFILE=${BP_DIR}/${BP_NAME}.log
 
 ##V Lock file (uncomment to use lock file feature )
-APP_LOCK_FILE=/tmp/${BP_NAME}.lock
+BP_LOCK_FILE=/tmp/${BP_NAME}.lock
 
 ##V Logging options (uncomment to activate logging parameters)
 BP_LOG_OK=1
@@ -267,7 +267,7 @@ bpCallStack() { ##I Print out BASH call stack
 }
 
 bpCleanUp() { ##I Cleanup function
-  rm -f "$APP_LOCK_FILE"    # remove Lock file
+  rm -f "$BP_LOCK_FILE"    # remove Lock file
 #  echo -e "${E_SHOW}"     # Turn on cursor if turned of
 }
 
@@ -528,12 +528,12 @@ bpCd() { ##I Safe cd function (exits on fail)
 bpMkDir() { ##I Create a directory if it does not exist
   if [ ! -d "$1" ]; then
     if mkdir -p "$1"; then
-		  bpOk "Creating directory $( bpColorizeFile ${1} )."
-			return 0
-		else
-		  bpError "Failed to create directory $( bpColorizeFile ${1} )."
-			return 1
-		fi
+      bpOk "Creating directory $( bpColorizeFile ${1} )."
+      return 0
+    else
+      bpError "Failed to create directory $( bpColorizeFile ${1} )."
+      return 1
+    fi
   fi
 }
 
@@ -544,12 +544,12 @@ bpMkDir() { ##I Create a directory if it does not exist
 bpLn() { ##I Create symbolic link
   if [ ! -L "$1" ]; then
     if ln -sf "${1}" "${2}" ; then
-		  bpOk "Creating link $( bpColorizeFile ${2} )."
-			return 0
-		else
-		  bpError "Failed to create link $( bpColorizeFile ${2} )."
-			return 1
-		fi
+      bpOk "Creating link $( bpColorizeFile ${2} )."
+      return 0
+    else
+      bpError "Failed to create link $( bpColorizeFile ${2} )."
+      return 1
+    fi
   fi
 }
 
@@ -559,12 +559,12 @@ bpLn() { ##I Create symbolic link
 #
 bpCp() { ##I Copy file(s)
   if cp -rf "$@" ; then
-	  bpOk "Copying $( bpColorizeFile ${1} ) to $( bpColorizeFile ${2} )"
-		return 0
-	else
-	  bpError "Failed copying $( bpColorizeFile ${1} ) to $( bpColorizeFile ${2} )"
-		return 1
-	fi
+    bpOk "Copying $( bpColorizeFile ${1} ) to $( bpColorizeFile ${2} )"
+    return 0
+  else
+    bpError "Failed copying $( bpColorizeFile ${1} ) to $( bpColorizeFile ${2} )"
+    return 1
+  fi
 }
 
 #
@@ -573,12 +573,12 @@ bpCp() { ##I Copy file(s)
 #
 bpMv() { ##I Move file(s)
   if mv "$1" "$2" ; then
-	  bpOk "Moving file $( bpColorizeFile ${1} ) to $( bpColorizeFile ${2})."
-		return 0
-	else
-	  bpError "Failed moving file $( bpColorizeFile ${1} ) to $( bpColorizeFile ${2})."
-		return 1
-	fi
+    bpOk "Moving file $( bpColorizeFile ${1} ) to $( bpColorizeFile ${2})."
+    return 0
+  else
+    bpError "Failed moving file $( bpColorizeFile ${1} ) to $( bpColorizeFile ${2})."
+    return 1
+  fi
 }
 
 # 
@@ -586,12 +586,12 @@ bpMv() { ##I Move file(s)
 #
 bpRm() { ##I Remove file(s)
   if rm -rf "${1}" ; then
-	  bpOk "Removing file $( bpColorizeFile ${1} )."
-		return 0
-	else
-	  bpError "Failed removing file $( bpColorizeFile ${1} )."
-		return 1
-	fi
+    bpOk "Removing file $( bpColorizeFile ${1} )."
+    return 0
+  else
+    bpError "Failed removing file $( bpColorizeFile ${1} )."
+    return 1
+  fi
 }
 
 
@@ -602,12 +602,12 @@ bpBackup() { ##I Make backup of file
   BF="${1}_$(date +"%Y%m%d")-$(date +"%H%M%S").bak"
 
   if cp -rf "$1" "${BF}" ; then
-	  bpOk "Backing up file $( bpColorizeFile $1 ) to $( bpColorizeFile ${BF} )."
-		return 0
-	else
-	  bpError "Failed backing up file $( bpColorizeFile $1 ) to $( bpColorizeFile ${BF} )."
-	  return 1
-	fi
+    bpOk "Backing up file $( bpColorizeFile $1 ) to $( bpColorizeFile ${BF} )."
+    return 0
+  else
+    bpError "Failed backing up file $( bpColorizeFile $1 ) to $( bpColorizeFile ${BF} )."
+    return 1
+  fi
 }
 
 #
@@ -915,16 +915,6 @@ bpLsPaths() { ##I List paths
 }
 
 #
-# $1 
-# $2
-#
-bpAddLink() { ##I Add symbolic link to dir
-  if [ ! -L "$1" ]; then
-     ln -s "${1}" "${2}"
-  fi
-}
-
-#
 # $1 directory to add to path
 #
 bpAddPath() { ##I Add dir to PATH variable
@@ -932,8 +922,7 @@ bpAddPath() { ##I Add dir to PATH variable
 
   bpInfo "Adding PATH \"${2}\""
   if [ ! -L "$1" ]; then
-     ln -s "${1}" "${BP_SETTINGS_PATHS}/${ll}"
-     bpInfo "Adding PATH \"${2}\""
+     bpLn  "${1}" "${BP_SETTINGS_PATHS}/${ll}"
   fi
 }
 
@@ -951,8 +940,7 @@ bpAddModule() { ##I Add init script to
   m=$( realpath "${1}" )
   if [ ! -L "$m" ]; then
     rm -f "${BP_SETTINGS_MODULES}/$(basename $m)"
-    ln -s "$m" "${BP_SETTINGS_MODULES}/."
-    bpInfo "Adding module $(bpColorizeFile $m)"
+    bpLn "$m" "${BP_SETTINGS_MODULES}/."
   fi
 }
 
@@ -961,7 +949,7 @@ bpRmModule() { ##I Remove module
 }
 
 
-
+##-
 
 # Logging ---------------------------------------------------------
 
@@ -973,10 +961,10 @@ bpRmModule() { ##I Remove module
 # Arg1 String to log to file
 #
 bpLog() { ##I Log to file command
-  # check for APP_LOGFILE variable
-  if [ -n "$APP_LOGFILE" ]; then
+  # check for BP_LOGFILE variable
+  if [ -n "$BP_LOGFILE" ]; then
     ts=$(date +"%Y-%m-%d %H:%M:%S")
-    bpFilterEscape "$ts $1"  >> "${APP_LOGFILE}"
+    bpFilterEscape "$ts $1"  >> "${BP_LOGFILE}"
   fi
 }
 
@@ -1000,16 +988,16 @@ bpLogCritical() {  ##I Log Critical message to file
   bpLog "[Crit] $1"
 }
 
-log() { ##C APP_LOGFILE View logfile
-  if [ -n "$APP_LOGFILE" ]; then
-    if [ -f "${APP_LOGFILE}" ]; then  # Check that logfile exists
+log() { ##C BP_LOGFILE View logfile
+  if [ -n "$BP_LOGFILE" ]; then
+    if [ -f "${BP_LOGFILE}" ]; then  # Check that logfile exists
       D=$(sed -r -e "s|\[Info\]|\[\\${BP_C_INFO}Info\\${E_END}\]|"  \
             -e "s|\[Warn\]|\[\\${BP_C_WARNING}Warn\\${E_END}\]|"  \
             -e "s|\[Erro\]|\[\\${BP_C_ERROR}Erro\\${E_END}\]|"    \
             -e "s|\[ Ok \]|\[\\${BP_C_OK} Ok \\${E_END}\]|"    \
             -e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
             -e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
-            -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < "${APP_LOGFILE}" )
+            -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < "${BP_LOGFILE}" )
 
       echo -e "$D"
     fi
@@ -1019,10 +1007,10 @@ log() { ##C APP_LOGFILE View logfile
   fi
 }
 
-mlog() {   ##C APP_LOGFILE Monitor logfile
-  if [ -n "$APP_LOGFILE" ]; then
-    if [ -f "${APP_LOGFILE}" ]; then  # Check that logfile exists
-      tail -f "${APP_LOGFILE}" | sed -r -e "s|\[Info\]|\[\\${BP_C_INFO}Info\\${E_END}\]|"  \
+mlog() {   ##C BP_LOGFILE Monitor logfile
+  if [ -n "$BP_LOGFILE" ]; then
+    if [ -f "${BP_LOGFILE}" ]; then  # Check that logfile exists
+      tail -f "${BP_LOGFILE}" | sed -r -e "s|\[Info\]|\[\\${BP_C_INFO}Info\\${E_END}\]|"  \
             -e "s|\[Warn\]|\[\\${BP_C_WARNING}Warn\\${E_END}\]|"  \
             -e "s|\[Erro\]|\[\\${BP_C_ERROR}Erro\\${E_END}\]|"    \
             -e "s|\[ Ok \]|\[\\${BP_C_OK} Ok \\${E_END}\]|"    \
@@ -1095,12 +1083,12 @@ bpAssertRoot() { ##I Assert that user is root
 }
 
 bpAssertNoLockFile() { ##I Assert that lockfile is not present
-  if [ -n "$APP_LOCK_FILE" ]; then
-    if [ -f "$APP_LOCK_FILE" ]; then
-      bpError "Script is already running. (${APP_LOCK_FILE})"
+  if [ -n "$BP_LOCK_FILE" ]; then
+    if [ -f "$BP_LOCK_FILE" ]; then
+      bpError "Script is already running. (${BP_LOCK_FILE})"
       exit  "1" # do not use bpExit because lock file belongs to prexsisting process
     fi
-    touch "$APP_LOCK_FILE"
+    touch "$BP_LOCK_FILE"
   fi
 }
 
@@ -1173,8 +1161,8 @@ printCondNamedLine() {
 }
 
 help() { ##D Print help information
-  echo "$APP_USAGE"
-  echo -e "$APP_DESC"
+  echo "$BP_USAGE"
+  echo -e "$BP_DESC"
   echo 
 	
   BP_HELP=1
@@ -1230,7 +1218,7 @@ ihelp() { ##I Print internal help information
   SC="$1"
 
   IHELP=1    # Force ihelp documentations
-  APP_LOGFILE=1  # Force log documentation
+  BP_LOGFILE=1  # Force log documentation
 
   help_lines=$(grep -h '##[C|I|-]' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e 'printNamedLine' -e 'awk' -e 'bpPrintInfo' -e 'name' )
   for help_line in ${help_lines} ; do
@@ -1256,11 +1244,11 @@ ihelp() { ##I Print internal help information
 iinfo() { ##I Show information about script
   bpTextLine "Script information"
   bpPrintVar "Script" BP_NAME "$( bpColorizeFile "${BP_DIR}/${BP_NAME}" )"
-  bpPrintVar "Script version" APP_VERSION
+  bpPrintVar "Script version" BP_VERSION
   bpPrintVar "Template version" BP_VERSION 
   bpPrintVar "Bashplate settings file" BP_SETTINGS "$( bpColorizeFile ${BP_SETTINGS} )"
-  bpPrintVar "Log file" APP_LOGFILE  "$( bpColorizeFile "${APP_LOGFILE}" )"
-  bpPrintVar "Lock file"  APP_LOCK_FILE  "$( bpColorizeFile "${APP_LOCK_FILE}" )"
+  bpPrintVar "Log file" BP_LOGFILE  "$( bpColorizeFile "${BP_LOGFILE}" )"
+  bpPrintVar "Lock file"  BP_LOCK_FILE  "$( bpColorizeFile "${BP_LOCK_FILE}" )"
   bpPrintVar "Default function" DEFAULT_CMD_HOOK
   bpPrintInfo "PID"  $$   
   bpPrintVar "Date" BP_DATE
@@ -1336,7 +1324,7 @@ ied() { ##I Open this file with standard editor
 
 
 version() { ##D Print version information
-  echo "$APP_VERSION"
+  echo "$BP_VERSION"
 }
 
 # Runs a function in this file as a command

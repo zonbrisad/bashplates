@@ -57,7 +57,7 @@ BP_LOG_ERROR=1
 BP_LOG_CRITICAL=1
 
 ##V Activate settings function (will create settings file when run)
-#BP__CONF=1
+#BP_CONF=1
 
 }
 #---------------------------------------------------------------------
@@ -396,19 +396,29 @@ bpCd() { ##I Safe cd function (exits on fail)
 #
 bpMkDir() { ##I Create a directory if it does not exist
   if [ ! -d "$1" ]; then
-    bpInfo "Creating directory \"${1}\""
-    mkdir -p "$1"
+    if mkdir -p "$1"; then
+      bpOk "Creating directory $( bpColorizeFile ${1} )."
+      return 0
+    else
+      bpError "Failed to create directory $( bpColorizeFile ${1} )."
+      return 1
+    fi
   fi
 }
 
 #
-# $1 
-# $2
+# $1 target file/dir
+# $2 link
 #
 bpLn() { ##I Create symbolic link
-  bpInfo "Creating link \"${2}\""
   if [ ! -L "$1" ]; then
-    ln -sf "${1}" "${2}"
+    if ln -sf "${1}" "${2}" ; then
+      bpOk "Creating link $( bpColorizeFile ${2} )."
+      return 0
+    else
+      bpError "Failed to create link $( bpColorizeFile ${2} )."
+      return 1
+    fi
   fi
 }
 
@@ -417,8 +427,13 @@ bpLn() { ##I Create symbolic link
 # $2 destination
 #
 bpCp() { ##I Copy file(s)
-  bpInfo "Copying \"${1}\" to \"${2}\""
-  cp -rf "$@"
+  if cp -rf "$@" ; then
+    bpOk "Copying $( bpColorizeFile ${1} ) to $( bpColorizeFile ${2} )"
+    return 0
+  else
+    bpError "Failed copying $( bpColorizeFile ${1} ) to $( bpColorizeFile ${2} )"
+    return 1
+  fi
 }
 
 #
@@ -426,16 +441,26 @@ bpCp() { ##I Copy file(s)
 # $2 destination
 #
 bpMv() { ##I Move file(s)
-  bpInfo "Moving file \"${1}\" \"${2}\""
-  mv "$1" "$2"
+  if mv "$1" "$2" ; then
+    bpOk "Moving file $( bpColorizeFile ${1} ) to $( bpColorizeFile ${2})."
+    return 0
+  else
+    bpError "Failed moving file $( bpColorizeFile ${1} ) to $( bpColorizeFile ${2})."
+    return 1
+  fi
 }
 
 # 
 # $1 file(s) to be removed
 #
 bpRm() { ##I Remove file(s)
-  bpInfo "Removing file \"${1}\""
-  rm -rf "${1}"
+  if rm -rf "${1}" ; then
+    bpOk "Removing file $( bpColorizeFile ${1} )."
+    return 0
+  else
+    bpError "Failed removing file $( bpColorizeFile ${1} )."
+    return 1
+  fi
 }
 
 
@@ -444,8 +469,14 @@ bpRm() { ##I Remove file(s)
 #
 bpBackup() { ##I Make backup of file
   BF="${1}_$(date +"%Y%m%d")-$(date +"%H%M%S").bak"
-  bpInfo "Backing up file \"$1\" to \"${BF}\""
-  cp -rf "$1" "${BF}" 
+
+  if cp -rf "$1" "${BF}" ; then
+    bpOk "Backing up file $( bpColorizeFile $1 ) to $( bpColorizeFile ${BF} )."
+    return 0
+  else
+    bpError "Failed backing up file $( bpColorizeFile $1 ) to $( bpColorizeFile ${BF} )."
+    return 1
+  fi
 }
 
 #
