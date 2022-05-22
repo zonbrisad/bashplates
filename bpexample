@@ -1033,7 +1033,6 @@ BP_E_OK=0            # successful termination
 
 ##C- IHELP Printing functions
 
-# Print text with row
 #
 # arg1 text to be printed
 # arg2 text color
@@ -1051,7 +1050,6 @@ bpPrintLineC() { ##I Print text with adjusted line after with selectable colors
   echo -en ${E_END} 
 }
 
-# Print text with row
 #
 # arg1 text to be printed
 # arg2 text color
@@ -1074,30 +1072,27 @@ bpTextLine() { ##I Print text with line after
 	fi
 }
 
-# Print a divider row
-#
-bpLine() { ##I Print a line
+
+bpLine() { ##I Print a divider row
   bpPrintLineC "" "${BP_C_LINE}" "${BP_C_LINE}" "" "-"
 }
 
-# Generic command/description printout function
+
 # 
 # $1 command color
 # $2 description color
 # $3 command text
 # $4 desccription text
 #
-bpPrintInfoGeneric() {
+bpPrintInfoGeneric() { # Generic command/description printout function
   printf "${1}  %-24.24s${E_END} ${2}%s${E_END}\n" "$3" "$4"
 }
 
-
-# Print text into two columns
 #
 # arg1 text for column 1
 # arg2 text for column 2
 #
-bpPrintInfo() { ##I Print information pair 
+bpPrintInfo() { ##I Print text into two columns
   bpPrintInfoGeneric "${BP_C_ID}" "${BP_C_DESCRIPTION}" "$1" "$2"
 }
 
@@ -1105,7 +1100,6 @@ bpPrintInfoAlt() {
   bpPrintInfoGeneric "${E_DARKGRAY}" "${BP_C_DESCRIPTION}" "$1" "$2"
 }
 
-# Print a variable + text into two columns
 #
 # $1 text for column 1
 # $2 variable for column 2
@@ -1138,16 +1132,13 @@ bpColorizeFile() { ##I Colorize string containing filename
   fi
 }
 
-
-#
-# Colorize string containing URL
 #
 # $1 string with url to colorize
 # ret colorized string
 #
 # todo: give username own color
 #
-bpColorizeUrl() { ##I Colorize string containing url 
+bpColorizeUrl() { ##I Colorize string containing URL
   url=$(echo -n $1 | sed -r -e "s/^.*\/\///")
   prot=$(echo -n $1 | sed -r -e "s/:\/.*//")
   #un=$( echo $url | sed -r -e 's/\(.*\)@/$1/')
@@ -1183,11 +1174,10 @@ bpCd() { ##I Safe cd function (exits on fail)
   cd "$1" || bpExit "Failed to cd to [$1]"
 }
 
-# Create a directory if it does not exist
 #
 # $1 Directory to be created
 #
-bpMkDir() { ##I Create directory
+bpMkDir() { ##I Create a directory if it does not exist
   if [ ! -d "$1" ]; then
     bpInfo "Creating directory \"${1}\""
     mkdir -p "$1"
@@ -1206,8 +1196,6 @@ bpLn() { ##I Create symbolic link
 }
 
 # 
-# Copy file(s)
-# 
 # $1 file(s) to be copied
 # $2 destination
 #
@@ -1217,28 +1205,23 @@ bpCp() { ##I Copy file(s)
 }
 
 #
-# Move file(s)
-#
 # $1 file(s) to be moved
 # $2 destination
+#
 bpMv() { ##I Move file(s)
   bpInfo "Moving file \"${1}\" \"${2}\""
   mv "$1" "$2"
 }
 
 # 
-# Remove file(s)
-# 
 # $1 file(s) to be removed
 #
-bpRm() { ##I Remove file
+bpRm() { ##I Remove file(s)
   bpInfo "Removing file \"${1}\""
   rm -rf "${1}"
 }
 
 
-# 
-# Make backup of file
 #
 # $1 file to be backed up
 #
@@ -1248,7 +1231,6 @@ bpBackup() { ##I Make backup of file
   cp -rf "$1" "${BF}" 
 }
 
-# Replace text in file
 #
 # $1 file 
 # $2 text to replace
@@ -1258,17 +1240,15 @@ bpReplace() {  ##I Replace text in file
   sed -i -e "s/${2}/${3}/g"  "$1"
 }
 
-# Replace entire line matching pattern
 #
 # $1 file 
 # $2 pattern matching line
 # $3 new text
 #
-bpReplaceLine() {  ##I Replace entire line in file
+bpReplaceLine() {  ##I Replace entire line matching pattern
   sed -i -e "0,/${2}/s/${2}.*/${3}/" "${1}"
 }
 
-# Appends a line to a file if it is not present in that file.
 #
 # $1 file
 # $2 line to append
@@ -1277,7 +1257,6 @@ bpAppendIfNoSuchLine() { ##I Append a line if it does not exist in file
   grep -q -F "$2" "$1" || echo "$2" >> "$1"
 }
 
-# Remove line in file containing a given string
 #
 # $1 file
 # $2 string
@@ -1287,8 +1266,6 @@ bpRemoveLineContaining() { ##I Remove line in file if it contains given string
   mv -f "${1}_tmp" "${1}"
 }
 
-#
-# Check if string exists in file
 #
 # $1 file
 # $2 string
@@ -1318,14 +1295,36 @@ bpEdit() { ##I Open file in default editor (BP_EDIT variable must be set)
 # $2 start marker
 # $3 end marker
 #
-bpGetSection() { ##I Get section of file between two markers
+bpGetSection() { ##I Get text from file between two markers
   cat "$1" | grep -A 10000 -m 1 "$2" | grep -B 10000 -m 1 "$3" | grep -v "$2" | grep -v "$3"
 }
 
-##C- IHELP Input
+
+# 
+# $1 File to import
+#
+bpImport() { ## Import file into variable
+  if [ -f $1 ]; then
+	  cat $1
+	fi
+}
 
 #
-# Read string from commandline
+# $1 file
+# $2 match
+# $3 text to insert
+#
+bpInsert() { ##I Insert text into file
+	a=$( cat "$1" | grep -A 10000 "$2" | grep -v "$2" )
+	b=$( cat "$1" | grep -B 10000 "$2" | grep -v "$2" )
+ 
+  echo "$b" "$3" "$a"  >| $1
+}
+
+
+
+##C- IHELP Input
+
 #
 # $1  Question string
 # $2  Default value
@@ -1345,8 +1344,6 @@ bpRead() { ##I Read string from commandline
   echo "${result}"
 }
 
-#
-# Read integer from commandline
 #
 # $1  Question string
 # $2  Default value
@@ -1814,6 +1811,9 @@ help() { ##D Print help information
   fi
 }
 
+#
+# $1 command
+# 
 ihelp() { ##I Print internal help information  
 
   # Singe command documentation
@@ -1821,7 +1821,10 @@ ihelp() { ##I Print internal help information
     echo
     bpTextLine "$2"
     echo
-    grep --no-filename -B 10 "$0" -e "${2}()" | grep "#" | grep -v "##"
+    echo "#"
+    echo -n "# "
+    grep --no-filename "$0" -e "${2}()"  | sed -n -e 's/^.*##I //p' 
+    grep --no-filename -B 8 "$0" -e "${2}()" | grep "#" | grep -v "##"
     bpLine
     bpExit
   fi
@@ -1877,7 +1880,6 @@ iinfo() { ##I Show information about script
 
 #
 iview() {  ##I View example
-#  VF='s/\$[{]?[a-zA-Z0-9_]*[}]?/'"\\${BP_C_VAR}&\\${E_END}/" 
   # Singe command documentation
   if [ "$2" != "" ]; then
     echo

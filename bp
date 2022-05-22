@@ -215,14 +215,12 @@ pull() { ##C BP_DEV Pull project from GITHUB
   bpCd - 
 } 
 
-
 bp_phh() { 
   if [ ! -n "${BP_INIT_RUN}" ]; then
-    bpWarning "Make sure to do load bp_init ( source $(realpath bp_init) )" 
+    bpInfo "Make sure to do load bp_init ( source $(realpath bp_init) )" 
 		echo
 	fi
 }
-
 
 ##- BASH Documentation
 
@@ -595,6 +593,8 @@ bpPrintVar() { ##I Print variable value and description
 }
 
 
+#
+# Colorize string containing filename
 #
 # $1 string with filename to colorize
 # ret colorized string
@@ -1306,10 +1306,10 @@ ihelp() { ##I Print internal help information
     echo
     bpTextLine "$2"
     echo
-#		echo "#"
-#		echo -n "# "
-		#grep --no-filename "$0" -e "${2}()"  | sed -n -e 's/^.*##I //p' 
-    grep --no-filename -B 10 "$0" -e "${2}()" | grep "#" | grep -v "##"
+    echo "#"
+    echo -n "# "
+    grep --no-filename "$0" -e "${2}()"  | sed -n -e 's/^.*##I //p' 
+    grep --no-filename -B 8 "$0" -e "${2}()" | grep "#" | grep -v "##"
     bpLine
     bpExit
   fi
