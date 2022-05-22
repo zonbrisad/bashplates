@@ -213,6 +213,9 @@ To montor the logfile simply enter the "mlog" command.
 ```
 
 # Files
+
+[History](doc/history.txt)
+
  - `bpexample  ` example bashplate script
  - `templates/bashplate` bashplate template
  - `bp`        bashplate project management script

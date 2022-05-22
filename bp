@@ -168,6 +168,10 @@ dl() { ##C BP_DEV Make diff with latest bashtemplate
   meld ${BP_DIR}/templates/bashplate  $2
 }
 
+tabs() { ##C BP_DEV Remove tabs
+  cat $0 | sed -e 's/[ \t]*//'
+}
+
 
 ##C- BP_DEV Project management (git) (for developers only)
 
@@ -1011,16 +1015,6 @@ bpLsPaths() { ##I List paths
 }
 
 #
-# $1 
-# $2
-#
-bpAddLink() { ##I Add symbolic link to dir
-  if [ ! -L "$1" ]; then
-     ln -s "${1}" "${2}"
-  fi
-}
-
-#
 # $1 directory to add to path
 #
 bpAddPath() { ##I Add dir to PATH variable
@@ -1028,8 +1022,7 @@ bpAddPath() { ##I Add dir to PATH variable
 
   bpInfo "Adding PATH \"${2}\""
   if [ ! -L "$1" ]; then
-     ln -s "${1}" "${BP_SETTINGS_PATHS}/${ll}"
-     bpInfo "Adding PATH \"${2}\""
+     bpLn  "${1}" "${BP_SETTINGS_PATHS}/${ll}"
   fi
 }
 
@@ -1047,16 +1040,13 @@ bpAddModule() { ##I Add init script to
   m=$( realpath "${1}" )
   if [ ! -L "$m" ]; then
     rm -f "${BP_SETTINGS_MODULES}/$(basename $m)"
-    ln -s "$m" "${BP_SETTINGS_MODULES}/."
-    bpInfo "Adding module $(bpColorizeFile $m)"
+    bpLn "$m" "${BP_SETTINGS_MODULES}/."
   fi
 }
 
 bpRmModule() { ##I Remove module
   bpRm "${BP_SETTINGS_MODULES}/${1}"
 }
-
-
 
 
 # Logging ---------------------------------------------------------
