@@ -11,7 +11,6 @@ subcommandbased shellscripts.
 
 ## Features
 
-
 - Handler for commands
 - Built in Documantation handling of commands (help command)
 - logfile function
@@ -90,12 +89,11 @@ $ bp new
 - log     - View log file
 - mlog    - View log file live
 - version - Show version information
-- info    - show various script information 
 
-## Internal(i) commands
+## Internal(hidden) commands
 All bashplates based scripts have four internal "hidden" commands who all start with
 the letter i. These commands are always hidden to the user and are
-there as a help to the developer of the script. The commands are `ihelp` `iinfo` `iview` `ivars`.
+there as a aid the developer. The commands are `ihelp` `iinfo` `iview` `ivars`.
 
 ### ihelp
 `ihelp` is by far the most important internal command. It reveals all
