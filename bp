@@ -48,7 +48,7 @@ bpUserSettings() {
   BP_PREAMBLE="#!/usr/bin/env bash"
   BP_HEADER=${BP_TEMPLATES}/header
 
-  if [ -f ${BP_DIR}/BP_DEV ]; then
+  if [ -f ${BP_DIR}/DEV ]; then
     BP_DEV=1
   fi 
 }
