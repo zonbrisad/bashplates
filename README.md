@@ -12,6 +12,9 @@ MIT
 
   - [About](#about)
   - [Features](#features)
+  - [Requirements](#requirements)
+    - [Runtime](#runtime)
+    - [Development](#development)
   - [Download and Installation](#download-and-installation)
     - [Download](#download)
     - [Installation](#installation)
@@ -36,6 +39,7 @@ MIT
     - [View log](#view-log)
     - [Monitor log](#monitor-log)
   - [Files](#files)
+  - [History](#history)
   - [TODO](#todo)
   - [References and tutorials](#references-and-tutorials)
 - [Example scripts](#example-scripts)
@@ -65,6 +69,16 @@ subcommandbased shellscripts.
 - default function
 - Selfcontained
 - Few external dependencies (grep, sed, awk, date, tail, tput)
+
+
+## Requirements
+
+### Runtime
+- bash
+- basic commands like grep, sed, awk, date, tail etc
+
+### Development
+- shellcheck
 
 ## Download and Installation
 
@@ -251,13 +265,16 @@ To montor the logfile simply enter the "mlog" command.
 
 ## Files
 
-[History](doc/history.txt)
+- `bpexample  ` example bashplate script
+- `templates/bashplate` bashplate template
+- `bp`        bashplate project management script
+- `history.txt` history file 
+- `README.md` this documentation
 
- - `bpexample  ` example bashplate script
- - `templates/bashplate` bashplate template
- - `bp`        bashplate project management script
- - `history.txt` history file 
- - `README.md` this documentation
+
+## History
+
+[History](doc/HISTORY.md)
 
 ## TODO
 - Add verbose option

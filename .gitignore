@@ -1,0 +1,89 @@
+#
+# General .gitignore file
+#
+# Peter Malmberg <peter.malmberg@gmail.com> 
+# 
+#
+
+# Temporary files
+#--------------------------------------------------------------------
+*.tmp
+*.old
+*.orig
+*~
+
+# Revision control
+#--------------------------------------------------------------------
+.svn
+.git
+
+# C/C++
+#--------------------------------------------------------------------
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+*.lo
+*.slo
+
+# Symbols etc
+*.lst
+*.sym
+*.map
+*.lss
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Static Libraries
+*.lib
+*.a
+*.la
+*.lo
+*.lai
+
+# Shared libraries (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+*.bin
+*.elf
+*.a
+
+# Debug files
+*.dSYM/
+
+# Makefile specific
+#--------------------------------------------------------------------
+*.d
+.dep
+
+# Qt 
+#--------------------------------------------------------------------
+*.moc
+moc_*.h
+moc_*.cpp
+*_moc.h
+*_moc.cpp
+qrc_*.cpp
+ui_*.h
+
+# QtCreator Qml
+*.qmlproject.user
+*.qmlproject.user.*
+
+# QtCtreator CMake
+CMakeLists.txt.user*
+
