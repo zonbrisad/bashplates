@@ -274,7 +274,7 @@ To montor the logfile simply enter the "mlog" command.
 
 ## History
 
-[History](doc/HISTORY.md)
+[HISTORY.md](/doc/HISTORY.md)
 
 ## TODO
 - Add verbose option
