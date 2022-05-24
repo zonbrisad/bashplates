@@ -1,11 +1,50 @@
-
-# Bashplates	
+# Bashplates
 
 #### Author 
 Peter Malmberg  <peter.malmberg@gmail.com>
 #### License
 MIT
-#### Description
+
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+  - [About](#about)
+  - [Features](#features)
+  - [Download and Installation](#download-and-installation)
+    - [Download](#download)
+    - [Installation](#installation)
+    - [Bashplate settings](#bashplate-settings)
+  - [Getting started](#getting-started)
+    - [bp command](#bp-command)
+    - [Create new script](#create-new-script)
+  - [Built in commands](#built-in-commands)
+  - [Internal(hidden) commands](#internalhidden-commands)
+    - [ihelp](#ihelp)
+    - [iinfo](#iinfo)
+    - [`iview`](#iview)
+    - [ivars](#ivars)
+  - [Examples](#examples)
+  - [Documentation](#documentation)
+    - [Documentation tags](#documentation-tags)
+    - [Standard subcommand function documentation](#standard-subcommand-function-documentation)
+    - [Conditional subcommand function documentation](#conditional-subcommand-function-documentation)
+  - [Log](#log)
+    - [Activate log feature](#activate-log-feature)
+    - [Usage](#usage)
+    - [View log](#view-log)
+    - [Monitor log](#monitor-log)
+  - [Files](#files)
+  - [TODO](#todo)
+  - [References and tutorials](#references-and-tutorials)
+- [Example scripts](#example-scripts)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+
+
+## About
 Bashplates is a bashscript template generator to enable rappid development of
 subcommandbased shellscripts.
 
@@ -210,7 +249,7 @@ To montor the logfile simply enter the "mlog" command.
   bpexample mlog
 ```
 
-# Files
+## Files
 
 [History](doc/history.txt)
 
@@ -220,12 +259,12 @@ To montor the logfile simply enter the "mlog" command.
  - `history.txt` history file 
  - `README.md` this documentation
 
-# TODO
+## TODO
 - Add verbose option
 - Use logrotate for logs
 - Mail feature
 
-# References and tutorials
+## References and tutorials
 
 [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.html#Programmable-Completion)
 
