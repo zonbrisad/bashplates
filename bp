@@ -63,6 +63,9 @@ bpUserSettings() {
 # $2 destination file
 #
 bpAppend() { ##I Append file to file
+  if [ ! -f $1 ]; then
+	  bpError "Can't append file $( bpColorizeFile ${1}) to $( bpColorizeFile ${2} )."
+	fi
   cat $1 >> $2
 }
 
@@ -484,6 +487,7 @@ E_END=$'\e[m'              # Clear Attributes
 # Default Bashplate colortheme
 BP_C_OK=$E_BR_GREEN
 BP_C_INFO=$E_BR_CYAN
+BP_C_DEBUG=$E_ON_GREEN$E_BLACK
 BP_C_WARNING=$E_BR_YELLOW
 BP_C_ERROR=$E_BR_RED
 BP_C_CRITICAL=$E_ON_RED$E_WHITE
@@ -1170,6 +1174,18 @@ bpInfo() { ##I Info message
     bpLogInfo "$1"
   fi
   echo -e "[${BP_C_INFO}Info${E_END}] $1"
+}
+
+bpDbg() { ##I Debug message
+  if [ ! -n "$BP_DEBUG" ]; then
+    return 
+  fi
+  if [ -n "$BP_LOG_INFO" ]; then
+    bpLogDebug "$1"
+  fi
+
+  echo -e "[${BP_C_DEBUG}Dbg${E_END}] $1"
+
 }
 
 bpWarning() { ##I Warning message

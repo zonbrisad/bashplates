@@ -1,3 +1,14 @@
+Version 1.30 beta
+Major changes
+  - Improved documentation system
+	- bpCp, bpMv, bpRm etc. now return correct status and log messages
+	- Internal variable names are more consistent
+	- Fixed bpCleanup escape code bug
+	- many bugfixes
+
+Future
+  - Experiments with modules 
+
 Version 1.20
   - Adding simple template
   - Added info hook
