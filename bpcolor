@@ -1002,7 +1002,7 @@ bpDbg() { ##I Debug message
     bpLogDebug "$1"
   fi
 
-  echo -e "[${BP_C_DEBUG}Dbg${E_END}] $1"
+  echo -e "[${BP_C_DEBUG}Debug${E_END}] $1"
 }
 
 bpWarning() { ##I Warning message
