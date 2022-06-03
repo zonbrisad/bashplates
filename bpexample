@@ -32,7 +32,7 @@
 #set -o xtrace
 # Display shell input lines as they are read
 #set -v
-set -o errtrace
+#set -o errtrace
 
 # Exit script when a command fails. Append ||true if error is expected
 #set -o errexit # || true
@@ -564,6 +564,57 @@ readyn() { ##D Test Yes/No question from cmdline
 }
 
 
+#
+# $1 Question
+# $2 default value
+# $3 question array
+#
+bpReadSelect() {
+  arr=("${@}")
+  len=${#arr[@]}
+
+  while [ true ]; do
+    echo $1
+  
+    i=2
+    while [ $i -lt $len ]; do
+      choice=${arr[$i]}
+      let i++
+      desc=${arr[$i]}
+      let i++
+      bpPrintInfo "${choice}) " "${desc}"
+    done
+
+    ans=$( bpRead "Choice" "${2}" )
+
+    i=2
+    while [ $i -lt $len ]; do
+      choice=${arr[$i]}
+      if [ "${choice}" == "${ans}" ]; then
+        echo $ans
+        return 0
+
+      fi
+      let i++
+      let i++
+    done
+  done 
+}
+
+readselect() { ##D Test select from list read command
+
+  slist=(                      \
+    "a" "First choice"         \
+    "b" "Second choice"        \
+    "3" "Third alternative"    \
+    "4" "Fourth alternative"   \
+    "penta" "Fifth choice"     \
+    "hexa" "Sixth choice"      \
+  )
+  
+  bpReadSelect "Please choose an alternative" "3" "${slist[@]}"
+}
+
 ##- Experiments
 
 bpShow() {
@@ -1092,7 +1143,7 @@ bpPrintInfoGeneric() { # Generic command/description printout function
 # arg1 text for column 1
 # arg2 text for column 2
 #
-bpPrintInfo() { ##I Print text into two columns
+bpPrintInfo() {  ##I Print text into two columns
   bpPrintInfoGeneric "${BP_C_ID}" "${BP_C_DESCRIPTION}" "$1" "$2"
 }
 
