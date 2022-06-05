@@ -1478,43 +1478,43 @@ bpRunCommand() {
     bpErrorExit "No command given"
   fi
 
-  if [ "$( type -t $1 )" = "function" ]; then # Check if subcommand is declared as function
-      command=$1
-      # execute pre command hook  if existing
-      if [ -n "$PRE_CMD_HOOK" ]; then
-        "${PRE_CMD_HOOK}" "$command"
-      fi
-
-      # Check if command is conditional
-      if [[ $( grep "${command}()" "$0" ) = *"##C"* ]]; then  
-
-        # Check if condition is true and then execute else printout error message
-        C=$( grep "${command}()" "$0"  | sed -s 's/^.*##C.//' | awk '{print $1}' )
-        if [ -n "$C" ]; then
-          eval "D=\$$C"
-
-          if [ -n "$D" ]; then
-            # execute command
-            "${command}" "$@" 
-          else
-            bpError "Command \"$command\" not available right now."
-          fi
-        else
-          bpError "Command \"$command\" is conditional, but is missing conditional variable"
-        fi
-      else 
-        # command is not conditional, execute
-        "${command}" "$@"
-      fi
-
-      # execute post command hook  if existing
-      if [ -n "$POST_CMD_HOOK" ]; then
-        "${POST_CMD_HOOK}" "$command"
-      fi      
-      bpExit
-  else
+  if [ "$( type -t $1 )" != "function" ]; then # Check if subcommand is declared as function
     bpErrorExit "Command \"$1\" not found"
   fi
+
+  command=$1
+  # execute pre command hook  if existing
+  if [ -n "$PRE_CMD_HOOK" ]; then
+    "${PRE_CMD_HOOK}" "$command"
+  fi
+
+  # Check if command is conditional
+  if [[ $( grep "${command}()" "$0" ) = *"##C"* ]]; then  
+
+    # Check if condition is true and then execute else printout error message
+    C=$( grep "${command}()" "$0"  | sed -s 's/^.*##C.//' | awk '{print $1}' )
+    if [ -n "$C" ]; then
+      eval "D=\$$C"
+
+      if [ -n "$D" ]; then
+        # execute command
+        "${command}" "$@" 
+      else
+        bpError "Command \"$command\" not available right now."
+      fi
+    else
+      bpError "Command \"$command\" is conditional, but is missing conditional variable"
+    fi
+  else 
+    # command is not conditional, execute
+    "${command}" "$@"
+  fi
+
+  # execute post command hook  if existing
+  if [ -n "$POST_CMD_HOOK" ]; then
+    "${POST_CMD_HOOK}" "$command"
+  fi      
+  bpExit
 }
 
 #---------------------------------------------------------------------
