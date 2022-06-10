@@ -1429,6 +1429,14 @@ iinfo() { ##I Show information about script
   settings
 }
 
+bpHasCmd() {  ##I Check if command is available
+ if type ${1} &> /dev/null ; then
+   return 0
+ else
+   return 1
+ fi
+}
+
 #
 iview() {  ##I View example
   # Singe command documentation
@@ -1436,8 +1444,9 @@ iview() {  ##I View example
 	  bpExit
 	fi
   
-  if type batcat &> /dev/null ; then   # Use batcat to view function if available
-    grep --no-filename -A 60  "$0" -e "${2}()" | grep -B 60 -m 1 -x "}" | batcat --language bash
+#  if type batcat &> /dev/null ; then   # Use batcat, if available, to view function
+	if bpHasCmd batcat ; then   # Use batcat, if available, to view function
+    grep --no-filename -A 60  "$0" -e "${2}()" | grep -B 60 -m 1 -x "}"  | batcat --language bash
 	else
     echo
 		bpTextLine "$2"
