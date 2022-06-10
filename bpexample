@@ -615,7 +615,6 @@ readselect() { ##D Test select from list read command
   bpReadSelect "Please choose an alternative" "3" "${slist[@]}"
 }
 
-
 ##- Experiments
 
 bpShow() {

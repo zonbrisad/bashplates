@@ -167,6 +167,8 @@ eh() { ##C BP_DEV Edit header template
   bpEdit ${BP_DIR}/templates/header
 }
 
+
+
 dl() { ##C BP_DEV Make diff with latest bashtemplate
   meld ${BP_DIR}/templates/bashplate  $2
 }
@@ -232,7 +234,31 @@ bp_phh() {
 ##- BASH Documentation
 
 cc() { ##D Cheat sheet for common BASH features
-  #echo
+  
+	bpTextLine "Arithmetic operators"
+	bpPrintInfo "(( N1 + N2 ))" "Addition"
+	bpPrintInfo "(( N1 - N2 ))" "Subtraction"
+	bpPrintInfo "(( N1 * N2 ))" "Multiplication"
+	bpPrintInfo "(( N1 / N2 ))" "Division"
+	bpPrintInfo "(( N1 % N2 ))" "Modulo"
+	bpPrintInfo "(( N1 ** N2 ))" "Exponentiation"
+	bpPrintInfo "(( N1++ ))" "Variable increment"
+	bpPrintInfo "(( N1-- ))" "Variable decrement"
+  bpTextLine "Bitwise operators"
+	bpPrintInfo "(( N1 >> N2 ))" "Bitwise shift left"
+	bpPrintInfo "(( N1 << N2 ))" "Bitwise shift right"
+	bpPrintInfo "(( N1 & N2 ))" "Bitwise and"
+	bpPrintInfo "(( N1 | N2 ))" "Bitwise or"
+	bpPrintInfo "(( N1 ^ N2 ))" "Bitwise xor"
+	bpPrintInfo "(( N1 ~ N2 ))" "Bitwise negation"
+	bpTextLine "Logical operators"
+	bpPrintInfo "(( N1 && N2 ))" "Logical and"
+	bpPrintInfo "(( N1 || N2 ))" "Logical or"
+#	bpPrintInfo "(( N1 N2 ))" ""
+#	bpPrintInfo "(( N1 N2 ))" ""
+#	bpPrintInfo "(( N1 N2 ))" ""
+					
+	
   bpTextLine "String tests"
 	bpPrintInfo '[ "$STR1" == "$STR2" ]' "Strings equal"
 	bpPrintInfo '[ "$STR1" != "$STR2" ]' "Strings not equal"
@@ -285,7 +311,8 @@ cc() { ##D Cheat sheet for common BASH features
 	bpPrintInfo '>' "write to file"
 	bpPrintInfo '>>' "append to file"
 	bpPrintInfo '>|' "overwrite file"
-	bpPrintInfo '2&>1' "stderr to stdout"
+	bpPrintInfo '2>&1' "stderr to stdout"
+	bpPrintInfo '&> /dev/null' "stdout and stderr to /dev/null"
   bpLine
 }
 
@@ -1405,10 +1432,16 @@ iinfo() { ##I Show information about script
 #
 iview() {  ##I View example
   # Singe command documentation
-  if [ "$2" != "" ]; then
+  if [ "$2" == "" ]; then
+	  bpExit
+	fi
+  
+  if type batcat &> /dev/null ; then   # Use batcat to view function if available
+    grep --no-filename -A 60  "$0" -e "${2}()" | grep -B 60 -m 1 -x "}" | batcat --language bash
+	else
     echo
-    bpTextLine "$2"
-    echo
+		bpTextLine "$2"
+		echo
     grep --no-filename -A 60  "$0" -e "${2}()" | grep -B 60 -m 1 -x "}" | \
       sed  -e "s/#.*/\\${BP_C_COMMENT}&\\${E_END}/"          \
              -e "s/\<echo\>/\\${BP_C_RESERVED}&\\${E_END}/"    \
@@ -1435,9 +1468,9 @@ iview() {  ##I View example
 #             -e $VF
 #             -e 's/\$[{]?[a-zA-Z0-9]*[}]?/XXX/'
 #             -e 's/$?/'"\\${BP_C_VAR}&\\${E_END}/" \
-    bpLine
-    bpExit
+          bpLine
   fi
+  bpExit
 }
 
 ivars() { ##I Print internal variables
