@@ -517,13 +517,17 @@ bpRemoveLineContaining() { ##I Remove line in file if it contains given string
 #
 # $1 file
 # $2 string
-# return 1 for true, 0 for false
+# return true if existing 
 #
 bpStrExist() { ##I Check if string exist in file  
+  if [ ! -f $1 ]; then
+    return 1
+  fi
+
   if grep -q -F "$2" "$1" ; then
-    echo "1"
+    return 0
   else
-    echo "0"
+    return 1
   fi
 }
 
@@ -670,12 +674,15 @@ bpReadN() { ##I Ask yes/no question default no
 
 ##C- BP_CONF Bashplate settings
 
+#
+# arg1 config file
+# arg2 setting name
+# arg3 setting value
+# arg4 setting description
+#
 bpAddSetting() { 
 
-  # Check if setting exist in file
-  S=$(bpStrExist "${1}" "${2}" )
-
-  if [ "${S}" == "0" ]; then
+  if ! bpStrExist "${1}" "${2}"; then
     {
       echo "# ${4}" 
       echo "${2}=\"${3}\"" 
