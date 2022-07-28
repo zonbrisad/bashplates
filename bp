@@ -542,11 +542,11 @@ BP_E_OK=0            # successful termination
 ##C- IHELP Printing functions
 
 #
-# arg1 text to be printed
-# arg2 text color
-# arg3 line color
-# arg4 middle character
-# arg5 line character
+# $1 text to be printed
+# $2 text color
+# $3 line color
+# $4 middle character
+# $5 line character
 #
 bpPrintLineC() { ##I Print text with adjusted line after with selectable colors
   len1="${#1}"
@@ -559,9 +559,9 @@ bpPrintLineC() { ##I Print text with adjusted line after with selectable colors
 }
 
 #
-# arg1 text to be printed
-# arg2 text color
-# arg3 line color
+# $1 text to be printed
+# $2 text color
+# $3 line color
 #
 bpTextLineC() { ##I Print text with adjusted line after with selectable colors
   bpPrintLineC "$1" "$2" "$3" " " "-"
@@ -597,8 +597,8 @@ bpPrintInfoGeneric() { # Generic command/description printout function
 }
 
 #
-# arg1 text for column 1
-# arg2 text for column 2
+# $1 text for column 1
+# $2 text for column 2
 #
 bpPrintInfo() { ##I Print text into two columns
   bpPrintInfoGeneric "${BP_C_ID}" "${BP_C_DESCRIPTION}" "$1" "$2"
@@ -810,13 +810,17 @@ bpRemoveLineContaining() { ##I Remove line in file if it contains given string
 #
 # $1 file
 # $2 string
-# return 1 for true, 0 for false
+# return true if existing 
 #
 bpStrExist() { ##I Check if string exist in file  
+  if [ ! -f $1 ]; then
+    return 1
+  fi
+
   if grep -q -F "$2" "$1" ; then
-    echo "1"
+    return 0
   else
-    echo "0"
+    return 1
   fi
 }
 
@@ -963,12 +967,15 @@ bpReadN() { ##I Ask yes/no question default no
 
 ##C- BP_CONF Bashplate settings
 
+#
+# $1 config file
+# $2 setting name
+# $3 setting value
+# $4 setting description
+#
 bpAddSetting() { 
 
-  # Check if setting exist in file
-  S=$(bpStrExist "${1}" "${2}" )
-
-  if [ "${S}" == "0" ]; then
+  if ! bpStrExist "${1}" "${2}"; then
     {
       echo "# ${4}" 
       echo "${2}=\"${3}\"" 
@@ -989,9 +996,9 @@ bpAddSettings() {
 
 # Change setting in config file (key value pair)
 #
-# arg1 config file
-# arg2 setting to change
-# arg3 new value for setting
+# $1 config file
+# $2 setting to change
+# $3 new value for setting
 #
 bpChSetting() {  
   SETTING="$2"
@@ -1120,7 +1127,7 @@ bpRmModule() { ##I Remove module
 #
 # Function logging to file
 #
-# Arg1 String to log to file
+# $1 String to log to file
 #
 bpLog() { ##I Log to file command
   # check for BP_LOGFILE variable
@@ -1441,16 +1448,15 @@ bpHasCmd() {  ##I Check if command is available
 iview() {  ##I View example
   # Singe command documentation
   if [ "$2" == "" ]; then
-	  bpExit
-	fi
+    bpExit
+  fi
   
-#  if type batcat &> /dev/null ; then   # Use batcat, if available, to view function
-	if bpHasCmd batcat ; then   # Use batcat, if available, to view function
+  if bpHasCmd batcat ; then   # Use batcat, if available, to view function
     grep --no-filename -A 60  "$0" -e "${2}()" | grep -B 60 -m 1 -x "}"  | batcat --language bash
-	else
+  else
     echo
-		bpTextLine "$2"
-		echo
+    bpTextLine "$2"
+    echo
     grep --no-filename -A 60  "$0" -e "${2}()" | grep -B 60 -m 1 -x "}" | \
       sed  -e "s/#.*/\\${BP_C_COMMENT}&\\${E_END}/"          \
              -e "s/\<echo\>/\\${BP_C_RESERVED}&\\${E_END}/"    \
@@ -1477,7 +1483,7 @@ iview() {  ##I View example
 #             -e $VF
 #             -e 's/\$[{]?[a-zA-Z0-9]*[}]?/XXX/'
 #             -e 's/$?/'"\\${BP_C_VAR}&\\${E_END}/" \
-          bpLine
+    bpLine
   fi
   bpExit
 }

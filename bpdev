@@ -47,6 +47,8 @@ bpUserSettings() {
 # User defined functions
 #---------------------------------------------------------------------
 
+##- En named line
+
 bpIsFunction() { ##C IHELP Check if and identifier is declared as a function
   if [ "$( type -t $1 )" == "function" ]; then 
     return 0
@@ -1062,46 +1064,52 @@ irt() { ##I Remove tabs from script
 ##C- IHELP Help & info
 
 printCommand() {
-  help_line=$1
-  help_command=$(echo "$help_line" | sed -s 's/(.*//')
-  help_info=$(echo "$help_line" | sed -s 's/^.*'"$2"'//')
-  bpPrintInfo "$help_command" "$help_info"
+  IFS=$'  '
+	arr=($1)
+	IFS=$'\n'
+	info=${arr[@]:3}
+	bpPrintInfo "${arr[0]}" "${info}"
 }
 
 printCondCommand() {
-  help_line="$1"
-  C=$(echo "$1" | sed -s 's/^.*##C//' | awk '{print $1}')
-  
-  eval "D=\$$C"
-  
-  help_command=$(echo "$help_line" | sed -s 's/(.*//')
-  help_info=$(echo "$help_line" | sed -s 's/^.*'"$C"'//')
+  IFS=$'  '
+	arr=($1)
+	IFS=$'\n'
+	help_info=${arr[@]:4}
+  BP_CONF=1
+  COND=${arr[3]}
+  eval "D=\$$COND"
 
   if [ -n "$D" ]; then
-    bpPrintInfo "$help_command" "$help_info"
+    bpPrintInfo "${arr[0]}" "${help_info}"
   else
     if [ "$2" -eq 1 ]; then
-      bpPrintInfoAlt "$help_command" "$help_info"
+      bpPrintInfoAlt "${arr[0]}" "$help_info"
     fi
   fi
 }
 
 printNamedLine() {
-  name=$(echo "$1" | sed -e 's/^.*##-//' -e 's/^[ \t]*//' )
-  bpTextLine "$name"
+  IFS=$'  '
+	arr=($1)
+	IFS=$'\n'
+	info=${arr[@]:1}
+	bpTextLine "${info}"
 }
 
 printCondNamedLine() {
-  help_line="$1"
-  C=$(echo "$1" | sed -s 's/^.*##C-//' | awk '{print $1}')
-  name=$(echo "$help_line" | sed -e 's/^.*'"$C"'//' -e 's/^[ \t]*//' )
-  eval "D=\$$C"
+  IFS=$'  '
+	arr=($1)
+	IFS=$'\n'
+	name=${arr[@]:2}
+	COND=${arr[1]}
+  eval "D=\$$COND"
   if [ -n "$D" ]; then
     bpTextLine "$name"
   fi
 }
 
-help() { ##D Print help information
+help() { ##D Print help information (faster experimental version)
   echo "$BP_USAGE"
   echo -e "$BP_DESC"
   echo 
@@ -1120,6 +1128,8 @@ help() { ##D Print help information
   IFS=$'\n'
   SC="$1"
   help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##I' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##-//' -e 'help_line' -e 'printLine')
+  help_lines=$(echo -e "$help_lines" | sed -s 's/()//g')
+
   for help_line in ${help_lines} ; do
     case "$help_line" in
       *"##-"*)   printNamedLine     "$help_line" ;;
@@ -1162,6 +1172,8 @@ ihelp() { ##I Print internal help information
   BP_LOGFILE=1  # Force log documentation
 
   help_lines=$(grep -h '##[C|I|-]' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e 'printNamedLine' -e 'awk' -e 'bpPrintInfo' -e 'name' )
+	help_lines=$(echo -e "$help_lines" | sed -s 's/()//g')
+	
   for help_line in ${help_lines} ; do
     case "$help_line" in
       *"##-"*)   printNamedLine     "$help_line" ;;

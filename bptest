@@ -60,96 +60,96 @@ bpUserSettings() {
 
 tf() { ##D Test file manipulation functions
   TDIR=${BP_DIR}/td
-	F1=${TDIR}/file1
-	F2=${TDIR}/file2
-	F3=${TDIR}/file3
-	FL=${TDIR}/file1_link
-	FNE=${TDIR}/file_not_exist
+  F1=${TDIR}/file1
+  F2=${TDIR}/file2
+  F3=${TDIR}/file3
+  FL=${TDIR}/file1_link
+  FNE=${TDIR}/file_not_exist
   S=0
-	F=0
+  F=0
  
   rm -rf ${TDIR}
-	
+  
   if  bpMkDir ${TDIR} ; then
-		(( S++ ))
-	else
-		(( F++ ))
-	fi
-	
-	# Creating test file
-	echo -e "Some text for testing.\n\nSome more text" > $F1
-	
-	if bpMkDir /nisse_fail_dir ; then
-	  (( F++ ))
-	else 
-	  (( S++ ))
-	fi
-	
-  if bpCp ${F1} ${F2} ; then
-	  (( S++ ))
-	else
+    (( S++ ))
+  else
     (( F++ ))
-	fi
+  fi
+  
+  # Creating test file
+  echo -e "Some text for testing.\n\nSome more text" > $F1
+  
+  if bpMkDir /nisse_fail_dir ; then
+    (( F++ ))
+  else 
+    (( S++ ))
+  fi
+  
+  if bpCp ${F1} ${F2} ; then
+    (( S++ ))
+  else
+    (( F++ ))
+  fi
 
   if bpCp ${FNE} ${F2} ; then
     (( F++ ))
-	else
-  	(( S++ ))
-	fi
+  else
+    (( S++ ))
+  fi
 
-	if bpBackup ${F1} ; then
-	  (( S++ ))
-	else
-  	(( F++ ))
-	fi
+  if bpBackup ${F1} ; then
+    (( S++ ))
+  else
+    (( F++ ))
+  fi
 
   if bpBackup ${FNE} ; then
-	  (( F++ ))
-	else
-  	(( S++ ))
-	fi
+    (( F++ ))
+  else
+    (( S++ ))
+  fi
 
   if bpMv ${F2} ${F3} ; then
-	  (( S++ ))
-	else
-  	(( F++ ))
-	fi
-	
-	if bpMv ${FNE} ${F3} ; then
-	  (( F++ ))
-	else
-  	(( S++ ))
-	fi
+    (( S++ ))
+  else
+    (( F++ ))
+  fi
+  
+  if bpMv ${FNE} ${F3} ; then
+    (( F++ ))
+  else
+    (( S++ ))
+  fi
 
   if bpRm ${F3} ; then
-	  (( S++ ))
-	else
-  	(( F++ ))
-	fi
+    (( S++ ))
+  else
+    (( F++ ))
+  fi
 
   if bpRm ${FNE} ; then
-	  (( S++ ))
-	else
-  	(( F++ ))
-	fi
+    (( S++ ))
+  else
+    (( F++ ))
+  fi
 
   if bpLn ${F1}  ${FL} ; then
-	  (( S++ ))
-	else
-  	(( F++ ))
-	fi
+    (( S++ ))
+  else
+    (( F++ ))
+  fi
 
   if bpLn ${FNE}  ${FL} ; then
-	  (( S++ ))
-	else
-  	(( F++ ))
-	fi
+    (( S++ ))
+  else
+    (( F++ ))
+  fi
 
 
   bpTextLine "Stats"
   bpPrintInfo "Success" "$S"
-	bpPrintInfo "Fail"    "$F"
-	bpLine
+  bpPrintInfo "Fail"    "$F"
+  bpLine
 }
 
 
@@ -412,10 +412,10 @@ bpTextLine_old() { ##I Print text with line after
 bpTextLine() { ##I Print text with line after
 #  echo "$1 ${#1}"
   if [ "${#1}" -eq 0 ]; then
-	  bpPrintLineC "" "" "${BP_C_LINE}" "" "-"
-	else
-  	bpPrintLineC "$1" "${BP_C_LINE_TEXT}" "${BP_C_LINE}" " " "-"
-	fi
+    bpPrintLineC "" "" "${BP_C_LINE}" "" "-"
+  else
+    bpPrintLineC "$1" "${BP_C_LINE_TEXT}" "${BP_C_LINE}" " " "-"
+  fi
 }
 
 
@@ -684,8 +684,8 @@ bpGetSection() { ##I Get text from file between two markers
 #
 bpImport() { ## Import file into variable
   if [ -f $1 ]; then
-	  cat $1
-	fi
+    cat $1
+  fi
 }
 
 #
@@ -694,8 +694,8 @@ bpImport() { ## Import file into variable
 # $3 text to insert
 #
 bpInsert() { ##I Insert text into file
-	a=$( cat "$1" | grep -A 10000 "$2" | grep -v "$2" )
-	b=$( cat "$1" | grep -B 10000 "$2" | grep -v "$2" )
+  a=$( cat "$1" | grep -A 10000 "$2" | grep -v "$2" )
+  b=$( cat "$1" | grep -B 10000 "$2" | grep -v "$2" )
  
   echo "$b" "$3" "$a"  >| $1
 }
@@ -821,7 +821,7 @@ bpAddSettings() {
   bpAddSetting $BP_SETTINGS "BP_EDITOR"  "vi"                "Default editor"
   bpAddSetting $BP_SETTINGS "BP_LICENSE" "MIT"               "Default project license"
   bpAddSetting $BP_SETTINGS "BP_ORG"     "ACME"              "Default organisation"
-  bpAddSetting $BP_SETTINGS "BP_DIFF"    "meld"              "Default diff program"	
+  bpAddSetting $BP_SETTINGS "BP_DIFF"    "meld"              "Default diff program"  
   bpAddSetting $BP_SETTINGS "BP_PATH"    "${BP_DIR}" "Path to Bashplates directory"
 }
 
@@ -840,7 +840,7 @@ bpChSetting() {
     bpAddSettings
   fi
   sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" "$1"
-	
+  
   bpInfo "Setting ${SETTING} to ${VAL}"
 }
 
@@ -1115,7 +1115,7 @@ icheck() { ##I Make a shellcheck
 }
 
 irt() { ##I Remove tabs from script
-  sed -i -e 's/\t/  /g' "${BP_DIR}/${BP_NAME}"
+  sed -i -e 's/\t/  /g' "${BP_DIR}/${BP_SELF}"
 }
 
 ##C- IHELP Help & info
@@ -1164,13 +1164,13 @@ help() { ##D Print help information
   echo "$BP_USAGE"
   echo -e "$BP_DESC"
   echo 
-	
+  
   BP_HELP=1
-	
+  
   if [ ! -e "${BP_SETTINGS_DIR}" ] && [ -n "${BP_SETTINGS}" ]; then
-    BPINIT=1	
+    BPINIT=1  
   fi
-	
+  
  # bpExecHook "PRE_HELP_HOOK"
   if [ -n "$PRE_HELP_HOOK" ]; then
     "${PRE_HELP_HOOK}" 
@@ -1243,7 +1243,7 @@ ihelp() { ##I Print internal help information
 
 iinfo() { ##I Show information about script
   bpTextLine "Script information"
-  bpPrintVar "Script" BP_NAME "$( bpColorizeFile "${BP_DIR}/${BP_NAME}" )"
+  bpPrintVar "Script" BP_NAME "$( bpColorizeFile "${BP_DIR}/${BP_SELF}" )"
   bpPrintVar "Script version" BP_VERSION
   bpPrintVar "Template version" BP_VERSION 
   bpPrintVar "Bashplate settings file" BP_SETTINGS "$( bpColorizeFile ${BP_SETTINGS} )"
@@ -1389,7 +1389,7 @@ BP_VERSION="1.20"
 BP_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 ##V Name of script
-BP_NAME=$(basename "$0")
+BP_SELF=$(basename "$0")
 
 ##V Number of arguments given to script
 BP_ARGUMENTS=$#

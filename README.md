@@ -285,19 +285,18 @@ To montor the logfile simply enter the "mlog" command.
 ## References and tutorials
 
 [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.html#Programmable-Completion)
-
 [BASH arithmetics](https://www.shell-tips.com/bash/math-arithmetic-calculation/#gsc.tab=0)
-
 [Best Practices for Writing Bash Scripts](http://kvz.io/blog/2013/11/21/bash-best-practices/)
-
 [What are the best practices for writing shell scripts?](https://www.quora.com/What-are-the-best-practices-for-writing-shell-scripts)
-
 
 # Example scripts
 
 [Simple bash shell script template](https://gist.github.com/KylePDavis/3901321)
-
-
+[bashsimplecurses](https://github.com/metal3d/bashsimplecurses)
+[BOILERPLATE SHELL SCRIPT TEMPLATE](http://natelandau.com/boilerplate-shell-script-template/)
+[bash3boilerplate](https://github.com/kvz/bash3boilerplate/blob/master/main.sh)
+[Self-contained auto-updating rsync-based backup script](https://gist.github.com/KylePDavis/3f8c511838a36f2528d7)
+[This is a shell script template generator](http://linuxcommand.org/lc3_new_script.php)
 
 [bp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp.png "bp"
 [bp-ihelp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-ihelp.png "bp ihelp"
@@ -305,14 +304,3 @@ To montor the logfile simply enter the "mlog" command.
 [bp-vhelp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-vhelp.png "bp vhelp"
 [bp-info]:  https://github.com/zonbrisad/bashplates/raw/master/doc/bp-info.png "bp info"
 [bp-log]:https://github.com/zonbrisad/bashplates/raw/master/doc/bp-log.png "bp log"
-
-
-
-[BOILERPLATE SHELL SCRIPT TEMPLATE](http://natelandau.com/boilerplate-shell-script-template/)
-
-[bash3boilerplate](https://github.com/kvz/bash3boilerplate/blob/master/main.sh)
-
-[Self-contained auto-updating rsync-based backup script](https://gist.github.com/KylePDavis/3f8c511838a36f2528d7)
-
-[This is a shell script template generator](http://linuxcommand.org/lc3_new_script.php)
-

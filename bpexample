@@ -328,7 +328,7 @@ color1() { ##D Standard 16 colors
 color3() { ##D Show example of all 256 colors
   
   echo
-  bpTextLine "256 Colors foreground"
+#  bpTextLine "256 Colors foreground"
   echo
   for i in {0..231} ; do
     printf "\x1b[38;5;%sm  %3d  ${E_END} " "$i" "$i"
@@ -352,7 +352,7 @@ color3() { ##D Show example of all 256 colors
 
 
   echo
-  bpTextLine "256 Colors background"
+#  bpTextLine "256 Colors background"
   echo
   for i in {0..231} ; do
     printf "\x1b[48;5;%sm  %3d  ${E_END} " "$i" "$i"
@@ -972,7 +972,7 @@ bpCallStack() { ##I Print out BASH call stack
 }
 
 bpCleanUp() { ##I Cleanup function
-  rm -f "$APP_LOCK_FILE"    # remove Lock file
+  rm -f "$BP_LOCK_FILE"    # remove Lock file
 #  echo -e "${E_SHOW}"     # Turn on cursor if turned of
 }
 
@@ -1058,6 +1058,7 @@ E_END=$'\e[m'              # Clear Attributes
 # Default Bashplate colortheme
 BP_C_OK=$E_BR_GREEN
 BP_C_INFO=$E_BR_CYAN
+BP_C_DEBUG=$E_ON_GREEN$E_BLACK
 BP_C_WARNING=$E_BR_YELLOW
 BP_C_ERROR=$E_BR_RED
 BP_C_CRITICAL=$E_ON_RED$E_WHITE
@@ -1143,7 +1144,7 @@ bpPrintInfoGeneric() { # Generic command/description printout function
 # arg1 text for column 1
 # arg2 text for column 2
 #
-bpPrintInfo() {  ##I Print text into two columns
+bpPrintInfo() { ##I Print text into two columns
   bpPrintInfoGeneric "${BP_C_ID}" "${BP_C_DESCRIPTION}" "$1" "$2"
 }
 
@@ -1213,8 +1214,10 @@ bpFilterEscape() { ##I Filter escape characters from string
 bpRun() { ##I Execute command
   if [ -e "$1" ]; then
     ${1}
+    return 0
   else
     bpError "Could not execute $1, file does not exist!"
+    return 1
   fi
 }
 
@@ -1230,19 +1233,29 @@ bpCd() { ##I Safe cd function (exits on fail)
 #
 bpMkDir() { ##I Create a directory if it does not exist
   if [ ! -d "$1" ]; then
-    bpInfo "Creating directory \"${1}\""
-    mkdir -p "$1"
+    if mkdir -p "$1"; then
+      bpOk "Creating directory $( bpColorizeFile ${1} )."
+      return 0
+    else
+      bpError "Failed to create directory $( bpColorizeFile ${1} )."
+      return 1
+    fi
   fi
 }
 
 #
-# $1 
-# $2
+# $1 target file/dir
+# $2 link
 #
 bpLn() { ##I Create symbolic link
-  bpInfo "Creating link \"${2}\""
   if [ ! -L "$1" ]; then
-    ln -sf "${1}" "${2}"
+    if ln -sf "${1}" "${2}" ; then
+      bpOk "Creating link $( bpColorizeFile ${2} )."
+      return 0
+    else
+      bpError "Failed to create link $( bpColorizeFile ${2} )."
+      return 1
+    fi
   fi
 }
 
@@ -1251,8 +1264,13 @@ bpLn() { ##I Create symbolic link
 # $2 destination
 #
 bpCp() { ##I Copy file(s)
-  bpInfo "Copying \"${1}\" to \"${2}\""
-  cp -rf "$@"
+  if cp -rf "$@" ; then
+    bpOk "Copying $( bpColorizeFile ${1} ) to $( bpColorizeFile ${2} )"
+    return 0
+  else
+    bpError "Failed copying $( bpColorizeFile ${1} ) to $( bpColorizeFile ${2} )"
+    return 1
+  fi
 }
 
 #
@@ -1260,16 +1278,26 @@ bpCp() { ##I Copy file(s)
 # $2 destination
 #
 bpMv() { ##I Move file(s)
-  bpInfo "Moving file \"${1}\" \"${2}\""
-  mv "$1" "$2"
+  if mv "$1" "$2" ; then
+    bpOk "Moving file $( bpColorizeFile ${1} ) to $( bpColorizeFile ${2})."
+    return 0
+  else
+    bpError "Failed moving file $( bpColorizeFile ${1} ) to $( bpColorizeFile ${2})."
+    return 1
+  fi
 }
 
 # 
 # $1 file(s) to be removed
 #
 bpRm() { ##I Remove file(s)
-  bpInfo "Removing file \"${1}\""
-  rm -rf "${1}"
+  if rm -rf "${1}" ; then
+    bpOk "Removing file $( bpColorizeFile ${1} )."
+    return 0
+  else
+    bpError "Failed removing file $( bpColorizeFile ${1} )."
+    return 1
+  fi
 }
 
 
@@ -1278,8 +1306,14 @@ bpRm() { ##I Remove file(s)
 #
 bpBackup() { ##I Make backup of file
   BF="${1}_$(date +"%Y%m%d")-$(date +"%H%M%S").bak"
-  bpInfo "Backing up file \"$1\" to \"${BF}\""
-  cp -rf "$1" "${BF}" 
+
+  if cp -rf "$1" "${BF}" ; then
+    bpOk "Backing up file $( bpColorizeFile $1 ) to $( bpColorizeFile ${BF} )."
+    return 0
+  else
+    bpError "Failed backing up file $( bpColorizeFile $1 ) to $( bpColorizeFile ${BF} )."
+    return 1
+  fi
 }
 
 #
@@ -1320,13 +1354,17 @@ bpRemoveLineContaining() { ##I Remove line in file if it contains given string
 #
 # $1 file
 # $2 string
-# return 1 for true, 0 for false
+# return true if existing 
 #
 bpStrExist() { ##I Check if string exist in file  
+  if [ ! -f $1 ]; then
+    return 1
+  fi
+
   if grep -q -F "$2" "$1" ; then
-    echo "1"
+    return 0
   else
-    echo "0"
+    return 1
   fi
 }
 
@@ -1473,12 +1511,15 @@ bpReadN() { ##I Ask yes/no question default no
 
 ##C- BP_CONF Bashplate settings
 
+#
+# $1 config file
+# $2 setting name
+# $3 setting value
+# $4 setting description
+#
 bpAddSetting() { 
 
-  # Check if setting exist in file
-  S=$(bpStrExist "${1}" "${2}" )
-
-  if [ "${S}" == "0" ]; then
+  if ! bpStrExist "${1}" "${2}"; then
     {
       echo "# ${4}" 
       echo "${2}=\"${3}\"" 
@@ -1586,12 +1627,15 @@ bpLsPaths() { ##I List paths
   done
 }
 
+#
+# $1 directory to add to path
+#
 bpAddPath() { ##I Add dir to PATH variable
   ll=$( echo "${1}" | sed -e 's/\//_/g' )
 
   bpInfo "Adding PATH \"${2}\""
   if [ ! -L "$1" ]; then
-     ln -s "${1}" "${BP_SETTINGS_PATHS}/${ll}"
+     bpLn  "${1}" "${BP_SETTINGS_PATHS}/${ll}"
   fi
 }
 
@@ -1609,8 +1653,7 @@ bpAddModule() { ##I Add init script to
   m=$( realpath "${1}" )
   if [ ! -L "$m" ]; then
     rm -f "${BP_SETTINGS_MODULES}/$(basename $m)"
-    ln -s "$m" "${BP_SETTINGS_MODULES}/."
-    bpInfo "Adding module $(bpColorizeFile $m)"
+    bpLn "$m" "${BP_SETTINGS_MODULES}/."
   fi
 }
 
@@ -1631,10 +1674,10 @@ bpRmModule() { ##I Remove module
 # Arg1 String to log to file
 #
 bpLog() { ##I Log to file command
-  # check for APP_LOGFILE variable
-  if [ -n "$APP_LOGFILE" ]; then
+  # check for BP_LOGFILE variable
+  if [ -n "$BP_LOGFILE" ]; then
     ts=$(date +"%Y-%m-%d %H:%M:%S")
-    bpFilterEscape "$ts $1"  >> "${APP_LOGFILE}"
+    bpFilterEscape "$ts $1"  >> "${BP_LOGFILE}"
   fi
 }
 
@@ -1658,16 +1701,16 @@ bpLogCritical() {  ##I Log Critical message to file
   bpLog "[Crit] $1"
 }
 
-log() { ##C APP_LOGFILE View logfile
-  if [ -n "$APP_LOGFILE" ]; then
-    if [ -f "${APP_LOGFILE}" ]; then  # Check that logfile exists
+log() { ##C BP_LOGFILE View logfile
+  if [ -n "$BP_LOGFILE" ]; then
+    if [ -f "${BP_LOGFILE}" ]; then  # Check that logfile exists
       D=$(sed -r -e "s|\[Info\]|\[\\${BP_C_INFO}Info\\${E_END}\]|"  \
             -e "s|\[Warn\]|\[\\${BP_C_WARNING}Warn\\${E_END}\]|"  \
             -e "s|\[Erro\]|\[\\${BP_C_ERROR}Erro\\${E_END}\]|"    \
             -e "s|\[ Ok \]|\[\\${BP_C_OK} Ok \\${E_END}\]|"    \
             -e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
             -e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
-            -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < "${APP_LOGFILE}" )
+            -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < "${BP_LOGFILE}" )
 
       echo -e "$D"
     fi
@@ -1677,10 +1720,10 @@ log() { ##C APP_LOGFILE View logfile
   fi
 }
 
-mlog() {   ##C APP_LOGFILE Monitor logfile
-  if [ -n "$APP_LOGFILE" ]; then
-    if [ -f "${APP_LOGFILE}" ]; then  # Check that logfile exists
-      tail -f "${APP_LOGFILE}" | sed -r -e "s|\[Info\]|\[\\${BP_C_INFO}Info\\${E_END}\]|"  \
+mlog() {   ##C BP_LOGFILE Monitor logfile
+  if [ -n "$BP_LOGFILE" ]; then
+    if [ -f "${BP_LOGFILE}" ]; then  # Check that logfile exists
+      tail -f "${BP_LOGFILE}" | sed -r -e "s|\[Info\]|\[\\${BP_C_INFO}Info\\${E_END}\]|"  \
             -e "s|\[Warn\]|\[\\${BP_C_WARNING}Warn\\${E_END}\]|"  \
             -e "s|\[Erro\]|\[\\${BP_C_ERROR}Erro\\${E_END}\]|"    \
             -e "s|\[ Ok \]|\[\\${BP_C_OK} Ok \\${E_END}\]|"    \
@@ -1709,6 +1752,17 @@ bpInfo() { ##I Info message
     bpLogInfo "$1"
   fi
   echo -e "[${BP_C_INFO}Info${E_END}] $1"
+}
+
+bpDbg() { ##I Debug message
+  if [ ! -n "$BP_DEBUG" ]; then
+    return 
+  fi
+  if [ -n "$BP_LOG_INFO" ]; then
+    bpLogDebug "$1"
+  fi
+
+  echo -e "[${BP_C_DEBUG}Dbg${E_END}] $1"
 }
 
 bpWarning() { ##I Warning message
@@ -1745,17 +1799,13 @@ bpAssertRoot() { ##I Assert that user is root
 }
 
 bpAssertNoLockFile() { ##I Assert that lockfile is not present
-  if [ -n "$APP_LOCK_FILE" ]; then
-    if [ -f "$APP_LOCK_FILE" ]; then
-      bpError "Script is already running. (${APP_LOCK_FILE})"
+  if [ -n "$BP_LOCK_FILE" ]; then
+    if [ -f "$BP_LOCK_FILE" ]; then
+      bpError "Script is already running. (${BP_LOCK_FILE})"
       exit  "1" # do not use bpExit because lock file belongs to prexsisting process
     fi
-    touch "$APP_LOCK_FILE"
+    touch "$BP_LOCK_FILE"
   fi
-}
-
-bpAssertRequiredProgs() { # Assert that required programs are available on the system (deprecated)
-  bpAssertProgs "${REQUIRED_PROGRAMS[@]}"
 }
 
 #
@@ -1827,8 +1877,8 @@ printCondNamedLine() {
 }
 
 help() { ##D Print help information
-  echo "$APP_USAGE"
-  echo -e "$APP_DESC"
+  echo "$BP_USAGE"
+  echo -e "$BP_DESC"
   echo 
 	
   BP_HELP=1
@@ -1884,7 +1934,7 @@ ihelp() { ##I Print internal help information
   SC="$1"
 
   IHELP=1    # Force ihelp documentations
-  APP_LOGFILE=1  # Force log documentation
+  BP_LOGFILE=1  # Force log documentation
 
   help_lines=$(grep -h '##[C|I|-]' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e 'printNamedLine' -e 'awk' -e 'bpPrintInfo' -e 'name' )
   for help_line in ${help_lines} ; do
@@ -1910,11 +1960,11 @@ ihelp() { ##I Print internal help information
 iinfo() { ##I Show information about script
   bpTextLine "Script information"
   bpPrintVar "Script" BP_NAME "$( bpColorizeFile "${BP_DIR}/${BP_NAME}" )"
-  bpPrintVar "Script version" APP_VERSION
+  bpPrintVar "Script version" BP_VERSION
   bpPrintVar "Template version" BP_VERSION 
   bpPrintVar "Bashplate settings file" BP_SETTINGS "$( bpColorizeFile ${BP_SETTINGS} )"
-  bpPrintVar "Log file" APP_LOGFILE  "$( bpColorizeFile "${APP_LOGFILE}" )"
-  bpPrintVar "Lock file"  APP_LOCK_FILE  "$( bpColorizeFile "${APP_LOCK_FILE}" )"
+  bpPrintVar "Log file" BP_LOGFILE  "$( bpColorizeFile "${BP_LOGFILE}" )"
+  bpPrintVar "Lock file"  BP_LOCK_FILE  "$( bpColorizeFile "${BP_LOCK_FILE}" )"
   bpPrintVar "Default function" DEFAULT_CMD_HOOK
   bpPrintInfo "PID"  $$   
   bpPrintVar "Date" BP_DATE
@@ -1929,10 +1979,24 @@ iinfo() { ##I Show information about script
   settings
 }
 
+bpHasCmd() {  ##I Check if command is available
+ if type ${1} &> /dev/null ; then
+   return 0
+ else
+   return 1
+ fi
+}
+
 #
 iview() {  ##I View example
   # Singe command documentation
-  if [ "$2" != "" ]; then
+  if [ "$2" == "" ]; then
+    bpExit
+  fi
+  
+  if bpHasCmd batcat ; then   # Use batcat, if available, to view function
+    grep --no-filename -A 60  "$0" -e "${2}()" | grep -B 60 -m 1 -x "}"  | batcat --language bash
+  else
     echo
     bpTextLine "$2"
     echo
@@ -1963,8 +2027,8 @@ iview() {  ##I View example
 #             -e 's/\$[{]?[a-zA-Z0-9]*[}]?/XXX/'
 #             -e 's/$?/'"\\${BP_C_VAR}&\\${E_END}/" \
     bpLine
-    bpExit
   fi
+  bpExit
 }
 
 ivars() { ##I Print internal variables
@@ -1990,7 +2054,7 @@ ied() { ##I Open this file with standard editor
 
 
 version() { ##D Print version information
-  echo "$APP_VERSION"
+  echo "$BP_VERSION"
 }
 
 # Runs a function in this file as a command
@@ -2005,42 +2069,36 @@ bpRunCommand() {
     bpErrorExit "No command given"
   fi
 
-  if [ "$( type -t $1 )" = "function" ]; then # Check if subcommand is declared as function
-      command=$1
-      # execute pre command hook  if existing
-      if [ -n "$PRE_CMD_HOOK" ]; then
-        "${PRE_CMD_HOOK}" "$command"
-      fi
-
-      # Check if command is conditional
-      if [[ $( grep "${command}()" "$0" ) = *"##C"* ]]; then  
-
-        # Check if condition is true and then execute else printout error message
-        C=$( grep "${command}()" "$0"  | sed -s 's/^.*##C.//' | awk '{print $1}' )
-        if [ -n "$C" ]; then
-          eval "D=\$$C"
-
-          if [ -n "$D" ]; then
-            # execute command
-            "${command}" "$@" 
-          else
-            bpError "Command \"$command\" not available right now."
-          fi
-        else
-          bpError "Command \"$command\" is conditional, but is missing conditional variable"
-        fi
-      else 
-        # command is not conditional, execute
-        "${command}" "$@"
-      fi
-
-      # execute post command hook  if existing
-      if [ -n "$POST_CMD_HOOK" ]; then
-        "${POST_CMD_HOOK}" "$command"
-      fi      
-      bpExit
-  else
+  if [ "$( type -t $1 )" != "function" ]; then # Check if subcommand is declared as function
     bpErrorExit "Command \"$1\" not found"
+  fi
+
+  command=$1
+  # execute pre command hook  if existing
+  if [ -n "$PRE_CMD_HOOK" ]; then
+    "${PRE_CMD_HOOK}" "$command"
+  fi
+
+  # Check if command is conditional
+  if [[ $( grep "${command}()" "$0" ) = *"##C"* ]]; then  
+
+    # Check if condition is true and then execute else printout error message
+    C=$( grep "${command}()" "$0"  | sed -s 's/^.*##C.//' | awk '{print $1}' )
+    if [ -n "$C" ]; then
+      eval "D=\$$C"
+
+      if [ -n "$D" ]; then
+        # execute command
+        "${command}" "$@" 
+      else
+        bpError "Command \"$command\" not available right now."
+      fi
+    else
+      bpError "Command \"$command\" is conditional, but is missing conditional variable"
+    fi
+  else 
+    # command is not conditional, execute
+    "${command}" "$@"
   fi
 }
 
