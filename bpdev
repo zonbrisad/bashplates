@@ -1065,24 +1065,24 @@ icheck() { ##I Make a shellcheck
 }
 
 irt() { ##I Remove tabs from script
-  sed -i -e 's/\t/  /g' "${BP_DIR}/${BP_SELF}"
+  sed -i -e 's/\t/  /g' "${BP_SELF_DIR}/${BP_SELF}"
 }
 
 ##C- IHELP Help & info
 
 printCommand() {
   IFS=$'  '
-	arr=($1)
-	IFS=$'\n'
-	info=${arr[@]:3}
-	bpPrintInfo "${arr[0]}" "${info}"
+  arr=($1)
+  IFS=$'\n'
+  info=${arr[@]:3}
+  bpPrintInfo "${arr[0]}" "${info}"
 }
 
 printCondCommand() {
   IFS=$'  '
-	arr=($1)
-	IFS=$'\n'
-	help_info=${arr[@]:4}
+  arr=($1)
+  IFS=$'\n'
+  help_info=${arr[@]:4}
   BP_CONF=1
   COND=${arr[3]}
   eval "D=\$$COND"
@@ -1098,25 +1098,25 @@ printCondCommand() {
 
 printNamedLine() {
   IFS=$'  '
-	arr=($1)
-	IFS=$'\n'
-	info=${arr[@]:1}
-	bpTextLine "${info}"
+  arr=($1)
+  IFS=$'\n'
+  info=${arr[@]:1}
+  bpTextLine "${info}"
 }
 
 printCondNamedLine() {
   IFS=$'  '
-	arr=($1)
-	IFS=$'\n'
-	name=${arr[@]:2}
-	COND=${arr[1]}
+  arr=($1)
+  IFS=$'\n'
+  name=${arr[@]:2}
+  COND=${arr[1]}
   eval "D=\$$COND"
   if [ -n "$D" ]; then
     bpTextLine "$name"
   fi
 }
 
-help() { ##D Print help information (faster experimental version)
+help() { ##D Print help information
   echo "$BP_USAGE"
   echo -e "$BP_DESC"
   echo 
@@ -1179,8 +1179,8 @@ ihelp() { ##I Print internal help information
   BP_LOGFILE=1  # Force log documentation
 
   help_lines=$(grep -h '##[C|I|-]' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e 'printNamedLine' -e 'awk' -e 'bpPrintInfo' -e 'name' )
-	help_lines=$(echo -e "$help_lines" | sed -s 's/()//g')
-	
+  help_lines=$(echo -e "$help_lines" | sed -s 's/()//g')
+  
   for help_line in ${help_lines} ; do
     case "$help_line" in
       *"##-"*)   printNamedLine     "$help_line" ;;
@@ -1324,12 +1324,12 @@ bpRunCommand() {
   fi
   
   # Check if command is conditional
-	CL=$(grep -E "${command}().*##C" "$0")
-	if [[ "$CL" = *"##C"* ]]; then
-	
+  CL=$(grep -E "${command}().*##C" "$0")
+  if [[ "$CL" = *"##C"* ]]; then
+  
     # Check if condition is true and then execute else printout error message
- 		ARR=($CL)
-		CV="${ARR[3]}"
+    ARR=($CL)
+    CV="${ARR[3]}"
 
     if [ -n "$CV" ]; then
       eval "D=\$$CV"
