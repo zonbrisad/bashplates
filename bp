@@ -1305,7 +1305,6 @@ printCondCommand() {
   arr=($1)
   IFS=$'\n'
   help_info=${arr[@]:4}
-  BP_CONF=1
   COND=${arr[3]}
   eval "D=\$$COND"
 
@@ -1553,9 +1552,7 @@ bpRunCommand() {
     ARR=($CL)
     CV="${ARR[3]}"
     if [ -n "$CV" ]; then
-		  echo "Hit"
       eval "D=\$$CV"
-			echo $D
       if [ -n "$D" ]; then
         # execute command
         "${command}" "$@" 

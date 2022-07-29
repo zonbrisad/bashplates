@@ -920,6 +920,17 @@ bpInfo() { ##I Info message
   echo -e "[${BP_C_INFO}Info${E_END}] $1"
 }
 
+bpDbg() { ##I Debug message
+  if [ ! -n "$BP_DEBUG" ]; then
+    return 
+  fi
+  if [ -n "$BP_LOG_INFO" ]; then
+    bpLogDebug "$1"
+  fi
+
+  echo -e "[${BP_C_DEBUG}Dbg${E_END}] $1"
+}
+
 bpWarning() { ##I Warning message
   if [ -n "$BP_LOG_WARNING" ]; then
     bpLogWarning "$1"
@@ -1004,7 +1015,6 @@ printCondCommand() {
   arr=($1)
   IFS=$'\n'
   help_info=${arr[@]:4}
-  BP_CONF=1
   COND=${arr[3]}
   eval "D=\$$COND"
 
@@ -1251,7 +1261,6 @@ bpRunCommand() {
     # Check if condition is true and then execute else printout error message
     ARR=($CL)
     CV="${ARR[3]}"
-
     if [ -n "$CV" ]; then
       eval "D=\$$CV"
       if [ -n "$D" ]; then
