@@ -81,6 +81,13 @@ hook() { ##D Test bpExecHook
   bpExecHook "does_not_exist_hook"
 }
 
+cond() { ##C CND Conditional function
+  echo "Conditional function"
+}
+
+nocond() { ##D Ordinary function
+  echo "Non conditional function"
+}
 
 
 #---------------------------------------------------------------------
@@ -1127,10 +1134,10 @@ help() { ##D Print help information (faster experimental version)
 
   IFS=$'\n'
   SC="$1"
-  help_lines=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##I' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##-//' -e 'help_line' -e 'printLine')
-  help_lines=$(echo -e "$help_lines" | sed -s 's/()//g')
+  HELP_LINES=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##I' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##-//' -e 'help_line' -e 'printLine')
+  HELP_LINES="${HELP_LINES//()}"
 
-  for help_line in ${help_lines} ; do
+  for help_line in ${HELP_LINES} ; do
     case "$help_line" in
       *"##-"*)   printNamedLine     "$help_line" ;;
       *"##C-"*)  printCondNamedLine "$help_line" ;;
@@ -1196,7 +1203,7 @@ ihelp() { ##I Print internal help information
 
 iinfo() { ##I Show information about script
   bpTextLine "Script information"
-  bpPrintVar "Script" BP_NAME "$( bpColorizeFile "${BP_DIR}/${BP_NAME}" )"
+  bpPrintVar "Script" BP_SELF "$( bpColorizeFile "${BP_SELF_DIR}/${BP_SELF}" )"
   bpPrintVar "Script version" BP_VERSION
   bpPrintVar "Template version" BP_VERSION 
   bpPrintVar "Bashplate settings file" BP_SETTINGS "$( bpColorizeFile ${BP_SETTINGS} )"
@@ -1315,15 +1322,17 @@ bpRunCommand() {
   if [ -n "$PRE_CMD_HOOK" ]; then
     "${PRE_CMD_HOOK}" "$command"
   fi
-
+  
   # Check if command is conditional
-  if [[ $( grep "${command}()" "$0" ) = *"##C"* ]]; then  
-
+	CL=$(grep -E "${command}().*##C" "$0")
+	if [[ "$CL" = *"##C"* ]]; then
+	
     # Check if condition is true and then execute else printout error message
-    C=$( grep "${command}()" "$0"  | sed -s 's/^.*##C.//' | awk '{print $1}' )
-    if [ -n "$C" ]; then
-      eval "D=\$$C"
+ 		ARR=($CL)
+		CV="${ARR[3]}"
 
+    if [ -n "$CV" ]; then
+      eval "D=\$$CV"
       if [ -n "$D" ]; then
         # execute command
         "${command}" "$@" 
@@ -1353,7 +1362,7 @@ bpRunCommand() {
 BP_VERSION="1.20"
 
 ##V Directory where script is located
-BP_SELF_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+BP_SELF_DIR="${0%/*}"
 
 ##V Name of script
 BP_SELF=$(basename "$0")
