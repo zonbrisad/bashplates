@@ -1535,7 +1535,7 @@ bpAddSettings() {
   bpAddSetting $BP_SETTINGS "BP_LICENSE" "MIT"               "Default project license"
   bpAddSetting $BP_SETTINGS "BP_ORG"     "ACME"              "Default organisation"
   bpAddSetting $BP_SETTINGS "BP_DIFF"    "meld"              "Default diff program"  
-  bpAddSetting $BP_SETTINGS "BP_PATH"    "${BP_DIR}" "Path to Bashplates directory"
+  bpAddSetting $BP_SETTINGS "BP_PATH"    "${BP_SELF_DIR}" "Path to Bashplates directory"
 }
 
 # Change setting in config file (key value pair)

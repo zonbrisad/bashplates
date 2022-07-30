@@ -42,8 +42,8 @@ set -o pipefail
 #---------------------------------------------------------------------
 bpUserSettings() {
 
-  BP_ADDONS="${BP_DIR}/addons"
-  BP_TEMPLATES="${BP_DIR}/templates"
+  BP_ADDONS="${BP_SELF_DIR}/addons"
+  BP_TEMPLATES="${BP_SELF_DIR}/templates"
 
   BP_PREAMBLE="#!/usr/bin/env bash"
   BP_HEADER=${BP_TEMPLATES}/header
@@ -149,28 +149,28 @@ ea() { ##C BP_DEV Edit addon
 ##- Setup
 
 bp_install() { ##D Install bashplates init
-  bpAddModule ${BP_DIR}/bp_init
+  bpAddModule ${BP_SELF_DIR}/bp_init
 }
 
 ##C- BP_DEV Development (for developers only)
 
 
 et() { ##C BP_DEV Edit bashplate template
-  bpEdit ${BP_DIR}/templates/bashplate
+  bpEdit ${BP_SELF_DIR}/templates/bashplate
 }
 
 est() { ##C BP_DEV Edit simple bashplate template
-  bpEdit ${BP_DIR}/templates/bashplate-simple
+  bpEdit ${BP_SELF_DIR}/templates/bashplate-simple
 }
 
 eh() { ##C BP_DEV Edit header template
-  bpEdit ${BP_DIR}/templates/header
+  bpEdit ${BP_SELF_DIR}/templates/header
 }
 
 
 
 dl() { ##C BP_DEV Make diff with latest bashtemplate
-  meld ${BP_DIR}/templates/bashplate  $2
+  meld ${BP_SELF_DIR}/templates/bashplate  $2
 }
 
 tabs() { ##C BP_DEV Remove tabs
@@ -181,7 +181,7 @@ tabs() { ##C BP_DEV Remove tabs
 ##C- BP_DEV Project management (git) (for developers only)
 
 clean() { ##C BP_DEV Remove leftover files
-  bpCd "${BP_DIR}"
+  bpCd "${BP_SELF_DIR}"
 
   find . -name "*~"     -delete
   find . -name "*.orig" -delete
@@ -192,14 +192,14 @@ clean() { ##C BP_DEV Remove leftover files
 }
 
 commit() { ##C BP_DEV Commit project to repository
-  bpCd "${BP_DIR}"
+  bpCd "${BP_SELF_DIR}"
   git commit -a
   #git push --tags -a
   bpCd - 
 }
 
 tag() { ##C BP_DEV Make a new tag
-  bpCd "${BP_DIR}"
+  bpCd "${BP_SELF_DIR}"
   # List existing tags
   git tag
 
@@ -213,13 +213,13 @@ tag() { ##C BP_DEV Make a new tag
 }
 
 push() { ##C BP_DEV Push project to GITHUB
-  bpCd "${BP_DIR}"
+  bpCd "${BP_SELF_DIR}"
   git push --progress
   bpCd - 
 } 
 
 pull() { ##C BP_DEV Pull project from GITHUB
-  bpCd "${BP_DIR}"
+  bpCd "${BP_SELF_DIR}"
   git pull --progress
   bpCd - 
 } 
@@ -325,13 +325,13 @@ bpInitSettings() {
 BP_VERSION="1.05"
 
 ##V Usage info
-BP_USAGE="Usage: ${BP_NAME} command [option]"
+BP_USAGE="Usage: ${BP_SELF} command [option]"
 
 ##V Description text
 BP_DESC="Generate bash scripts from templates"
 
 ##V logfile (uncomment to use logfile)
-BP_LOGFILE=${BP_DIR}/${BP_NAME}.log
+BP_LOGFILE=${BP_SELF_DIR}/${BP_NAME}.log
 
 ##V Lock file (uncomment to use lock file feature )
 BP_LOCK_FILE=/tmp/${BP_NAME}.lock
@@ -991,7 +991,7 @@ bpAddSettings() {
   bpAddSetting $BP_SETTINGS "BP_LICENSE" "MIT"               "Default project license"
   bpAddSetting $BP_SETTINGS "BP_ORG"     "ACME"              "Default organisation"
   bpAddSetting $BP_SETTINGS "BP_DIFF"    "meld"              "Default diff program"  
-  bpAddSetting $BP_SETTINGS "BP_PATH"    "${BP_DIR}" "Path to Bashplates directory"
+  bpAddSetting $BP_SETTINGS "BP_PATH"    "${BP_SELF_DIR}" "Path to Bashplates directory"
 }
 
 # Change setting in config file (key value pair)
