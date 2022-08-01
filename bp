@@ -331,7 +331,7 @@ BP_USAGE="Usage: ${BP_SELF} command [option]"
 BP_DESC="Generate bash scripts from templates"
 
 ##V logfile (uncomment to use logfile)
-BP_LOGFILE=${BP_SELF_DIR}/${BP_NAME}.log
+BP_LOGFILE=${BP_SELF_DIR}/${BP_SELF}.log
 
 ##V Lock file (uncomment to use lock file feature )
 BP_LOCK_FILE=/tmp/${BP_NAME}.lock

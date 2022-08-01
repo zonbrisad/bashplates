@@ -856,6 +856,7 @@ setdiff() { ##C BP_CONF Set default diff program
 ##C- IHELP Bashrc path/module handling
 
 bpLsPaths() { ##I List paths
+  shopt -s nullglob dotglob
   for p in ${BP_SETTINGS_PATHS}/*; do
     echo  "A: $( readlink ${p} )"
   done
@@ -878,8 +879,9 @@ bpRmPath() { ##I Remove path
 }
 
 bpLsModules() { ##I List modules
+  shopt -s nullglob dotglob
   for p in ${BP_SETTINGS_MODULES}/*; do
-    echo  "A: $( readlink ${p} )"
+    echo  "$( readlink ${p} )"
   done
 }
 

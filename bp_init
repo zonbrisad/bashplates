@@ -76,6 +76,10 @@ export BP_PATH=${BP_SCRIPT_PATH}
 # Add alias for quick access to bashplate dir
 alias bpd='cd ${BP_SCRIPT_PATH}'
 
+alias bplsd="bprc lsd
+
+
+
 # Indicated that initscript was run
 export BP_INIT_RUN=1
 
