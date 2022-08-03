@@ -76,7 +76,7 @@ export BP_PATH=${BP_SCRIPT_PATH}
 # Add alias for quick access to bashplate dir
 alias bpd='cd ${BP_SCRIPT_PATH}'
 
-alias bplsd="bprc lsd
+#alias bplsd="bprc lsd"
 
 
 
