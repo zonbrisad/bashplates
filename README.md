@@ -281,6 +281,8 @@ To montor the logfile simply enter the "mlog" command.
 - Use logrotate for logs
 - Mail feature
 - Add warning sign to bpReadYN question
+- dictionary functions
+- Select from list function
 
 ## References and tutorials
 

@@ -183,6 +183,12 @@ tabs() { ##C BP_DEV Remove tabs
 
 ##C- BP_DEV Project management (git) (for developers only)
 
+status() { ##C BP_DEV Git status
+  bpCd "${BP_SELF_DIR}"
+	git status
+	bpCd -
+}
+
 clean() { ##C BP_DEV Remove leftover files
   bpCd "${BP_SELF_DIR}"
 

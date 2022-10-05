@@ -1,4 +1,8 @@
-# Version 1.30 beta
+# Version 1.30 beta 2
+- doc: major performace improvements for doc generation
+
+
+# Version 1.30 beta 1
 - doc: Improved documentation system
 - fix: bpCp, bpMv, bpRm etc. now return correct status and log messages
 - fix: Internal variable names are more consistent
