@@ -169,7 +169,7 @@ bpDictKey() { ##D
 dtest() { ##D Test dictionary test
   :
 }
-E_U_BLACK=$'\e[58;5:0m'        # Black
+E_U_BLACK=$'\e[58;5;0m'        # Black
 E_U_RED=$'\e[58;5;1m'          # Red
 E_U_GREEN=$'\e[58;5;2m'        # Green
 E_U_YELLOW=$'\e[58;5;3m'       # Yellow
@@ -194,7 +194,6 @@ underline() { ##D Test of extended underline attributes
   echo "${E_ATTR_UNDERLINE_DASH}Underline dashed${E_END}"
 
   echo "${E_ATTR_UNDERLINE}${E_BG_WHITE}${E_BLACK}${E_U_BLACK}Underline black${E_END}"
-
   echo "${E_ATTR_UNDERLINE}${E_U_RED}Underline red${E_END}"
   echo "${E_ATTR_UNDERLINE}${E_U_GREEN}Underline green${E_END}"
   echo "${E_ATTR_UNDERLINE}${E_U_YELLOW}Underline yellow${E_END}"
