@@ -193,7 +193,7 @@ underline() { ##D Test of extended underline attributes
   echo "${E_ATTR_UNDERLINE_DOT}Underline dotted${E_END}"
   echo "${E_ATTR_UNDERLINE_DASH}Underline dashed${E_END}"
 
-  echo "${E_ATTR_UNDERLINE}${E_ON_WHITE}${E_BLACK}${E_U_BLACK}Underline black${E_END}"
+  echo "${E_ATTR_UNDERLINE}${E_BG_WHITE}${E_BLACK}${E_U_BLACK}Underline black${E_END}"
 
   echo "${E_ATTR_UNDERLINE}${E_U_RED}Underline red${E_END}"
   echo "${E_ATTR_UNDERLINE}${E_U_GREEN}Underline green${E_END}"
@@ -215,30 +215,29 @@ underline() { ##D Test of extended underline attributes
 }
 
 color() { ##D Standard 16 colors 
-  #FCOLORS=( ${E_BLACK} ${E_RED} ${E_GREEN} ${E_YELLOW} ${E_BLUE} ${E_MAGENTA} ${E_CYAN} ${E_GRAY} ${E_DARKGRAY} ${E_BR_RED} ${E_BR_GREEN} ${E_BR_YELLOW} ${E_BR_BLUE} ${E_BR_MAGENTA} ${E_BR_CYAN} ${E_WHITE} )
-  #BCOLORS=( ${E_ON_BLACK} ${E_ON_RED} ${E_ON_GREEN} ${E_ON_YELLOW} ${E_ON_BLUE} ${E_ON_MAGENTA} ${E_ON_CYAN} ${E_ON_WHITE} )
-  #BCOLORSA=( ${E_ON_GRAY} ${E_ON_DARK_GRAY} ${E_ON_BR_RED} ${E_ON_BR_GREEN} ${E_ON_BR_YELLOW} ${E_ON_BR_BLUE} ${E_ON_BR_MAGENTA}${E_ON_BR_CYAN} ${E_ON_BR_WHITE} )
-
-  FCOLORS2=( E_BLACK E_RED E_GREEN E_YELLOW E_BLUE E_MAGENTA E_CYAN E_GRAY E_DARKGRAY E_BR_RED E_BR_GREEN E_BR_YELLOW E_BR_BLUE E_BR_MAGENTA E_BR_CYAN E_WHITE )
-  BCOLORS2=( E_ON_BLACK E_ON_RED E_ON_GREEN E_ON_YELLOW E_ON_BLUE E_ON_MAGENTA E_ON_CYAN E_ON_WHITE )
-  BCOLORSA=( E_ON_DARK_GRAY E_ON_BR_RED E_ON_BR_GREEN E_ON_BR_YELLOW E_ON_BR_BLUE E_ON_BR_MAGENTA E_ON_BR_CYAN E_ON_GRAY  )
+  FCOLORS=( E_BLACK E_RED E_GREEN E_YELLOW E_BLUE E_MAGENTA E_CYAN E_GRAY E_DARKGRAY E_BR_RED E_BR_GREEN E_BR_YELLOW E_BR_BLUE E_BR_MAGENTA E_BR_CYAN E_WHITE )
+  BCOLORS=( E_BG_BLACK E_BG_RED E_BG_GREEN E_BG_YELLOW E_BG_BLUE E_BG_MAGENTA E_BG_CYAN E_BG_WHITE )
+  BCOLORS_BR=( E_BG_DARK_GRAY E_BG_BR_RED E_BG_BR_GREEN E_BG_BR_YELLOW E_BG_BR_BLUE E_BG_BR_MAGENTA E_BG_BR_CYAN E_BG_GRAY  )
 
   echo
   bpTextLine "16 color map"
-  for fc in ${FCOLORS2[*]}; do
+  echo
+  for fc in ${FCOLORS[*]}; do
     eval "FG=\$$fc"
-    for bc in ${BCOLORS2[*]}; do
+    for bc in ${BCOLORS[*]}; do
       eval "BG=\$$bc"
-      printf "${FG}${BG}%-12s${E_END}" "$fc"
+      printf "${FG}${BG}%-14s${E_END}" "$fc"
     done
     echo
   done
   
-  for fc in ${FCOLORS2[*]}; do
+  echo 
+
+  for fc in ${FCOLORS[*]}; do
     eval "FG=\$$fc"
-    for bc in ${BCOLORSA[*]}; do
+    for bc in ${BCOLORS_BR[*]}; do
       eval "BG=\$$bc"
-      printf "${FG}${BG}%-12s${E_END}" "$fc"
+      printf "${FG}${BG}%-14s${E_END}" "$fc"
     done
     echo
   done
@@ -399,7 +398,6 @@ bpErrorExit() {  ##I Safely exit script with a error
 
 # ANSI foreground colors codes
 #
-#E_BLACK=$'\e[38:5:0m'        # Black
 E_BLACK=$'\e[38:5:0m'        # Black
 E_RED=$'\e[38:5:1m'          # Red
 E_GREEN=$'\e[38:5:2m'        # Green
@@ -407,61 +405,34 @@ E_YELLOW=$'\e[38:5:3m'       # Yellow
 E_BLUE=$'\e[38:5:4m'         # Blue
 E_MAGENTA=$'\e[38:5:5m'      # Magenta
 E_CYAN=$'\e[38:5:6m'         # Cyan
-E_GRAY=$'\e[338:5:m'         # Gray
+E_GRAY=$'\e[38:5:7m'         # Gray
 E_DARKGRAY=$'\e[38:5:8m'     # Dark Gray
 E_BR_RED=$'\e[38:5:9m'       # Bright Red
-E_BR_GREEN=$'\e[38:5:10m'     # Bright Green
-E_BR_YELLOW=$'\e[38:5:11m'    # Bright Yellow
-E_BR_BLUE=$'\e[38:5:12m'      # Bright Blue
-E_BR_MAGENTA=$'\e[38:5:13m'   # Bright Magenta
-E_BR_CYAN=$'\e[38:5:14m'      # Bright Cyan
-E_WHITE=$'\e[38:5:15m'        # White
-# E_BLACK=$'\e[30m'        # Black
-# E_RED=$'\e[31m'          # Red
-# E_GREEN=$'\e[32m'        # Green
-# E_YELLOW=$'\e[33m'       # Yellow
-# E_BLUE=$'\e[34m'         # Blue
-# E_MAGENTA=$'\e[35m'      # Magenta
-# E_CYAN=$'\e[36m'         # Cyan
-# E_GRAY=$'\e[37m'         # Gray
-# E_DARKGRAY=$'\e[1;30m'     # Dark Gray
-# E_BR_RED=$'\e[1;31m'       # Bright Red
-# E_BR_GREEN=$'\e[1;32m'     # Bright Green
-# E_BR_YELLOW=$'\e[1;33m'    # Bright Yellow
-# E_BR_BLUE=$'\e[1;34m'      # Bright Blue
-# E_BR_MAGENTA=$'\e[1;35m'   # Bright Magenta
-# E_BR_CYAN=$'\e[1;36m'      # Bright Cyan
-# E_WHITE=$'\e[1;37m'        # White
+E_BR_GREEN=$'\e[38:5:10m'    # Bright Green
+E_BR_YELLOW=$'\e[38:5:11m'   # Bright Yellow
+E_BR_BLUE=$'\e[38:5:12m'     # Bright Blue
+E_BR_MAGENTA=$'\e[38:5:13m'  # Bright Magenta
+E_BR_CYAN=$'\e[38:5:14m'     # Bright Cyan
+E_WHITE=$'\e[38:5:15m'       # White
 
 # ANSI background color codes
 #
-E_ON_BLACK=$'\e[48;5;0m'       # Black
-E_ON_RED=$'\e[48;5;1m'         # Red
-E_ON_GREEN=$'\e[48;5;2m'       # Green
-E_ON_YELLOW=$'\e[48;5;3m'      # Yellow
-E_ON_BLUE=$'\e[48;5;4m'        # Blue
-E_ON_MAGENTA=$'\e[48;5;5m'     # Magenta
-E_ON_CYAN=$'\e[48;5;6m'        # Cyan
-
-E_ON_GRAY=$'\e[48;5;7m'        # Gray
-E_ON_DARK_GRAY=$'\e[48;5;8m'   # Dark gray
-E_ON_BR_RED=$'\e[48;5;9m'      # Red
-E_ON_BR_GREEN=$'\e[48;5;10m'       # Green
-E_ON_BR_YELLOW=$'\e[48;5;11m'      # Yellow
-E_ON_BR_BLUE=$'\e[48;5;12m'        # Blue
-E_ON_BR_MAGENTA=$'\e[48;5;13m'     # Magenta
-E_ON_BR_CYAN=$'\e[48;5;14m'        # Cyan
-E_ON_WHITE=$'\e[48;5;15m'       # White
-
-
-# E_ON_BLACK=$'\e[40m'       # Black
-# E_ON_RED=$'\e[41m'         # Red
-# E_ON_GREEN=$'\e[42m'       # Green
-# E_ON_YELLOW=$'\e[43m'      # Yellow
-# E_ON_BLUE=$'\e[44m'        # Blue
-# E_ON_MAGENTA=$'\e[45m'     # Magenta
-# E_ON_CYAN=$'\e[46m'        # Cyan
-# E_ON_WHITE=$'\e[47m'       # White
+E_BG_BLACK=$'\e[48;5;0m'       # Black
+E_BG_RED=$'\e[48;5;1m'         # Red
+E_BG_GREEN=$'\e[48;5;2m'       # Green
+E_BG_YELLOW=$'\e[48;5;3m'      # Yellow
+E_BG_BLUE=$'\e[48;5;4m'        # Blue
+E_BG_MAGENTA=$'\e[48;5;5m'     # Magenta
+E_BG_CYAN=$'\e[48;5;6m'        # Cyan
+E_BG_GRAY=$'\e[48;5;7m'        # Gray
+E_BG_DARK_GRAY=$'\e[48;5;8m'   # Dark gray
+E_BG_BR_RED=$'\e[48;5;9m'      # Red
+E_BG_BR_GREEN=$'\e[48;5;10m'   # Green
+E_BG_BR_YELLOW=$'\e[48;5;11m'  # Yellow
+E_BG_BR_BLUE=$'\e[48;5;12m'    # Blue
+E_BG_BR_MAGENTA=$'\e[48;5;13m' # Magenta
+E_BG_BR_CYAN=$'\e[48;5;14m'    # Cyan
+E_BG_WHITE=$'\e[48;5;15m'      # White
 
 # ANSI Text attributes
 E_ATTR_BOLD=$'\e[1m'
@@ -489,10 +460,10 @@ E_END=$'\e[m'              # Clear Attributes
 # Default Bashplate colortheme
 BP_C_OK=$E_BR_GREEN
 BP_C_INFO=$E_BR_CYAN
-BP_C_DEBUG=$E_ON_GREEN$E_BLACK
+BP_C_DEBUG=$E_BG_GREEN$E_BLACK
 BP_C_WARNING=$E_BR_YELLOW
 BP_C_ERROR=$E_BR_RED
-BP_C_CRITICAL=$E_ON_RED$E_WHITE
+BP_C_CRITICAL=$E_BG_RED$E_WHITE
 BP_C_LINE=$E_DARKGRAY
 BP_C_LINE_TEXT=$E_YELLOW
 BP_C_DESCRIPTION=$E_GREEN
@@ -1143,7 +1114,7 @@ log() { ##C BP_LOGFILE View logfile
             -e "s|\[ Ok \]|\[\\${BP_C_OK} Ok \\${E_END}\]|"    \
             -e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
             -e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
-            -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < "${BP_LOGFILE}" )
+            -e "s|\[Crit\]|\[\\${E_BG_RED}\\${E_WHITE}Crit\\${E_END}\]|" < "${BP_LOGFILE}" )
 
       echo -e "$D"
     fi
@@ -1162,7 +1133,7 @@ mlog() {   ##C BP_LOGFILE Monitor logfile
             -e "s|\[ Ok \]|\[\\${BP_C_OK} Ok \\${E_END}\]|"    \
             -e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
             -e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
-            -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|"
+            -e "s|\[Crit\]|\[\\${E_BG_RED}\\${E_WHITE}Crit\\${E_END}\]|"
 
     fi
   else

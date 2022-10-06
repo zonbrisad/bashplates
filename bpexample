@@ -295,9 +295,6 @@ attr() { ##D demonstrate font attributes
 }
 
 color1() { ##D Standard 16 colors 
-  FCOLORS=( ${E_BLACK} ${E_RED} ${E_GREEN} ${E_YELLOW} ${E_BLUE} ${E_MAGENTA} ${E_CYAN} ${E_GRAY} ${E_DARKGRAY} ${E_BR_RED} ${E_BR_GREEN} ${E_BR_YELLOW} ${E_BR_BLUE} ${E_BR_MAGENTA} ${E_BR_CYAN} ${E_WHITE} )
-  BCOLORS=( ${E_ON_BLACK} ${E_ON_RED} ${E_ON_GREEN} ${E_ON_YELLOW} ${E_ON_BLUE} ${E_ON_MAGENTA} ${E_ON_CYAN} ${E_ON_WHITE} )
-
   FCOLORS2=( E_BLACK E_RED E_GREEN E_YELLOW E_BLUE E_MAGENTA E_CYAN E_GRAY E_DARKGRAY E_BR_RED E_BR_GREEN E_BR_YELLOW E_BR_BLUE E_BR_MAGENTA E_BR_CYAN E_WHITE )
   BCOLORS2=( E_ON_BLACK E_ON_RED E_ON_GREEN E_ON_YELLOW E_ON_BLUE E_ON_MAGENTA E_ON_CYAN E_ON_WHITE )
 
@@ -313,16 +310,6 @@ color1() { ##D Standard 16 colors
   done
 
   echo
-  return
-  for fc in ${FCOLORS[*]}
-  do
-    for bc in ${BCOLORS[*]}
-    do
-      echo  -en "${fc}${bc}   XXXX   ${E_END}"
-    done
-        echo ""
-  done
-  echo -e "\n\n"
 }  
 
 color3() { ##D Show example of all 256 colors
