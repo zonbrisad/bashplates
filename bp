@@ -128,7 +128,7 @@ newa() { ##C BP_DEV Create a new bashplate addon (experimental)
 
 la() { ##C BP_DEV List addons
   bpTextLine "Addons"
-  for f in ${BP_ADDONS}/*; do
+  for f in "${BP_ADDONS}"/*; do
     bpPrintInfo "$(${f} getname)" "$(${f} getdesc)"
   done
   bpLine
@@ -265,8 +265,8 @@ cc() { ##D Cheat sheet for common BASH features
   #  bpPrintInfo "(( N1 N2 ))" ""
 
   bpTextLine "String tests"
-  bpPrintInfo '[ "$STR1" == "$STR2" ]' "Strings equal"
-  bpPrintInfo '[ "$STR1" != "$STR2" ]' "Strings not equal"
+  bpPrintInfo "[ \"\$STR1\" == \"\$STR2\" ]" "Strings equal"
+  bpPrintInfo "[ \"\$STR1\" != \"\$STR2\" ]" "Strings not equal"
   bpPrintInfo "[ -z STRING ]" "Empty string"
   bpPrintInfo "[ -n STRING ]" "Not empty string (string exists)"
   bpPrintInfo "[[ STRING =~ STRING ]]" "Regexp"
@@ -306,8 +306,7 @@ cc() { ##D Cheat sheet for common BASH features
   bpPrintInfo '$#' "Number of arguments"
   bpPrintInfo '$*' "All arguments"
   bpPrintInfo '$@' "All arguments, starting from first"
-  bpPrintInfo '$1' "First argument"
-
+  bpPrintInfo "\$1" "First argument"
   bpPrintInfo '$?' "Exit status of last task"
   bpPrintInfo '$!' "PID of last background task"
   bpPrintInfo '$$' "PID of shell"
@@ -319,7 +318,30 @@ cc() { ##D Cheat sheet for common BASH features
   bpPrintInfo '2>&1' "stderr to stdout"
   bpPrintInfo '&> /dev/null' "stdout and stderr to /dev/null"
   bpPrintInfo '<<< VAR' "Pipe variable to command"
+
+  bpTextLine "Array defining"
+  bpPrintInfo "Fruits=('Apple' 'Banana' 'Orange')" "" "35"
   bpLine
+  bpPrintInfo "Fruits[0]=\"Apple\""
+  bpPrintInfo "Fruits[1]=\"Banana\""
+  bpPrintInfo "Fruits[2]=\"Orange\""
+  bpLine
+  bpPrintInfo "FS=\"Apple Banana Orange\""
+  bpPrintInfo "read -r -a Fruits <<< \$FS" "" "35"
+
+  bpTextLine "Array operations"
+  #bpPrintInfo "Fruits=(\"\${Fruits[@]}\" \"Grape\")"
+  bpPrintInfo "Fruits=(\"\${Fruits[@]}\" \"Grape\")" "Append element" "35"
+  bpPrintInfo "Fruits+=(\"Grape\")" "Append element" "35"
+  bpPrintInfo "\${Fruits[n]}" "Element n" "35"
+  bpPrintInfo "\${Fruits[-1]}" "Last element" "35"
+  bpPrintInfo "\${Fruits[@]}" "All elements, space separated" "35"
+  bpPrintInfo "\${#Fruits[@]}" "Nr of elements" "35"
+  bpPrintInfo "\${#Fruits[n]}" "String lenght of nth element" "35"
+  bpPrintInfo "\${Fruits[@]:3:2}" "Range (from pos 3, length 2)" "35"
+  bpPrintInfo "\${!Fruits[@]}" "Keys of all elements" "35"
+  bpLine
+  # x=($(cat "kalle"))
 }
 
 #---------------------------------------------------------------------
@@ -642,15 +664,21 @@ bpLine() { ##I Print a divider row
 # $4 desccription text
 #
 bpPrintInfoGeneric() { # Generic command/description printout function
-  printf "${1}  %-24.24s${E_RESET} ${2}%s${E_RESET}\n" "$3" "$4"
+  if [ -n "$5" ]; then
+    X="$5"
+  else
+    X=24
+  fi
+  printf "${1}  %-${X}.${X}s${E_RESET} ${2}%s${E_RESET}\n" "$3" "$4"
 }
 
 #
 # $1 text for column 1
 # $2 text for column 2
+# $3 (optional) left alignment
 #
 bpPrintInfo() { ##I Print text into two columns
-  bpPrintInfoGeneric "${BP_C_ID}" "${BP_C_DESCRIPTION}" "$1" "$2"
+  bpPrintInfoGeneric "${BP_C_ID}" "${BP_C_DESCRIPTION}" "$1" "$2" "$3"
 }
 
 bpPrintInfoAlt() {
@@ -661,6 +689,7 @@ bpPrintInfoAlt() {
 # $1 text for column 1
 # $2 variable for column 2
 # $3 optional text form column 2
+# $4 (optional) left alignment
 #
 bpPrintVar() { ##I Print variable value and description
   var="$2"
