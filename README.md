@@ -278,11 +278,21 @@ To montor the logfile simply enter the "mlog" command.
 
 ## TODO
 - Add verbose option
+- Add quiet option
+- Add color suppression option
+- Add warning sign to bpReadYN question
+- Add override editor for "ied" command
 - Use logrotate for logs
 - Mail feature
-- Add warning sign to bpReadYN question
 - dictionary functions
 - Select from list function
+- Module system
+- Merge bpLine and bpTextLine
+- Reformat messages to "straigt columns"
+- change name of bpRead to bpReadStr(ing)
+- multi column output
+- Fix bpEscapeFilter
+
 
 ## References and tutorials
 
