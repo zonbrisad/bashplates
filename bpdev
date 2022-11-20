@@ -368,6 +368,13 @@ msg() { ##D Messsages format test
   echo -e "[${BP_C_CRITICAL}Cri${E_RESET}] My little error message"
   echo
 
+  bpTextLine "Debug color tests"  
+	echo -e "[${BP_C_DEBUG} Debug  ${E_RESET}] Default color"
+	echo -e "[${E_BG_BR_GREEN}${E_FG_WHITE} Debug  ${E_RESET}] Bright green bg"
+	echo -e "[${E_BG_GREEN}${E_FG_BLACK} Debug  ${E_RESET}] Green bg, black fg"
+	echo -e "[${E_BG_BR_GREEN}${E_FG_BLACK} Debug  ${E_RESET}] Bright green bg, black fg"
+	
+
 }
 
 url() {
@@ -436,7 +443,7 @@ bpInitSettings() {
   BP_LOG_CRITICAL=1
 
   ##V Activate settings function (will create settings file when run)
-  #BP_CONF=1
+  BP_CONF=1
 
 }
 #---------------------------------------------------------------------
@@ -1154,7 +1161,7 @@ bpChSetting() {
   fi
   sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" "$1"
 
-  bpInfo "Setting ${SETTING} to ${VAL}"
+  bpOk "Setting ${SETTING} to ${VAL}"
 }
 
 bpCreateSettings() {
