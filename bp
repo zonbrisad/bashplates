@@ -46,9 +46,9 @@ bpUserSettings() {
   BP_TEMPLATES="${BP_SELF_DIR}/templates"
 
   BP_PREAMBLE="#!/usr/bin/env bash"
-  BP_HEADER=${BP_TEMPLATES}/header
+  BP_HEADER="${BP_TEMPLATES}/header"
 
-  if [ -f ${BP_SELF_DIR}/DEV ]; then
+  if [ -f "${BP_SELF_DIR}/DEV" ]; then
     BP_DEV=1
   fi
 }
@@ -63,10 +63,10 @@ bpUserSettings() {
 # $2 destination file
 #
 bpAppend() { ##I Append file to file
-  if [ ! -f $1 ]; then
-    bpError "Can't append file $(bpColorizeFile ${1}) to $(bpColorizeFile ${2})."
+  if [ ! -f "$1" ]; then
+    bpError "Can't append file $(bpColorizeFile "${1}") to $(bpColorizeFile "${2}")."
   fi
-  cat $1 >>$2
+  cat "$1" >>"$2"
 }
 
 #
@@ -87,17 +87,17 @@ newScript() {
   fi
 
   if [ -e "${script}" ]; then
-    bpError "File ${E_BR_CYAN}${script}${E_END} already exists"
+    bpError "File ${E_FG_BR_CYAN}${script}${E_END} already exists"
     return
   fi
 
   desc=$(bpRead "Enter description")
   author=$(bpRead "Enter author" "${BP_NAME} <${BP_EMAIL}>")
 
-  echo "${BP_PREAMBLE}" >|${script}
-  echo "$(bpImport $BP_HEADER)" >>${script}
-  cat "${BP_TEMPLATES}/$1" >>${script}
-  chmod +x ${script}
+  echo "${BP_PREAMBLE}" >|"${script}"
+  echo "$(bpImport $BP_HEADER)" >>"${script}"
+  cat "${BP_TEMPLATES}/$1" >>"${script}"
+  chmod +x "${script}"
 
   if [ "$3" == "addon" ]; then
     bpInsert "${script}" "#__MODULES__" "$(bpaddon getaddontemp)"
@@ -143,39 +143,39 @@ ia() { ##C BP_DEV Install addon
 }
 
 ea() { ##C BP_DEV Edit addon
-  bpEdit ${BP_ADDONS}/${2}.bpaddon
+  bpEdit "${BP_ADDONS}/${2}.bpaddon"
 }
 
 ##- Setup
 
 bp_install() { ##D Install bashplates init
-  bpAddModule ${BP_SELF_DIR}/bp_init
+  bpAddModule "${BP_SELF_DIR}/bp_init"
 }
 
 ##C- BP_DEV Development (for developers only)
 
 et() { ##C BP_DEV Edit bashplate template
-  bpEdit ${BP_SELF_DIR}/templates/bashplate
+  bpEdit "${BP_SELF_DIR}/templates/bashplate"
 }
 
 est() { ##C BP_DEV Edit simple bashplate template
-  bpEdit ${BP_SELF_DIR}/templates/bashplate-simple
+  bpEdit "${BP_SELF_DIR}/templates/bashplate-simple"
 }
 
 eh() { ##C BP_DEV Edit header template
-  bpEdit ${BP_SELF_DIR}/templates/header
+  bpEdit "${BP_SELF_DIR}/templates/header"
 }
 
 ei() { ##C BP_DEV Edit Bashplate init file
-  bpEdit ${BP_SELF_DIR}/bp_init
+  bpEdit "${BP_SELF_DIR}/bp_init"
 }
 
 dl() { ##C BP_DEV Make diff with latest bashtemplate
-  meld ${BP_SELF_DIR}/templates/bashplate $2
+  meld "${BP_SELF_DIR}/templates/bashplate" "$2"
 }
 
 tabs() { ##C BP_DEV Remove tabs
-  cat $0 | sed -e 's/[ \t]*//'
+  sed -e 's/[ \t]*//' "$0"
 }
 
 ##C- BP_DEV Project management (git) (for developers only)

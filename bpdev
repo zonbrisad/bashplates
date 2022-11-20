@@ -390,6 +390,18 @@ colorize() { ##D Test F="/use/local/var/log/messages"
   echo
 }
 
+s2a() { ##D String to array
+  X=$'Rad 1\nRad 2\nRad 3'
+  #X="Rad 1|Rad 2|Rad 3"
+  IFS=$'\n'
+  #IFS=$'|'
+  read -ra XX <<<$X
+  for x in "${XX[@]}"; do
+    echo "$x"
+  done
+
+}
+
 #---------------------------------------------------------------------
 # Bashplate modules
 #---------------------------------------------------------------------
