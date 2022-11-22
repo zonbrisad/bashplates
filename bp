@@ -286,6 +286,7 @@ cc() { ##D Cheat sheet for common BASH features
   bpPrintInfo '>| FILE' "overwrite file"
   bpPrintInfo '2>&1' "stderr to stdout"
   bpPrintInfo '&> /dev/null' "stdout and stderr to /dev/null"
+	bpPrintInfo '< FILE' "Pipe file to command"
   bpPrintInfo '<<< VAR' "Pipe variable to command"
 
   bpTextLine "Array defining"
