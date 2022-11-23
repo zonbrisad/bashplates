@@ -530,10 +530,17 @@ bpStrExist() { ##I Check if string exist in file
 
 #
 # $1 file to open in editor
+# $2 override editor (optional)
 #
-bpEdit() { ##I Open file in default editor (BP_EDIT variable must be set)
+bpEdit() { ##I Open file in editor set by BP_EDIT variable
+
+  if [ -n "$2" ]; then
+    bpRun "$2" "$1"
+    return 0
+  fi
+
   if [ -n "$BP_EDITOR" ]; then
-    ${BP_EDITOR} "${1}"
+    bpRun "${BP_EDITOR}" "${1}"
   else
     bpError "BP_EDITOR variable not set, can't open file ${1}"
   fi

@@ -795,7 +795,7 @@ bpPrintVar() { ##I Print variable value and description
     fi
     bpPrintInfo "$1" "${X}"
   else
-    printf "${BP_C_ID}  %-24s${E_RESET} ${E_RED}N/A${E_RESET}\n" "$1"
+    printf "${BP_C_ID}  %-24s${E_RESET} ${BP_C_ERROR}N/A${E_RESET}\n" "$1"
   fi
 }
 

@@ -38,6 +38,9 @@ set -o pipefail
 # User defined Settings
 #---------------------------------------------------------------------
 bpUserSettings() {
+  BP_ADDONS="${BP_SELF_DIR}/addons"
+  BP_TEMPLATES="${BP_SELF_DIR}/templates"
+  
   BP_PREAMBLE="#!/usr/bin/env bash"
   BP_HEADER="${BP_TEMPLATES}/header"
 
@@ -300,7 +303,7 @@ cc() { ##D Cheat sheet for common BASH features
 
   bpTextLine "Array operations"
   #bpPrintInfo "Fruits=(\"\${Fruits[@]}\" \"Grape\")"
-  bpPrintInfo "Fruits=(\"\${Fruits[@]}\" \"Grape\")" "Append element" "35"
+#  bpPrintInfo "Fruits=(\"\${Fruits[@]}\" \"Grape\")" "Append element" "35"
   bpPrintInfo "Fruits+=(\"Grape\")" "Append element" "35"
   bpPrintInfo "\${Fruits[n]}" "Element n" "35"
   bpPrintInfo "\${Fruits[-1]}" "Last element" "35"
