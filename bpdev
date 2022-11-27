@@ -346,6 +346,11 @@ color() { ##D Standard 16 colors
   echo
 }
 
+
+
+
+
+
 ##- Test of print messages
 
 msg() { ##D Messsages format test
@@ -423,6 +428,38 @@ colorize() { ##D Test F="/use/local/var/log/messages"
   echo
 }
 
+
+aa() {
+
+  bpTextLine "$1"
+	bpPrintInfo "cmd1" "My command 1"
+	bpPrintInfo "cmd2" "My command 2"
+	bpPrintVar "NoVar" "Somevariable"
+	bpPrintVar "BP_SELF_DIR" "BP_SELF_DIR"
+	echo
+	
+}
+
+cst() { ##D Color scheme tests
+  aa "Default color scheme"
+	
+
+  BP_C_LINE="${E_FG_DARKGRAY}"
+  BP_C_LINE_TEXT="${E_FG_BR_YELLOW}"
+  BP_C_DESCRIPTION="${E_FG_BR_CYAN}"
+  BP_C_ID="${E_FG_BR_MAGENTA}"
+  BP_C_FILENAME="${E_FG_BR_GREEN}"
+  BP_C_PATH="${E_FG_GREEN}"
+  BP_C_URL_SCHEME="${E_FG_DARKGRAY}"
+
+	
+	aa "Makeplates color scheme"
+
+
+}
+
+
+
 s2a() { ##D String to array
   X=$'Rad 1\nRad 2\nRad 3'
   #X="Rad 1|Rad 2|Rad 3"
@@ -434,6 +471,29 @@ s2a() { ##D String to array
   done
 
 }
+
+#xx() {
+
+# OPTS=$(getopt --longoptions idebug -- "$@")
+# echo $OPTS
+# eval set --$OPTS
+
+# while true; do
+#   case "$1" in
+#     --idebug)
+#       set -o xtrace
+#         ;;
+#     --)
+#         shift
+#         break
+#         ;;
+#     esac
+#     shift
+# done
+#}
+#echo $@
+#xx
+
 
 #---------------------------------------------------------------------
 # Bashplate modules

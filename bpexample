@@ -6,7 +6,7 @@
 #  [Description]
 #    Bashplate example script. This script inludes a number of examples
 #    demonstrating a number features of the bashplate template.
-#  
+#
 #  [Author]
 #    Peter Malmberg <peter.malmberg@gmail.com>
 #
@@ -59,41 +59,40 @@ logtest() { ##D Test of log function
   log
 }
 
-print() { ##D Bashplate text output function examples 
-  echo -e "\nExample of $E_GREEN bpLine $E_END"
+print() { ##D Bashplate text output function examples
+  echo -e "\nExample of $E_GREEN bpLine $E_RESET"
   bpLine
-  
-  echo -e "\nExample of $E_GREEN bpTextLine $E_END"
+
+  echo -e "\nExample of $E_GREEN bpTextLine $E_RESET"
   bpTextLine "Kalle"
-  
-  echo -e "\nExample of $E_GREEN bpPrintInfo $E_END"
+
+  echo -e "\nExample of $E_GREEN bpPrintInfo $E_RESET"
   bpPrintInfo "Kalle" "desc"
-    
-  echo -e "\nExample of $E_GREEN bpColorizeFile $E_END"
+
+  echo -e "\nExample of $E_GREEN bpColorizeFile $E_RESET"
   F="/use/local/var/log/messages"
   echo -e "The filename $(bpColorizeFile $F) is colorized."
 
-  echo -e "\nExample of $E_GREEN bpColorizeUrl $E_END"
-  echo -n " $(bpColorizeUrl https://github.com/zonbrisad/bashplates )"
+  echo -e "\nExample of $E_GREEN bpColorizeUrl $E_RESET"
+  echo -n " $(bpColorizeUrl https://github.com/zonbrisad/bashplates)"
   echo
 }
 
 traptest() { ##D Trap signal test
   TRAPTEST=1
-	bpRead "Press CTRL-C" 
+  bpRead "Press CTRL-C"
 }
 
 tltest() { ##D Test textline
-  bpTextLineC "Green" "${E_BR_GREEN}" "${E_GREEN}" "_"
-  bpTextLineC "Magenta" "${E_BR_MAGENTA}" "${E_MAGENTA}" "_"
-  bpTextLineC "Blue" "${E_BR_BLUE}" "${E_BLUE}" "_"
-  bpTextLineC "Red" "${E_BR_RED}" "${E_RED}" "_"
-  bpTextLineC "Yellow" "${E_BR_YELLOW}" "${E_YELLOW}" "_"
-  bpTextLineC "Cyan" "${E_BR_CYAN}" "${E_CYAN}" "_"
-  bpTextLineC "White" "${E_WHITE}" "${E_GRAY}" "_"
+  bpTextLineC "Green" "${E_FG_BR_GREEN}" "${E_FG_GREEN}" "_"
+  bpTextLineC "Magenta" "${E_FG_BR_MAGENTA}" "${E_FG_MAGENTA}" "_"
+  bpTextLineC "Blue" "${E_FG_BR_BLUE}" "${E_FG_BLUE}" "_"
+  bpTextLineC "Red" "${E_FG_BR_RED}" "${E_FG_RED}" "_"
+  bpTextLineC "Yellow" "${E_FG_BR_YELLOW}" "${E_FG_YELLOW}" "_"
+  bpTextLineC "Cyan" "${E_FG_BR_CYAN}" "${E_FG_CYAN}" "_"
+  bpTextLineC "White" "${E_FG_WHITE}" "${E_FG_GRAY}" "_"
   bpTextLine "Standard colors"
 }
-
 
 roottest() { ##D Test assert root
   bpAssertRoot
@@ -102,35 +101,34 @@ roottest() { ##D Test assert root
 
 locktest() { ##D Lock file test
   bpAssertNoLockFile
-  "${BPSCRIPTPATH}/bpexample" locktest  
+  "${BP_SELF_DIR}/bpexample" locktest
 }
 
-assertProgs() { ##D Assert required programs test 
+assertProgs() { ##D Assert required programs test
   bpAssertRequiredProgs
 }
 
 prefunc() {
-  echo -e "${E_WHITE}Prefunc${E_END} -------------------------------------------------------"
+  echo -e "${E_FG_WHITE}Prefunc${E_RESET} -------------------------------------------------------"
 }
 
 postfunc() {
-  echo -e "${E_WHITE}Postfunc${E_END} ------------------------------------------------------"
+  echo -e "${E_FG_WHITE}Postfunc${E_RESET} ------------------------------------------------------"
 }
 
 infoHook() {
-  bpPrintVar "Test1"       "Information test1"
-  bpPrintVar "Test2"       "Information test2"
+  bpPrintVar "Test1" "Information test1"
+  bpPrintVar "Test2" "Information test2"
 }
-
 
 appendTest() { ##D Testing append line to file function
   rm -f append
   touch append
-  
+
   bpAppendIfNoSuchLine "append" "Line to append1"
   bpAppendIfNoSuchLine "append" "Line to append2"
   bpAppendIfNoSuchLine "append" "Line to append3"
-  
+
   echo "File first time"
   cat append
 
@@ -154,14 +152,13 @@ errorTest() { ##D Test of error messages
   bpCritical "Critical test"
 }
 
-
 ##- Hook tests
 
-precmd() { ##D Test preCmdHook 
+precmd() { ##D Test preCmdHook
   echo
 }
 
-postcmd() { ##D Test postCmdHook 
+postcmd() { ##D Test postCmdHook
   echo
 }
 
@@ -189,8 +186,8 @@ pipe() { ##D pipe example
 
 bpElapsedTime() { ##D Return elapsed time
   #dt=$((etime - stime))
-  dt=$SECONDS        # total time elapsed in seconds
-  ds=$((dt % 60))    
+  dt=$SECONDS # total time elapsed in seconds
+  ds=$((dt % 60))
   dm=$(((dt / 60) % 60))
   dh=$((dt / 3600))
   printf '%02d:%02d:%02d' $dh $dm $ds
@@ -200,7 +197,7 @@ print_spinner() {
 
   XX=("|" "/" "-" "\\")
   if [ -n "$SPINNER" ]; then
-    SPINNER=$(( SPINNER + 1))
+    SPINNER=$((SPINNER + 1))
     if [ $SPINNER -gt 3 ]; then
       SPINNER=0
     fi
@@ -208,9 +205,8 @@ print_spinner() {
     SPINNER=0
   fi
   echo " ${XX[$SPINNER]} $1"
-  echo -e "$E_RETURN $E_UP"
+  echo -e "$E_CUR_RETURN $E_CUR_UP"
 }
-
 
 spinner() { ##D Spinner example
   echo "$E_HIDE"
@@ -226,13 +222,12 @@ bpWait() { ##I Wait for n seconds
   a=0
   tmp=${SECONDS}
   while [ "$a" -lt "$1" ]; do
-    a=$(( SECONDS - tmp ))
+    a=$((SECONDS - tmp))
     print_spinner "Waiting... $a"
     sleep 0.1
   done
   echo -e "${E_SHOW}"
 }
-
 
 wait() { ##D Wait for n seconds
   bpWait "$2"
@@ -247,7 +242,7 @@ print_bar() {
   for jx in $(seq 1 $((${1} - ${2}))); do
     echo -n " "
   done
-  echo  "] ${2}"   
+  echo "] ${2}"
 }
 
 bar() { ##D print a testbar (ANSI)
@@ -256,7 +251,7 @@ bar() { ##D print a testbar (ANSI)
   for i in {1..60}; do
     sleep 0.03
     print_bar 60 $i
-    echo -e "$E_RETURN $E_UP"
+    echo -e "$E_CUR_RETURN $E_CUR_UP"
   done
   echo -e "$E_SHOW"
 }
@@ -267,32 +262,31 @@ shade() { ##D Shade demo (256 color terminal required)
   bpTextLine "B/W shading"
   echo
   echo
-  echo -e "$E_RETURN"
+  echo -e "$E_CUR_RETURN"
   echo -en "$E_HIDE"
-  for i in {232..255} {255..232} ; do
+  for i in {232..255} {255..232}; do
     sleep 0.05
-    printf "\x1b[38;5;%sm _____ Shading text _____ ${E_END}" "$i"
-    echo -e "$E_RETURN"
+    printf "\x1b[38;5;%sm _____ Shading text _____ ${E_RESET}" "$i"
+    echo -e "$E_CUR_RETURN"
   done
   echo -e "$E_SHOW"
 }
-
 
 attr() { ##D demonstrate font attributes
   echo
   bpTextLine "Font attributes"
   echo
-  echo -e "${E_ATTR_UNDERLINE}Underline${E_END}"
-  echo -e "${E_ATTR_BOLD}Bold${E_END}"
-  echo -e "${E_ATTR_BLINK}Blink${E_END}"
-  echo -e "${E_ATTR_LOWI}Low Intensity${E_END}"
-  echo -e "${E_ATTR_REVERSE}Reverse video${E_END}"
+  echo -e "${E_ATTR_UNDERLINE}Underline${E_RESET}"
+  echo -e "${E_ATTR_BOLD}Bold${E_RESET}"
+  echo -e "${E_ATTR_BLINK}Blink${E_RESET}"
+  echo -e "${E_ATTR_LOWI}Low Intensity${E_RESET}"
+  echo -e "${E_ATTR_REVERSE}Reverse video${E_RESET}"
   echo
 }
 
-color1() { ##D Standard 16 colors 
-  FCOLORS2=( E_BLACK E_RED E_GREEN E_YELLOW E_BLUE E_MAGENTA E_CYAN E_GRAY E_DARKGRAY E_BR_RED E_BR_GREEN E_BR_YELLOW E_BR_BLUE E_BR_MAGENTA E_BR_CYAN E_WHITE )
-  BCOLORS2=( E_ON_BLACK E_ON_RED E_ON_GREEN E_ON_YELLOW E_ON_BLUE E_ON_MAGENTA E_ON_CYAN E_ON_WHITE )
+color1() { ##D Standard 16 colors
+  FCOLORS2=(E_FG_BLACK E_FG_RED E_FG_GREEN E_FG_YELLOW E_FG_BLUE E_FG_MAGENTA E_FG_CYAN E_FG_GRAY E_FG_DARKGRAY E_FG_BR_RED E_FG_BR_GREEN E_FG_BR_YELLOW E_FG_BR_BLUE E_FG_BR_MAGENTA E_FG_BR_CYAN E_FG_WHITE)
+  BCOLORS2=(E_BG_BLACK E_BG_RED E_BG_GREEN E_BG_YELLOW E_BG_BLUE E_BG_MAGENTA E_BG_CYAN E_BG_WHITE)
 
   echo
   bpTextLine "16 color map"
@@ -300,155 +294,148 @@ color1() { ##D Standard 16 colors
     eval "FG=\$$fc"
     for bc in ${BCOLORS2[*]}; do
       eval "BG=\$$bc"
-      printf "${FG}${BG}%-12s${E_END}" "$fc"
+      printf "${FG}${BG}%-12s${E_RESET}" "$fc"
     done
     echo
   done
 
   echo
-}  
+}
 
 color3() { ##D Show example of all 256 colors
-  
+
   echo
-#  bpTextLine "256 Colors foreground"
+  #  bpTextLine "256 Colors foreground"
   echo
-  for i in {0..231} ; do
-    printf "\x1b[38;5;%sm  %3d  ${E_END} " "$i" "$i"
-    if (( i == 7 )) || (( i == 15 )) || ( (( i > 15 )) && (( (i-15) % 6 == 0 )) ); then
+  for i in {0..231}; do
+    printf "\x1b[38;5;%sm  %3d  ${E_RESET} " "$i" "$i"
+    if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
       echo
-      
-      if (( i == 15)); then
+
+      if ((i == 15)); then
         echo
       fi
     fi
   done
-  
+
   echo
-  for i in {232..255} ; do
-    printf "\x1b[38;5;%sm %3d ${E_END}" "$i" "$i"
-    if (( i == 243 )); then 
+  for i in {232..255}; do
+    printf "\x1b[38;5;%sm %3d ${E_RESET}" "$i" "$i"
+    if ((i == 243)); then
       echo
     fi
   done
   echo -e "\n"
 
-
   echo
-#  bpTextLine "256 Colors background"
+  #  bpTextLine "256 Colors background"
   echo
-  for i in {0..231} ; do
-    printf "\x1b[48;5;%sm  %3d  ${E_END} " "$i" "$i"
-    if (( i == 7 )) || (( i == 15 )) || ( (( i > 15 )) && (( (i-15) % 6 == 0 )) ); then
+  for i in {0..231}; do
+    printf "\x1b[48;5;%sm  %3d  ${E_RESET} " "$i" "$i"
+    if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
       echo
-      if (( i == 15)); then
+      if ((i == 15)); then
         echo
       fi
     fi
   done
-  
+
   echo
-  for i in {232..255} ; do
-    printf "\x1b[48;5;%sm %3d ${E_END}" "$i" "$i"
-    if (( i == 243 )); then 
+  for i in {232..255}; do
+    printf "\x1b[48;5;%sm %3d ${E_RESET}" "$i" "$i"
+    if ((i == 243)); then
       echo
     fi
   done
   echo -e "\n"
 }
 
-
-
-
-
 #color3() { ##D Color test
-#  echo -e "[${E_BLACK}${E_ON_RED}Error${E_END}] ${E_BR_RED}Error text${E_END}"
-#  echo -e "[${E_WHITE}${E_ON_YELLOW}Warning${E_END}] ${E_BR_YELLOW}Warning text${E_END}"
+#  echo -e "[${E_BLACK}${E_ON_RED}Error${E_RESET}] ${E_BR_RED}Error text${E_RESET}"
+#  echo -e "[${E_WHITE}${E_ON_YELLOW}Warning${E_RESET}] ${E_BR_YELLOW}Warning text${E_RESET}"
 #}
 
 FLAG_BLUE="\x1b[48;5;20m"
 FLAG_YELLOW="\x1b[48;5;226m"
 
 smallFlag() {
-  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_END}"
-  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_END}"
-  echo -e "${FLAG_YELLOW}                 ${E_END}"
-  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_END}"
-  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_END}"
+  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_RESET}"
+  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_RESET}"
+  echo -e "${FLAG_YELLOW}                 ${E_RESET}"
+  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_RESET}"
+  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_RESET}"
 }
 
-mediumFlag() { 
-  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
-  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
-  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
-  echo -e "${FLAG_YELLOW}                         ${E_END}"
-  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
-  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
-  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_END}"
+mediumFlag() {
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_RESET}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_RESET}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_RESET}"
+  echo -e "${FLAG_YELLOW}                         ${E_RESET}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_RESET}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_RESET}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_RESET}"
 }
 
-largeFlag() { 
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
-  echo -e "${FLAG_YELLOW}                                      ${E_END}"
-  echo -e "${FLAG_YELLOW}                                      ${E_END}"
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_END}"
+largeFlag() {
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
+  echo -e "${FLAG_YELLOW}                                      ${E_RESET}"
+  echo -e "${FLAG_YELLOW}                                      ${E_RESET}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
 }
 
-hugeFlag() { 
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-  echo -e "${FLAG_YELLOW}                                               ${E_END}"
-  echo -e "${FLAG_YELLOW}                                               ${E_END}"
-  echo -e "${FLAG_YELLOW}                                               ${E_END}"  
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_END}"
+hugeFlag() {
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
+  echo -e "${FLAG_YELLOW}                                               ${E_RESET}"
+  echo -e "${FLAG_YELLOW}                                               ${E_RESET}"
+  echo -e "${FLAG_YELLOW}                                               ${E_RESET}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
+  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
 }
 
-FLAG_RED=$'\e[41m'         # Red
-FLAG_WHITE=$'\e[47m'       # White
+FLAG_RED=$'\e[41m'   # Red
+FLAG_WHITE=$'\e[47m' # White
 
-norwayFlag() { 
-  
-#  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_END}"
-#  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_END}"
-#  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_END}"
-  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_END}"
-  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_END}"
-  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_END}"
-  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_END}"
-  echo -e "${FLAG_WHITE}           ${FLAG_BLUE}    ${FLAG_WHITE}                       ${E_END}"
-  echo -e "${FLAG_BLUE}                                      ${E_END}"
-  echo -e "${FLAG_BLUE}                                      ${E_END}"
-  echo -e "${FLAG_WHITE}           ${FLAG_BLUE}    ${FLAG_WHITE}                       ${E_END}"
-  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_END}"
-  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_END}"
-  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_END}"
-  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_END}"
+norwayFlag() {
 
-#  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_END}"
-#  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_END}"
-#  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_END}"
-#  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_END}"
-#  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_END}"
+  #  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_RESET}"
+  #  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_RESET}"
+  #  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_RESET}"
+  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_RESET}"
+  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_RESET}"
+  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_RESET}"
+  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_RESET}"
+  echo -e "${FLAG_WHITE}           ${FLAG_BLUE}    ${FLAG_WHITE}                       ${E_RESET}"
+  echo -e "${FLAG_BLUE}                                      ${E_RESET}"
+  echo -e "${FLAG_BLUE}                                      ${E_RESET}"
+  echo -e "${FLAG_WHITE}           ${FLAG_BLUE}    ${FLAG_WHITE}                       ${E_RESET}"
+  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_RESET}"
+  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_RESET}"
+  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_RESET}"
+  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_RESET}"
+
+  #  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_RESET}"
+  #  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_RESET}"
+  #  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_RESET}"
+  #  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_RESET}"
+  #  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_RESET}"
 }
-
-
 
 flags() { ##D Print swedish flags
   echo
@@ -460,79 +447,75 @@ flags() { ##D Print swedish flags
   echo
   hugeFlag
   echo
-#  norwayFlag
-#  echo
+  #  norwayFlag
+  #  echo
 }
-
 
 fret() {
   sleep 0.1
-  echo $E_RETURN $E_UP $E_UP $E_UP $E_UP $E_UP $E_UP $E_UP
+  echo "$E_CUR_RETURN" "$E_CUR_UP" "$E_CUR_UP" "$E_CUR_UP" "$E_CUR_UP" "$E_CUR_UP" "$E_CUR_UP" "$E_CUR_UP"
   mediumFlag
 
 }
 
-fadeflag() { ##D Fade flag 
+fadeflag() { ##D Fade flag
 
-
-	FLAG_BLUE="\x1b[48;5;16m"
+  FLAG_BLUE="\x1b[48;5;16m"
   FLAG_YELLOW="\x1b[48;5;58m"
-	mediumFlag
-	FLAG_BLUE="\x1b[48;5;17m"
+  mediumFlag
+  FLAG_BLUE="\x1b[48;5;17m"
   FLAG_YELLOW="\x1b[48;5;94m"
-	fret
-	FLAG_BLUE="\x1b[48;5;18m"
+  fret
+  FLAG_BLUE="\x1b[48;5;18m"
   FLAG_YELLOW="\x1b[48;5;142m"
-	fret
-	FLAG_BLUE="\x1b[48;5;19m"
+  fret
+  FLAG_BLUE="\x1b[48;5;19m"
   FLAG_YELLOW="\x1b[48;5;178m"
-	fret
-	FLAG_BLUE="\x1b[48;5;20m"
+  fret
+  FLAG_BLUE="\x1b[48;5;20m"
   FLAG_YELLOW="\x1b[48;5;220m"
-	fret
-	FLAG_BLUE="\x1b[48;5;21m"
+  fret
+  FLAG_BLUE="\x1b[48;5;21m"
   FLAG_YELLOW="\x1b[48;5;226m"
-	fret
-	
-	echo $E_DOWN $E_DOWN $E_DOWN $E_DOWN $E_DOWN
+  fret
 
-	
-
+  echo "$E_CUR_DOWN $E_CUR_DOWN $E_CUR_DOWN $E_CUR_DOWN $E_CUR_DOWN"
 
 }
-
 
 flash() { ##D Flash screen
-  while true; do 
-	  printf \\e[?5h; sleep 0.1; printf \\e[?5l; 
-		read -s -n1 -t1 && break; 
-	 done;
+  while true; do
+    printf \\e[?5h
+    sleep 0.1
+    printf \\e[?5l
+    read -s -n1 -t1 && break
+  done
 }
 
-E_RGB=$'\e[0;36m'         # RGB
-rgb() { ##D Many colors
+E_RGB=$'\e[0;36m' # RGB
+rgb() {           ##D Many colors
   echo -e "\e[0;38;2;123;132;123m AA"
-	echo -e "\e[0;38;2;123;132;240m AA"
-	echo -e "\e[0;38;2;12;13;10m AA"
+  echo -e "\e[0;38;2;123;132;240m AA"
+  echo -e "\e[0;38;2;12;13;10m AA"
 }
 
 ##- Read tests
 
-readstr() {  ##D Test string read from cmdline
-  x=$(bpRead "Enter a string" "Default value" )
+readstr() { ##D Test string read from cmdline
+  x=$(bpRead "Enter a string" "Default value")
   echo "You entered \"$x\""
-  x=$(bpRead "Just press enter" "Default value" )
+  x=$(bpRead "Just press enter" "Default value")
   echo "You entered \"$x\""
 }
 
-readint() {  ##D Test integer read from cmdline
+readint() { ##D Test integer read from cmdline
   x=$(bpReadInt "Enter value" "12" "0" "100")
   echo "You entered \"$x\""
   x=$(bpReadInt "Just press enter" "45" "0" "100")
   echo "You entered \"$x\""
 }
 
-readyn() { ##D Test Yes/No question from cmdline 
+readyn() { ##D Test Yes/No question from cmdline
   if bpReadY "Default yes"; then
     echo "YES"
   else
@@ -546,7 +529,6 @@ readyn() { ##D Test Yes/No question from cmdline
   fi
 }
 
-
 #
 # $1 Question
 # $2 default value
@@ -558,7 +540,7 @@ bpReadSelect() {
 
   while [ true ]; do
     echo $1
-  
+
     i=2
     while [ $i -lt $len ]; do
       choice=${arr[$i]}
@@ -568,7 +550,7 @@ bpReadSelect() {
       bpPrintInfo "${choice}) " "${desc}"
     done
 
-    ans=$( bpRead "Choice" "${2}" )
+    ans=$(bpRead "Choice" "${2}")
 
     i=2
     while [ $i -lt $len ]; do
@@ -581,53 +563,51 @@ bpReadSelect() {
       let i++
       let i++
     done
-  done 
+  done
 }
 
 readselect() { ##D Test select from list read command
 
-  slist=(                      \
-    "a" "First choice"         \
-    "b" "Second choice"        \
-    "3" "Third alternative"    \
-    "4" "Fourth alternative"   \
-    "penta" "Fifth choice"     \
-    "hexa" "Sixth choice"      \
+  slist=(
+    "a" "First choice"
+    "b" "Second choice"
+    "3" "Third alternative"
+    "4" "Fourth alternative"
+    "penta" "Fifth choice"
+    "hexa" "Sixth choice"
   )
-  
+
   bpReadSelect "Please choose an alternative" "3" "${slist[@]}"
 }
 
 ##- Experiments
 
 bpShow() {
-  for a in {1..10}; do 
-	  echo -e "${E_RED}$1${E_END}"
-		sleep 0.3
-		echo -e "${E_UP}${E_RETURN}"
-		echo -e "${E_BR_RED}$1${E_END}"
-		sleep 0.3
-		echo -e "${E_UP}${E_RETURN}"
-#		echo -e "${E_RETURN}"
-				
-	done
+  for a in {1..10}; do
+    echo -e "${E_RED}$1${E_RESET}"
+    sleep 0.3
+    echo -e "${E_UP}${E_RETURN}"
+    echo -e "${E_BR_RED}$1${E_RESET}"
+    sleep 0.3
+    echo -e "${E_UP}${E_RETURN}"
+    #		echo -e "${E_RETURN}"
+
+  done
 }
 
 blink() { ##D Test
   bpShow "Blinking message"
 }
 
-
 listfiles() { ##D list files
-  for file in ./*
-	do
-	  echo $file
-	  if [ -L $file ]; then
-		echo "A"
-		else
-		echo "B"
-		fi
-	done
+  for file in ./*; do
+    echo "$file"
+    if [ -L "$file" ]; then
+      echo "A"
+    else
+      echo "B"
+    fi
+  done
 }
 
 #
@@ -635,49 +615,50 @@ listfiles() { ##D list files
 # $2 Command to execute
 #
 bpRepeat() { ##I Repeat command n times
- local i max
- max=$1; shift;
- for ((i=1; i <= max ; i++)); do  # --> C-like syntax
-   eval "$@";
- done
+  local i max
+  max=$1
+  shift
+  for ((i = 1; i <= max; i++)); do # --> C-like syntax
+    eval "$@"
+  done
 
 }
 
-repeat() { ##D Test repeat 
+repeat() { ##D Test repeat
   bpRepeat 10 "ls ; sleep 1"
 }
-
 
 #
 # $1 Text to set as title
 #
 bpTitle() { ##I Set terminal window title
   case "$TERM" in
-    *term* | rxvt)
-	    echo -en  "\e]0;$*\a" ;;
-	  *)  ;;
+  *term* | rxvt)
+    echo -en "\e]0;$*\a"
+    ;;
+  *) ;;
   esac
 }
 
 title() { ##D Set title
   bpTitle "Kalle"
-	bpWait 10
+  bpWait 10
 }
 
 bpDo() { ##I Execute command
-  if $1 ; then
-	  bpOk "Ok"
-	else
-	  bpError "Command $1 failed"
-	fi
-	
+  if $1; then
+    bpOk "Ok"
+  else
+    bpError "Command $1 failed"
+  fi
+
 }
 
 ex() { ##D Ex
   bpDo ls
-	bpDo sl
+  bpDo sl
 }
-		 
+
 fileTest() { ##D Test colorization of filename
   F="/use/local/var/log/messages"
   echo -n "The filename $(bpColorizeFile $F) is colorized."
@@ -685,7 +666,7 @@ fileTest() { ##D Test colorization of filename
 
 #
 # String contains
-# 
+#
 # $1 Substring to search
 # $2 String to search in
 #
@@ -695,21 +676,21 @@ bpInString() {
     echo 1
   else
     echo 0
-  fi  
+  fi
 }
 
 inString() { ##D String contains test
   A="Hello world"
-  
-  if [ "$( bpInString HelloX "$A" )" = "1" ]; then
-#  if  $( bpInString "Hello" "$A" ) ; then
+
+  if [ "$(bpInString HelloX "$A")" = "1" ]; then
+    #  if  $( bpInString "Hello" "$A" ) ; then
     echo "A"
   else
     echo "B"
   fi
-  
+
   bpInString "Hello" "$A"
-  bpInString "Kalle" "$A" 
+  bpInString "Kalle" "$A"
 }
 
 arg() { ##A Integer argument test
@@ -717,28 +698,27 @@ arg() { ##A Integer argument test
 }
 
 opttest() { ##D Options testing
-  echo "$1" "$2" "$3" 
+  echo "$1" "$2" "$3"
   echo "$*"
   bpTextLine "Option testing"
   while getopts ":a:" opt; do
-  echo "$opt"
+    echo "$opt"
     case $opt in
-      a)
-        echo "-a was triggered, Parameter: $OPTARG" >&2
+    a)
+      echo "-a was triggered, Parameter: $OPTARG" >&2
       ;;
-      \?)
-        echo "Invalid option: -$OPTARG" >&2
-        exit 1
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
       ;;
     :)
       echo "Option -$OPTARG requires an argument." >&2
       exit 1
-    ;;
+      ;;
     esac
   done
 
 }
-
 
 aVeryLongCommandTestCommand() { ##D Testing truncation of long command strings
   echo
@@ -748,9 +728,6 @@ aVeryLongCommandTestCommand() { ##D Testing truncation of long command strings
 inactiveCommand() { ##CV ICMD Inactive command test
   echo "Only possible if ICMD is set."
 }
-
-
-
 
 # Directory where to store archives
 ARCHIVEDIR="archive"
@@ -763,114 +740,109 @@ BUILDDIR="build"
 # Archive makeplate project
 #
 # $1 Target name
-# 
+#
 archive() { ##D Make a tar archive of the source code
   DT=$(date +"%Y%m%d-%H%M%S")
   bpMkDir ${ARCHIVEDIR}
-  tar -cvzf "${ARCHIVEDIR}/${1}_${DT}.tar.gz" ./*  \
+  tar -cvzf "${ARCHIVEDIR}/${1}_${DT}.tar.gz" ./* \
     --exclude=${ARCHIVEDIR} \
     --exclude=${BACKUP_DIR} \
-    --exclude=${OUTDIR}     \
-    --exclude=${BUILDDIR}   \
-    --exclude='*.a'      \
-    --exclude='*.o'      \
-    --exclude='*.ko'     \
-    --exclude='*.obj'    \
-    --exclude='*.a'      \
-    --exclude='*.la'     \
-    --exclude='*.lo'     \
-    --exclude='*.slo'    \
-    --exclude='*.lib'    \
-    --exclude='*.so'     \
-    --exclude='*.so*'    \
-    --exclude='.dep'     \
-    --exclude='.svn'     \
-    --exclude='.git'     \
-    --exclude='*.elf'    \
-    --exclude='*.hex'    \
-    --exclude='*.bin'    \
-    --exclude='*.exe'    \
-    --exclude='*.sym'    \
-    --exclude='*.lss'    \
-    --exclude='*.map'    \
-    --exclude='*.app'    \
-    --exclude='*.i*86'   \
+    --exclude=${OUTDIR} \
+    --exclude=${BUILDDIR} \
+    --exclude='*.a' \
+    --exclude='*.o' \
+    --exclude='*.ko' \
+    --exclude='*.obj' \
+    --exclude='*.a' \
+    --exclude='*.la' \
+    --exclude='*.lo' \
+    --exclude='*.slo' \
+    --exclude='*.lib' \
+    --exclude='*.so' \
+    --exclude='*.so*' \
+    --exclude='.dep' \
+    --exclude='.svn' \
+    --exclude='.git' \
+    --exclude='*.elf' \
+    --exclude='*.hex' \
+    --exclude='*.bin' \
+    --exclude='*.exe' \
+    --exclude='*.sym' \
+    --exclude='*.lss' \
+    --exclude='*.map' \
+    --exclude='*.app' \
+    --exclude='*.i*86' \
     --exclude='*.x86_64' \
-    --exclude='*~'       \
-    --exclude="*.old"    \
-    --exclude="*.tmp"    
+    --exclude='*~' \
+    --exclude="*.old" \
+    --exclude="*.tmp"
 }
-
-
 
 # Max number of backups
 BACKUPS=100
 
 backup() { ##D Make an incremental backup
-  bpMkDir ${BACKUP_DIR}
+  bpMkDir "${BACKUP_DIR}"
   # remove oldest backup
-  bpRm  ${BACKUP_DIR}/backup_${BACKUPS}
-  # rotate backups 
-  for ((x=BACKUPS;x>0;x--)); do                 
-    bdir=${BACKUP_DIR}/backup_$(( x - 1 )) ;    
-    # check if directory exist before renameing  it 
-    if [ -d ${bdir} ]; then                        
-      mv -f ${bdir}  ${BACKUP_DIR}/backup_${x} ;  
-    fi ;                                            
-  done 
-  rsync --archive                 \
-        --delete                  \
-        --relative                \
-        --exclude=${BACKUP_DIR}   \
-        --exclude=${ARCHIVEDIR}   \
-        --exclude=${OUTDIR}       \
-        --link-dest="${PWD}/${BACKUP_DIR}/backup_1" \
-        .                      \
-        ${BACKUP_DIR}/backup_0 
+  bpRm ${BACKUP_DIR}/backup_${BACKUPS}
+  # rotate backups
+  for ((x = BACKUPS; x > 0; x--)); do
+    bdir=${BACKUP_DIR}/backup_$((x - 1))
+    # check if directory exist before renameing  it
+    if [ -d ${bdir} ]; then
+      mv -f ${bdir} ${BACKUP_DIR}/backup_${x}
+    fi
+  done
+  rsync --archive \
+    --delete \
+    --relative \
+    --exclude=${BACKUP_DIR} \
+    --exclude=${ARCHIVEDIR} \
+    --exclude=${OUTDIR} \
+    --link-dest="${PWD}/${BACKUP_DIR}/backup_1" \
+    . \
+    ${BACKUP_DIR}/backup_0
 }
-
 
 backupfile() { ##D Backup file
-  bpBackup $2
+  bpBackup "$2"
 }
 
-#XXX=-e 's/[0-9]*/\\${BP_C_VALUE}&\\${E_END}/' \
-
+#XXX=-e 's/[0-9]*/\\${BP_C_VALUE}&\\${E_RESET}/' \
 
 f() { ##D Create an error
   false
 }
 
-
 #---------------------------------------------------------------------
 # Bashplate settings
 #---------------------------------------------------------------------
-bpInitSettings() { 
+bpInitSettings() {
 
-##V Script version info
-BP_VERSION="1.00"
+  ##V Script version info
+  BP_VERSION="1.00"
 
-##V Usage info
-BP_USAGE="Usage: ${BP_NAME} command [option]"
+  ##V Usage info
+  BP_USAGE="Usage: ${BP_NAME} command [option]"
 
-##V Description text
-BP_DESC="Examples of how to use bashplates."
+  ##V Description text
+  BP_DESC="Examples of how to use bashplates."
 
-##V logfile (uncomment to use logfile)
-BP_LOGFILE=${BP_SELF_DIR}/${BP_NAME}.log
+  ##V logfile (uncomment to use logfile)
+  BP_LOGFILE=${BP_SELF_DIR}/${BP_NAME}.log
 
-##V Lock file (uncomment to use lock file feature )
-BP_LOCK_FILE=/tmp/${BP_NAME}.lock
+  ##V Lock file (uncomment to use lock file feature )
+  BP_LOCK_FILE=/tmp/${BP_NAME}.lock
 
-##V Logging options (uncomment to activate logging parameters)
-BP_LOG_OK=1
-BP_LOG_INFO=1
-BP_LOG_WARNING=1
-BP_LOG_ERROR=1
-BP_LOG_CRITICAL=1
+  ##V Logging options (uncomment to activate logging parameters)
+  BP_LOG_OK=1
+  BP_LOG_INFO=1
+  BP_LOG_WARNING=1
+  BP_LOG_ERROR=1
+  BP_LOG_CRITICAL=1
 
-##V Activate settings function (will create settings file when run)
-BP__CONF=1
+  ##V Activate settings function (will create settings file when run)
+  BP__CONF=1
 
 }
 #---------------------------------------------------------------------
@@ -947,8 +919,8 @@ bpCallStack() { ##I Print out BASH call stack
   bpTextLine "Call stack"
   echo
   local frame=0
-  while caller $frame | sed -r -e "s/[0-9]*/${BP_C_VALUE}&${E_END}/"   ; do
-    ((frame++));
+  while caller $frame | sed -r -e "s/[0-9]*/${BP_C_VALUE}&${E_RESET}/"; do
+    ((frame++))
   done
   echo "$*"
   bpLine
@@ -991,76 +963,121 @@ bpErrorExit() { ##I Safely exit script with a error
 
 # ANSI foreground colors codes
 #
-E_BLACK=$'\e[0;30m'        # Black
-E_RED=$'\e[0;31m'          # Red
-E_GREEN=$'\e[0;32m'        # Green
-E_YELLOW=$'\e[0;33m'       # Yellow
-E_BLUE=$'\e[0;34m'         # Blue
-E_MAGENTA=$'\e[0;35m'      # Magenta
-E_CYAN=$'\e[0;36m'         # Cyan
-E_GRAY=$'\e[0;37m'         # Gray
-E_DARKGRAY=$'\e[1;30m'     # Dark Gray
-E_BR_RED=$'\e[1;31m'       # Bright Red
-E_BR_GREEN=$'\e[1;32m'     # Bright Green
-E_BR_YELLOW=$'\e[1;33m'    # Bright Yellow
-E_BR_BLUE=$'\e[1;34m'      # Bright Blue
-E_BR_MAGENTA=$'\e[1;35m'   # Bright Magenta
-E_BR_CYAN=$'\e[1;36m'      # Bright Cyan
-E_WHITE=$'\e[1;37m'        # White
+E_FG_BLACK=$'\e[38:5:0m'       # Black
+E_FG_RED=$'\e[38:5:1m'         # Red
+E_FG_GREEN=$'\e[38:5:2m'       # Green
+E_FG_YELLOW=$'\e[38:5:3m'      # Yellow
+E_FG_BLUE=$'\e[38:5:4m'        # Blue
+E_FG_MAGENTA=$'\e[38:5:5m'     # Magenta
+E_FG_CYAN=$'\e[38:5:6m'        # Cyan
+E_FG_GRAY=$'\e[38:5:7m'        # Gray
+E_FG_DARKGRAY=$'\e[38:5:8m'    # Dark Gray
+E_FG_BR_RED=$'\e[38:5:9m'      # Bright Red
+E_FG_BR_GREEN=$'\e[38:5:10m'   # Bright Green
+E_FG_BR_YELLOW=$'\e[38:5:11m'  # Bright Yellow
+E_FG_BR_BLUE=$'\e[38:5:12m'    # Bright Blue
+E_FG_BR_MAGENTA=$'\e[38:5:13m' # Bright Magenta
+E_FG_BR_CYAN=$'\e[38:5:14m'    # Bright Cyan
+E_FG_WHITE=$'\e[38:5:15m'      # White
 
 # ANSI background color codes
 #
-E_ON_BLACK=$'\e[40m'       # Black
-E_ON_RED=$'\e[41m'         # Red
-E_ON_GREEN=$'\e[42m'       # Green
-E_ON_YELLOW=$'\e[43m'      # Yellow
-E_ON_BLUE=$'\e[44m'        # Blue
-E_ON_MAGENTA=$'\e[45m'     # Magenta
-E_ON_CYAN=$'\e[46m'        # Cyan
-E_ON_WHITE=$'\e[47m'       # White
+E_BG_BLACK=$'\e[48;5;0m'       # Black
+E_BG_RED=$'\e[48;5;1m'         # Red
+E_BG_GREEN=$'\e[48;5;2m'       # Green
+E_BG_YELLOW=$'\e[48;5;3m'      # Yellow
+E_BG_BLUE=$'\e[48;5;4m'        # Blue
+E_BG_MAGENTA=$'\e[48;5;5m'     # Magenta
+E_BG_CYAN=$'\e[48;5;6m'        # Cyan
+E_BG_GRAY=$'\e[48;5;7m'        # Gray
+E_BG_DARK_GRAY=$'\e[48;5;8m'   # Dark gray
+E_BG_BR_RED=$'\e[48;5;9m'      # Bright Red
+E_BG_BR_GREEN=$'\e[48;5;10m'   # Bright Green
+E_BG_BR_YELLOW=$'\e[48;5;11m'  # Bright Yellow
+E_BG_BR_BLUE=$'\e[48;5;12m'    # Bright Blue
+E_BG_BR_MAGENTA=$'\e[48;5;13m' # Bright Magenta
+E_BG_BR_CYAN=$'\e[48;5;14m'    # Bright Cyan
+E_BG_WHITE=$'\e[48;5;15m'      # White
+
+# ANSI underline color codes
+#
+# Not in standard. implemented in Kitty, VTE, mintty, etc.
+#
+E_UL_BLACK=$'\e[58;5;0m'       # Black
+E_UL_RED=$'\e[58;5;1m'         # Red
+E_UL_GREEN=$'\e[58;5;2m'       # Green
+E_UL_YELLOW=$'\e[58;5;3m'      # Yellow
+E_UL_BLUE=$'\e[58;5;4m'        # Blue
+E_UL_MAGENTA=$'\e[58;5;5m'     # Magenta
+E_UL_CYAN=$'\e[58;5;6m'        # Cyan
+E_UL_GRAY=$'\e[58;5;7m'        # Gray
+E_UL_DARKGRAY=$'\e[58;5;8m'    # Dark Gray
+E_UL_BR_RED=$'\e[58;5;9m'      # Bright Red
+E_UL_BR_GREEN=$'\e[58;5;10m'   # Bright Green
+E_UL_BR_YELLOW=$'\e[58;5;11m'  # Bright Yellow
+E_UL_BR_BLUE=$'\e[58;5;12m'    # Bright Blue
+E_UL_BR_MAGENTA=$'\e[58;5;13m' # Bright Magenta
+E_UL_BR_CYAN=$'\e[58;5;14m'    # Bright Cyan
+E_UL_WHITE=$'\e[58;5;15m'      # White
 
 # ANSI Text attributes
-E_ATTR_BOLD=$'\e[1m'
-E_ATTR_LOWI=$'\e[2m'
-E_ATTR_UNDERLINE=$'\e[4m'
-E_ATTR_BLINK=$'\e[5m'
-E_ATTR_REVERSE=$'\e[7m'
+E_ATTR_BOLD=$'\e[1m'               # Bold text
+E_ATTR_LOWI=$'\e[2m'               # Low intensity
+E_ATTR_ITALIC=$'\e[3m'             # Italic text
+E_ATTR_UNDERLINE=$'\e[4m'          # Underlined text
+E_ATTR_UNDERLINE_DOUBLE=$'\e[4:2m' # Double underline (limited support)
+E_ATTR_UNDERLINE_CURLY=$'\e[4:3m'  # Curly underline (limited support)
+E_ATTR_UNDERLINE_DOT=$'\e[4:4m'    # Dotted underline (limited support)
+E_ATTR_UNDERLINE_DASH=$'\e[4:5m'   # Dashed underline (limited support)
+E_ATTR_BLINK=$'\e[5m'              # Blinking text
+E_ATTR_RAPID_BLINK=$'\e[6m'        # Rapid blink (Limited support)
+E_ATTR_REVERSE=$'\e[7m'            # Reverse color
+E_ATTR_CROSSED=$'\e[9m'            # Crossed over text
+E_ATTR_FRAKTUR=$'\e[20m'           # Gothic (limited support)
+E_ATTR_FRAMED=$'\e[51m'            # Framed (limited support)
+E_ATTR_OVERLINED=$'\e[53m'         # Overlined text
+E_ATTR_SUPERSCRIPT=$'\e[73m'       # Superscript text (limited support)
+E_ATTR_SUBSCRIPT=$'\e[74m'         # Subscript text (limited support)
 
 # ANSI cursor operations
 #
-E_RETURN=$'\e[F'           # Move cursor to begining of line
-E_UP=$'\e[A'               # Move cursor one line up
-E_DOWN=$'\e[B'             # Move cursor one line down
-E_FORWARD=$'\e[C'          # Move cursor forward
-E_BACK=$'\e[D'             # Move cursor backward
-E_HIDE=$'\e[?25l'          # Hide cursor
-E_SHOW=$'\e[?25h'          # Show cursor
+E_CUR_RETURN=$'\e[F'  # Move cursor to begining of line
+E_CUR_UP=$'\e[A'      # Move cursor one line up
+E_CUR_DOWN=$'\e[B'    # Move cursor one line down
+E_CUR_FORWARD=$'\e[C' # Move cursor forward
+E_CUR_BACK=$'\e[D'    # Move cursor backward
+E_CUR_HIDE=$'\e[?25l' # Hide cursor
+E_CUR_SHOW=$'\e[?25h' # Show cursor
 
-E_END=$'\e[m'              # Clear Attributes
+E_RESET=$'\e[0m' # Clear Attributes
 
 # Default Bashplate colortheme
-BP_C_OK=$E_BR_GREEN
-BP_C_INFO=$E_BR_CYAN
-BP_C_DEBUG=$E_ON_GREEN$E_BLACK
-BP_C_WARNING=$E_BR_YELLOW
-BP_C_ERROR=$E_BR_RED
-BP_C_CRITICAL=$E_ON_RED$E_WHITE
-BP_C_LINE=$E_DARKGRAY
-BP_C_LINE_TEXT=$E_YELLOW
-BP_C_DESCRIPTION=$E_GREEN
-BP_C_ID=$E_CYAN
-BP_C_FILENAME=$E_BR_GREEN
-BP_C_PATH=$E_GREEN
+BP_C_OK="${E_FG_BR_GREEN}"
+BP_C_INFO="${E_FG_BR_CYAN}"
+BP_C_DEBUG="${E_BG_GREEN}${E_FG_WHITE}"
+BP_C_WARNING="${E_FG_BR_YELLOW}"
+BP_C_ERROR="${E_FG_BR_RED}"
+BP_C_CRITICAL="${E_BG_RED}${E_FG_WHITE}"
+BP_C_LINE="${E_FG_DARKGRAY}"
+BP_C_LINE_TEXT="${E_FG_YELLOW}"
+BP_C_DESCRIPTION="${E_FG_GREEN}"
+BP_C_ID="${E_FG_CYAN}"
+
+BP_C_FILENAME="${E_FG_BR_GREEN}"
+BP_C_PATH="${E_FG_GREEN}"
+BP_C_URL_SCHEME="${E_FG_DARKGRAY}"
+# BP_C_URL_USER=""
+# BP_C_URL_HOST=""
 
 # Shellscript colorize colors
-BP_C_RESERVED=$E_RED
-BP_C_COMMENT=$E_CYAN
-BP_C_STRING=$E_GREEN
-BP_C_VAR=$E_BR_YELLOW
+BP_C_RESERVED="${E_FG_RED}"
+BP_C_COMMENT="${E_FG_CYAN}"
+BP_C_STRING="${E_FG_GREEN}"
+BP_C_VAR="${E_FG_BR_YELLOW}"
 
 # Exit codes
 #
-BP_E_OK=0            # successful termination
+BP_E_OK=0 # successful termination
 
 #---------------------------------------------------------------------
 # Bashplate internal functions
@@ -1080,9 +1097,9 @@ bpPrintLineC() { ##I Print text with adjusted line after with selectable colors
   len4="${#4}"
 
   echo -en "${2}${1}${4}${3}"
-  l=$(( BP_COLUMNS - len1 - len4  ))
-  seq -s"${5}" "${l}"|tr -d '[:digit:]'
-  echo -en ${E_END} 
+  l=$((BP_COLUMNS - len1 - len4))
+  seq -s"${5}" "${l}" | tr -d '[:digit:]'
+  echo -en "${E_RESET}"
 }
 
 #
@@ -1118,15 +1135,21 @@ bpLine() { ##I Print a divider row
 # $4 desccription text
 #
 bpPrintInfoGeneric() { # Generic command/description printout function
-  printf "${1}  %-24.24s${E_END} ${2}%s${E_END}\n" "$3" "$4"
+  if [ -n "$5" ]; then
+    X="$5"
+  else
+    X=24
+  fi
+  printf "${1}  %-${X}.${X}s${E_RESET} ${2}%s${E_RESET}\n" "$3" "$4"
 }
 
 #
 # $1 text for column 1
 # $2 text for column 2
+# $3 (optional) left alignment
 #
 bpPrintInfo() { ##I Print text into two columns
-  bpPrintInfoGeneric "${BP_C_ID}" "${BP_C_DESCRIPTION}" "$1" "$2"
+  bpPrintInfoGeneric "${BP_C_ID}" "${BP_C_DESCRIPTION}" "$1" "$2" "$3"
 }
 
 bpPrintInfoAlt() {
@@ -1137,6 +1160,7 @@ bpPrintInfoAlt() {
 # $1 text for column 1
 # $2 variable for column 2
 # $3 optional text form column 2
+# $4 (optional) left alignment
 #
 bpPrintVar() { ##I Print variable value and description
   var="$2"
@@ -1148,7 +1172,7 @@ bpPrintVar() { ##I Print variable value and description
     fi
     bpPrintInfo "$1" "${X}"
   else
-    printf "${BP_C_ID}  %-24s${E_END} ${E_RED}N/A${E_END}\n" "$1"
+    printf "${BP_C_ID}  %-24s${E_RESET} ${BP_C_ERROR}N/A${E_RESET}\n" "$1"
   fi
 }
 
@@ -1461,10 +1485,19 @@ bpReadYN() { ##I Ask yes/no question generic
     fi
 
     case "$yn" in
-      [Yy]* ) return 0;  break;;
-      [Nn]* ) return 1;  break;;
-      ""    ) return "$2"; break;;
-      * ) echo "Please answer yes or no.";;
+    [Yy]*)
+      return 0
+      break
+      ;;
+    [Nn]*)
+      return 1
+      break
+      ;;
+    "")
+      return "$2"
+      break
+      ;;
+    *) echo "Please answer yes or no." ;;
     esac
   done
 }
@@ -1538,7 +1571,7 @@ bpChSetting() {
   fi
   sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" "$1"
 
-  bpInfo "Setting ${SETTING} to ${VAL}"
+  bpOk "Setting ${SETTING} to ${VAL}"
 }
 
 bpCreateSettings() {
@@ -1688,14 +1721,14 @@ bpLogCritical() { ##I Log Critical message to file
 
 log() { ##C BP_LOGFILE View logfile
   if [ -n "$BP_LOGFILE" ]; then
-    if [ -f "${BP_LOGFILE}" ]; then  # Check that logfile exists
-      D=$(sed -r -e "s|\[Info\]|\[\\${BP_C_INFO}Info\\${E_END}\]|"  \
-            -e "s|\[Warn\]|\[\\${BP_C_WARNING}Warn\\${E_END}\]|"  \
-            -e "s|\[Erro\]|\[\\${BP_C_ERROR}Erro\\${E_END}\]|"    \
-            -e "s|\[ Ok \]|\[\\${BP_C_OK} Ok \\${E_END}\]|"    \
-            -e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
-            -e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
-            -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|" < "${BP_LOGFILE}" )
+    if [ -f "${BP_LOGFILE}" ]; then # Check that logfile exists
+      D=$(sed -r -e "s|\[Info\]|\[\\${BP_C_INFO}Info\\${E_RESET}\]|" \
+        -e "s|\[Warn\]|\[\\${BP_C_WARNING}Warn\\${E_RESET}\]|" \
+        -e "s|\[Erro\]|\[\\${BP_C_ERROR}Erro\\${E_RESET}\]|" \
+        -e "s|\[ Ok \]|\[\\${BP_C_OK} Ok \\${E_RESET}\]|" \
+        -e "s/[-0-9]+/\\${E_FG_GREEN}&\\${E_RESET}/1" \
+        -e "s/[:0-9]+/\\${E_FG_BR_GREEN}&\\${E_RESET}/6" \
+        -e "s|\[Crit\]|\[\\${E_BG_RED}\\${E_FG_WHITE}Crit\\${E_RESET}\]|" <"${BP_LOGFILE}")
 
       echo -e "$D"
     fi
@@ -1705,16 +1738,16 @@ log() { ##C BP_LOGFILE View logfile
   fi
 }
 
-mlog() {   ##C BP_LOGFILE Monitor logfile
+mlog() { ##C BP_LOGFILE Monitor logfile
   if [ -n "$BP_LOGFILE" ]; then
-    if [ -f "${BP_LOGFILE}" ]; then  # Check that logfile exists
-      tail -f "${BP_LOGFILE}" | sed -r -e "s|\[Info\]|\[\\${BP_C_INFO}Info\\${E_END}\]|"  \
-            -e "s|\[Warn\]|\[\\${BP_C_WARNING}Warn\\${E_END}\]|"  \
-            -e "s|\[Erro\]|\[\\${BP_C_ERROR}Erro\\${E_END}\]|"    \
-            -e "s|\[ Ok \]|\[\\${BP_C_OK} Ok \\${E_END}\]|"    \
-            -e "s/[-0-9]+/\\${E_GREEN}&\\${E_END}/1"            \
-            -e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_END}/6"            \
-            -e "s|\[Crit\]|\[\\${E_ON_RED}\\${E_WHITE}Crit\\${E_END}\]|"
+    if [ -f "${BP_LOGFILE}" ]; then # Check that logfile exists
+      tail -f "${BP_LOGFILE}" | sed -r -e "s|\[Info\]|\[\\${BP_C_INFO}Info\\${E_RESET}\]|" \
+        -e "s|\[Warn\]|\[\\${BP_C_WARNING}Warn\\${E_RESET}\]|" \
+        -e "s|\[Erro\]|\[\\${BP_C_ERROR}Erro\\${E_RESET}\]|" \
+        -e "s|\[ Ok \]|\[\\${BP_C_OK} Ok \\${E_RESET}\]|" \
+        -e "s/[-0-9]+/\\${E_FG_GREEN}&\\${E_RESET}/1" \
+        -e "s/[:0-9]+/\\${E_FG_BR_GREEN}&\\${E_RESET}/6" \
+        -e "s|\[Crit\]|\[\\${E_BG_RED}\\${E_FG_WHITE}Crit\\${E_RESET}\]|"
 
     fi
   else
@@ -1728,47 +1761,47 @@ mlog() {   ##C BP_LOGFILE Monitor logfile
 bpOk() { ##I Success message
   if [ -n "$BP_LOG_OK" ]; then
     bpLogOk "$1"
-  fi  
-  echo -e "[${BP_C_OK}Ok${E_END}] $1"
+  fi
+  echo -e "[${BP_C_OK}Ok${E_RESET}] $1"
 }
 
 bpInfo() { ##I Info message
   if [ -n "$BP_LOG_INFO" ]; then
     bpLogInfo "$1"
   fi
-  echo -e "[${BP_C_INFO}Info${E_END}] $1"
+  echo -e "[${BP_C_INFO}Info${E_RESET}] $1"
 }
 
 bpDbg() { ##I Debug message
-  if [ ! -n "$BP_DEBUG" ]; then
-    return 
+  if [ -z "$BP_DEBUG" ]; then
+    return
   fi
   if [ -n "$BP_LOG_INFO" ]; then
     bpLogDebug "$1"
   fi
 
-  echo -e "[${BP_C_DEBUG}Dbg${E_END}] $1"
+  echo -e "[${BP_C_DEBUG}Dbg${E_RESET}] $1"
 }
 
 bpWarning() { ##I Warning message
   if [ -n "$BP_LOG_WARNING" ]; then
     bpLogWarning "$1"
   fi
-  echo -e "[${BP_C_WARNING}Warning${E_END}] $1"
+  echo -e "[${BP_C_WARNING}Warning${E_RESET}] $1"
 }
 
 bpError() { ##I Error message
   if [ -n "$BP_LOG_ERROR" ]; then
     bpLogError "$1"
   fi
-  echo -e "[${BP_C_ERROR}Error${E_END}] $1"
+  echo -e "[${BP_C_ERROR}Error${E_RESET}] $1"
 }
 
 bpCritical() { ##I Critical error message
   if [ -n "$BP_LOG_CRITICAL" ]; then
     bpLogCritical "$1"
   fi
-  echo -e "[${BP_C_CRITICAL}Critical${E_END}] $1"
+  echo -e "[${BP_C_CRITICAL}Critical${E_RESET}] $1"
   bpExit
 }
 
@@ -2037,10 +2070,10 @@ ivars() { ##I Print internal variables
     if [ "$line" == "--" ]; then
       echo
     else
-      help_line=$(echo "${line}" | sed -u -e "s/##V[ ]/${BP_C_DESCRIPTION}/i" -e "s/^.*=/${BP_C_ID}&${E_END}/i" -e "s/=/${E_END}=/" )
+      help_line=$(echo "${line}" | sed -u -e "s/##V[ ]/${BP_C_DESCRIPTION}/i" -e "s/^.*=/${BP_C_ID}&${E_RESET}/i" -e "s/=/${E_RESET}=/")
       echo -e "$help_line"
-      echo -en "$E_END"
-  fi
+      echo -en "$E_RESET"
+    fi
   done
   echo
 }
