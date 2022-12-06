@@ -112,6 +112,7 @@ nocond() { ##D Ordinary function
   echo "Non conditional function"
 }
 
+##- Bp select from list
 list=(
   "Choose your alternative"
   "1" ":" "Alternative 1"
@@ -170,6 +171,28 @@ bpSelectFromList() { ##I Select from list
   done
 }
 
+bpPrintChooseList() {
+  echo
+	arr=("${@}")
+	len=${#arr[@]}
+
+  echo ${arr[0]}
+	i=1
+	while [ $i -lt "$len" ]; do
+	  desc=${arr[$i]}
+		printf "${BP_C_ID}  %-5.24s${E_RESET} ${BP_C_DESCRIPTION}%s${E_RESET}\n" "${i}" "$desc"
+		((i++))
+	done																													
+}
+
+bpChoose() {
+  while true; do
+	  bpPrintChooseList "${@}"
+	  x=$(bpRead "")
+		
+	done
+}
+
 rl() { ##D Read list
   dict=(
     "a" "Dict A"
@@ -180,7 +203,14 @@ rl() { ##D Read list
 
   bpSelectFromList "${list[@]}"
   echo "$bpReturn"
+	
 }
+
+
+ch() { ##D Choose from list
+  bpChoose "Select an alternative" "Alt 1" "Alt 2" "Alt 3"
+}
+
 
 ##- Dictionary
 

@@ -285,6 +285,7 @@ To montor the logfile simply enter the "mlog" command.
 - Add color suppression option
 - Add warning sign to bpReadYN question
 - Add override editor for "ied" command
+- Add trim string function
 - Use logrotate for logs
 - Mail feature
 - dictionary functions
@@ -312,6 +313,7 @@ To montor the logfile simply enter the "mlog" command.
 [bash3boilerplate](https://github.com/kvz/bash3boilerplate/blob/master/main.sh)
 [Self-contained auto-updating rsync-based backup script](https://gist.github.com/KylePDavis/3f8c511838a36f2528d7)
 [This is a shell script template generator](http://linuxcommand.org/lc3_new_script.php)
+[Charm gum](https://github.com/charmbracelet/gum)
 
 [bp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp.png "bp"
 [bp-ihelp]: https://github.com/zonbrisad/bashplates/raw/master/doc/bp-ihelp.png "bp ihelp"
