@@ -150,6 +150,10 @@ dd() { ##C BP_DEV Diff with bpdev
   ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "$2"
 }
 
+dt() { ##C BP_DEV Diff bpdev with template
+  ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "${BP_SELF_DIR}/templates/bashplate" 
+}
+
 tabs() { ##C BP_DEV Remove tabs
   sed -e 's/[ \t]*//' "$0"
 }
