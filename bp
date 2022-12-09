@@ -143,7 +143,11 @@ ei() { ##C BP_DEV Edit Bashplate init file
 }
 
 dl() { ##C BP_DEV Make diff with latest bashtemplate
-  meld "${BP_SELF_DIR}/templates/bashplate" "$2"
+  ${BP_DIFF} "${BP_SELF_DIR}/templates/bashplate" "$2"
+}
+
+dd() { ##C BP_DEV Diff with bpdev
+  ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "$2"
 }
 
 tabs() { ##C BP_DEV Remove tabs
