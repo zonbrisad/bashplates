@@ -264,13 +264,14 @@ attr() { ##D demonstrate font attributes
   echo
   bpTextLine "Font style attributes"
   echo
-  print_attr "E_ATTR_BOLD" "Bold"
-  print_attr "E_ATTR_LOWI" "Low Intensity"
-  print_attr "E_ATTR_ITALIC" "Italic"
-  print_attr "E_ATTR_REVERSE" "Reverse video"
-  print_attr "E_ATTR_BLINK" "Blink"
-  print_attr "E_ATTR_UNDERLINE" "Underline normal"
-  print_attr "E_ATTR_CROSSED" "Crossed"
+  print_attr "E_RESET" "Normal text"
+  print_attr "E_ATTR_BOLD" "Bold text"
+  print_attr "E_ATTR_DIM" "Dim text"
+  print_attr "E_ATTR_ITALIC" "Italic text"
+  print_attr "E_ATTR_REVERSE" "Reverse text"
+  print_attr "E_ATTR_BLINK" "Blink text"
+  print_attr "E_ATTR_UNDERLINE" "Underline text"
+  print_attr "E_ATTR_CROSSED" "Crossed text"
   echo
   bpTextLine "Extended font style attributes(limited support)"
   echo
@@ -372,6 +373,48 @@ color() { ##D Standard 16 colors
   done
 
   echo
+}
+
+
+icons_() { ## Unicode icons
+  for a in {0..31}; do
+		hex1=$( printf "%s%02x" "$1" $a)
+		hex2=$( printf "%s%02x" "$1" $(($a + 32)) )
+		hex3=$( printf "%s%02x" "$1" $(($a + 64)) )
+		hex4=$( printf "%s%02x" "$1" $(($a + 96)) )
+		hex5=$( printf "%s%02x" "$1" $(($a + 128)) )
+		hex6=$( printf "%s%02x" "$1" $(($a + 160)) )
+		hex7=$( printf "%s%02x" "$1" $(($a + 192)) )
+		hex8=$( printf "%s%02x" "$1" $(($a + 224)) )
+		echo -e " $hex1  \u${hex1}    $hex2  \u${hex2}    $hex3  \u${hex3}   $hex4  \u${hex4}   $hex5  \u${hex5}   $hex6  \u${hex6}   $hex7  \u${hex7}   $hex8  \u${hex8}"
+#		printf "%s  %s   %s  \n" "$hex1" "${hex1}" "$hex2"
+	done
+
+}
+
+icons() { ##D Unicode icons
+  icons_ "26"
+	echo
+	icons_ "27"	
+	echo
+	
+	# Emoticons
+	icons_ "1F6"
+  echo
+	
+	
+	# Enclosed characters
+	icons_ "24"
+  echo
+
+
+	# Flags
+	icons_ "1F1"
+  echo
+
+	icons_ "1F5"
+  echo
+	
 }
 
 ##- Test of print messages
@@ -761,7 +804,7 @@ E_UL_WHITE=$'\e[58;5;15m'      # White
 
 # ANSI Text attributes
 E_ATTR_BOLD=$'\e[1m'               # Bold text
-E_ATTR_LOWI=$'\e[2m'               # Low intensity
+E_ATTR_DIM=$'\e[2m'                # Dim(low intensity) text
 E_ATTR_ITALIC=$'\e[3m'             # Italic text
 E_ATTR_UNDERLINE=$'\e[4m'          # Underlined text
 E_ATTR_UNDERLINE_DOUBLE=$'\e[4:2m' # Double underline (limited support)
@@ -1596,7 +1639,7 @@ bpAssertProgs() { ##I Assert that required programs are available on the system
 
 ##C- IHELP Debug/Controll
 
-icheck() { ##I Make a shellcheck
+icheck() { ##I Run shellcheck on script
   bpAssertProgs "shellcheck"
   shellcheck "$0"
 }
@@ -1755,7 +1798,6 @@ iinfo() { ##I Show information about script
   fi
   settings
 }
-
 
 iview() { ##I View example
   # Singe command documentation

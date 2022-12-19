@@ -293,9 +293,16 @@ To montor the logfile simply enter the "mlog" command.
 - Module system
 - Merge bpLine and bpTextLine
 - Reformat messages to "straigt columns"
-- change name of bpRead to bpReadStr(ing)
+- rename bpRead to bpReadStr(ing)
 - multi column output
 - Fix bpEscapeFilter
+
+
+## Sugestions
+ - rename iview to iv
+ - rename ivars to ivar or iva 
+ - rename iinfo to ii
+ - rename icheck to ic
 
 
 ## References and tutorials

@@ -147,7 +147,7 @@ dl() { ##C BP_DEV Make diff with latest bashtemplate
 }
 
 dd() { ##C BP_DEV Diff with bpdev
-  ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "$2"
+  ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "${BP_SELF_DIR}/bp"
 }
 
 dt() { ##C BP_DEV Diff bpdev with template
@@ -532,7 +532,7 @@ E_UL_WHITE=$'\e[58;5;15m'      # White
 
 # ANSI Text attributes
 E_ATTR_BOLD=$'\e[1m'               # Bold text
-E_ATTR_LOWI=$'\e[2m'               # Low intensity
+E_ATTR_DIM=$'\e[2m'                # Dim(low intensity) text
 E_ATTR_ITALIC=$'\e[3m'             # Italic text
 E_ATTR_UNDERLINE=$'\e[4m'          # Underlined text
 E_ATTR_UNDERLINE_DOUBLE=$'\e[4:2m' # Double underline (limited support)
@@ -682,7 +682,7 @@ bpPrintVar() { ##I Print variable value and description
     fi
     bpPrintInfo "$1" "${X}"
   else
-    printf "${BP_C_ID}  %-24s${E_RESET} ${E_RED}N/A${E_RESET}\n" "$1"
+    printf "${BP_C_ID}  %-24s${E_RESET} ${BP_C_ERROR}N/A${E_RESET}\n" "$1"
   fi
 }
 
@@ -724,6 +724,17 @@ bpFilterEscape() { ##I Filter escape characters from string
 }
 
 ##C- IHELP File operations
+
+#
+# $1 command to check
+#
+bpHasCmd() { ##I Check if command is available
+  if [ -x "$(command -v "${1}")" ]; then
+    return 0
+  else
+    return 1
+  fi
+}
 
 #
 # $1 command to execute
@@ -1516,30 +1527,16 @@ iinfo() { ##I Show information about script
   settings
 }
 
-#
-# $1 command to check
-#
-bpHasCmd() { ##I Check if command is available
-  if [ -x "$(command -v "${1}")" ]; then
-    return 0
-  else
-    return 1
-  fi
-}
-
-#
 iview() { ##I View example
   # Singe command documentation
   if [ "$2" == "" ]; then
     bpExit
   fi
 
+  echo
   if bpHasCmd batcat; then # Use batcat, if available, to view function
-    grep --no-filename -A 60 "$0" -e "${2}()" | grep -B 60 -m 1 -x "}" | batcat --language bash
+    grep --no-filename -A 60 "$0" -e "${2}()" | grep -B 60 -m 1 -x "}" | batcat --language bash --decorations never
   else
-    echo
-    bpTextLine "$2"
-    echo
     grep --no-filename -A 60 "$0" -e "${2}()" | grep -B 60 -m 1 -x "}" |
       sed -e "s/#.*/\\${BP_C_COMMENT}&\\${E_RESET}/" \
         -e "s/\<echo\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
@@ -1563,11 +1560,8 @@ iview() { ##I View example
         -e "s/\<while\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
         -e "s/\".*\"/\\${BP_C_STRING}&\\${E_RESET}/" \
         -e "s/\([^=]*\)=/${BP_C_VAR}\1\\${E_RESET}=/"
-    #             -e $VF
-    #             -e 's/\$[{]?[a-zA-Z0-9]*[}]?/XXX/'
-    #             -e 's/$?/'"\\${BP_C_VAR}&\\${E_RESET}/" \
-    bpLine
   fi
+  echo
   bpExit
 }
 

@@ -230,7 +230,7 @@ E_UL_WHITE=$'\e[58;5;15m'      # White
 
 # ANSI Text attributes
 E_ATTR_BOLD=$'\e[1m'               # Bold text
-E_ATTR_LOWI=$'\e[2m'               # Low intensity
+E_ATTR_DIM=$'\e[2m'                # Dim(low intensity) text
 E_ATTR_ITALIC=$'\e[3m'             # Italic text
 E_ATTR_UNDERLINE=$'\e[4m'          # Underlined text
 E_ATTR_UNDERLINE_DOUBLE=$'\e[4:2m' # Double underline (limited support)
@@ -1065,7 +1065,7 @@ bpAssertProgs() { ##I Assert that required programs are available on the system
 
 ##C- IHELP Debug/Controll
 
-icheck() { ##I Make a shellcheck
+icheck() { ##I Run shellcheck on script
   bpAssertProgs "shellcheck"
   shellcheck "$0"
 }
