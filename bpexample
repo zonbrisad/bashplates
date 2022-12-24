@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=2034
 # shellcheck disable=1090
+# shellcheck disable=2317
 #---------------------------------------------------------------------
 #
 #  [Description]
@@ -252,6 +253,17 @@ bar() { ##D print a testbar (ANSI)
     sleep 0.03
     print_bar 60 $i
     echo -e "$E_CUR_RETURN $E_CUR_UP"
+  done
+  echo -e "$E_SHOW"
+}
+
+barcr() { ##D print a testbar using carriage return(ANSI)
+  bpTextLine "Bar test"
+  echo -en "$E_HIDE"
+  for i in {1..60}; do
+    sleep 0.03
+    print_bar 60 $i
+    echo -e "\r${E_CUR_UP}"
   done
   echo -e "$E_SHOW"
 }

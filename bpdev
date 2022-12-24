@@ -345,7 +345,7 @@ attr() { ##D demonstrate font attributes
 }
 
 color() { ##D Standard 16 colors
-  FCOLORS=(E_BLACK E_RED E_GREEN E_YELLOW E_BLUE E_MAGENTA E_CYAN E_GRAY E_DARKGRAY E_BR_RED E_BR_GREEN E_BR_YELLOW E_BR_BLUE E_BR_MAGENTA E_BR_CYAN E_WHITE)
+  FCOLORS=(E_FG_BLACK E_FG_RED E_FG_GREEN E_FG_YELLOW E_FG_BLUE E_FG_MAGENTA E_FG_CYAN E_FG_GRAY E_FG_DARKGRAY E_FG_BR_RED E_FG_BR_GREEN E_FG_BR_YELLOW E_FG_BR_BLUE E_FG_BR_MAGENTA E_FG_BR_CYAN E_FG_WHITE)
   BCOLORS=(E_BG_BLACK E_BG_RED E_BG_GREEN E_BG_YELLOW E_BG_BLUE E_BG_MAGENTA E_BG_CYAN E_BG_WHITE)
   BCOLORS_BR=(E_BG_DARK_GRAY E_BG_BR_RED E_BG_BR_GREEN E_BG_BR_YELLOW E_BG_BR_BLUE E_BG_BR_MAGENTA E_BG_BR_CYAN E_BG_GRAY)
 
@@ -356,7 +356,7 @@ color() { ##D Standard 16 colors
     eval "FG=\$$fc"
     for bc in "${BCOLORS[@]}"; do
       eval "BG=\$$bc"
-      printf "${FG}${BG} %-13s${E_RESET}" "$fc"
+      printf "${FG}${BG} %-15s${E_RESET}" "$fc"
     done
     echo
   done
@@ -367,7 +367,7 @@ color() { ##D Standard 16 colors
     eval "FG=\$$fc"
     for bc in "${BCOLORS_BR[@]}"; do
       eval "BG=\$$bc"
-      printf "${FG}${BG} %-13s${E_RESET}" "$fc"
+      printf "${FG}${BG} %-15s${E_RESET}" "$fc"
     done
     echo
   done
@@ -531,6 +531,9 @@ s2a() { ##D String to array
 
 }
 
+
+
+
 #xx() {
 
 # OPTS=$(getopt --longoptions idebug -- "$@")
@@ -592,6 +595,15 @@ bpb() { ##D Print banner
 
   echo ${bp3[@]}
 
+}
+
+
+nl() { ##D New line test
+
+  printf "New line test (NL)\n"
+	printf "Carriage return test(CR)\r"
+ 
+  printf  "Whittnes row\n"
 }
 
 #---------------------------------------------------------------------
