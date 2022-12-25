@@ -191,7 +191,7 @@ bpElapsedTime() { ##D Return elapsed time
   ds=$((dt % 60))
   dm=$(((dt / 60) % 60))
   dh=$((dt / 3600))
-  printf '%02d:%02d:%02d' $dh $dm $ds
+  printf '%02d:%02d:%02d' "$dh" "$dm" "$ds"
 }
 
 print_spinner() {
@@ -199,7 +199,7 @@ print_spinner() {
   XX=("|" "/" "-" "\\")
   if [ -n "$SPINNER" ]; then
     SPINNER=$((SPINNER + 1))
-    if [ $SPINNER -gt 3 ]; then
+    if [ "$SPINNER" -gt 3 ]; then
       SPINNER=0
     fi
   else
@@ -251,7 +251,7 @@ bar() { ##D print a testbar (ANSI)
   echo -en "$E_HIDE"
   for i in {1..60}; do
     sleep 0.03
-    print_bar 60 $i
+    print_bar 60 "$i"
     echo -e "$E_CUR_RETURN $E_CUR_UP"
   done
   echo -e "$E_SHOW"
@@ -262,7 +262,7 @@ barcr() { ##D print a testbar using carriage return(ANSI)
   echo -en "$E_HIDE"
   for i in {1..60}; do
     sleep 0.03
-    print_bar 60 $i
+    print_bar 60 "$i"
     echo -e "\r${E_CUR_UP}"
   done
   echo -e "$E_SHOW"
@@ -306,7 +306,7 @@ color1() { ##D Standard 16 colors
     eval "FG=\$$fc"
     for bc in ${BCOLORS2[*]}; do
       eval "BG=\$$bc"
-      printf "${FG}${BG}%-12s${E_RESET}" "$fc"
+      printf "${FG}${BG}%-15s${E_RESET}" "$fc"
     done
     echo
   done

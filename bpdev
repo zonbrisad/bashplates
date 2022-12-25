@@ -233,21 +233,21 @@ dtest() { ##D Test dictionary test
 
 ##- New ANSII escape functions
 underline() { ##D Test of extended underline attributes
-  echo "${E_ATTR_UNDERLINE}Underline normal${E_RESET}"
-  echo "${E_ATTR_UNDERLINE_CURLY}Underline curly${E_RESET}"
-  echo "${E_ATTR_UNDERLINE_DOUBLE}Underline double${E_RESET}"
-  echo "${E_ATTR_UNDERLINE_DOT}Underline dotted${E_RESET}"
-  echo "${E_ATTR_UNDERLINE_DASH}Underline dashed${E_RESET}"
+  echo "${E_UNDERLINE}Underline normal${E_RESET}"
+  echo "${E_UNDERLINE_CURLY}Underline curly${E_RESET}"
+  echo "${E_UNDERLINE_DOUBLE}Underline double${E_RESET}"
+  echo "${E_UNDERLINE_DOT}Underline dotted${E_RESET}"
+  echo "${E_UNDERLINE_DASH}Underline dashed${E_RESET}"
 
-  echo "${E_ATTR_ITALIC}Italic${E_RESET}"
-  echo "${E_ATTR_FRAKTUR}Gothic${E_RESET}"
-  echo "${E_ATTR_FRAMED}Framed${E_RESET}"
-  echo "${E_ATTR_OVERLINED}Overlined${E_RESET}"
-  echo "${E_ATTR_SUBSCRIPT}Subscript${E_RESET}"
-  echo "${E_ATTR_SUPERSCRIPT}Superscript${E_RESET}"
-  echo "${E_ATTR_BLINK}Slow blink${E_RESET}"
-  echo "${E_ATTR_RAPID_BLINK}Rapid blink${E_RESET}"
-  echo "${E_ATTR_CROSSED}Crossed${E_RESET}"
+  echo "${E_ITALIC}Italic${E_RESET}"
+  echo "${E_FRAKTUR}Gothic${E_RESET}"
+  echo "${E_FRAMED}Framed${E_RESET}"
+  echo "${E_OVERLINED}Overlined${E_RESET}"
+  echo "${E_SUBSCRIPT}Subscript${E_RESET}"
+  echo "${E_SUPERSCRIPT}Superscript${E_RESET}"
+  echo "${E_BLINK}Slow blink${E_RESET}"
+  echo "${E_RAPID_BLINK}Rapid blink${E_RESET}"
+  echo "${E_CROSSED}Crossed${E_RESET}"
 }
 
 print_attr() {
@@ -257,7 +257,7 @@ print_attr() {
 
 print_attr2() {
   eval "ATTR=\$${1}"
-  printf "${E_ATTR_UNDERLINE}${ATTR}%-30s ${E_FG_GREEN}%-20s${E_RESET}\n" "${2}${E_RESET}" "${1}"
+  printf "${E_UNDERLINE}${ATTR}%-30s ${E_FG_GREEN}%-20s${E_RESET}\n" "${2}${E_RESET}" "${1}"
 }
 
 attr() { ##D demonstrate font attributes
@@ -265,27 +265,27 @@ attr() { ##D demonstrate font attributes
   bpTextLine "Font style attributes"
   echo
   print_attr "E_RESET" "Normal text"
-  print_attr "E_ATTR_BOLD" "Bold text"
-  print_attr "E_ATTR_DIM" "Dim text"
-  print_attr "E_ATTR_ITALIC" "Italic text"
-  print_attr "E_ATTR_REVERSE" "Reverse text"
-  print_attr "E_ATTR_BLINK" "Blink text"
-  print_attr "E_ATTR_UNDERLINE" "Underline text"
-  print_attr "E_ATTR_CROSSED" "Crossed text"
+  print_attr "E_BOLD" "Bold text"
+  print_attr "E_DIM" "Dim text"
+  print_attr "E_ITALIC" "Italic text"
+  print_attr "E_REVERSE" "Reverse text"
+  print_attr "E_BLINK" "Blink text"
+  print_attr "E_UNDERLINE" "Underline text"
+  print_attr "E_CROSSED" "Crossed text"
   echo
   bpTextLine "Extended font style attributes(limited support)"
   echo
-  print_attr "E_ATTR_FRACTUR" "Fractur/gothic"
-  print_attr "E_ATTR_UNDERLINE_CURLY" "Underline curly"
-  print_attr "E_ATTR_UNDERLINE_DOUBLE" "Underline double"
-  print_attr "E_ATTR_UNDERLINE_DOT" "Underline dotted"
-  print_attr "E_ATTR_UNDERLINE_DASH" "Underline dashed"
-  print_attr "E_ATTR_SUBSCRIPT" "Subscript"
-  print_attr "E_ATTR_SUPERSCRIPT" "Superscript"
-  print_attr "E_ATTR_RAPID_BLINK" "Rapid blink"
-  print_attr "E_ATTR_FRAME" "Frame"
+  print_attr "E_FRACTUR" "Fractur/gothic"
+  print_attr "E_UNDERLINE_CURLY" "Underline curly"
+  print_attr "E_UNDERLINE_DOUBLE" "Underline double"
+  print_attr "E_UNDERLINE_DOT" "Underline dotted"
+  print_attr "E_UNDERLINE_DASH" "Underline dashed"
+  print_attr "E_SUBSCRIPT" "Subscript"
+  print_attr "E_SUPERSCRIPT" "Superscript"
+  print_attr "E_RAPID_BLINK" "Rapid blink"
+  print_attr "E_FRAME" "Frame"
   echo
-  print_attr "E_ATTR_OVERLINED" "Overlined"
+  print_attr "E_OVERLINED" "Overlined"
 
   echo
   bpTextLine "Foreground color attributes"
@@ -375,46 +375,43 @@ color() { ##D Standard 16 colors
   echo
 }
 
-
 icons_() { ## Unicode icons
   for a in {0..31}; do
-		hex1=$( printf "%s%02x" "$1" $a)
-		hex2=$( printf "%s%02x" "$1" $(($a + 32)) )
-		hex3=$( printf "%s%02x" "$1" $(($a + 64)) )
-		hex4=$( printf "%s%02x" "$1" $(($a + 96)) )
-		hex5=$( printf "%s%02x" "$1" $(($a + 128)) )
-		hex6=$( printf "%s%02x" "$1" $(($a + 160)) )
-		hex7=$( printf "%s%02x" "$1" $(($a + 192)) )
-		hex8=$( printf "%s%02x" "$1" $(($a + 224)) )
-		echo -e " $hex1  \u${hex1}    $hex2  \u${hex2}    $hex3  \u${hex3}   $hex4  \u${hex4}   $hex5  \u${hex5}   $hex6  \u${hex6}   $hex7  \u${hex7}   $hex8  \u${hex8}"
-#		printf "%s  %s   %s  \n" "$hex1" "${hex1}" "$hex2"
-	done
+    hex1=$(printf "%s%02x" "$1" $a)
+    hex2=$(printf "%s%02x" "$1" $(($a + 32)))
+    hex3=$(printf "%s%02x" "$1" $(($a + 64)))
+    hex4=$(printf "%s%02x" "$1" $(($a + 96)))
+    hex5=$(printf "%s%02x" "$1" $(($a + 128)))
+    hex6=$(printf "%s%02x" "$1" $(($a + 160)))
+    hex7=$(printf "%s%02x" "$1" $(($a + 192)))
+    hex8=$(printf "%s%02x" "$1" $(($a + 224)))
+    echo -e " $hex1  \u${hex1}    $hex2  \u${hex2}    $hex3  \u${hex3}   $hex4  \u${hex4}   $hex5  \u${hex5}   $hex6  \u${hex6}   $hex7  \u${hex7}   $hex8  \u${hex8}"
+    #		printf "%s  %s   %s  \n" "$hex1" "${hex1}" "$hex2"
+  done
 
 }
 
 icons() { ##D Unicode icons
   icons_ "26"
-	echo
-	icons_ "27"	
-	echo
-	
-	# Emoticons
-	icons_ "1F6"
   echo
-	
-	
-	# Enclosed characters
-	icons_ "24"
+  icons_ "27"
   echo
 
-
-	# Flags
-	icons_ "1F1"
+  # Emoticons
+  icons_ "1F6"
   echo
 
-	icons_ "1F5"
+  # Enclosed characters
+  icons_ "24"
   echo
-	
+
+  # Flags
+  icons_ "1F1"
+  echo
+
+  icons_ "1F5"
+  echo
+
 }
 
 ##- Test of print messages
@@ -531,9 +528,6 @@ s2a() { ##D String to array
 
 }
 
-
-
-
 #xx() {
 
 # OPTS=$(getopt --longoptions idebug -- "$@")
@@ -597,13 +591,12 @@ bpb() { ##D Print banner
 
 }
 
-
 nl() { ##D New line test
 
   printf "New line test (NL)\n"
-	printf "Carriage return test(CR)\r"
- 
-  printf  "Whittnes row\n"
+  printf "Carriage return test(CR)\r"
+
+  printf "Whittnes row\n"
 }
 
 #---------------------------------------------------------------------
@@ -815,23 +808,23 @@ E_UL_BR_CYAN=$'\e[58;5;14m'    # Bright Cyan
 E_UL_WHITE=$'\e[58;5;15m'      # White
 
 # ANSI Text attributes
-E_ATTR_BOLD=$'\e[1m'               # Bold text
-E_ATTR_DIM=$'\e[2m'                # Dim(low intensity) text
-E_ATTR_ITALIC=$'\e[3m'             # Italic text
-E_ATTR_UNDERLINE=$'\e[4m'          # Underlined text
-E_ATTR_UNDERLINE_DOUBLE=$'\e[4:2m' # Double underline (limited support)
-E_ATTR_UNDERLINE_CURLY=$'\e[4:3m'  # Curly underline (limited support)
-E_ATTR_UNDERLINE_DOT=$'\e[4:4m'    # Dotted underline (limited support)
-E_ATTR_UNDERLINE_DASH=$'\e[4:5m'   # Dashed underline (limited support)
-E_ATTR_BLINK=$'\e[5m'              # Blinking text
-E_ATTR_RAPID_BLINK=$'\e[6m'        # Rapid blink (Limited support)
-E_ATTR_REVERSE=$'\e[7m'            # Reverse color
-E_ATTR_CROSSED=$'\e[9m'            # Crossed over text
-E_ATTR_FRAKTUR=$'\e[20m'           # Gothic (limited support)
-E_ATTR_FRAMED=$'\e[51m'            # Framed (limited support)
-E_ATTR_OVERLINED=$'\e[53m'         # Overlined text
-E_ATTR_SUPERSCRIPT=$'\e[73m'       # Superscript text (limited support)
-E_ATTR_SUBSCRIPT=$'\e[74m'         # Subscript text (limited support)
+E_BOLD=$'\e[1m'               # Bold text
+E_DIM=$'\e[2m'                # Dim(low intensity) text
+E_ITALIC=$'\e[3m'             # Italic text
+E_UNDERLINE=$'\e[4m'          # Underlined text
+E_UNDERLINE_DOUBLE=$'\e[4:2m' # Double underline (limited support)
+E_UNDERLINE_CURLY=$'\e[4:3m'  # Curly underline (limited support)
+E_UNDERLINE_DOT=$'\e[4:4m'    # Dotted underline (limited support)
+E_UNDERLINE_DASH=$'\e[4:5m'   # Dashed underline (limited support)
+E_BLINK=$'\e[5m'              # Blinking text
+E_RAPID_BLINK=$'\e[6m'        # Rapid blink (Limited support)
+E_REVERSE=$'\e[7m'            # Reverse color
+E_CROSSED=$'\e[9m'            # Crossed over text
+E_FRAKTUR=$'\e[20m'           # Gothic (limited support)
+E_FRAMED=$'\e[51m'            # Framed (limited support)
+E_OVERLINED=$'\e[53m'         # Overlined text
+E_SUPERSCRIPT=$'\e[73m'       # Superscript text (limited support)
+E_SUBSCRIPT=$'\e[74m'         # Subscript text (limited support)
 
 # ANSI cursor operations
 #
