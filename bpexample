@@ -243,7 +243,7 @@ print_bar() {
   for jx in $(seq 1 $((${1} - ${2}))); do
     echo -n " "
   done
-  echo "] ${2}"
+  echo -n "] ${2}"
 }
 
 bar() { ##D print a testbar (ANSI)
@@ -252,7 +252,8 @@ bar() { ##D print a testbar (ANSI)
   for i in {1..60}; do
     sleep 0.03
     print_bar 60 "$i"
-    echo -e "$E_CUR_RETURN $E_CUR_UP"
+    #echo -e "$E_CUR_RETURN $E_CUR_UP"
+    echo -en "$E_CUR_RETURN$E_CUR_DOWN"
   done
   echo -e "$E_SHOW"
 }
@@ -263,7 +264,7 @@ barcr() { ##D print a testbar using carriage return(ANSI)
   for i in {1..60}; do
     sleep 0.03
     print_bar 60 "$i"
-    echo -e "\r${E_CUR_UP}"
+    echo -en "\r"
   done
   echo -e "$E_SHOW"
 }
@@ -551,29 +552,29 @@ bpReadSelect() {
   len=${#arr[@]}
 
   while [ true ]; do
-    echo $1
+    echo "$1"
 
     i=2
-    while [ $i -lt $len ]; do
+    while [ "$i" -lt "$len" ]; do
       choice=${arr[$i]}
-      let i++
+      ((i++))
       desc=${arr[$i]}
-      let i++
+      ((i++))
       bpPrintInfo "${choice}) " "${desc}"
     done
 
     ans=$(bpRead "Choice" "${2}")
 
     i=2
-    while [ $i -lt $len ]; do
+    while [ "$i" -lt "$len" ]; do
       choice=${arr[$i]}
       if [ "${choice}" == "${ans}" ]; then
-        echo $ans
+        echo "$ans"
         return 0
 
       fi
-      let i++
-      let i++
+      ((i++))
+      ((i++))
     done
   done
 }
@@ -755,12 +756,12 @@ BUILDDIR="build"
 #
 archive() { ##D Make a tar archive of the source code
   DT=$(date +"%Y%m%d-%H%M%S")
-  bpMkDir ${ARCHIVEDIR}
+  bpMkDir "${ARCHIVEDIR}"
   tar -cvzf "${ARCHIVEDIR}/${1}_${DT}.tar.gz" ./* \
-    --exclude=${ARCHIVEDIR} \
-    --exclude=${BACKUP_DIR} \
-    --exclude=${OUTDIR} \
-    --exclude=${BUILDDIR} \
+    --exclude="${ARCHIVEDIR}" \
+    --exclude="${BACKUP_DIR}" \
+    --exclude="${OUTDIR}" \
+    --exclude="${BUILDDIR}" \
     --exclude='*.a' \
     --exclude='*.o' \
     --exclude='*.ko' \
@@ -796,24 +797,24 @@ BACKUPS=100
 backup() { ##D Make an incremental backup
   bpMkDir "${BACKUP_DIR}"
   # remove oldest backup
-  bpRm ${BACKUP_DIR}/backup_${BACKUPS}
+  bpRm "${BACKUP_DIR}/backup_${BACKUPS}"
   # rotate backups
   for ((x = BACKUPS; x > 0; x--)); do
     bdir=${BACKUP_DIR}/backup_$((x - 1))
     # check if directory exist before renameing  it
-    if [ -d ${bdir} ]; then
-      mv -f ${bdir} ${BACKUP_DIR}/backup_${x}
+    if [ -d "${bdir}" ]; then
+      mv -f "${bdir}" "${BACKUP_DIR}/backup_${x}"
     fi
   done
   rsync --archive \
     --delete \
     --relative \
-    --exclude=${BACKUP_DIR} \
-    --exclude=${ARCHIVEDIR} \
-    --exclude=${OUTDIR} \
+    --exclude="${BACKUP_DIR}" \
+    --exclude="${ARCHIVEDIR}" \
+    --exclude="${OUTDIR}" \
     --link-dest="${PWD}/${BACKUP_DIR}/backup_1" \
     . \
-    ${BACKUP_DIR}/backup_0
+    "${BACKUP_DIR}/backup_0"
 }
 
 backupfile() { ##D Backup file
@@ -931,7 +932,7 @@ bpCallStack() { ##I Print out BASH call stack
   bpTextLine "Call stack"
   echo
   local frame=0
-  while caller $frame | sed -r -e "s/[0-9]*/${BP_C_VALUE}&${E_RESET}/"; do
+  while caller "$frame" | sed -r -e "s/[0-9]*/${BP_C_VALUE}&${E_RESET}/"; do
     ((frame++))
   done
   echo "$*"
