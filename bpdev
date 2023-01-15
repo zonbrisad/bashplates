@@ -71,6 +71,62 @@ ea() { ##D Edit addon
   bpEdit "${BP_ADDONS}/${2}.bpaddon"
 }
 
+####BPAddonTemplateBegin####
+
+ADDON_NAME="__NAME__"
+ADDON_VER=""
+ADDON_LINK=""
+ADDON_DESC="__DESC__"
+ADDON_AUTHOR="__AUTHOR__"
+ADDON_DATE="__DATE__"
+
+###BPAddonBegin###
+
+###BPAddonEnd###
+
+getname() { ##D Get addon name
+  echo "${ADDON_NAME}"
+}
+
+getversion() { ##D Get addon version
+  echo "${ADDON_VERSION}"
+}
+
+getdesc() { ##D Get addon description
+  echo "${ADDON_DESC}"
+}
+
+getaddon() { ##D Get addon
+  #  cat $0 | grep -A 1000 -m 1 "###BPAddonBegin###" | grep -B 1000 -m 1 "###BPAddonEnd###" | grep -v "###BPAddonBegin###" | grep -v  "###BPAddonEnd###"
+  bpGetSection "${0}" "###BPAddonBegin###" "###BPAddonEnd###"
+}
+
+info() { ##D Get addon information
+  bpTextLine "Addon information"
+  bpPrintInfo "Name" "$ADDON_NAME"
+  bpPrintInfo "Description" "$ADDON_DESC"
+  bpPrintInfo "Version" "$ADDON_VER"
+  bpPrintInfo "Link" "$ADDON_LINK"
+  bpLine
+}
+
+#
+# $1 file
+# $2 start match
+# $3 ending match
+#
+bpGetSection() { ##
+  grep -A 10000 -m 1 "$2" <"$1" | grep -B 10000 -m 1 "$3" | grep -v "$2" | grep -v "$3"
+}
+
+####BPAddonTemplateEnd####
+
+##- Addon template
+
+getaddontemp() { ##D Get addon template
+  bpGetSection "${0}" "####BPAddonTemplateBegin####" "####BPAddonTemplateEnd####"
+}
+
 ##- En named line
 
 bpIsFunction() { ##C IHELP Check if and identifier is declared as a function
@@ -260,6 +316,16 @@ print_attr2() {
   printf "${E_UNDERLINE}${ATTR}%-30s ${E_FG_GREEN}%-20s${E_RESET}\n" "${2}${E_RESET}" "${1}"
 }
 
+E_FONT1=$'\e[11m' # Font 1
+E_FONT2=$'\e[12m' # Font 2
+E_FONT3=$'\e[13m' # Font 3
+E_FONT4=$'\e[14m' # Font 4
+E_FONT5=$'\e[15m' # Font 5
+E_FONT6=$'\e[16m' # Font 6
+E_FONT7=$'\e[17m' # Font 7
+E_FONT8=$'\e[18m' # Font 8
+E_FONT9=$'\e[19m' # Font 9
+
 attr() { ##D demonstrate font attributes
   echo
   bpTextLine "Font style attributes"
@@ -286,6 +352,19 @@ attr() { ##D demonstrate font attributes
   print_attr "E_FRAME" "Frame"
   echo
   print_attr "E_OVERLINED" "Overlined"
+
+  echo
+  bpTextLine "Alternative fonts"
+  echo
+  print_attr "E_FONT1" "Font 1"
+  print_attr "E_FONT2" "Font 2"
+  print_attr "E_FONT3" "Font 3"
+  print_attr "E_FONT4" "Font 4"
+  print_attr "E_FONT5" "Font 5"
+  print_attr "E_FONT6" "Font 6"
+  print_attr "E_FONT7" "Font 7"
+  print_attr "E_FONT8" "Font 8"
+  print_attr "E_FONT9" "Font 9"
 
   echo
   bpTextLine "Foreground color attributes"
@@ -591,7 +670,7 @@ bpb() { ##D Print banner
     echo -e "$x"
   done
 
-#  echo ${bp3[@]}
+  #  echo ${bp3[@]}
 
 }
 

@@ -270,17 +270,16 @@ barcr() { ##D print a testbar using carriage return(ANSI)
 }
 
 shade() { ##D Shade demo (256 color terminal required)
-  echo -en '\033]1 Kalle \007'
-  echo
+  #echo -en '\033]1 Kalle \007'
+  #echo
   bpTextLine "B/W shading"
-  echo
-  echo
-  echo -e "$E_CUR_RETURN"
   echo -en "$E_HIDE"
+  echo
+  echo -en "$E_CUR_RETURN"
   for i in {232..255} {255..232}; do
     sleep 0.05
     printf "\x1b[38;5;%sm _____ Shading text _____ ${E_RESET}" "$i"
-    echo -e "$E_CUR_RETURN"
+    echo -en "$E_CUR_RETURN$E_CUR_DOWN"
   done
   echo -e "$E_SHOW"
 }
@@ -380,13 +379,13 @@ smallFlag() {
 }
 
 mediumFlag() {
-  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_RESET}"
-  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_RESET}"
-  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_RESET}"
-  echo -e "${FLAG_YELLOW}                         ${E_RESET}"
-  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_RESET}"
-  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_RESET}"
-  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}               ${E_RESET}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}              ${E_RESET}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}              ${E_RESET}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}              ${E_RESET}"
+  echo -e "${FLAG_YELLOW}                        ${E_RESET}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}              ${E_RESET}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}              ${E_RESET}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}              ${E_RESET}"
 }
 
 largeFlag() {
@@ -405,21 +404,21 @@ largeFlag() {
 }
 
 hugeFlag() {
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
-  echo -e "${FLAG_YELLOW}                                               ${E_RESET}"
-  echo -e "${FLAG_YELLOW}                                               ${E_RESET}"
-  echo -e "${FLAG_YELLOW}                                               ${E_RESET}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
-  echo -e "${FLAG_BLUE}              ${FLAG_YELLOW}      ${FLAG_BLUE}                           ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_YELLOW}                                                 ${E_RESET}"
+  echo -e "${FLAG_YELLOW}                                                 ${E_RESET}"
+  echo -e "${FLAG_YELLOW}                                                 ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
 }
 
 FLAG_RED=$'\e[41m'   # Red
