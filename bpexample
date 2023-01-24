@@ -841,7 +841,7 @@ bpInitSettings() {
   BP_DESC="Examples of how to use bashplates."
 
   ##V logfile (uncomment to use logfile)
-  BP_LOGFILE=${BP_SELF_DIR}/${BP_NAME}.log
+  BP_LOGFILE=${BP_SELF_DIR}/${BP_SELF}.log
 
   ##V Lock file (uncomment to use lock file feature )
   BP_LOCK_FILE=/tmp/${BP_NAME}.lock
