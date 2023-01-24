@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck disable=2034
+# shellcheck disable=2317
 # shellcheck disable=1090
 #---------------------------------------------------------------------
 #
@@ -185,7 +186,7 @@ bpPrintList() { ##I Print items in selection list
   arr=("${@}")
   len=${#arr[@]}
   i=1
-  while [ $i -lt "$len" ]; do
+  while [ "$i" -lt "$len" ]; do
     key=${arr[$i]}
     ((i++))
     val=${arr[$i]}
@@ -209,7 +210,7 @@ bpSelectFromList() { ##I Select from list
     arr=("${@}")
     len=${#arr[@]}
     i=1
-    while [ $i -lt "$len" ]; do
+    while [ "$i" -lt "$len" ]; do
       key=${arr[$i]}
       ((i++))
       val=${arr[$i]}
@@ -232,9 +233,9 @@ bpPrintChooseList() {
   arr=("${@}")
   len=${#arr[@]}
 
-  echo ${arr[0]}
+  echo "${arr[0]}"
   i=1
-  while [ $i -lt "$len" ]; do
+  while [ "$i" -lt "$len" ]; do
     desc=${arr[$i]}
     printf "${BP_C_ID}  %-5.24s${E_RESET} ${BP_C_DESCRIPTION}%s${E_RESET}\n" "${i}" "$desc"
     ((i++))
@@ -272,7 +273,7 @@ bpDictKey() { ##I aa
   arr=("${@}")
   len=${#arr[@]}
   i=0
-  while [ $i -lt "$len" ]; do
+  while [ "$i" -lt "$len" ]; do
     alt=${arr[$i]}
     ((i++))
     ((i++))
@@ -456,15 +457,15 @@ color() { ##D Standard 16 colors
 
 icons_() { ## Unicode icons
   for a in {0..31}; do
-    hex1=$(printf "%s%02x" "$1" $a)
-    hex2=$(printf "%s%02x" "$1" $(($a + 32)))
-    hex3=$(printf "%s%02x" "$1" $(($a + 64)))
-    hex4=$(printf "%s%02x" "$1" $(($a + 96)))
-    hex5=$(printf "%s%02x" "$1" $(($a + 128)))
-    hex6=$(printf "%s%02x" "$1" $(($a + 160)))
-    hex7=$(printf "%s%02x" "$1" $(($a + 192)))
-    hex8=$(printf "%s%02x" "$1" $(($a + 224)))
-    echo -e " $hex1  \u${hex1}    $hex2  \u${hex2}    $hex3  \u${hex3}   $hex4  \u${hex4}   $hex5  \u${hex5}   $hex6  \u${hex6}   $hex7  \u${hex7}   $hex8  \u${hex8}"
+    hex1=$(printf "%s%02x" "$1" "$a")
+    hex2=$(printf "%s%02x" "$1" $(("$a" + 32)))
+    hex3=$(printf "%s%02x" "$1" $(("$a" + 64)))
+    hex4=$(printf "%s%02x" "$1" $(("$a" + 96)))
+    hex5=$(printf "%s%02x" "$1" $(("$a" + 128)))
+    hex6=$(printf "%s%02x" "$1" $(("$a" + 160)))
+    hex7=$(printf "%s%02x" "$1" $(("$a" + 192)))
+    hex8=$(printf "%s%02x" "$1" $(("$a" + 224)))
+    echo -e " ${hex1}  \u${hex1}    $hex2  \u${hex2}    $hex3  \u${hex3}   $hex4  \u${hex4}   $hex5  \u${hex5}   $hex6  \u${hex6}   $hex7  \u${hex7}   $hex8  \u${hex8}"
     #		printf "%s  %s   %s  \n" "$hex1" "${hex1}" "$hex2"
   done
 
@@ -600,7 +601,7 @@ s2a() { ##D String to array
   #X="Rad 1|Rad 2|Rad 3"
   IFS=$'\n'
   #IFS=$'|'
-  read -ra XX <<<$X
+  read -ra XX <<<"$X"
   for x in "${XX[@]}"; do
     echo "$x"
   done
@@ -1887,6 +1888,16 @@ iinfo() { ##I Show information about script
   settings
 }
 
+#
+# Filter out function from script file
+#
+# $1 file
+# $2 function
+#
+bpGetFunction() {
+  grep --no-filename -A 60 "$1" -e "${2}()" | grep -B 60 -m 1 -x "}"
+}
+
 iview() { ##I View example
   # Singe command documentation
   if [ "$2" == "" ]; then
@@ -1895,7 +1906,8 @@ iview() { ##I View example
 
   echo
   if bpHasCmd batcat; then # Use batcat, if available, to view function
-    grep --no-filename -A 60 "$0" -e "${2}()" | grep -B 60 -m 1 -x "}" | batcat --language bash --decorations never
+    bpGetFunction "$0" "${2}" | batcat --language bash --decorations never
+    #grep --no-filename -A 60 "$0" -e "${2}()" | grep -B 60 -m 1 -x "}" | batcat --language bash --decorations never
   else
     grep --no-filename -A 60 "$0" -e "${2}()" | grep -B 60 -m 1 -x "}" |
       sed -e "s/#.*/\\${BP_C_COMMENT}&\\${E_RESET}/" \
