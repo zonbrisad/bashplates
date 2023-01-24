@@ -436,7 +436,7 @@ color() { ##D Standard 16 colors
     eval "FG=\$$fc"
     for bc in "${BCOLORS[@]}"; do
       eval "BG=\$$bc"
-      printf "${FG}${BG} %-15s${E_RESET}" "$fc"
+      printf "${FG}${BG}%-10s${E_RESET}" "${fc:5}"
     done
     echo
   done
@@ -447,7 +447,7 @@ color() { ##D Standard 16 colors
     eval "FG=\$$fc"
     for bc in "${BCOLORS_BR[@]}"; do
       eval "BG=\$$bc"
-      printf "${FG}${BG} %-15s${E_RESET}" "$fc"
+      printf "${FG}${BG}%-10s${E_RESET}" "${fc:5}"
     done
     echo
   done
