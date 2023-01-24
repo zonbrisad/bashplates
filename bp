@@ -117,6 +117,17 @@ news() { ##D Create a new simple bashplate project
 }
 
 
+newi() { ##C BP_DEV Create new init script
+  name=$(bpRead "Enter name of new ${t}" "")
+	script="${name}_init"
+#	bpCp "${BP_TEMPLATES}/bashplate-init" "${script}"
+	cat "${BP_TEMPLATES}/bashplate-init">>"${script}"
+	desc=$(bpRead "Enter description")
+	bpReplace "${script}" "__DESC__" "${desc}"
+	chmod +x "${script}"
+	bpOk "Created file $script"
+}
+
 
 ##- Setup
 
