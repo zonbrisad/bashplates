@@ -704,7 +704,7 @@ bpInitSettings() {
   BP_DESC="Sandbox for testing new bashplate features."
 
   ##V logfile (uncomment to use logfile)
-  #BP_LOGFILE=${BP_SELF_DIR}/${BP_SELF}.log
+  BP_LOGFILE=${BP_SELF_DIR}/${BP_SELF}.log
 
   ##V Lock file (uncomment to use lock file feature )
   #BP_LOCK_FILE=/tmp/${BP_SELF}.lock
@@ -939,6 +939,8 @@ BP_C_PATH="${E_FG_GREEN}"
 BP_C_URL_SCHEME="${E_FG_DARKGRAY}"
 # BP_C_URL_USER=""
 # BP_C_URL_HOST=""
+BP_C_TIME="${E_FG_BR_MAGENTA}"
+BP_C_DATE="${E_FG_MAGENTA}"
 
 # Shellscript colorize colors
 BP_C_RESERVED="${E_FG_RED}"
@@ -1608,8 +1610,8 @@ log() { ##C BP_LOGFILE View logfile
         -e "s|\[Warn\]|\[\\${BP_C_WARNING}Warn\\${E_RESET}\]|" \
         -e "s|\[Erro\]|\[\\${BP_C_ERROR}Erro\\${E_RESET}\]|" \
         -e "s|\[ Ok \]|\[\\${BP_C_OK} Ok \\${E_RESET}\]|" \
-        -e "s/[-0-9]+/\\${E_FG_GREEN}&\\${E_RESET}/1" \
-        -e "s/[:0-9]+/\\${E_FG_BR_GREEN}&\\${E_RESET}/6" \
+        -e "s/[-0-9]+/\\${BP_C_DATE}&\\${E_RESET}/1" \
+        -e "s/[:0-9]+/\\${BP_C_TIME}&\\${E_RESET}/6" \
         -e "s|\[Crit\]|\[\\${E_BG_RED}\\${E_FG_WHITE}Crit\\${E_RESET}\]|" <"${BP_LOGFILE}")
 
       echo -e "$D"

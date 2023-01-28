@@ -280,22 +280,23 @@ To montor the logfile simply enter the "mlog" command.
 [HISTORY.md](/doc/HISTORY.md)
 
 ## TODO
-- Add verbose option
-- Add quiet option
-- Add color suppression option
-- Add warning sign to bpReadYN question
-- Add override editor for "ied" command
-- Add trim string function
-- Use logrotate for logs
-- Mail feature
-- dictionary functions
-- Select from list function
-- Module system
-- Merge bpLine and bpTextLine
-- Reformat messages to "straigt columns"
-- rename bpRead to bpReadStr(ing)
-- multi column output
-- Fix bpEscapeFilter
+- [ ] Add verbose option
+- [ ] Add quiet option
+- [ ] Add color suppression option
+- [ ] Add warning sign to bpReadYN question
+- [X] Add override editor for "ied" command
+- [ ] Add trim string function
+- [ ] Use logrotate for logs
+- [ ] Mail feature
+- [ ] dictionary functions
+- [ ] Select from list function
+- [ ] Module system
+- [ ] Merge bpLine and bpTextLine
+- [ ] Reformat messages to "straigt columns"
+- [ ] rename bpRead to bpReadStr(ing)
+- [ ] multi column output
+- [ ] Fix bpEscapeFilter
+- [ ] Change color of time and date in log view command from green to something else
 
 
 ## Sugestions
