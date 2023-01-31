@@ -78,6 +78,19 @@ alias bpd='cd ${BP_SCRIPT_PATH}'
 
 #alias bplsd="bprc lsd"
 
+_bp_completions() {
+  COMPREPLY=$(bp help)
+}
+
+_bpdev_completions() {
+  COMPREPLY=$(bpdev completion)
+}
+
+#complete -F _bp_completions bp
+#complete -F _bpdev_completions bpdev
+
+
+
 
 
 # Indicated that initscript was run

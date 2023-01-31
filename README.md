@@ -132,7 +132,6 @@ $ bp setemail "john.doe@foo.bar"
 The bp command is the main command that is used for creating new scripts, make sure it is working. Se Install section if not.
 
 ### Create new script
-
 To create a new script type the command bellow.  The new script will
 be created in the directory you are currently standing in.
 
@@ -296,7 +295,8 @@ To montor the logfile simply enter the "mlog" command.
 - [ ] rename bpRead to bpReadStr(ing)
 - [ ] multi column output
 - [ ] Fix bpEscapeFilter
-- [ ] Change color of time and date in log view command from green to something else
+- [ ] Change color of time and date in log view command from green/dark green to something else t.ex. magenta
+- [ ] Add automatic completions 
 
 
 ## Sugestions
@@ -312,6 +312,7 @@ To montor the logfile simply enter the "mlog" command.
 [BASH arithmetics](https://www.shell-tips.com/bash/math-arithmetic-calculation/#gsc.tab=0)
 [Best Practices for Writing Bash Scripts](http://kvz.io/blog/2013/11/21/bash-best-practices/)
 [What are the best practices for writing shell scripts?](https://www.quora.com/What-are-the-best-practices-for-writing-shell-scripts)
+[Command completion](https://opensource.com/article/18/3/creating-bash-completion-script)
 
 # Example scripts
 

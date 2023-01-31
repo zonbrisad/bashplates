@@ -309,12 +309,12 @@ underline() { ##D Test of extended underline attributes
 
 print_attr() {
   eval "ATTR=\$${1}"
-  printf "${ATTR}%-30s ${E_FG_GREEN}%-20s${E_RESET}\n" "${2}${E_RESET}" "${1}"
+  printf "${ATTR}%-30s ${E_GREEN}%-20s${E_RESET}\n" "${2}${E_RESET}" "${1}"
 }
 
 print_attr2() {
   eval "ATTR=\$${1}"
-  printf "${E_UNDERLINE}${ATTR}%-30s ${E_FG_GREEN}%-20s${E_RESET}\n" "${2}${E_RESET}" "${1}"
+  printf "${E_UNDERLINE}${ATTR}%-30s ${E_GREEN}%-20s${E_RESET}\n" "${2}${E_RESET}" "${1}"
 }
 
 E_FONT1=$'\e[11m' # Font 1
@@ -370,21 +370,21 @@ attr() { ##D demonstrate font attributes
   echo
   bpTextLine "Foreground color attributes"
   echo
-  print_attr "E_FG_RED" "Foreground red"
-  print_attr "E_FG_YELLOW" "Foreground yellow"
-  print_attr "E_FG_GREEN" "Foreground green"
-  print_attr "E_FG_BLUE" "Foreground blue"
-  print_attr "E_FG_CYAN" "Foreground cyan"
-  print_attr "E_FG_MAGENTA" "Foreground magenta"
-  print_attr "E_FG_DARKGRAY" "Foreground dark gray"
-  print_attr "E_FG_BR_RED" "Foreground red"
-  print_attr "E_FG_BR_YELLOW" "Foreground yellow"
-  print_attr "E_FG_BR_GREEN" "Foreground green"
-  print_attr "E_FG_BR_BLUE" "Foreground blue"
-  print_attr "E_FG_BR_CYAN" "Foreground cyan"
-  print_attr "E_FG_BR_MAGENTA" "Foreground magenta"
-  print_attr "E_FG_GRAY" "Foreground gray"
-  print_attr "E_FG_WHITE" "Foreground white"
+  print_attr "E_RED" "Foreground red"
+  print_attr "E_YELLOW" "Foreground yellow"
+  print_attr "E_GREEN" "Foreground green"
+  print_attr "E_BLUE" "Foreground blue"
+  print_attr "E_CYAN" "Foreground cyan"
+  print_attr "E_MAGENTA" "Foreground magenta"
+  print_attr "E_DARKGRAY" "Foreground dark gray"
+  print_attr "E_BR_RED" "Foreground red"
+  print_attr "E_BR_YELLOW" "Foreground yellow"
+  print_attr "E_BR_GREEN" "Foreground green"
+  print_attr "E_BR_BLUE" "Foreground blue"
+  print_attr "E_BR_CYAN" "Foreground cyan"
+  print_attr "E_BR_MAGENTA" "Foreground magenta"
+  print_attr "E_GRAY" "Foreground gray"
+  print_attr "E_WHITE" "Foreground white"
   echo
   bpTextLine "Background color attributes"
   echo
@@ -425,7 +425,7 @@ attr() { ##D demonstrate font attributes
 }
 
 color() { ##D Standard 16 colors
-  FCOLORS=(E_FG_BLACK E_FG_RED E_FG_GREEN E_FG_YELLOW E_FG_BLUE E_FG_MAGENTA E_FG_CYAN E_FG_GRAY E_FG_DARKGRAY E_FG_BR_RED E_FG_BR_GREEN E_FG_BR_YELLOW E_FG_BR_BLUE E_FG_BR_MAGENTA E_FG_BR_CYAN E_FG_WHITE)
+  FCOLORS=(E_BLACK E_RED E_GREEN E_YELLOW E_BLUE E_MAGENTA E_CYAN E_GRAY E_DARKGRAY E_BR_RED E_BR_GREEN E_BR_YELLOW E_BR_BLUE E_BR_MAGENTA E_BR_CYAN E_WHITE)
   BCOLORS=(E_BG_BLACK E_BG_RED E_BG_GREEN E_BG_YELLOW E_BG_BLUE E_BG_MAGENTA E_BG_CYAN E_BG_WHITE)
   BCOLORS_BR=(E_BG_DARK_GRAY E_BG_BR_RED E_BG_BR_GREEN E_BG_BR_YELLOW E_BG_BR_BLUE E_BG_BR_MAGENTA E_BG_BR_CYAN E_BG_GRAY)
 
@@ -436,7 +436,7 @@ color() { ##D Standard 16 colors
     eval "FG=\$$fc"
     for bc in "${BCOLORS[@]}"; do
       eval "BG=\$$bc"
-      printf "${FG}${BG}%-10s${E_RESET}" "${fc:5}"
+      printf "${FG}${BG}%-10s${E_RESET}" "${fc:2}"
     done
     echo
   done
@@ -447,7 +447,7 @@ color() { ##D Standard 16 colors
     eval "FG=\$$fc"
     for bc in "${BCOLORS_BR[@]}"; do
       eval "BG=\$$bc"
-      printf "${FG}${BG}%-10s${E_RESET}" "${fc:5}"
+      printf "${FG}${BG}%-10s${E_RESET}" "${fc:2}"
     done
     echo
   done
@@ -491,6 +491,17 @@ icons() { ##D Unicode icons
 
   icons_ "1F5"
   echo
+
+}
+
+tdim() { ##D Terminal dimensions
+  while true; do
+    lines=$(tput lines)
+    cols=$(tput cols)
+    echo "  Lines: ${lines} "
+    echo "  Cols: ${cols}   "
+    echo -en $E_CUR_RETURN${E_CUR_RETURN}
+  done
 
 }
 
@@ -545,9 +556,9 @@ msg() { ##D Messsages format test
 
   bpTextLine "Debug color tests"
   echo -e "[${BP_C_DEBUG} Debug  ${E_RESET}] Default color"
-  echo -e "[${E_BG_BR_GREEN}${E_FG_WHITE} Debug  ${E_RESET}] Bright green bg"
-  echo -e "[${E_BG_GREEN}${E_FG_BLACK} Debug  ${E_RESET}] Green bg, black fg"
-  echo -e "[${E_BG_BR_GREEN}${E_FG_BLACK} Debug  ${E_RESET}] Bright green bg, black fg"
+  echo -e "[${E_BG_BR_GREEN}${E_WHITE} Debug  ${E_RESET}] Bright green bg"
+  echo -e "[${E_BG_GREEN}${E_BLACK} Debug  ${E_RESET}] Green bg, black fg"
+  echo -e "[${E_BG_BR_GREEN}${E_BLACK} Debug  ${E_RESET}] Bright green bg, black fg"
 
 }
 
@@ -564,8 +575,8 @@ colorize() { ##D Test F="/use/local/var/log/messages"
   echo "Examples"
   echo
 
-  url "$E_FG_DARKGRAY" "$E_FG_MAGENTA" "$E_FG_GREEN" "$E_FG_CYAN" "${E_FG_GREEN}" "${E_FG_BR_GREEN}"
-  url "$E_FG_DARKGRAY" "$E_FG_BR_MAGENTA" "$E_FG_GREEN" "$E_FG_BR_CYAN" "${E_FG_GREEN}" "${E_FG_BR_GREEN}" "${E_FG_GRAY}"
+  url "$E_DARKGRAY" "$E_MAGENTA" "$E_GREEN" "$E_CYAN" "${E_GREEN}" "${E_BR_GREEN}"
+  url "$E_DARKGRAY" "$E_BR_MAGENTA" "$E_GREEN" "$E_BR_CYAN" "${E_GREEN}" "${E_BR_GREEN}" "${E_GRAY}"
 
   echo
 }
@@ -584,13 +595,13 @@ aa() {
 cst() { ##D Color scheme tests
   aa "Default color scheme"
 
-  BP_C_LINE="${E_FG_DARKGRAY}"
-  BP_C_LINE_TEXT="${E_FG_BR_YELLOW}"
-  BP_C_DESCRIPTION="${E_FG_BR_CYAN}"
-  BP_C_ID="${E_FG_BR_MAGENTA}"
-  BP_C_FILENAME="${E_FG_BR_GREEN}"
-  BP_C_PATH="${E_FG_GREEN}"
-  BP_C_URL_SCHEME="${E_FG_DARKGRAY}"
+  BP_C_LINE="${E_DARKGRAY}"
+  BP_C_LINE_TEXT="${E_BR_YELLOW}"
+  BP_C_DESCRIPTION="${E_BR_CYAN}"
+  BP_C_ID="${E_BR_MAGENTA}"
+  BP_C_FILENAME="${E_BR_GREEN}"
+  BP_C_PATH="${E_GREEN}"
+  BP_C_URL_SCHEME="${E_DARKGRAY}"
 
   aa "Makeplates color scheme"
 
@@ -681,6 +692,41 @@ nl() { ##D New line test
   printf "Carriage return test(CR)\r"
 
   printf "Whittnes row\n"
+}
+
+XXprintCommand() {
+  IFS=$' '
+  read -r -a arr <<<"$1"
+  inf="${arr[*]:3}"
+  #IFS=$'\n'
+  echo -n "${arr[0]} "
+  # bpPrintInfo "${arr[0]}" "${inf}"
+}
+completion() { ##D Print help information
+
+  BP_HELP=1
+
+  IFS=$'\n'
+  SC="$1"
+  # HELP_LINES=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##I' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##-//' -e 'help_line' -e 'printLine')
+  HELP_LINES=$(grep -h -e "##D" -e "##C" "$0" | grep -v -e 'grep' -e '##I' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##-//' -e 'help_line' -e 'printLine')
+  HELP_LINES="${HELP_LINES//()/}"
+
+  for help_line in ${HELP_LINES}; do
+    case "$help_line" in
+    #    *"##-"*) printNamedLine "$help_line" ;;
+    #    *"##C-"*) printCondNamedLine "$help_line" ;;
+    #    *"##CV"*) printCondCommand "$help_line" 1 ;;
+    #    *"##C"*) XXprintCommand "$help_line" 0 ;;
+    *"##D"*) XXprintCommand "$help_line" '##D' ;;
+    *) ;;
+
+    esac
+  done
+
+  if [ -n "$POST_HELP_HOOK" ]; then
+    "${POST_HELP_HOOK}"
+  fi
 }
 
 #---------------------------------------------------------------------
@@ -834,22 +880,22 @@ bpErrorExit() { ##I Safely exit script with a error
 
 # ANSI foreground colors codes
 #
-E_FG_BLACK=$'\e[38:5:0m'       # Black
-E_FG_RED=$'\e[38:5:1m'         # Red
-E_FG_GREEN=$'\e[38:5:2m'       # Green
-E_FG_YELLOW=$'\e[38:5:3m'      # Yellow
-E_FG_BLUE=$'\e[38:5:4m'        # Blue
-E_FG_MAGENTA=$'\e[38:5:5m'     # Magenta
-E_FG_CYAN=$'\e[38:5:6m'        # Cyan
-E_FG_GRAY=$'\e[38:5:7m'        # Gray
-E_FG_DARKGRAY=$'\e[38:5:8m'    # Dark Gray
-E_FG_BR_RED=$'\e[38:5:9m'      # Bright Red
-E_FG_BR_GREEN=$'\e[38:5:10m'   # Bright Green
-E_FG_BR_YELLOW=$'\e[38:5:11m'  # Bright Yellow
-E_FG_BR_BLUE=$'\e[38:5:12m'    # Bright Blue
-E_FG_BR_MAGENTA=$'\e[38:5:13m' # Bright Magenta
-E_FG_BR_CYAN=$'\e[38:5:14m'    # Bright Cyan
-E_FG_WHITE=$'\e[38:5:15m'      # White
+E_BLACK=$'\e[38:5:0m'       # Black
+E_RED=$'\e[38:5:1m'         # Red
+E_GREEN=$'\e[38:5:2m'       # Green
+E_YELLOW=$'\e[38:5:3m'      # Yellow
+E_BLUE=$'\e[38:5:4m'        # Blue
+E_MAGENTA=$'\e[38:5:5m'     # Magenta
+E_CYAN=$'\e[38:5:6m'        # Cyan
+E_GRAY=$'\e[38:5:7m'        # Gray
+E_DARKGRAY=$'\e[38:5:8m'    # Dark Gray
+E_BR_RED=$'\e[38:5:9m'      # Bright Red
+E_BR_GREEN=$'\e[38:5:10m'   # Bright Green
+E_BR_YELLOW=$'\e[38:5:11m'  # Bright Yellow
+E_BR_BLUE=$'\e[38:5:12m'    # Bright Blue
+E_BR_MAGENTA=$'\e[38:5:13m' # Bright Magenta
+E_BR_CYAN=$'\e[38:5:14m'    # Bright Cyan
+E_WHITE=$'\e[38:5:15m'      # White
 
 # ANSI background color codes
 #
@@ -923,30 +969,30 @@ E_CUR_SHOW=$'\e[?25h' # Show cursor
 E_RESET=$'\e[0m' # Clear Attributes
 
 # Default Bashplate colortheme
-BP_C_OK="${E_FG_BR_GREEN}"
-BP_C_INFO="${E_FG_BR_CYAN}"
-BP_C_DEBUG="${E_BG_GREEN}${E_FG_WHITE}"
-BP_C_WARNING="${E_FG_BR_YELLOW}"
-BP_C_ERROR="${E_FG_BR_RED}"
-BP_C_CRITICAL="${E_BG_RED}${E_FG_WHITE}"
-BP_C_LINE="${E_FG_DARKGRAY}"
-BP_C_LINE_TEXT="${E_FG_YELLOW}"
-BP_C_DESCRIPTION="${E_FG_GREEN}"
-BP_C_ID="${E_FG_CYAN}"
+BP_C_OK="${E_BR_GREEN}"
+BP_C_INFO="${E_BR_CYAN}"
+BP_C_DEBUG="${E_BG_GREEN}${E_WHITE}"
+BP_C_WARNING="${E_BR_YELLOW}"
+BP_C_ERROR="${E_BR_RED}"
+BP_C_CRITICAL="${E_BG_RED}${E_WHITE}"
+BP_C_LINE="${E_DARKGRAY}"
+BP_C_LINE_TEXT="${E_YELLOW}"
+BP_C_DESCRIPTION="${E_GREEN}"
+BP_C_ID="${E_CYAN}"
 
-BP_C_FILENAME="${E_FG_BR_GREEN}"
-BP_C_PATH="${E_FG_GREEN}"
-BP_C_URL_SCHEME="${E_FG_DARKGRAY}"
+BP_C_FILENAME="${E_BR_GREEN}"
+BP_C_PATH="${E_GREEN}"
+BP_C_URL_SCHEME="${E_DARKGRAY}"
 # BP_C_URL_USER=""
 # BP_C_URL_HOST=""
-BP_C_TIME="${E_FG_BR_MAGENTA}"
-BP_C_DATE="${E_FG_MAGENTA}"
+BP_C_TIME="${E_BR_MAGENTA}"
+BP_C_DATE="${E_MAGENTA}"
 
 # Shellscript colorize colors
-BP_C_RESERVED="${E_FG_RED}"
-BP_C_COMMENT="${E_FG_CYAN}"
-BP_C_STRING="${E_FG_GREEN}"
-BP_C_VAR="${E_FG_BR_YELLOW}"
+BP_C_RESERVED="${E_RED}"
+BP_C_COMMENT="${E_CYAN}"
+BP_C_STRING="${E_GREEN}"
+BP_C_VAR="${E_BR_YELLOW}"
 
 # Exit codes
 #
@@ -1612,7 +1658,7 @@ log() { ##C BP_LOGFILE View logfile
         -e "s|\[ Ok \]|\[\\${BP_C_OK} Ok \\${E_RESET}\]|" \
         -e "s/[-0-9]+/\\${BP_C_DATE}&\\${E_RESET}/1" \
         -e "s/[:0-9]+/\\${BP_C_TIME}&\\${E_RESET}/6" \
-        -e "s|\[Crit\]|\[\\${E_BG_RED}\\${E_FG_WHITE}Crit\\${E_RESET}\]|" <"${BP_LOGFILE}")
+        -e "s|\[Crit\]|\[\\${E_BG_RED}\\${E_WHITE}Crit\\${E_RESET}\]|" <"${BP_LOGFILE}")
 
       echo -e "$D"
     fi
@@ -1629,9 +1675,9 @@ mlog() { ##C BP_LOGFILE Monitor logfile
         -e "s|\[Warn\]|\[\\${BP_C_WARNING}Warn\\${E_RESET}\]|" \
         -e "s|\[Erro\]|\[\\${BP_C_ERROR}Erro\\${E_RESET}\]|" \
         -e "s|\[ Ok \]|\[\\${BP_C_OK} Ok \\${E_RESET}\]|" \
-        -e "s/[-0-9]+/\\${E_FG_GREEN}&\\${E_RESET}/1" \
-        -e "s/[:0-9]+/\\${E_FG_BR_GREEN}&\\${E_RESET}/6" \
-        -e "s|\[Crit\]|\[\\${E_BG_RED}\\${E_FG_WHITE}Crit\\${E_RESET}\]|"
+        -e "s/[-0-9]+/\\${E_GREEN}&\\${E_RESET}/1" \
+        -e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_RESET}/6" \
+        -e "s|\[Crit\]|\[\\${E_BG_RED}\\${E_WHITE}Crit\\${E_RESET}\]|"
 
     fi
   else
