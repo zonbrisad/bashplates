@@ -500,7 +500,7 @@ tdim() { ##D Terminal dimensions
     cols=$(tput cols)
     echo "  Lines: ${lines} "
     echo "  Cols: ${cols}   "
-    echo -en $E_CUR_RETURN${E_CUR_RETURN}
+    echo -en "$E_CUR_RETURN${E_CUR_RETURN}"
   done
 
 }
@@ -559,12 +559,12 @@ msg() { ##D Messsages format test
   echo -e "[${E_BG_BR_GREEN}${E_WHITE} Debug  ${E_RESET}] Bright green bg"
   echo -e "[${E_BG_GREEN}${E_BLACK} Debug  ${E_RESET}] Green bg, black fg"
   echo -e "[${E_BG_BR_GREEN}${E_BLACK} Debug  ${E_RESET}] Bright green bg, black fg"
-
 }
 
 url() {
-  echo "${1}https${7}://${2}username${7}@${3}hostname.org${7}:${4}80${7}/${5}path${7}/${5}to${7}/${6}filename.html${E_RESET}"
+  echo -e "${1}https${7}://${2}zonbrisad${7}@${3}github.com${7}:${4}80${7}${5}/zonbrisad${7}/${6}bashplates.git${E_RESET}\n"
 }
+
 colorize() { ##D Test F="/use/local/var/log/messages"
 
   echo
@@ -577,12 +577,19 @@ colorize() { ##D Test F="/use/local/var/log/messages"
 
   url "$E_DARKGRAY" "$E_MAGENTA" "$E_GREEN" "$E_CYAN" "${E_GREEN}" "${E_BR_GREEN}"
   url "$E_DARKGRAY" "$E_BR_MAGENTA" "$E_GREEN" "$E_BR_CYAN" "${E_GREEN}" "${E_BR_GREEN}" "${E_GRAY}"
-
+	url "$E_DARKGRAY" "$E_BR_BLUE" "$E_CYAN" "$E_BR_CYAN" "${E_MAGENTA}" "${E_BR_MAGENTA}" #"${E_GRAY}"
+	url "$E_DARKGRAY" "$E_BLUE" "$E_BR_MAGENTA" "$E_MAGENTA" "${E_CYAN}" "${E_BR_CYAN}" #"${E_GRAY}"
+	url "$E_DARKGRAY" "$E_BLUE" "$E_BR_MAGENTA" "$E_DARKGRAY" "${E_CYAN}" "${E_BR_CYAN}" #"${E_GRAY}"
+	url "$E_DARKGRAY" "$E_BLUE" "$E_BR_MAGENTA" "$E_YELLOW" "${E_CYAN}" "${E_BR_CYAN}" #"${E_GRAY}"
+	url "$E_DARKGRAY" "$E_MAGENTA" "$E_BR_MAGENTA" "$E_YELLOW" "${E_CYAN}" "${E_BR_CYAN}" #"${E_GRAY}"
+	url "$E_YELLOW" "$E_MAGENTA" "$E_BR_MAGENTA" "$E_YELLOW" "${E_CYAN}" "${E_BR_CYAN}" #"${E_GRAY}"
+  url "$E_DARKGRAY" "$E_MAGENTA" "$E_BR_MAGENTA" "$E_DARKGRAY" "${E_CYAN}" "${E_BR_CYAN}" #"${E_GRAY}"
+	url "$E_DARKGRAY" "$E_BLUE" "$E_BR_BLUE" "$E_DARKGRAY" "${E_CYAN}" "${E_BR_CYAN}" #"${E_GRAY}"
+	url "$E_GRAY" "$E_BLUE" "$E_BR_BLUE" "$E_GRAY" "${E_CYAN}" "${E_BR_CYAN}" #"${E_GRAY}"
   echo
 }
 
 aa() {
-
   bpTextLine "$1"
   bpPrintInfo "cmd1" "My command 1"
   bpPrintInfo "cmd2" "My command 2"
