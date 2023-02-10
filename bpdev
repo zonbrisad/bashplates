@@ -509,12 +509,21 @@ tdim() { ##D Terminal dimensions
 
 msg() { ##D Messsages format test
 
-  bpTextLine "Uneven message length (current)"
+  bpTextLine "Unaligned message (current)"
   echo -e "[${BP_C_OK}Ok${E_RESET}] My little error message"
   echo -e "[${BP_C_INFO}Info${E_RESET}] My little error message"
   echo -e "[${BP_C_DEBUG}Debug${E_RESET}] My little error message"
   echo -e "[${BP_C_WARNING}Warning${E_RESET}] My little error message"
   echo -e "[${BP_C_ERROR}Error${E_RESET}] My little error message"
+  echo -e "[${BP_C_CRITICAL}Critical${E_RESET}] My little error message"
+  echo
+
+  bpTextLine "Unaligned message (current)"
+  echo -e "   [${BP_C_OK}Ok${E_RESET}]    My little error message"
+  echo -e "  [${BP_C_INFO}Info${E_RESET}]   My little error message"
+  echo -e " [${BP_C_DEBUG}Debug${E_RESET}]   My little error message"
+  echo -e "[${BP_C_WARNING}Warning${E_RESET}]  My little error message"
+  echo -e " [${BP_C_ERROR}Error${E_RESET}]   My little error message"
   echo -e "[${BP_C_CRITICAL}Critical${E_RESET}] My little error message"
   echo
 
