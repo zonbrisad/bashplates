@@ -559,6 +559,7 @@ msg() { ##D Messsages format test
   echo -e "[${E_BG_BR_GREEN}${E_WHITE} Debug  ${E_RESET}] Bright green bg"
   echo -e "[${E_BG_GREEN}${E_BLACK} Debug  ${E_RESET}] Green bg, black fg"
   echo -e "[${E_BG_BR_GREEN}${E_BLACK} Debug  ${E_RESET}] Bright green bg, black fg"
+
 }
 
 url() {
@@ -577,15 +578,15 @@ colorize() { ##D Test F="/use/local/var/log/messages"
 
   url "$E_DARKGRAY" "$E_MAGENTA" "$E_GREEN" "$E_CYAN" "${E_GREEN}" "${E_BR_GREEN}"
   url "$E_DARKGRAY" "$E_BR_MAGENTA" "$E_GREEN" "$E_BR_CYAN" "${E_GREEN}" "${E_BR_GREEN}" "${E_GRAY}"
-	url "$E_DARKGRAY" "$E_BR_BLUE" "$E_CYAN" "$E_BR_CYAN" "${E_MAGENTA}" "${E_BR_MAGENTA}" #"${E_GRAY}"
-	url "$E_DARKGRAY" "$E_BLUE" "$E_BR_MAGENTA" "$E_MAGENTA" "${E_CYAN}" "${E_BR_CYAN}" #"${E_GRAY}"
-	url "$E_DARKGRAY" "$E_BLUE" "$E_BR_MAGENTA" "$E_DARKGRAY" "${E_CYAN}" "${E_BR_CYAN}" #"${E_GRAY}"
-	url "$E_DARKGRAY" "$E_BLUE" "$E_BR_MAGENTA" "$E_YELLOW" "${E_CYAN}" "${E_BR_CYAN}" #"${E_GRAY}"
-	url "$E_DARKGRAY" "$E_MAGENTA" "$E_BR_MAGENTA" "$E_YELLOW" "${E_CYAN}" "${E_BR_CYAN}" #"${E_GRAY}"
-	url "$E_YELLOW" "$E_MAGENTA" "$E_BR_MAGENTA" "$E_YELLOW" "${E_CYAN}" "${E_BR_CYAN}" #"${E_GRAY}"
+  url "$E_DARKGRAY" "$E_BR_BLUE" "$E_CYAN" "$E_BR_CYAN" "${E_MAGENTA}" "${E_BR_MAGENTA}"  #"${E_GRAY}"
+  url "$E_DARKGRAY" "$E_BLUE" "$E_BR_MAGENTA" "$E_MAGENTA" "${E_CYAN}" "${E_BR_CYAN}"     #"${E_GRAY}"
+  url "$E_DARKGRAY" "$E_BLUE" "$E_BR_MAGENTA" "$E_DARKGRAY" "${E_CYAN}" "${E_BR_CYAN}"    #"${E_GRAY}"
+  url "$E_DARKGRAY" "$E_BLUE" "$E_BR_MAGENTA" "$E_YELLOW" "${E_CYAN}" "${E_BR_CYAN}"      #"${E_GRAY}"
+  url "$E_DARKGRAY" "$E_MAGENTA" "$E_BR_MAGENTA" "$E_YELLOW" "${E_CYAN}" "${E_BR_CYAN}"   #"${E_GRAY}"
+  url "$E_YELLOW" "$E_MAGENTA" "$E_BR_MAGENTA" "$E_YELLOW" "${E_CYAN}" "${E_BR_CYAN}"     #"${E_GRAY}"
   url "$E_DARKGRAY" "$E_MAGENTA" "$E_BR_MAGENTA" "$E_DARKGRAY" "${E_CYAN}" "${E_BR_CYAN}" #"${E_GRAY}"
-	url "$E_DARKGRAY" "$E_BLUE" "$E_BR_BLUE" "$E_DARKGRAY" "${E_CYAN}" "${E_BR_CYAN}" #"${E_GRAY}"
-	url "$E_GRAY" "$E_BLUE" "$E_BR_BLUE" "$E_GRAY" "${E_CYAN}" "${E_BR_CYAN}" #"${E_GRAY}"
+  url "$E_DARKGRAY" "$E_BLUE" "$E_BR_BLUE" "$E_DARKGRAY" "${E_CYAN}" "${E_BR_CYAN}"       #"${E_GRAY}"
+  url "$E_GRAY" "$E_BLUE" "$E_BR_BLUE" "$E_GRAY" "${E_CYAN}" "${E_BR_CYAN}"               #"${E_GRAY}"
   echo
 }
 
