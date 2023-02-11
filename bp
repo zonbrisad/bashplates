@@ -230,7 +230,7 @@ bp_phh() {
 
 ##- BASH Documentation
 
-cc() { ##D Cheat sheet for common BASH features
+cs() { ##D Cheat sheet for common BASH features
 
   bpTextLine "Arithmetic operators"
   bpPrintInfo "(( N1 + N2 ))" "Addition"
