@@ -124,14 +124,14 @@ signalDbg() {
 ##C- IHELP Exit and cleanup
 
 bpCallStack() { ##I Print out BASH call stack
-  bpTextLine "Call stack"
+  bpPrintLine "Call stack"
   echo
   local frame=0
   while caller $frame | sed -r -e "s/[0-9]*/${BP_C_VALUE}&${E_RESET}/"; do
     ((frame++))
   done
   echo "$*"
-  bpLine
+  bpPrintLine
 }
 
 bpCleanUp() {           ##I Cleanup function
@@ -171,22 +171,22 @@ bpErrorExit() { ##I Safely exit script with a error
 
 # ANSI foreground colors codes
 #
-E_FG_BLACK=$'\e[38:5:0m'       # Black
-E_FG_RED=$'\e[38:5:1m'         # Red
-E_FG_GREEN=$'\e[38:5:2m'       # Green
-E_FG_YELLOW=$'\e[38:5:3m'      # Yellow
-E_FG_BLUE=$'\e[38:5:4m'        # Blue
-E_FG_MAGENTA=$'\e[38:5:5m'     # Magenta
-E_FG_CYAN=$'\e[38:5:6m'        # Cyan
-E_FG_GRAY=$'\e[38:5:7m'        # Gray
-E_FG_DARKGRAY=$'\e[38:5:8m'    # Dark Gray
-E_FG_BR_RED=$'\e[38:5:9m'      # Bright Red
-E_FG_BR_GREEN=$'\e[38:5:10m'   # Bright Green
-E_FG_BR_YELLOW=$'\e[38:5:11m'  # Bright Yellow
-E_FG_BR_BLUE=$'\e[38:5:12m'    # Bright Blue
-E_FG_BR_MAGENTA=$'\e[38:5:13m' # Bright Magenta
-E_FG_BR_CYAN=$'\e[38:5:14m'    # Bright Cyan
-E_FG_WHITE=$'\e[38:5:15m'      # White
+E_BLACK=$'\e[38:5:0m'       # Black
+E_RED=$'\e[38:5:1m'         # Red
+E_GREEN=$'\e[38:5:2m'       # Green
+E_YELLOW=$'\e[38:5:3m'      # Yellow
+E_BLUE=$'\e[38:5:4m'        # Blue
+E_MAGENTA=$'\e[38:5:5m'     # Magenta
+E_CYAN=$'\e[38:5:6m'        # Cyan
+E_GRAY=$'\e[38:5:7m'        # Gray
+E_DARKGRAY=$'\e[38:5:8m'    # Dark Gray
+E_BR_RED=$'\e[38:5:9m'      # Bright Red
+E_BR_GREEN=$'\e[38:5:10m'   # Bright Green
+E_BR_YELLOW=$'\e[38:5:11m'  # Bright Yellow
+E_BR_BLUE=$'\e[38:5:12m'    # Bright Blue
+E_BR_MAGENTA=$'\e[38:5:13m' # Bright Magenta
+E_BR_CYAN=$'\e[38:5:14m'    # Bright Cyan
+E_WHITE=$'\e[38:5:15m'      # White
 
 # ANSI background color codes
 #
@@ -260,28 +260,30 @@ E_CUR_SHOW=$'\e[?25h' # Show cursor
 E_RESET=$'\e[0m' # Clear Attributes
 
 # Default Bashplate colortheme
-BP_C_OK="${E_FG_BR_GREEN}"
-BP_C_INFO="${E_FG_BR_CYAN}"
-BP_C_DEBUG="${E_BG_GREEN}${E_FG_WHITE}"
-BP_C_WARNING="${E_FG_BR_YELLOW}"
-BP_C_ERROR="${E_FG_BR_RED}"
-BP_C_CRITICAL="${E_BG_RED}${E_FG_WHITE}"
-BP_C_LINE="${E_FG_DARKGRAY}"
-BP_C_LINE_TEXT="${E_FG_YELLOW}"
-BP_C_DESCRIPTION="${E_FG_GREEN}"
-BP_C_ID="${E_FG_CYAN}"
+BP_C_OK="${E_BR_GREEN}"
+BP_C_INFO="${E_BR_CYAN}"
+BP_C_DEBUG="${E_BG_GREEN}${E_WHITE}"
+BP_C_WARNING="${E_BR_YELLOW}"
+BP_C_ERROR="${E_BR_RED}"
+BP_C_CRITICAL="${E_BG_RED}${E_WHITE}"
+BP_C_LINE="${E_DARKGRAY}"
+BP_C_LINE_TEXT="${E_YELLOW}"
+BP_C_DESCRIPTION="${E_GREEN}"
+BP_C_ID="${E_CYAN}"
 
-BP_C_FILENAME="${E_FG_BR_GREEN}"
-BP_C_PATH="${E_FG_GREEN}"
-BP_C_URL_SCHEME="${E_FG_DARKGRAY}"
+BP_C_FILENAME="${E_BR_CYAN}"
+BP_C_PATH="${E_CYAN}"
+BP_C_URL_SCHEME="${E_DARKGRAY}"
 # BP_C_URL_USER=""
 # BP_C_URL_HOST=""
+BP_C_TIME="${E_BR_MAGENTA}"
+BP_C_DATE="${E_MAGENTA}"
 
 # Shellscript colorize colors
-BP_C_RESERVED="${E_FG_RED}"
-BP_C_COMMENT="${E_FG_CYAN}"
-BP_C_STRING="${E_FG_GREEN}"
-BP_C_VAR="${E_FG_BR_YELLOW}"
+BP_C_RESERVED="${E_RED}"
+BP_C_COMMENT="${E_CYAN}"
+BP_C_STRING="${E_GREEN}"
+BP_C_VAR="${E_BR_YELLOW}"
 
 # Exit codes
 #
@@ -300,7 +302,7 @@ BP_E_OK=0 # successful termination
 # $4 middle character
 # $5 line character
 #
-bpPrintLineC() { ##I Print text with adjusted line after with selectable colors
+bpPrintLineGeneric() { ##I Print text with adjusted line after with selectable colors
   len1="${#1}"
   len4="${#4}"
 
@@ -316,27 +318,18 @@ bpPrintLineC() { ##I Print text with adjusted line after with selectable colors
 # $3 line color
 #
 bpTextLineC() { ##I Print text with adjusted line after with selectable colors
-  bpPrintLineC "$1" "$2" "$3" " " "-"
+  bpPrintLineGeneric "$1" "$2" "$3" " " "-"
 }
 
-bpTextLine_old() { ##I Print text with line after
-  bpTextLineC "$1" "${BP_C_LINE_TEXT}" "${BP_C_LINE}"
-}
-
-bpTextLine() { ##I Print text with line after
+bpPrintLine() { ##I Print text with line after
   #  echo "$1 ${#1}"
   if [ "${#1}" -eq 0 ]; then
-    bpPrintLineC "" "" "${BP_C_LINE}" "" "-"
+    bpPrintLineGeneric "" "" "${BP_C_LINE}" "" "-"
   else
-    bpPrintLineC "$1" "${BP_C_LINE_TEXT}" "${BP_C_LINE}" " " "-"
+    bpPrintLineGeneric "$1" "${BP_C_LINE_TEXT}" "${BP_C_LINE}" " " "-"
   fi
 }
 
-bpLine() { ##I Print a divider row
-  bpPrintLineC "" "${BP_C_LINE}" "${BP_C_LINE}" "" "-"
-}
-
-#
 # $1 command color
 # $2 description color
 # $3 command text
@@ -546,7 +539,7 @@ bpBackup() { ##I Make backup of file
 # $2 text to replace
 # $3 new text
 #
-bpReplace() { ##I Replace text in file
+bpReplace() { ##I Replace all ocurances of text in file
   sed -i -e "s/${2}/${3}/g" "$1"
 }
 
@@ -648,7 +641,7 @@ bpInsert() { ##I Insert text into file
 # $2  Default value
 # return string read from cmdline/default if enter pressed
 #
-bpRead() { ##I Read string from commandline
+bpReadStr() { ##I Read string from commandline
 
   if [ "${2}" == "" ]; then
     read -erp "${1} > " result
@@ -694,13 +687,13 @@ bpReadInt() { ##I Read integer from commandline
 # $2 default answer 0 = yes, 1 = no
 # return 0 = Yes, 1=No
 #
-bpReadYN() { ##I Ask yes/no question generic
+bpReadBool() { ##I Ask yes/no question generic
   while true; do
 
     if [ "$2" -eq 1 ]; then
-      yn=$(bpRead "${1} [y/N]")
+      yn=$(bpReadStr "${1} [y/N]")
     else
-      yn=$(bpRead "${1} [Y/n]")
+      yn=$(bpReadStr "${1} [Y/n]")
     fi
 
     case "$yn" in
@@ -725,8 +718,8 @@ bpReadYN() { ##I Ask yes/no question generic
 # $1 Question text
 # return 0 = Yes, 1=No
 #
-bpReadY() { ##I Ask yes/no question default yes
-  bpReadYN "$1" 0
+bpReadBoolDY() { ##I Ask yes/no question default yes
+  bpReadBool "$1" 0
   return $?
 }
 
@@ -734,8 +727,8 @@ bpReadY() { ##I Ask yes/no question default yes
 # $1 Question text
 # return 0 = Yes, 1=No
 #
-bpReadN() { ##I Ask yes/no question default no
-  bpReadYN "$1" 1
+bpReadBoolDN() { ##I Ask yes/no question default no
+  bpReadBool "$1" 1
   return $?
 }
 
@@ -821,14 +814,14 @@ bpLoadSettings() {
 }
 
 settings() { ##C BP_CONF Print bashplate settings
-  bpTextLine "Bashplates settings"
+  bpPrintLine "Bashplates settings"
   bpPrintVar "Name:" BP_NAME
   bpPrintVar "Email:" BP_EMAIL
   bpPrintVar "Default license:" BP_LICENSE
   bpPrintVar "Default editor" BP_EDITOR
   bpPrintVar "Default organisation" BP_ORG
   bpPrintVar "Default diff program" BP_DIFF
-  bpLine
+  bpPrintLine
 }
 
 setname() { ##C BP_CONF Set name
@@ -945,9 +938,9 @@ log() { ##C BP_LOGFILE View logfile
         -e "s|\[Warn\]|\[\\${BP_C_WARNING}Warn\\${E_RESET}\]|" \
         -e "s|\[Erro\]|\[\\${BP_C_ERROR}Erro\\${E_RESET}\]|" \
         -e "s|\[ Ok \]|\[\\${BP_C_OK} Ok \\${E_RESET}\]|" \
-        -e "s/[-0-9]+/\\${E_FG_GREEN}&\\${E_RESET}/1" \
-        -e "s/[:0-9]+/\\${E_FG_BR_GREEN}&\\${E_RESET}/6" \
-        -e "s|\[Crit\]|\[\\${E_BG_RED}\\${E_FG_WHITE}Crit\\${E_RESET}\]|" <"${BP_LOGFILE}")
+        -e "s/[-0-9]+/\\${BP_C_DATE}&\\${E_RESET}/1" \
+        -e "s/[:0-9]+/\\${BP_C_TIME}&\\${E_RESET}/6" \
+        -e "s|\[Crit\]|\[\\${E_BG_RED}\\${E_WHITE}Crit\\${E_RESET}\]|" <"${BP_LOGFILE}")
 
       echo -e "$D"
     fi
@@ -964,9 +957,9 @@ mlog() { ##C BP_LOGFILE Monitor logfile
         -e "s|\[Warn\]|\[\\${BP_C_WARNING}Warn\\${E_RESET}\]|" \
         -e "s|\[Erro\]|\[\\${BP_C_ERROR}Erro\\${E_RESET}\]|" \
         -e "s|\[ Ok \]|\[\\${BP_C_OK} Ok \\${E_RESET}\]|" \
-        -e "s/[-0-9]+/\\${E_FG_GREEN}&\\${E_RESET}/1" \
-        -e "s/[:0-9]+/\\${E_FG_BR_GREEN}&\\${E_RESET}/6" \
-        -e "s|\[Crit\]|\[\\${E_BG_RED}\\${E_FG_WHITE}Crit\\${E_RESET}\]|"
+        -e "s/[-0-9]+/\\${E_GREEN}&\\${E_RESET}/1" \
+        -e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_RESET}/6" \
+        -e "s|\[Crit\]|\[\\${E_BG_RED}\\${E_WHITE}Crit\\${E_RESET}\]|"
 
     fi
   else
@@ -1104,7 +1097,7 @@ printNamedLine() {
   IFS=$' '
   read -r -a arr <<<"$1"
   info=${arr[*]:1}
-  bpTextLine "${info}"
+  bpPrintLine "${info}"
 }
 
 printCondNamedLine() {
@@ -1114,7 +1107,7 @@ printCondNamedLine() {
   COND=${arr[1]}
   eval "D=\$$COND"
   if [ -n "$D" ]; then
-    bpTextLine "$name"
+    bpPrintLine "$name"
   fi
 }
 
@@ -1164,13 +1157,13 @@ ihelp() { ##I Print internal help information
   # Singe command documentation
   if [ "$2" != "" ]; then
     echo
-    bpTextLine "$2"
+    bpPrintLine "$2"
     echo
     echo "#"
     echo -n "# "
     grep --no-filename "$0" -e "${2}()" | sed -n -e 's/^.*##I //p'
     grep --no-filename -B 8 "$0" -e "${2}()" | grep "#" | grep -v "##"
-    bpLine
+    bpPrintLine
     bpExit
   fi
 
@@ -1194,17 +1187,17 @@ ihelp() { ##I Print internal help information
     esac
   done
 
-  bpTextLine "Bashplates comments"
+  bpPrintLine "Bashplates comments"
   bpPrintInfo "##D Description" "Subcommand information comment (shown with help)"
   bpPrintInfo "##C COND Description" "Conditional subcommand comment (shown with help)"
   bpPrintInfo "##- [Text]" "Separator line (shown with help)"
   bpPrintInfo "##C- COND [Text]" "Conditional separator line (shown with help)"
   bpPrintInfo "##I Description" "Internal function comment (shown ihelp)"
-  bpLine
+  bpPrintLine
 }
 
 iinfo() { ##I Show information about script
-  bpTextLine "Script information"
+  bpPrintLine "Script information"
   bpPrintVar "Script" BP_SELF "$(bpColorizeFile "${BP_SELF_DIR}/${BP_SELF}")"
   bpPrintVar "Script version" BP_VERSION
   bpPrintVar "Template version" BP_VERSION
@@ -1219,12 +1212,21 @@ iinfo() { ##I Show information about script
   bpPrintVar "Character lines" BP_LINES
 
   if [ -n "${POST_INFO_HOOK}" ]; then
-    bpTextLine "App. information"
+    bpPrintLine "App. information"
     ${POST_INFO_HOOK}
   fi
   settings
 }
 
+#
+# Filter out function from script file
+#
+# $1 file
+# $2 function
+#
+bpGetFunction() {
+  grep --no-filename -A 60 "$1" -e "${2}()" | grep -B 60 -m 1 -x "}"
+}
 
 iview() { ##I View example
   # Singe command documentation
@@ -1234,7 +1236,7 @@ iview() { ##I View example
 
   echo
   if bpHasCmd batcat; then # Use batcat, if available, to view function
-    grep --no-filename -A 60 "$0" -e "${2}()" | grep -B 60 -m 1 -x "}" | batcat --language bash --decorations never
+    bpGetFunction "$0" "${2}" | batcat --language bash --decorations never
   else
     grep --no-filename -A 60 "$0" -e "${2}()" | grep -B 60 -m 1 -x "}" |
       sed -e "s/#.*/\\${BP_C_COMMENT}&\\${E_RESET}/" \
@@ -1265,7 +1267,7 @@ iview() { ##I View example
 }
 
 ivars() { ##I Print internal variables
-  bpTextLine "Script variables"
+  bpPrintLine "Script variables"
   echo
   IFS=$'\n'
   help_lines=$(grep -v -e 'help_lines' -e 'help_line' "$0" | grep -A 1 '##V') # | sed "s/--//" )

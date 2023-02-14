@@ -53,11 +53,11 @@ newa() { ##D Create a new bashplate addon (experimental)
 }
 
 la() { ##D List addons
-  bpTextLine "Addons"
+  bpPrintLine "Addons"
   for f in "${BP_ADDONS}"/*; do
     bpPrintInfo "$(${f} getname)" "$(${f} getdesc)"
   done
-  bpLine
+  bpPrintLine
 }
 
 aa() { ##D Add addon
@@ -103,12 +103,12 @@ getaddon() { ##D Get addon
 }
 
 info() { ##D Get addon information
-  bpTextLine "Addon information"
+  bpPrintLine "Addon information"
   bpPrintInfo "Name" "$ADDON_NAME"
   bpPrintInfo "Description" "$ADDON_DESC"
   bpPrintInfo "Version" "$ADDON_VER"
   bpPrintInfo "Link" "$ADDON_LINK"
-  bpLine
+  bpPrintLine
 }
 
 #
@@ -205,7 +205,7 @@ bpSelectFromList() { ##I Select from list
 
   while true; do
     bpPrintList "${@}"
-    x=$(bpRead "$1")
+    x=$(bpReadStr "$1")
 
     arr=("${@}")
     len=${#arr[@]}
@@ -245,7 +245,7 @@ bpPrintChooseList() {
 bpChoose() {
   while true; do
     bpPrintChooseList "${@}"
-    x=$(bpRead "")
+    x=$(bpReadStr "")
 
   done
 }
@@ -329,7 +329,7 @@ E_FONT9=$'\e[19m' # Font 9
 
 attr() { ##D demonstrate font attributes
   echo
-  bpTextLine "Font style attributes"
+  bpPrintLine "Font style attributes"
   echo
   print_attr "E_RESET" "Normal text"
   print_attr "E_BOLD" "Bold text"
@@ -340,7 +340,7 @@ attr() { ##D demonstrate font attributes
   print_attr "E_UNDERLINE" "Underline text"
   print_attr "E_CROSSED" "Crossed text"
   echo
-  bpTextLine "Extended font style attributes(limited support)"
+  bpPrintLine "Extended font style attributes(limited support)"
   echo
   print_attr "E_FRACTUR" "Fractur/gothic"
   print_attr "E_UNDERLINE_CURLY" "Underline curly"
@@ -355,7 +355,7 @@ attr() { ##D demonstrate font attributes
   print_attr "E_OVERLINED" "Overlined"
 
   echo
-  bpTextLine "Alternative fonts"
+  bpPrintLine "Alternative fonts"
   echo
   print_attr "E_FONT1" "Font 1"
   print_attr "E_FONT2" "Font 2"
@@ -368,7 +368,7 @@ attr() { ##D demonstrate font attributes
   print_attr "E_FONT9" "Font 9"
 
   echo
-  bpTextLine "Foreground color attributes"
+  bpPrintLine "Foreground color attributes"
   echo
   print_attr "E_RED" "Foreground red"
   print_attr "E_YELLOW" "Foreground yellow"
@@ -386,7 +386,7 @@ attr() { ##D demonstrate font attributes
   print_attr "E_GRAY" "Foreground gray"
   print_attr "E_WHITE" "Foreground white"
   echo
-  bpTextLine "Background color attributes"
+  bpPrintLine "Background color attributes"
   echo
   print_attr "E_BG_RED" "Background red"
   print_attr "E_BG_YELLOW" "Background yellow"
@@ -404,7 +404,7 @@ attr() { ##D demonstrate font attributes
   print_attr "E_BG_GRAY" "Background gray"
   print_attr "E_BG_WHITE" "Background white"
   echo
-  bpTextLine "Underline color attributes (only supported on certain terminals)"
+  bpPrintLine "Underline color attributes (only supported on certain terminals)"
   echo
   print_attr2 "E_UL_RED" "Underline red"
   print_attr2 "E_UL_YELLOW" "Underline yellow"
@@ -430,7 +430,7 @@ color() { ##D Standard 16 colors
   BCOLORS_BR=(E_BG_DARK_GRAY E_BG_BR_RED E_BG_BR_GREEN E_BG_BR_YELLOW E_BG_BR_BLUE E_BG_BR_MAGENTA E_BG_BR_CYAN E_BG_GRAY)
 
   echo
-  bpTextLine "16 color map"
+  bpPrintLine "16 color map"
   echo
   for fc in "${FCOLORS[@]}"; do
     eval "FG=\$$fc"
@@ -509,7 +509,7 @@ tdim() { ##D Terminal dimensions
 
 msg() { ##D Messsages format test
 
-  bpTextLine "Unaligned message (current)"
+  bpPrintLine "Unaligned message (current)"
   echo -e "[${BP_C_OK}Ok${E_RESET}] My little error message"
   echo -e "[${BP_C_INFO}Info${E_RESET}] My little error message"
   echo -e "[${BP_C_DEBUG}Debug${E_RESET}] My little error message"
@@ -518,7 +518,7 @@ msg() { ##D Messsages format test
   echo -e "[${BP_C_CRITICAL}Critical${E_RESET}] My little error message"
   echo
 
-  bpTextLine "Unaligned message (current)"
+  bpPrintLine "Unaligned message (current)"
   echo -e "   [${BP_C_OK}Ok${E_RESET}]    My little error message"
   echo -e "  [${BP_C_INFO}Info${E_RESET}]   My little error message"
   echo -e " [${BP_C_DEBUG}Debug${E_RESET}]   My little error message"
@@ -527,7 +527,7 @@ msg() { ##D Messsages format test
   echo -e "[${BP_C_CRITICAL}Critical${E_RESET}] My little error message"
   echo
 
-  bpTextLine "Uneven message length with left alligned text"
+  bpPrintLine "Uneven message length with left alligned text"
   echo -e "[${BP_C_OK}Ok${E_RESET}]       My little error message"
   echo -e "[${BP_C_INFO}Info${E_RESET}]     My little error message"
   echo -e "[${BP_C_DEBUG}Debug${E_RESET}]    My little error message"
@@ -536,7 +536,7 @@ msg() { ##D Messsages format test
   echo -e "[${BP_C_CRITICAL}Critical${E_RESET}] My little error message"
   echo
 
-  bpTextLine "Full text messages with space padding"
+  bpPrintLine "Full text messages with space padding"
   echo -e "[${BP_C_OK}   Ok   ${E_RESET}] My little error message"
   echo -e "[${BP_C_INFO}  Info  ${E_RESET}] My little error message"
   echo -e "[${BP_C_DEBUG} Debug  ${E_RESET}] My little error message"
@@ -545,7 +545,7 @@ msg() { ##D Messsages format test
   echo -e "[${BP_C_CRITICAL}Critical${E_RESET}] My little error message"
   echo
 
-  bpTextLine "4 character message with padding"
+  bpPrintLine "4 character message with padding"
   echo -e "[${BP_C_OK} Ok ${E_RESET}] My little error message"
   echo -e "[${BP_C_INFO}Info${E_RESET}] My little error message"
   echo -e "[${BP_C_DEBUG}Dbg ${E_RESET}] My little error message"
@@ -554,7 +554,7 @@ msg() { ##D Messsages format test
   echo -e "[${BP_C_CRITICAL}Crit${E_RESET}] My little error message"
   echo
 
-  bpTextLine "3 character message with padding"
+  bpPrintLine "3 character message with padding"
   echo -e "[${BP_C_OK}Ok ${E_RESET}] My little error message"
   echo -e "[${BP_C_INFO}Inf${E_RESET}] My little error message"
   echo -e "[${BP_C_DEBUG}Dbg${E_RESET}] My little error message"
@@ -563,14 +563,14 @@ msg() { ##D Messsages format test
   echo -e "[${BP_C_CRITICAL}Cri${E_RESET}] My little error message"
   echo
 
-  bpTextLine "Debug color tests"
+  bpPrintLine "Debug color tests"
   echo -e "[${BP_C_DEBUG} Debug  ${E_RESET}] Default color"
   echo -e "[${E_BG_BR_GREEN}${E_WHITE} Debug  ${E_RESET}] Bright green bg"
   echo -e "[${E_BG_GREEN}${E_BLACK} Debug  ${E_RESET}] Green bg, black fg"
   echo -e "[${E_BG_BR_GREEN}${E_BLACK} Debug  ${E_RESET}] Bright green bg, black fg"
-	
-	echo -e "[${E_BG_BR_GREEN}${E_GREEN} Debug  ${E_RESET}] Bright green bg, green fg"
-	echo -e "[${E_BG_GREEN}${E_BR_GREEN} Debug  ${E_RESET}] Green bg, Br green fg"
+
+  echo -e "[${E_BG_BR_GREEN}${E_GREEN} Debug  ${E_RESET}] Bright green bg, green fg"
+  echo -e "[${E_BG_GREEN}${E_BR_GREEN} Debug  ${E_RESET}] Green bg, Br green fg"
 
 }
 
@@ -603,7 +603,7 @@ colorize() { ##D Test F="/use/local/var/log/messages"
 }
 
 aa() {
-  bpTextLine "$1"
+  bpPrintLine "$1"
   bpPrintInfo "cmd1" "My command 1"
   bpPrintInfo "cmd2" "My command 2"
   bpPrintVar "NoVar" "Somevariable"
@@ -749,6 +749,52 @@ completion() { ##D Print help information
   fi
 }
 
+args() { ##D Test of arguments
+  bpInfo "All options: $*"
+  while getopts ':abc' opt; do
+    case "${opt}" in
+    a) echo "A" ;;
+    b) echo "B" ;;
+    c) echo "C" ;;
+    esac
+  done
+}
+
+line() { ##D Some test
+  bpPrintLine
+  bpPrintLine "A text line"
+  bpPrintLine "XXX"
+}
+
+##- Update script
+kwr() { ##D Keyword replace
+  if [ ! -e "$2" ]; then
+    bpError "File ${2} does not exist"
+    bpExit
+  fi
+  bpReplace "$2" "bpTextLineC" "bpText_TEMP_LineC"
+
+  bpReplace "$2" "bpLine()" "bpLine_deprecated() "
+  bpReplace "$2" "bpLine" "bpPrintLine"
+  bpReplace "$2" "bpPrintLineC" "bpPrintLineGeneric"
+  bpReplace "$2" "bpTextLine" "bpPrintLine"
+
+  bpReplace "$2" "bpText_TEMP_LineC" "bpTextLineC"
+
+  bpReplace "$2" "bpRead()" "bpReadStr()"
+  bpReplace "$2" "bpRead " "bpReadStr "
+  bpReplace "$2" "bpReadYN" "bpReadBool"
+  bpReplace "$2" "bpReadY" "bpReadBoolDY"
+  bpReplace "$2" "bpReadN" "bpReadBoolDN"
+
+  #bpReplace "$2" "_ATTR_" "_"
+  #bpReplace "$2" "_CUR_" "_"
+
+  bpReplace "$2" "_FG_" "_"
+  bpReplaceLine "$2" "BP_C_FILENAME=" 'BP_C_FILENAME="${E_BR_CYAN}"'
+  bpReplaceLine "$2" "BP_C_PATH=" 'BP_C_PATH="${E_CYAN}"'
+}
+
 #---------------------------------------------------------------------
 # Bashplate modules
 #---------------------------------------------------------------------
@@ -853,14 +899,14 @@ signalDbg() {
 ##C- IHELP Exit and cleanup
 
 bpCallStack() { ##I Print out BASH call stack
-  bpTextLine "Call stack"
+  bpPrintLine "Call stack"
   echo
   local frame=0
   while caller $frame | sed -r -e "s/[0-9]*/${BP_C_VALUE}&${E_RESET}/"; do
     ((frame++))
   done
   echo "$*"
-  bpLine
+  bpPrintLine
 }
 
 bpCleanUp() {           ##I Cleanup function
@@ -1000,8 +1046,8 @@ BP_C_LINE_TEXT="${E_YELLOW}"
 BP_C_DESCRIPTION="${E_GREEN}"
 BP_C_ID="${E_CYAN}"
 
-BP_C_FILENAME="${E_BR_GREEN}"
-BP_C_PATH="${E_GREEN}"
+BP_C_FILENAME="${E_BR_CYAN}"
+BP_C_PATH="${E_CYAN}"
 BP_C_URL_SCHEME="${E_DARKGRAY}"
 # BP_C_URL_USER=""
 # BP_C_URL_HOST=""
@@ -1031,7 +1077,7 @@ BP_E_OK=0 # successful termination
 # $4 middle character
 # $5 line character
 #
-bpPrintLineC() { ##I Print text with adjusted line after with selectable colors
+bpPrintLineGeneric() { ##I Print text with adjusted line after with selectable colors
   len1="${#1}"
   len4="${#4}"
 
@@ -1047,24 +1093,16 @@ bpPrintLineC() { ##I Print text with adjusted line after with selectable colors
 # $3 line color
 #
 bpTextLineC() { ##I Print text with adjusted line after with selectable colors
-  bpPrintLineC "$1" "$2" "$3" " " "-"
+  bpPrintLineGeneric "$1" "$2" "$3" " " "-"
 }
 
-bpTextLine_old() { ##I Print text with line after
-  bpTextLineC "$1" "${BP_C_LINE_TEXT}" "${BP_C_LINE}"
-}
-
-bpTextLine() { ##I Print text with line after
+bpPrintLine() { ##I Print text with line after
   #  echo "$1 ${#1}"
   if [ "${#1}" -eq 0 ]; then
-    bpPrintLineC "" "" "${BP_C_LINE}" "" "-"
+    bpPrintLineGeneric "" "" "${BP_C_LINE}" "" "-"
   else
-    bpPrintLineC "$1" "${BP_C_LINE_TEXT}" "${BP_C_LINE}" " " "-"
+    bpPrintLineGeneric "$1" "${BP_C_LINE_TEXT}" "${BP_C_LINE}" " " "-"
   fi
-}
-
-bpLine() { ##I Print a divider row
-  bpPrintLineC "" "${BP_C_LINE}" "${BP_C_LINE}" "" "-"
 }
 
 #
@@ -1277,7 +1315,7 @@ bpBackup() { ##I Make backup of file
 # $2 text to replace
 # $3 new text
 #
-bpReplace() { ##I Replace text in file
+bpReplace() { ##I Replace all ocurances of text in file
   sed -i -e "s/${2}/${3}/g" "$1"
 }
 
@@ -1379,7 +1417,7 @@ bpInsert() { ##I Insert text into file
 # $2  Default value
 # return string read from cmdline/default if enter pressed
 #
-bpRead() { ##I Read string from commandline
+bpReadStr() { ##I Read string from commandline
 
   if [ "${2}" == "" ]; then
     read -erp "${1} > " result
@@ -1425,13 +1463,13 @@ bpReadInt() { ##I Read integer from commandline
 # $2 default answer 0 = yes, 1 = no
 # return 0 = Yes, 1=No
 #
-bpReadYN() { ##I Ask yes/no question generic
+bpReadBool() { ##I Ask yes/no question generic
   while true; do
 
     if [ "$2" -eq 1 ]; then
-      yn=$(bpRead "${1} [y/N]")
+      yn=$(bpReadStr "${1} [y/N]")
     else
-      yn=$(bpRead "${1} [Y/n]")
+      yn=$(bpReadStr "${1} [Y/n]")
     fi
 
     case "$yn" in
@@ -1456,8 +1494,8 @@ bpReadYN() { ##I Ask yes/no question generic
 # $1 Question text
 # return 0 = Yes, 1=No
 #
-bpReadY() { ##I Ask yes/no question default yes
-  bpReadYN "$1" 0
+bpReadBoolDY() { ##I Ask yes/no question default yes
+  bpReadBool "$1" 0
   return $?
 }
 
@@ -1465,8 +1503,8 @@ bpReadY() { ##I Ask yes/no question default yes
 # $1 Question text
 # return 0 = Yes, 1=No
 #
-bpReadN() { ##I Ask yes/no question default no
-  bpReadYN "$1" 1
+bpReadBoolDN() { ##I Ask yes/no question default no
+  bpReadBool "$1" 1
   return $?
 }
 
@@ -1552,14 +1590,14 @@ bpLoadSettings() {
 }
 
 settings() { ##C BP_CONF Print bashplate settings
-  bpTextLine "Bashplates settings"
+  bpPrintLine "Bashplates settings"
   bpPrintVar "Name:" BP_NAME
   bpPrintVar "Email:" BP_EMAIL
   bpPrintVar "Default license:" BP_LICENSE
   bpPrintVar "Default editor" BP_EDITOR
   bpPrintVar "Default organisation" BP_ORG
   bpPrintVar "Default diff program" BP_DIFF
-  bpLine
+  bpPrintLine
 }
 
 setname() { ##C BP_CONF Set name
@@ -1835,7 +1873,7 @@ printNamedLine() {
   IFS=$' '
   read -r -a arr <<<"$1"
   info=${arr[*]:1}
-  bpTextLine "${info}"
+  bpPrintLine "${info}"
 }
 
 printCondNamedLine() {
@@ -1845,7 +1883,7 @@ printCondNamedLine() {
   COND=${arr[1]}
   eval "D=\$$COND"
   if [ -n "$D" ]; then
-    bpTextLine "$name"
+    bpPrintLine "$name"
   fi
 }
 
@@ -1895,13 +1933,13 @@ ihelp() { ##I Print internal help information
   # Singe command documentation
   if [ "$2" != "" ]; then
     echo
-    bpTextLine "$2"
+    bpPrintLine "$2"
     echo
     echo "#"
     echo -n "# "
     grep --no-filename "$0" -e "${2}()" | sed -n -e 's/^.*##I //p'
     grep --no-filename -B 8 "$0" -e "${2}()" | grep "#" | grep -v "##"
-    bpLine
+    bpPrintLine
     bpExit
   fi
 
@@ -1925,17 +1963,17 @@ ihelp() { ##I Print internal help information
     esac
   done
 
-  bpTextLine "Bashplates comments"
+  bpPrintLine "Bashplates comments"
   bpPrintInfo "##D Description" "Subcommand information comment (shown with help)"
   bpPrintInfo "##C COND Description" "Conditional subcommand comment (shown with help)"
   bpPrintInfo "##- [Text]" "Separator line (shown with help)"
   bpPrintInfo "##C- COND [Text]" "Conditional separator line (shown with help)"
   bpPrintInfo "##I Description" "Internal function comment (shown ihelp)"
-  bpLine
+  bpPrintLine
 }
 
 iinfo() { ##I Show information about script
-  bpTextLine "Script information"
+  bpPrintLine "Script information"
   bpPrintVar "Script" BP_SELF "$(bpColorizeFile "${BP_SELF_DIR}/${BP_SELF}")"
   bpPrintVar "Script version" BP_VERSION
   bpPrintVar "Template version" BP_VERSION
@@ -1950,7 +1988,7 @@ iinfo() { ##I Show information about script
   bpPrintVar "Character lines" BP_LINES
 
   if [ -n "${POST_INFO_HOOK}" ]; then
-    bpTextLine "App. information"
+    bpPrintLine "App. information"
     ${POST_INFO_HOOK}
   fi
   settings
@@ -2006,7 +2044,7 @@ iview() { ##I View example
 }
 
 ivars() { ##I Print internal variables
-  bpTextLine "Script variables"
+  bpPrintLine "Script variables"
   echo
   IFS=$'\n'
   help_lines=$(grep -v -e 'help_lines' -e 'help_line' "$0" | grep -A 1 '##V') # | sed "s/--//" )

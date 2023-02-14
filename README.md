@@ -290,13 +290,15 @@ To montor the logfile simply enter the "mlog" command.
 - [ ] dictionary functions
 - [ ] Select from list function
 - [ ] Module system
-- [ ] Merge bpLine and bpTextLine
+- [x] Merge bpLine and bpTextLine
 - [ ] Reformat messages to "straigt columns"
-- [ ] rename bpRead to bpReadStr(ing)
+- [x] rename bpRead to bpReadStr(ing)
+- [x] rename all bpRead?? to more apropriate
 - [ ] multi column output
 - [ ] Fix bpEscapeFilter
 - [ ] Change color of time and date in log view command from green/dark green to something else t.ex. magenta
 - [ ] Add automatic completions 
+- [x] Add keyword change function to bpdev
 
 
 ## Sugestions

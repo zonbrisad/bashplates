@@ -1,4 +1,5 @@
 # shellcheck disable=2034
+# shellcheck disable=2317
 # shellcheck disable=1090
 #---------------------------------------------------------------------
 #
