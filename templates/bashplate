@@ -91,7 +91,7 @@ DEFAULT_CMD_HOOK=help
 
 signalInt() {
   bpCleanUp
-  exit "$BP_E_OK"
+  exit "$BP_OK"
 }
 
 signalHup() {
@@ -229,33 +229,33 @@ E_UL_BR_CYAN=$'\e[58;5;14m'    # Bright Cyan
 E_UL_WHITE=$'\e[58;5;15m'      # White
 
 # ANSI Text attributes
-E_ATTR_BOLD=$'\e[1m'               # Bold text
-E_ATTR_DIM=$'\e[2m'                # Dim(low intensity) text
-E_ATTR_ITALIC=$'\e[3m'             # Italic text
-E_ATTR_UNDERLINE=$'\e[4m'          # Underlined text
-E_ATTR_UNDERLINE_DOUBLE=$'\e[4:2m' # Double underline (limited support)
-E_ATTR_UNDERLINE_CURLY=$'\e[4:3m'  # Curly underline (limited support)
-E_ATTR_UNDERLINE_DOT=$'\e[4:4m'    # Dotted underline (limited support)
-E_ATTR_UNDERLINE_DASH=$'\e[4:5m'   # Dashed underline (limited support)
-E_ATTR_BLINK=$'\e[5m'              # Blinking text
-E_ATTR_RAPID_BLINK=$'\e[6m'        # Rapid blink (Limited support)
-E_ATTR_REVERSE=$'\e[7m'            # Reverse color
-E_ATTR_CROSSED=$'\e[9m'            # Crossed over text
-E_ATTR_FRAKTUR=$'\e[20m'           # Gothic (limited support)
-E_ATTR_FRAMED=$'\e[51m'            # Framed (limited support)
-E_ATTR_OVERLINED=$'\e[53m'         # Overlined text
-E_ATTR_SUPERSCRIPT=$'\e[73m'       # Superscript text (limited support)
-E_ATTR_SUBSCRIPT=$'\e[74m'         # Subscript text (limited support)
+E_BOLD=$'\e[1m'               # Bold text
+E_DIM=$'\e[2m'                # Dim(low intensity) text
+E_ITALIC=$'\e[3m'             # Italic text
+E_UNDERLINE=$'\e[4m'          # Underlined text
+E_UNDERLINE_DOUBLE=$'\e[4:2m' # Double underline (limited support)
+E_UNDERLINE_CURLY=$'\e[4:3m'  # Curly underline (limited support)
+E_UNDERLINE_DOT=$'\e[4:4m'    # Dotted underline (limited support)
+E_UNDERLINE_DASH=$'\e[4:5m'   # Dashed underline (limited support)
+E_BLINK=$'\e[5m'              # Blinking text
+E_RAPID_BLINK=$'\e[6m'        # Rapid blink (Limited support)
+E_REVERSE=$'\e[7m'            # Reverse color
+E_CROSSED=$'\e[9m'            # Crossed over text
+E_FRAKTUR=$'\e[20m'           # Gothic (limited support)
+E_FRAMED=$'\e[51m'            # Framed (limited support)
+E_OVERLINED=$'\e[53m'         # Overlined text
+E_SUPERSCRIPT=$'\e[73m'       # Superscript text (limited support)
+E_SUBSCRIPT=$'\e[74m'         # Subscript text (limited support)
 
 # ANSI cursor operations
 #
-E_CUR_RETURN=$'\e[F'  # Move cursor to begining of line
-E_CUR_UP=$'\e[A'      # Move cursor one line up
-E_CUR_DOWN=$'\e[B'    # Move cursor one line down
-E_CUR_FORWARD=$'\e[C' # Move cursor forward
-E_CUR_BACK=$'\e[D'    # Move cursor backward
-E_CUR_HIDE=$'\e[?25l' # Hide cursor
-E_CUR_SHOW=$'\e[?25h' # Show cursor
+E_RETURN=$'\e[F'  # Move cursor to begining of line
+E_UP=$'\e[A'      # Move cursor one line up
+E_DOWN=$'\e[B'    # Move cursor one line down
+E_FORWARD=$'\e[C' # Move cursor forward
+E_BACK=$'\e[D'    # Move cursor backward
+E_HIDE=$'\e[?25l' # Hide cursor
+E_SHOW=$'\e[?25h' # Show cursor
 
 E_RESET=$'\e[0m' # Clear Attributes
 
@@ -287,7 +287,7 @@ BP_C_VAR="${E_BR_YELLOW}"
 
 # Exit codes
 #
-BP_E_OK=0 # successful termination
+BP_OK=0 # successful termination
 
 #---------------------------------------------------------------------
 # Bashplate internal functions

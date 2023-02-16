@@ -60,39 +60,9 @@ logtest() { ##D Test of log function
   log
 }
 
-print() { ##D Bashplate text output function examples
-  echo -e "\nExample of $E_GREEN bpPrintLine $E_RESET"
-  bpPrintLine
-
-  echo -e "\nExample of $E_GREEN bpPrintLine $E_RESET"
-  bpPrintLine "Kalle"
-
-  echo -e "\nExample of $E_GREEN bpPrintInfo $E_RESET"
-  bpPrintInfo "Kalle" "desc"
-
-  echo -e "\nExample of $E_GREEN bpColorizeFile $E_RESET"
-  F="/use/local/var/log/messages"
-  echo -e "The filename $(bpColorizeFile $F) is colorized."
-
-  echo -e "\nExample of $E_GREEN bpColorizeUrl $E_RESET"
-  echo -n " $(bpColorizeUrl https://github.com/zonbrisad/bashplates)"
-  echo
-}
-
 traptest() { ##D Trap signal test
   TRAPTEST=1
-  bpRead "Press CTRL-C"
-}
-
-tltest() { ##D Test textline
-  bpPrintLineC "Green" "${E_BR_GREEN}" "${E_GREEN}" "_"
-  bpPrintLineC "Magenta" "${E_BR_MAGENTA}" "${E_MAGENTA}" "_"
-  bpPrintLineC "Blue" "${E_BR_BLUE}" "${E_BLUE}" "_"
-  bpPrintLineC "Red" "${E_BR_RED}" "${E_RED}" "_"
-  bpPrintLineC "Yellow" "${E_BR_YELLOW}" "${E_YELLOW}" "_"
-  bpPrintLineC "Cyan" "${E_BR_CYAN}" "${E_CYAN}" "_"
-  bpPrintLineC "White" "${E_WHITE}" "${E_GRAY}" "_"
-  bpPrintLine "Standard colors"
+  bpReadStr "Press CTRL-C"
 }
 
 roottest() { ##D Test assert root
@@ -177,136 +147,136 @@ postCmdHook() {
 
 ##- Misc
 
-pipe() { ##D pipe example
+pipe() { ##D Pipe data to script
   stdin=$(cat)
   bpInfo "The follwing text was \"piped\" to the script"
   echo -e "$stdin"
 }
 
-##- Some fun
+##- ANSI Terminal
 
-bpElapsedTime() { ##D Return elapsed time
-  #dt=$((etime - stime))
-  dt=$SECONDS # total time elapsed in seconds
-  ds=$((dt % 60))
-  dm=$(((dt / 60) % 60))
-  dh=$((dt / 3600))
-  printf '%02d:%02d:%02d' "$dh" "$dm" "$ds"
+print_attr() {
+  eval "ATTR=\$${1}"
+  printf "${ATTR}%-30s ${E_GREEN}%-20s${E_RESET}\n" "${2}${E_RESET}" "${1}"
 }
 
-print_spinner() {
-
-  XX=("|" "/" "-" "\\")
-  if [ -n "$SPINNER" ]; then
-    SPINNER=$((SPINNER + 1))
-    if [ "$SPINNER" -gt 3 ]; then
-      SPINNER=0
-    fi
-  else
-    SPINNER=0
-  fi
-  echo " ${XX[$SPINNER]} $1"
-  echo -e "$E_CUR_RETURN $E_CUR_UP"
-}
-
-spinner() { ##D Spinner example
-  echo "$E_HIDE"
-  for i in {1..100}; do
-    print_spinner "Processing... $(bpElapsedTime)"
-    sleep 0.1
-  done
-  echo -e "${E_SHOW}"
-}
-
-bpWait() { ##I Wait for n seconds
-  echo "${E_HIDE}"
-  a=0
-  tmp=${SECONDS}
-  while [ "$a" -lt "$1" ]; do
-    a=$((SECONDS - tmp))
-    print_spinner "Waiting... $a"
-    sleep 0.1
-  done
-  echo -e "${E_SHOW}"
-}
-
-wait() { ##D Wait for n seconds
-  bpWait "$2"
-}
-
-print_bar() {
-
-  echo -n " ["
-  for jx in $(seq 1 "${2}"); do
-    echo -n "="
-  done
-  for jx in $(seq 1 $((${1} - ${2}))); do
-    echo -n " "
-  done
-  echo -n "] ${2}"
-}
-
-bar() { ##D print a testbar (ANSI)
-  bpPrintLine "Bar test"
-  echo -en "$E_HIDE"
-  for i in {1..60}; do
-    sleep 0.03
-    print_bar 60 "$i"
-    #echo -e "$E_CUR_RETURN $E_CUR_UP"
-    echo -en "$E_CUR_RETURN$E_CUR_DOWN"
-  done
-  echo -e "$E_SHOW"
-}
-
-barcr() { ##D print a testbar using carriage return(ANSI)
-  bpPrintLine "Bar test"
-  echo -en "$E_HIDE"
-  for i in {1..60}; do
-    sleep 0.03
-    print_bar 60 "$i"
-    echo -en "\r"
-  done
-  echo -e "$E_SHOW"
-}
-
-shade() { ##D Shade demo (256 color terminal required)
-  #echo -en '\033]1 Kalle \007'
-  #echo
-  bpPrintLine "B/W shading"
-  echo -en "$E_HIDE"
-  echo
-  echo -en "$E_CUR_RETURN"
-  for i in {232..255} {255..232}; do
-    sleep 0.05
-    printf "\x1b[38;5;%sm _____ Shading text _____ ${E_RESET}" "$i"
-    echo -en "$E_CUR_RETURN$E_CUR_DOWN"
-  done
-  echo -e "$E_SHOW"
+print_attr2() {
+  eval "ATTR=\$${1}"
+  printf "${E_UNDERLINE}${ATTR}%-30s ${E_GREEN}%-20s${E_RESET}\n" "${2}${E_RESET}" "${1}"
 }
 
 attr() { ##D demonstrate font attributes
   echo
-  bpPrintLine "Font attributes"
+  bpPrintLine "Font style attributes"
   echo
-  echo -e "${E_ATTR_UNDERLINE}Underline${E_RESET}"
-  echo -e "${E_ATTR_BOLD}Bold${E_RESET}"
-  echo -e "${E_ATTR_BLINK}Blink${E_RESET}"
-  echo -e "${E_ATTR_LOWI}Low Intensity${E_RESET}"
-  echo -e "${E_ATTR_REVERSE}Reverse video${E_RESET}"
+  print_attr "E_RESET" "Normal text"
+  print_attr "E_BOLD" "Bold text"
+  print_attr "E_DIM" "Dim text"
+  print_attr "E_ITALIC" "Italic text"
+  print_attr "E_REVERSE" "Reverse text"
+  print_attr "E_BLINK" "Blink text"
+  print_attr "E_UNDERLINE" "Underline text"
+  print_attr "E_CROSSED" "Crossed text"
+  echo
+  bpPrintLine "Extended font style attributes(limited support)"
+  echo
+  print_attr "E_FRACTUR" "Fractur/gothic"
+  print_attr "E_UNDERLINE_CURLY" "Underline curly"
+  print_attr "E_UNDERLINE_DOUBLE" "Underline double"
+  print_attr "E_UNDERLINE_DOT" "Underline dotted"
+  print_attr "E_UNDERLINE_DASH" "Underline dashed"
+  print_attr "E_SUBSCRIPT" "Subscript"
+  print_attr "E_SUPERSCRIPT" "Superscript"
+  print_attr "E_RAPID_BLINK" "Rapid blink"
+  print_attr "E_FRAME" "Frame"
+  echo
+  print_attr "E_OVERLINED" "Overlined"
   echo
 }
 
-color1() { ##D Standard 16 colors
-  FCOLORS2=(E_BLACK E_RED E_GREEN E_YELLOW E_BLUE E_MAGENTA E_CYAN E_GRAY E_DARKGRAY E_BR_RED E_BR_GREEN E_BR_YELLOW E_BR_BLUE E_BR_MAGENTA E_BR_CYAN E_WHITE)
-  BCOLORS2=(E_BG_BLACK E_BG_RED E_BG_GREEN E_BG_YELLOW E_BG_BLUE E_BG_MAGENTA E_BG_CYAN E_BG_WHITE)
+textc() { ##D Font color
+
+  echo
+  bpPrintLine "Foreground color attributes"
+  echo
+  print_attr "E_RED" "Foreground red"
+  print_attr "E_YELLOW" "Foreground yellow"
+  print_attr "E_GREEN" "Foreground green"
+  print_attr "E_BLUE" "Foreground blue"
+  print_attr "E_CYAN" "Foreground cyan"
+  print_attr "E_MAGENTA" "Foreground magenta"
+  print_attr "E_DARKGRAY" "Foreground dark gray"
+  print_attr "E_BR_RED" "Foreground red"
+  print_attr "E_BR_YELLOW" "Foreground yellow"
+  print_attr "E_BR_GREEN" "Foreground green"
+  print_attr "E_BR_BLUE" "Foreground blue"
+  print_attr "E_BR_CYAN" "Foreground cyan"
+  print_attr "E_BR_MAGENTA" "Foreground magenta"
+  print_attr "E_GRAY" "Foreground gray"
+  print_attr "E_WHITE" "Foreground white"
+  echo
+  bpPrintLine "Background color attributes"
+  echo
+  print_attr "E_BG_RED" "Background red"
+  print_attr "E_BG_YELLOW" "Background yellow"
+  print_attr "E_BG_GREEN" "Background green"
+  print_attr "E_BG_BLUE" "Background blue"
+  print_attr "E_BG_CYAN" "Background cyan"
+  print_attr "E_BG_MAGENTA" "Background magenta"
+  print_attr "E_BG_DARKGRAY" "Background dark gray"
+  print_attr "E_BG_BR_RED" "Background red"
+  print_attr "E_BG_BR_YELLOW" "Background yellow"
+  print_attr "E_BG_BR_GREEN" "Background green"
+  print_attr "E_BG_BR_BLUE" "Background blue"
+  print_attr "E_BG_BR_CYAN" "Background cyan"
+  print_attr "E_BG_BR_MAGENTA" "Background magenta"
+  print_attr "E_BG_GRAY" "Background gray"
+  print_attr "E_BG_WHITE" "Background white"
+  echo
+  bpPrintLine "Underline color attributes (only supported on certain terminals)"
+  echo
+  print_attr2 "E_UL_RED" "Underline red"
+  print_attr2 "E_UL_YELLOW" "Underline yellow"
+  print_attr2 "E_UL_GREEN" "Underline green"
+  print_attr2 "E_UL_BLUE" "Underline blue"
+  print_attr2 "E_UL_CYAN" "Underline cyan"
+  print_attr2 "E_UL_MAGENTA" "Underline magenta"
+  print_attr2 "E_UL_DARKGRAY" "Underline dark gray"
+  print_attr2 "E_UL_BR_RED" "Underline red"
+  print_attr2 "E_UL_BR_YELLOW" "Underline yellow"
+  print_attr2 "E_UL_BR_GREEN" "Underline green"
+  print_attr2 "E_UL_BR_BLUE" "Underline blue"
+  print_attr2 "E_UL_BR_CYAN" "Underline cyan"
+  print_attr2 "E_UL_BR_MAGENTA" "Underline magenta"
+  print_attr2 "E_UL_GRAY" "Underline gray"
+  print_attr2 "E_UL_WHITE" "Underline white"
+  echo
+}
+
+c16() { ##D Standard 16 colors
+  FCOLORS=(E_BLACK E_RED E_GREEN E_YELLOW E_BLUE E_MAGENTA E_CYAN E_GRAY E_DARKGRAY E_BR_RED E_BR_GREEN E_BR_YELLOW E_BR_BLUE E_BR_MAGENTA E_BR_CYAN E_WHITE)
+  BCOLORS=(E_BG_BLACK E_BG_RED E_BG_GREEN E_BG_YELLOW E_BG_BLUE E_BG_MAGENTA E_BG_CYAN E_BG_WHITE)
+  BCOLORS_BR=(E_BG_DARK_GRAY E_BG_BR_RED E_BG_BR_GREEN E_BG_BR_YELLOW E_BG_BR_BLUE E_BG_BR_MAGENTA E_BG_BR_CYAN E_BG_GRAY)
 
   echo
   bpPrintLine "16 color map"
-  for fc in ${FCOLORS2[*]}; do
+  echo
+  for fc in "${FCOLORS[@]}"; do
     eval "FG=\$$fc"
-    for bc in ${BCOLORS2[*]}; do
+    for bc in "${BCOLORS[@]}"; do
       eval "BG=\$$bc"
-      printf "${FG}${BG}%-15s${E_RESET}" "$fc"
+      printf "${FG}${BG}%-10s${E_RESET}" "${fc:2}"
+    done
+    echo
+  done
+
+  echo
+
+  for fc in "${FCOLORS[@]}"; do
+    eval "FG=\$$fc"
+    for bc in "${BCOLORS_BR[@]}"; do
+      eval "BG=\$$bc"
+      printf "${FG}${BG}%-10s${E_RESET}" "${fc:2}"
     done
     echo
   done
@@ -314,7 +284,7 @@ color1() { ##D Standard 16 colors
   echo
 }
 
-color3() { ##D Show example of all 256 colors
+c256() { ##D Show example of all 256 colors
 
   echo
   #  bpPrintLine "256 Colors foreground"
@@ -362,10 +332,106 @@ color3() { ##D Show example of all 256 colors
   echo -e "\n"
 }
 
-#color3() { ##D Color test
-#  echo -e "[${E_BLACK}${E_ON_RED}Error${E_RESET}] ${E_BR_RED}Error text${E_RESET}"
-#  echo -e "[${E_WHITE}${E_ON_YELLOW}Warning${E_RESET}] ${E_BR_YELLOW}Warning text${E_RESET}"
-#}
+##- Some fun
+
+bpElapsedTime() { ##D Return elapsed time
+  #dt=$((etime - stime))
+  dt=$SECONDS # total time elapsed in seconds
+  ds=$((dt % 60))
+  dm=$(((dt / 60) % 60))
+  dh=$((dt / 3600))
+  printf '%02d:%02d:%02d' "$dh" "$dm" "$ds"
+}
+
+print_spinner() {
+
+  XX=("|" "/" "-" "\\")
+  if [ -n "$SPINNER" ]; then
+    SPINNER=$((SPINNER + 1))
+    if [ "$SPINNER" -gt 3 ]; then
+      SPINNER=0
+    fi
+  else
+    SPINNER=0
+  fi
+  echo " ${XX[$SPINNER]} $1"
+  echo -e "$E_RETURN $E_UP"
+}
+
+spinner() { ##D Spinner example
+  echo "$E_HIDE"
+  for i in {1..100}; do
+    print_spinner "Processing... $(bpElapsedTime)"
+    sleep 0.1
+  done
+  echo -e "${E_SHOW}"
+}
+
+bpWait() { ##I Wait for n seconds
+  echo "${E_HIDE}"
+  a=0
+  tmp=${SECONDS}
+  while [ "$a" -lt "$1" ]; do
+    a=$((SECONDS - tmp))
+    print_spinner "Waiting... $a"
+    sleep 0.1
+  done
+  echo -e "${E_SHOW}"
+}
+
+wait() { ##D Wait for n seconds
+  bpWait "$2"
+}
+
+print_bar() {
+
+  echo -n " ["
+  for jx in $(seq 1 "${2}"); do
+    echo -n "="
+  done
+  for jx in $(seq 1 $((${1} - ${2}))); do
+    echo -n " "
+  done
+  echo -n "] ${2}"
+}
+
+bar() { ##D print a testbar (ANSI)
+  bpPrintLine "Bar test"
+  echo -en "$E_HIDE"
+  for i in {1..60}; do
+    sleep 0.03
+    print_bar 60 "$i"
+    #echo -e "$E_RETURN $E_UP"
+    echo -en "$E_RETURN$E_DOWN"
+  done
+  echo -e "$E_SHOW"
+}
+
+barcr() { ##D print a testbar using carriage return(ANSI)
+  bpPrintLine "Bar test"
+  echo -en "$E_HIDE"
+  for i in {1..60}; do
+    sleep 0.03
+    print_bar 60 "$i"
+    echo -en "\r"
+  done
+  echo -e "$E_SHOW"
+}
+
+shade() { ##D Shade demo (256 color terminal required)
+  #echo -en '\033]1 Kalle \007'
+  #echo
+  bpPrintLine "B/W shading"
+  echo -en "$E_HIDE"
+  echo
+  echo -en "$E_RETURN"
+  for i in {232..255} {255..232}; do
+    sleep 0.05
+    printf "\x1b[38;5;%sm _____ Shading text _____ ${E_RESET}" "$i"
+    echo -en "$E_RETURN$E_DOWN"
+  done
+  echo -e "$E_SHOW"
+}
 
 FLAG_BLUE="\x1b[48;5;20m"
 FLAG_YELLOW="\x1b[48;5;226m"
@@ -421,34 +487,6 @@ hugeFlag() {
   echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
 }
 
-FLAG_RED=$'\e[41m'   # Red
-FLAG_WHITE=$'\e[47m' # White
-
-norwayFlag() {
-
-  #  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_RESET}"
-  #  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_RESET}"
-  #  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_RESET}"
-  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_RESET}"
-  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_RESET}"
-  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_RESET}"
-  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_RESET}"
-  echo -e "${FLAG_WHITE}           ${FLAG_BLUE}    ${FLAG_WHITE}                       ${E_RESET}"
-  echo -e "${FLAG_BLUE}                                      ${E_RESET}"
-  echo -e "${FLAG_BLUE}                                      ${E_RESET}"
-  echo -e "${FLAG_WHITE}           ${FLAG_BLUE}    ${FLAG_WHITE}                       ${E_RESET}"
-  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_RESET}"
-  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_RESET}"
-  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_RESET}"
-  echo -e "${FLAG_RED}         ${FLAG_WHITE}  ${FLAG_BLUE}    ${FLAG_WHITE}  ${FLAG_RED}                     ${E_RESET}"
-
-  #  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_RESET}"
-  #  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_RESET}"
-  #  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_RESET}"
-  #  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_RESET}"
-  #  echo -e "${FLAG_RED}           ${FLAG_BLUE}    ${FLAG_RED}                       ${E_RESET}"
-}
-
 flags() { ##D Print swedish flags
   echo
   smallFlag
@@ -459,15 +497,12 @@ flags() { ##D Print swedish flags
   echo
   hugeFlag
   echo
-  #  norwayFlag
-  #  echo
 }
 
 fret() {
   sleep 0.1
-  echo "$E_CUR_RETURN" "$E_CUR_UP" "$E_CUR_UP" "$E_CUR_UP" "$E_CUR_UP" "$E_CUR_UP" "$E_CUR_UP" "$E_CUR_UP"
+  echo "$E_RETURN" "$E_UP" "$E_UP" "$E_UP" "$E_UP" "$E_UP" "$E_UP" "$E_UP"
   mediumFlag
-
 }
 
 fadeflag() { ##D Fade flag
@@ -491,8 +526,7 @@ fadeflag() { ##D Fade flag
   FLAG_YELLOW="\x1b[48;5;226m"
   fret
 
-  echo "$E_CUR_DOWN $E_CUR_DOWN $E_CUR_DOWN $E_CUR_DOWN $E_CUR_DOWN"
-
+  echo "$E_DOWN $E_DOWN $E_DOWN $E_DOWN $E_DOWN"
 }
 
 flash() { ##D Flash screen
@@ -514,9 +548,9 @@ rgb() {           ##D Many colors
 ##- Read tests
 
 readstr() { ##D Test string read from cmdline
-  x=$(bpRead "Enter a string" "Default value")
+  x=$(bpReadStr "Enter a string" "Default value")
   echo "You entered \"$x\""
-  x=$(bpRead "Just press enter" "Default value")
+  x=$(bpReadStr "Just press enter" "Default value")
   echo "You entered \"$x\""
 }
 
@@ -527,14 +561,14 @@ readint() { ##D Test integer read from cmdline
   echo "You entered \"$x\""
 }
 
-readyn() { ##D Test Yes/No question from cmdline
-  if bpReadY "Default yes"; then
+readbool() { ##D Test Yes/No question from cmdline
+  if bpReadBoolDY "Default yes"; then
     echo "YES"
   else
     echo "NO"
   fi
 
-  if bpReadN "Default no"; then
+  if bpReadBoolDN "Default no"; then
     echo "YES"
   else
     echo "NO"
@@ -562,7 +596,7 @@ bpReadSelect() {
       bpPrintInfo "${choice}) " "${desc}"
     done
 
-    ans=$(bpRead "Choice" "${2}")
+    ans=$(bpReadStr "Choice" "${2}")
 
     i=2
     while [ "$i" -lt "$len" ]; do
@@ -601,6 +635,7 @@ bpShow() {
     echo -e "${E_UP}${E_RETURN}"
     echo -e "${E_BR_RED}$1${E_RESET}"
     sleep 0.3
+    # echo -e "${E_UP}${E_RETURN}"
     echo -e "${E_UP}${E_RETURN}"
     #		echo -e "${E_RETURN}"
 
@@ -657,25 +692,6 @@ title() { ##D Set title
   bpWait 10
 }
 
-bpDo() { ##I Execute command
-  if $1; then
-    bpOk "Ok"
-  else
-    bpError "Command $1 failed"
-  fi
-
-}
-
-ex() { ##D Ex
-  bpDo ls
-  bpDo sl
-}
-
-fileTest() { ##D Test colorization of filename
-  F="/use/local/var/log/messages"
-  echo -n "The filename $(bpColorizeFile $F) is colorized."
-}
-
 #
 # String contains
 #
@@ -703,33 +719,6 @@ inString() { ##D String contains test
 
   bpInString "Hello" "$A"
   bpInString "Kalle" "$A"
-}
-
-arg() { ##A Integer argument test
-  bpPrintLine "Integer argument"
-}
-
-opttest() { ##D Options testing
-  echo "$1" "$2" "$3"
-  echo "$*"
-  bpPrintLine "Option testing"
-  while getopts ":a:" opt; do
-    echo "$opt"
-    case $opt in
-    a)
-      echo "-a was triggered, Parameter: $OPTARG" >&2
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
-      exit 1
-      ;;
-    :)
-      echo "Option -$OPTARG requires an argument." >&2
-      exit 1
-      ;;
-    esac
-  done
-
 }
 
 aVeryLongCommandTestCommand() { ##D Testing truncation of long command strings
@@ -821,10 +810,6 @@ backupfile() { ##D Backup file
 }
 
 #XXX=-e 's/[0-9]*/\\${BP_C_VALUE}&\\${E_RESET}/' \
-
-f() { ##D Create an error
-  false
-}
 
 #---------------------------------------------------------------------
 # Bashplate settings
@@ -1033,33 +1018,33 @@ E_UL_BR_CYAN=$'\e[58;5;14m'    # Bright Cyan
 E_UL_WHITE=$'\e[58;5;15m'      # White
 
 # ANSI Text attributes
-E_ATTR_BOLD=$'\e[1m'               # Bold text
-E_ATTR_LOWI=$'\e[2m'               # Low intensity
-E_ATTR_ITALIC=$'\e[3m'             # Italic text
-E_ATTR_UNDERLINE=$'\e[4m'          # Underlined text
-E_ATTR_UNDERLINE_DOUBLE=$'\e[4:2m' # Double underline (limited support)
-E_ATTR_UNDERLINE_CURLY=$'\e[4:3m'  # Curly underline (limited support)
-E_ATTR_UNDERLINE_DOT=$'\e[4:4m'    # Dotted underline (limited support)
-E_ATTR_UNDERLINE_DASH=$'\e[4:5m'   # Dashed underline (limited support)
-E_ATTR_BLINK=$'\e[5m'              # Blinking text
-E_ATTR_RAPID_BLINK=$'\e[6m'        # Rapid blink (Limited support)
-E_ATTR_REVERSE=$'\e[7m'            # Reverse color
-E_ATTR_CROSSED=$'\e[9m'            # Crossed over text
-E_ATTR_FRAKTUR=$'\e[20m'           # Gothic (limited support)
-E_ATTR_FRAMED=$'\e[51m'            # Framed (limited support)
-E_ATTR_OVERLINED=$'\e[53m'         # Overlined text
-E_ATTR_SUPERSCRIPT=$'\e[73m'       # Superscript text (limited support)
-E_ATTR_SUBSCRIPT=$'\e[74m'         # Subscript text (limited support)
+E_BOLD=$'\e[1m'               # Bold text
+E_LOWI=$'\e[2m'               # Low intensity
+E_ITALIC=$'\e[3m'             # Italic text
+E_UNDERLINE=$'\e[4m'          # Underlined text
+E_UNDERLINE_DOUBLE=$'\e[4:2m' # Double underline (limited support)
+E_UNDERLINE_CURLY=$'\e[4:3m'  # Curly underline (limited support)
+E_UNDERLINE_DOT=$'\e[4:4m'    # Dotted underline (limited support)
+E_UNDERLINE_DASH=$'\e[4:5m'   # Dashed underline (limited support)
+E_BLINK=$'\e[5m'              # Blinking text
+E_RAPID_BLINK=$'\e[6m'        # Rapid blink (Limited support)
+E_REVERSE=$'\e[7m'            # Reverse color
+E_CROSSED=$'\e[9m'            # Crossed over text
+E_FRAKTUR=$'\e[20m'           # Gothic (limited support)
+E_FRAMED=$'\e[51m'            # Framed (limited support)
+E_OVERLINED=$'\e[53m'         # Overlined text
+E_SUPERSCRIPT=$'\e[73m'       # Superscript text (limited support)
+E_SUBSCRIPT=$'\e[74m'         # Subscript text (limited support)
 
 # ANSI cursor operations
 #
-E_CUR_RETURN=$'\e[F'  # Move cursor to begining of line
-E_CUR_UP=$'\e[A'      # Move cursor one line up
-E_CUR_DOWN=$'\e[B'    # Move cursor one line down
-E_CUR_FORWARD=$'\e[C' # Move cursor forward
-E_CUR_BACK=$'\e[D'    # Move cursor backward
-E_CUR_HIDE=$'\e[?25l' # Hide cursor
-E_CUR_SHOW=$'\e[?25h' # Show cursor
+E_RETURN=$'\e[F'  # Move cursor to begining of line
+E_UP=$'\e[A'      # Move cursor one line up
+E_DOWN=$'\e[B'    # Move cursor one line down
+E_FORWARD=$'\e[C' # Move cursor forward
+E_BACK=$'\e[D'    # Move cursor backward
+E_HIDE=$'\e[?25l' # Hide cursor
+E_SHOW=$'\e[?25h' # Show cursor
 
 E_RESET=$'\e[0m' # Clear Attributes
 
@@ -1080,6 +1065,8 @@ BP_C_PATH="${E_CYAN}"
 BP_C_URL_SCHEME="${E_DARKGRAY}"
 # BP_C_URL_USER=""
 # BP_C_URL_HOST=""
+BP_C_TIME="${E_BR_MAGENTA}"
+BP_C_DATE="${E_MAGENTA}"
 
 # Shellscript colorize colors
 BP_C_RESERVED="${E_RED}"
@@ -1119,12 +1106,8 @@ bpPrintLineGeneric() { ##I Print text with adjusted line after with selectable c
 # $2 text color
 # $3 line color
 #
-bpPrintLineC() { ##I Print text with adjusted line after with selectable colors
+bpTextLineC() { ##I Print text with adjusted line after with selectable colors
   bpPrintLineGeneric "$1" "$2" "$3" " " "-"
-}
-
-bpPrintLine_old() { ##I Print text with line after
-  bpPrintLineC "$1" "${BP_C_LINE_TEXT}" "${BP_C_LINE}"
 }
 
 bpPrintLine() { ##I Print text with line after
@@ -1134,10 +1117,6 @@ bpPrintLine() { ##I Print text with line after
   else
     bpPrintLineGeneric "$1" "${BP_C_LINE_TEXT}" "${BP_C_LINE}" " " "-"
   fi
-}
-
-bpPrintLine_deprecated()  { ##I Print a divider row
-  bpPrintLineGeneric "" "${BP_C_LINE}" "${BP_C_LINE}" "" "-"
 }
 
 #
@@ -1339,7 +1318,7 @@ bpBackup() { ##I Make backup of file
 # $2 text to replace
 # $3 new text
 #
-bpReplace() { ##I Replace text in file
+bpReplace() { ##I Replace all ocurances of text in file
   sed -i -e "s/${2}/${3}/g" "$1"
 }
 
@@ -1441,7 +1420,7 @@ bpInsert() { ##I Insert text into file
 # $2  Default value
 # return string read from cmdline/default if enter pressed
 #
-bpRead() { ##I Read string from commandline
+bpReadStr() { ##I Read string from commandline
 
   if [ "${2}" == "" ]; then
     read -erp "${1} > " result
@@ -1487,13 +1466,13 @@ bpReadInt() { ##I Read integer from commandline
 # $2 default answer 0 = yes, 1 = no
 # return 0 = Yes, 1=No
 #
-bpReadYN() { ##I Ask yes/no question generic
+bpReadBool() { ##I Ask yes/no question generic
   while true; do
 
     if [ "$2" -eq 1 ]; then
-      yn=$(bpRead "${1} [y/N]")
+      yn=$(bpReadStr "${1} [y/N]")
     else
-      yn=$(bpRead "${1} [Y/n]")
+      yn=$(bpReadStr "${1} [Y/n]")
     fi
 
     case "$yn" in
@@ -1518,8 +1497,8 @@ bpReadYN() { ##I Ask yes/no question generic
 # $1 Question text
 # return 0 = Yes, 1=No
 #
-bpReadY() { ##I Ask yes/no question default yes
-  bpReadYN "$1" 0
+bpReadBoolDY() { ##I Ask yes/no question default yes
+  bpReadBool "$1" 0
   return $?
 }
 
@@ -1527,8 +1506,8 @@ bpReadY() { ##I Ask yes/no question default yes
 # $1 Question text
 # return 0 = Yes, 1=No
 #
-bpReadN() { ##I Ask yes/no question default no
-  bpReadYN "$1" 1
+bpReadBoolDN() { ##I Ask yes/no question default no
+  bpReadBool "$1" 1
   return $?
 }
 
@@ -1738,8 +1717,8 @@ log() { ##C BP_LOGFILE View logfile
         -e "s|\[Warn\]|\[\\${BP_C_WARNING}Warn\\${E_RESET}\]|" \
         -e "s|\[Erro\]|\[\\${BP_C_ERROR}Erro\\${E_RESET}\]|" \
         -e "s|\[ Ok \]|\[\\${BP_C_OK} Ok \\${E_RESET}\]|" \
-        -e "s/[-0-9]+/\\${E_GREEN}&\\${E_RESET}/1" \
-        -e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_RESET}/6" \
+        -e "s/[-0-9]+/\\${BP_C_DATE}&\\${E_RESET}/1" \
+        -e "s/[:0-9]+/\\${BP_C_TIME}&\\${E_RESET}/6" \
         -e "s|\[Crit\]|\[\\${E_BG_RED}\\${E_WHITE}Crit\\${E_RESET}\]|" <"${BP_LOGFILE}")
 
       echo -e "$D"
@@ -1858,7 +1837,7 @@ bpAssertProgs() { ##I Assert that required programs are available on the system
 
 ##C- IHELP Debug/Controll
 
-icheck() { ##I Make a shellcheck
+icheck() { ##I Run shellcheck on script
   bpAssertProgs "shellcheck"
   shellcheck "$0"
 }

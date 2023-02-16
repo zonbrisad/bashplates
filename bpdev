@@ -289,171 +289,6 @@ dtest() { ##D Test dictionary test
 }
 
 ##- New ANSII escape functions
-underline() { ##D Test of extended underline attributes
-  echo "${E_UNDERLINE}Underline normal${E_RESET}"
-  echo "${E_UNDERLINE_CURLY}Underline curly${E_RESET}"
-  echo "${E_UNDERLINE_DOUBLE}Underline double${E_RESET}"
-  echo "${E_UNDERLINE_DOT}Underline dotted${E_RESET}"
-  echo "${E_UNDERLINE_DASH}Underline dashed${E_RESET}"
-
-  echo "${E_ITALIC}Italic${E_RESET}"
-  echo "${E_FRAKTUR}Gothic${E_RESET}"
-  echo "${E_FRAMED}Framed${E_RESET}"
-  echo "${E_OVERLINED}Overlined${E_RESET}"
-  echo "${E_SUBSCRIPT}Subscript${E_RESET}"
-  echo "${E_SUPERSCRIPT}Superscript${E_RESET}"
-  echo "${E_BLINK}Slow blink${E_RESET}"
-  echo "${E_RAPID_BLINK}Rapid blink${E_RESET}"
-  echo "${E_CROSSED}Crossed${E_RESET}"
-}
-
-print_attr() {
-  eval "ATTR=\$${1}"
-  printf "${ATTR}%-30s ${E_GREEN}%-20s${E_RESET}\n" "${2}${E_RESET}" "${1}"
-}
-
-print_attr2() {
-  eval "ATTR=\$${1}"
-  printf "${E_UNDERLINE}${ATTR}%-30s ${E_GREEN}%-20s${E_RESET}\n" "${2}${E_RESET}" "${1}"
-}
-
-E_FONT1=$'\e[11m' # Font 1
-E_FONT2=$'\e[12m' # Font 2
-E_FONT3=$'\e[13m' # Font 3
-E_FONT4=$'\e[14m' # Font 4
-E_FONT5=$'\e[15m' # Font 5
-E_FONT6=$'\e[16m' # Font 6
-E_FONT7=$'\e[17m' # Font 7
-E_FONT8=$'\e[18m' # Font 8
-E_FONT9=$'\e[19m' # Font 9
-
-attr() { ##D demonstrate font attributes
-  echo
-  bpPrintLine "Font style attributes"
-  echo
-  print_attr "E_RESET" "Normal text"
-  print_attr "E_BOLD" "Bold text"
-  print_attr "E_DIM" "Dim text"
-  print_attr "E_ITALIC" "Italic text"
-  print_attr "E_REVERSE" "Reverse text"
-  print_attr "E_BLINK" "Blink text"
-  print_attr "E_UNDERLINE" "Underline text"
-  print_attr "E_CROSSED" "Crossed text"
-  echo
-  bpPrintLine "Extended font style attributes(limited support)"
-  echo
-  print_attr "E_FRACTUR" "Fractur/gothic"
-  print_attr "E_UNDERLINE_CURLY" "Underline curly"
-  print_attr "E_UNDERLINE_DOUBLE" "Underline double"
-  print_attr "E_UNDERLINE_DOT" "Underline dotted"
-  print_attr "E_UNDERLINE_DASH" "Underline dashed"
-  print_attr "E_SUBSCRIPT" "Subscript"
-  print_attr "E_SUPERSCRIPT" "Superscript"
-  print_attr "E_RAPID_BLINK" "Rapid blink"
-  print_attr "E_FRAME" "Frame"
-  echo
-  print_attr "E_OVERLINED" "Overlined"
-
-  echo
-  bpPrintLine "Alternative fonts"
-  echo
-  print_attr "E_FONT1" "Font 1"
-  print_attr "E_FONT2" "Font 2"
-  print_attr "E_FONT3" "Font 3"
-  print_attr "E_FONT4" "Font 4"
-  print_attr "E_FONT5" "Font 5"
-  print_attr "E_FONT6" "Font 6"
-  print_attr "E_FONT7" "Font 7"
-  print_attr "E_FONT8" "Font 8"
-  print_attr "E_FONT9" "Font 9"
-
-  echo
-  bpPrintLine "Foreground color attributes"
-  echo
-  print_attr "E_RED" "Foreground red"
-  print_attr "E_YELLOW" "Foreground yellow"
-  print_attr "E_GREEN" "Foreground green"
-  print_attr "E_BLUE" "Foreground blue"
-  print_attr "E_CYAN" "Foreground cyan"
-  print_attr "E_MAGENTA" "Foreground magenta"
-  print_attr "E_DARKGRAY" "Foreground dark gray"
-  print_attr "E_BR_RED" "Foreground red"
-  print_attr "E_BR_YELLOW" "Foreground yellow"
-  print_attr "E_BR_GREEN" "Foreground green"
-  print_attr "E_BR_BLUE" "Foreground blue"
-  print_attr "E_BR_CYAN" "Foreground cyan"
-  print_attr "E_BR_MAGENTA" "Foreground magenta"
-  print_attr "E_GRAY" "Foreground gray"
-  print_attr "E_WHITE" "Foreground white"
-  echo
-  bpPrintLine "Background color attributes"
-  echo
-  print_attr "E_BG_RED" "Background red"
-  print_attr "E_BG_YELLOW" "Background yellow"
-  print_attr "E_BG_GREEN" "Background green"
-  print_attr "E_BG_BLUE" "Background blue"
-  print_attr "E_BG_CYAN" "Background cyan"
-  print_attr "E_BG_MAGENTA" "Background magenta"
-  print_attr "E_BG_DARKGRAY" "Background dark gray"
-  print_attr "E_BG_BR_RED" "Background red"
-  print_attr "E_BG_BR_YELLOW" "Background yellow"
-  print_attr "E_BG_BR_GREEN" "Background green"
-  print_attr "E_BG_BR_BLUE" "Background blue"
-  print_attr "E_BG_BR_CYAN" "Background cyan"
-  print_attr "E_BG_BR_MAGENTA" "Background magenta"
-  print_attr "E_BG_GRAY" "Background gray"
-  print_attr "E_BG_WHITE" "Background white"
-  echo
-  bpPrintLine "Underline color attributes (only supported on certain terminals)"
-  echo
-  print_attr2 "E_UL_RED" "Underline red"
-  print_attr2 "E_UL_YELLOW" "Underline yellow"
-  print_attr2 "E_UL_GREEN" "Underline green"
-  print_attr2 "E_UL_BLUE" "Underline blue"
-  print_attr2 "E_UL_CYAN" "Underline cyan"
-  print_attr2 "E_UL_MAGENTA" "Underline magenta"
-  print_attr2 "E_UL_DARKGRAY" "Underline dark gray"
-  print_attr2 "E_UL_BR_RED" "Underline red"
-  print_attr2 "E_UL_BR_YELLOW" "Underline yellow"
-  print_attr2 "E_UL_BR_GREEN" "Underline green"
-  print_attr2 "E_UL_BR_BLUE" "Underline blue"
-  print_attr2 "E_UL_BR_CYAN" "Underline cyan"
-  print_attr2 "E_UL_BR_MAGENTA" "Underline magenta"
-  print_attr2 "E_UL_GRAY" "Underline gray"
-  print_attr2 "E_UL_WHITE" "Underline white"
-  echo
-}
-
-color() { ##D Standard 16 colors
-  FCOLORS=(E_BLACK E_RED E_GREEN E_YELLOW E_BLUE E_MAGENTA E_CYAN E_GRAY E_DARKGRAY E_BR_RED E_BR_GREEN E_BR_YELLOW E_BR_BLUE E_BR_MAGENTA E_BR_CYAN E_WHITE)
-  BCOLORS=(E_BG_BLACK E_BG_RED E_BG_GREEN E_BG_YELLOW E_BG_BLUE E_BG_MAGENTA E_BG_CYAN E_BG_WHITE)
-  BCOLORS_BR=(E_BG_DARK_GRAY E_BG_BR_RED E_BG_BR_GREEN E_BG_BR_YELLOW E_BG_BR_BLUE E_BG_BR_MAGENTA E_BG_BR_CYAN E_BG_GRAY)
-
-  echo
-  bpPrintLine "16 color map"
-  echo
-  for fc in "${FCOLORS[@]}"; do
-    eval "FG=\$$fc"
-    for bc in "${BCOLORS[@]}"; do
-      eval "BG=\$$bc"
-      printf "${FG}${BG}%-10s${E_RESET}" "${fc:2}"
-    done
-    echo
-  done
-
-  echo
-
-  for fc in "${FCOLORS[@]}"; do
-    eval "FG=\$$fc"
-    for bc in "${BCOLORS_BR[@]}"; do
-      eval "BG=\$$bc"
-      printf "${FG}${BG}%-10s${E_RESET}" "${fc:2}"
-    done
-    echo
-  done
-
-  echo
-}
 
 icons_() { ## Unicode icons
   for a in {0..31}; do
@@ -466,32 +301,29 @@ icons_() { ## Unicode icons
     hex7=$(printf "%s%02x" "$1" $(("$a" + 192)))
     hex8=$(printf "%s%02x" "$1" $(("$a" + 224)))
     echo -e " ${hex1}  \u${hex1}    $hex2  \u${hex2}    $hex3  \u${hex3}   $hex4  \u${hex4}   $hex5  \u${hex5}   $hex6  \u${hex6}   $hex7  \u${hex7}   $hex8  \u${hex8}"
-    #		printf "%s  %s   %s  \n" "$hex1" "${hex1}" "$hex2"
   done
-
 }
 
-icons() { ##D Unicode icons
+usym() { ##D Unicode symbols
   icons_ "26"
   echo
   icons_ "27"
   echo
 
   # Emoticons
-  icons_ "1F6"
-  echo
+  # icons_ "1F6"
+  # echo
 
   # Enclosed characters
   icons_ "24"
   echo
 
   # Flags
-  icons_ "1F1"
-  echo
+  #icons_ "1F1"
+  #echo
 
-  icons_ "1F5"
-  echo
-
+  #  icons_ "1F5"
+  #  echo
 }
 
 tdim() { ##D Terminal dimensions
@@ -571,7 +403,6 @@ msg() { ##D Messsages format test
 
   echo -e "[${E_BG_BR_GREEN}${E_GREEN} Debug  ${E_RESET}] Bright green bg, green fg"
   echo -e "[${E_BG_GREEN}${E_BR_GREEN} Debug  ${E_RESET}] Green bg, Br green fg"
-
 }
 
 url() {
@@ -694,11 +525,11 @@ bp4=(
 
 bpb() { ##D Print banner
 
-  for x in "${bp4[@]}"; do
+  for x in "${bp1[@]}"; do
     echo -e "$x"
   done
 
-  for x in "${bp3[@]}"; do
+  for x in "${bp2[@]}"; do
     echo -e "$x"
   done
 
@@ -787,8 +618,10 @@ kwr() { ##D Keyword replace
   bpReplace "$2" "bpReadY" "bpReadBoolDY"
   bpReplace "$2" "bpReadN" "bpReadBoolDN"
 
-  #bpReplace "$2" "_ATTR_" "_"
-  #bpReplace "$2" "_CUR_" "_"
+  bpReplace "$2" "_ATTR_" "_"
+  bpReplace "$2" "_CUR_" "_"
+
+  bpReplace "$2" "BP_E_OK" "BP_OK"
 
   bpReplace "$2" "_FG_" "_"
   bpReplaceLine "$2" "BP_C_FILENAME=" 'BP_C_FILENAME="${E_BR_CYAN}"'
