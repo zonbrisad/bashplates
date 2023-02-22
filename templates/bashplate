@@ -20,6 +20,8 @@ bpUserSettings() {
 # User defined functions
 #---------------------------------------------------------------------
 
+##-
+
 #---------------------------------------------------------------------
 # Bashplate modules
 #---------------------------------------------------------------------
@@ -330,6 +332,7 @@ bpPrintLine() { ##I Print text with line after
   fi
 }
 
+#
 # $1 command color
 # $2 description color
 # $3 command text
@@ -892,8 +895,6 @@ bpRmModule() { ##I Remove module
   bpRm "${BP_SETTINGS_MODULES}/${1}"
 }
 
-##-
-
 # Logging ---------------------------------------------------------
 
 ##C- IHELP Log functions
@@ -1173,12 +1174,12 @@ ihelp() { ##I Print internal help information
   IHELP=1      # Force ihelp documentations
   BP_LOGFILE=1 # Force log documentation
 
-  help_lines=$(grep -h '##[C|I|-]' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e 'printNamedLine' -e 'awk' -e 'bpPrintInfo' -e 'name')
+  help_lines=$(grep -h '##[C|I]' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e 'printNamedLine' -e 'awk' -e 'bpPrintInfo' -e 'name')
   help_lines=$(echo -e "$help_lines" | sed -s 's/()//g')
 
   for help_line in ${help_lines}; do
     case "$help_line" in
-    *"##-"*) printNamedLine "$help_line" ;;
+    #    *"##-"*) printNamedLine "$help_line" ;;
     *"##C-"*) printCondNamedLine "$help_line" ;;
     *"##I"*) printCommand "$help_line" '##I' ;;
     *"##C"*) printCondCommand "$help_line" 0 ;;

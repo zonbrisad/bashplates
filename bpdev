@@ -130,13 +130,6 @@ getaddontemp() { ##D Get addon template
 
 ##- En named line
 
-bpIsFunction() { ##C IHELP Check if and identifier is declared as a function
-  if [ "$(type -t "$1")" == "function" ]; then
-    return 0
-  fi
-  return 1
-}
-
 #
 # $1 hook name
 #
@@ -170,63 +163,8 @@ nocond() { ##D Ordinary function
 }
 
 ##- Bp select from list
-list=(
-  "Choose your alternative"
-  "1" ":" "Alternative 1"
-  "2" ":" "Another alternative"
-  "c" ":" "Alternative C"
-  "1c" ":" "Alt. 1C"
-  "d" "valueD" ":"
-)
 
 bpReturn=""
-
-bpPrintList() { ##I Print items in selection list
-  echo
-  arr=("${@}")
-  len=${#arr[@]}
-  i=1
-  while [ "$i" -lt "$len" ]; do
-    key=${arr[$i]}
-    ((i++))
-    val=${arr[$i]}
-    ((i++))
-    desc=${arr[$i]}
-    ((i++))
-    if [ "${desc}" == ":" ]; then
-      printf "${BP_C_ID}  %-5.24s${E_RESET} ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$key" "$val"
-    else
-      printf "${BP_C_ID}  %-5.24s${E_RESET} ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$key" "$desc"
-    fi
-  done
-}
-
-bpSelectFromList() { ##I Select from list
-
-  while true; do
-    bpPrintList "${@}"
-    x=$(bpReadStr "$1")
-
-    arr=("${@}")
-    len=${#arr[@]}
-    i=1
-    while [ "$i" -lt "$len" ]; do
-      key=${arr[$i]}
-      ((i++))
-      val=${arr[$i]}
-      ((i++))
-      ((i++))
-      if [ "$key" == "$x" ]; then
-        if [ "$val" == ":" ]; then
-          bpReturn="${key}"
-        else
-          bpReturn="${val}"
-        fi
-        return 0
-      fi
-    done
-  done
-}
 
 bpPrintChooseList() {
   echo
@@ -251,16 +189,16 @@ bpChoose() {
 }
 
 rl() { ##D Read list
-  dict=(
-    "a" "Dict A"
-    "b" "Dict B"
-    "C" "Dict C"
-    "xx" "Alternative"
+  list=(
+    "1" ":" "Alternative 1"
+    "2" ":" "Another alternative"
+    "c" ":" "Alternative C"
+    "1c" ":" "Alt. 1C"
+    "d" "valueD" ":"
   )
 
-  bpSelectFromList "${list[@]}"
-  echo "$bpReturn"
-
+  bpSelectFromList "2" "Choose your alternative" "${list[@]}"
+  echo -e "\nChoice: ${bpReturn}"
 }
 
 ch() { ##D Choose from list
@@ -626,6 +564,8 @@ kwr() { ##D Keyword replace
   bpReplace "$2" "_FG_" "_"
   bpReplaceLine "$2" "BP_C_FILENAME=" 'BP_C_FILENAME="${E_BR_CYAN}"'
   bpReplaceLine "$2" "BP_C_PATH=" 'BP_C_PATH="${E_CYAN}"'
+
+  bpReplaceLine "$2" "bpDbg" "bpDebug"
 }
 
 #---------------------------------------------------------------------
@@ -646,7 +586,7 @@ bpInitSettings() {
   BP_USAGE="Usage: ${BP_SELF} command [option]"
 
   ##V Description text
-  BP_DESC="Sandbox for testing new bashplate features."
+  BP_DESC="Sandbox for testing new experimental bashplate features."
 
   ##V logfile (uncomment to use logfile)
   BP_LOGFILE=${BP_SELF_DIR}/${BP_SELF}.log
@@ -699,7 +639,7 @@ DEFAULT_CMD_HOOK=help
 
 signalInt() {
   bpCleanUp
-  exit "$BP_E_OK"
+  exit "$BP_OK"
 }
 
 signalHup() {
@@ -857,13 +797,13 @@ E_SUBSCRIPT=$'\e[74m'         # Subscript text (limited support)
 
 # ANSI cursor operations
 #
-E_CUR_RETURN=$'\e[F'  # Move cursor to begining of line
-E_CUR_UP=$'\e[A'      # Move cursor one line up
-E_CUR_DOWN=$'\e[B'    # Move cursor one line down
-E_CUR_FORWARD=$'\e[C' # Move cursor forward
-E_CUR_BACK=$'\e[D'    # Move cursor backward
-E_CUR_HIDE=$'\e[?25l' # Hide cursor
-E_CUR_SHOW=$'\e[?25h' # Show cursor
+E_RETURN=$'\e[F'  # Move cursor to begining of line
+E_UP=$'\e[A'      # Move cursor one line up
+E_DOWN=$'\e[B'    # Move cursor one line down
+E_FORWARD=$'\e[C' # Move cursor forward
+E_BACK=$'\e[D'    # Move cursor backward
+E_HIDE=$'\e[?25l' # Hide cursor
+E_SHOW=$'\e[?25h' # Show cursor
 
 E_RESET=$'\e[0m' # Clear Attributes
 
@@ -895,7 +835,7 @@ BP_C_VAR="${E_BR_YELLOW}"
 
 # Exit codes
 #
-BP_E_OK=0 # successful termination
+BP_OK=0 # successful termination
 
 #---------------------------------------------------------------------
 # Bashplate internal functions
@@ -1026,30 +966,6 @@ bpFilterEscape() { ##I Filter escape characters from string
 ##C- IHELP File operations
 
 #
-# $1 command to check
-#
-bpHasCmd() { ##I Check if command is available
-  if [ -x "$(command -v "${1}")" ]; then
-    return 0
-  else
-    return 1
-  fi
-}
-
-#
-# $1 command to execute
-#
-bpRun() { ##I Execute command
-  if bpHasCmd "${1}"; then
-    "$@"
-    return $?
-  else
-    bpError "Could not execute $1, command does not exist!"
-    return 1
-  fi
-}
-
-#
 # $1 directory to change to
 #
 bpCd() { ##I Safe cd function (exits on fail)
@@ -1142,6 +1058,8 @@ bpBackup() { ##I Make backup of file
     return 1
   fi
 }
+
+##C- IHELP File editing
 
 #
 # $1 file
@@ -1341,22 +1259,86 @@ bpReadBoolDN() { ##I Ask yes/no question default no
   return $?
 }
 
-#---------------------------------------------------------------------
+bpPrintChoiceList() { # Print items in selection list
+  echo
+  arr=("${@:2}")
+  len=${#arr[@]}
+  i=1
+  while [ "$i" -lt "$len" ]; do
+    key=${arr[$i]}
+    ((i++))
+    val=${arr[$i]}
+    ((i++))
+    desc=${arr[$i]}
+    ((i++))
+
+    if [ "$key" == "$1" ]; then
+      default=">"
+    else
+      default=" "
+    fi
+
+    if [ "${desc}" == ":" ]; then
+      printf "${BP_C_ID} %-5s${E_RESET}%1s  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$key" "$default" "$val"
+    else
+      printf "${BP_C_ID} %-5s${E_RESET}%1s  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$key" "$default" "$desc"
+    fi
+  done
+}
+
 #
-#---------------------------------------------------------------------
+# Select from list of choices
+#
+# $1 Default value
+# $2 Question
+# $* Array of choices
+#
+# Return: bpReturn
+#
+# Example choice list.
+# list=(
+#  "a" ":" "Choice A"
+#  "b" ":" "Choice B"
+#  "c" ":" "Choice C"
+# )
+bpSelectFromList() { ##I Select from list
+
+  while true; do
+    bpPrintChoiceList "$1" "${@:2}"
+    x=$(bpReadStr "$2" "$1")
+
+    arr=("${@}")
+    len=${#arr[@]}
+    i=2
+    while [ "$i" -lt "$len" ]; do
+      key=${arr[$i]}
+      ((i++))
+      val=${arr[$i]}
+      ((i++))
+      ((i++))
+      if [ "$key" == "$x" ]; then
+        if [ "$val" == ":" ]; then
+          bpReturn="${key}"
+        else
+          bpReturn="${val}"
+        fi
+        return 0
+      fi
+    done
+  done
+}
 
 # Settings file ------------------------------------------------------
 
-##C- BP_CONF Bashplate settings
+##C- BP_CONF Bashplate config file
 
 #
 # $1 config file
-# $2 setting name
-# $3 setting value
-# $4 setting description
+# $2 key
+# $3 value
+# $4 description
 #
-bpAddSetting() {
-
+bpAddSetting() { ##I Add setting to config file
   if ! bpStrExist "${1}" "${2}"; then
     {
       echo "# ${4}"
@@ -1366,63 +1348,129 @@ bpAddSetting() {
   fi
 }
 
-bpAddSettings() {
-  bpAddSetting "$BP_SETTINGS" "BP_NAME" "John Doe" "Name of user"
-  bpAddSetting "$BP_SETTINGS" "BP_EMAIL" "JohnDoe@foo.bar" "Email of user"
-  bpAddSetting "$BP_SETTINGS" "BP_EDITOR" "vi" "Default editor"
-  bpAddSetting "$BP_SETTINGS" "BP_LICENSE" "MIT" "Default project license"
-  bpAddSetting "$BP_SETTINGS" "BP_ORG" "ACME" "Default organisation"
-  bpAddSetting "$BP_SETTINGS" "BP_DIFF" "meld" "Default diff program"
-  bpAddSetting "$BP_SETTINGS" "BP_PATH" "${BP_SELF_DIR}" "Path to Bashplates directory"
-}
-
 # Change setting in config file (key value pair)
 #
 # $1 config file
-# $2 setting to change
-# $3 new value for setting
+# $2 key
+# $3 value
 #
-bpChSetting() {
+bpChSetting() { ##I # Change setting in config file
   SETTING="$2"
   VAL="$3"
 
   S=$(bpStrExist "${1}" "${2}")
   if [ "${S}" == "0" ]; then
-    bpAddSettings
+    bpAddSettings ""
   fi
   sed -i "s/^\(${SETTING}\s*=\s*\).*\$/\1$VAL/" "$1"
 
   bpOk "Setting ${SETTING} to ${VAL}"
 }
 
-bpCreateSettings() {
-  bpInfo "Creating new bashplates settings. $(bpColorizeFile "${BP_SETTINGS}")"
-  bpMkDir "${BP_SETTINGS_DIR}"
-  bpMkDir "${BP_SETTINGS_PATHS}"
-  bpMkDir "${BP_SETTINGS_MODULES}"
+#
+# $1 File
+# $2 Headertext
+# $3 config array
+#
+bpCreateConfigFile() { ##I Create configuration file
+  FILE="$1"
+  {
+    echo "# "
+    echo "# $2"
+    echo "# "
+    echo
+  } >>"${FILE}"
 
-  # if file does not exist add header
-  if [ ! -e "${BP_SETTINGS}" ]; then
-    echo "# " >>"${BP_SETTINGS}"
-    echo "# Bashplates common settings" >"${BP_SETTINGS}"
-    echo "# " >>"${BP_SETTINGS}"
-    echo >>"${BP_SETTINGS}"
-  fi
-  bpAddSettings
+  arr=("${@:2}")
+  len=${#arr[@]}
+  i=1
+  while [ "$i" -lt "$len" ]; do
+    name=${arr[$i]}
+    ((i++))
+    key=${arr[$i]}
+    ((i++))
+    default=${arr[$i]}
+    ((i++))
+    desc=${arr[$i]}
+    ((i++))
+    bpAddSetting "$FILE" "$key" "$default" "$desc"
+  done
 }
 
-bpLoadSettings() {
-  if [ -n "${BP_SETTINGS}" ]; then
-    if [ -e "${BP_SETTINGS}" ]; then
-      source "${BP_SETTINGS}"
+conftest() { ##D Conf test
+  bpCreateConfigFile "${bp_settings_list[@]}"
+}
+
+bpLoadConfigFile() { ##I Load config file
+  if [ -n "${1}" ]; then
+    if [ -e "${1}" ]; then
+      source "${1}"
     else
-      bpCreateSettings
-      source "${BP_SETTINGS}"
+      bpCreateConfigFile "${@}"
+      source "${1}"
     fi
   fi
 }
 
-settings() { ##C BP_CONF Print bashplate settings
+bpInConfigList() { ##I Check if setting exist in config file
+  arr=("${@}")
+  len=${#arr[@]}
+  bpReturn=""
+  i=3
+  while [ "$i" -lt "$len" ]; do
+    key=${arr[$i]}
+    ((i++))
+    val=${arr[$i]}
+    ((i++))
+    ((i++))
+    desc=${arr[$i]}
+    ((i++))
+
+    if [ "$key" == "$1" ]; then
+      if [ "$val" == ":" ]; then
+        bpReturn="${key}"
+      else
+        bpReturn="${val}"
+      fi
+      return 0
+    fi
+  done
+  return 1
+}
+
+bpPrintConfigList() { ##I Print settings in config list
+  echo
+  arr=("${@:4}")
+  len=${#arr[@]}
+  i=1
+  while [ "$i" -lt "$len" ]; do
+    key=${arr[$i]}
+    ((i++))
+    val=${arr[$i]}
+    ((i++))
+    ((i++))
+    desc=${arr[$i]}
+    ((i++))
+
+    if [ "${desc}" == ":" ]; then
+      printf "${BP_C_ID} %-12s${E_RESET}  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$key" "$val"
+    else
+      printf "${BP_C_ID} %-12s${E_RESET}  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$key" "$desc"
+    fi
+  done
+}
+
+bpset() { ##D Set variable in bp
+
+  if bpInConfigList "$2" "${bp_settings_list[@]}"; then
+    echo "${bpReturn}"
+    bpChSetting "${BP_SETTINGS}" "${bpReturn}" "\"${3}\""
+    return
+  fi
+  bpPrintConfigList "" "" "${bp_settings_list[@]}"
+}
+
+settings() { #C BP_CONF Print bashplate settings
   bpPrintLine "Bashplates settings"
   bpPrintVar "Name:" BP_NAME
   bpPrintVar "Email:" BP_EMAIL
@@ -1431,30 +1479,6 @@ settings() { ##C BP_CONF Print bashplate settings
   bpPrintVar "Default organisation" BP_ORG
   bpPrintVar "Default diff program" BP_DIFF
   bpPrintLine
-}
-
-setname() { ##C BP_CONF Set name
-  bpChSetting "${BP_SETTINGS}" "BP_NAME" "\"${2}\""
-}
-
-setemail() { ##C BP_CONF Set email address
-  bpChSetting "${BP_SETTINGS}" "BP_EMAIL" "\"${2}\""
-}
-
-seteditor() { ##C BP_CONF Set default editor
-  bpChSetting "${BP_SETTINGS}" "BP_EDITOR" "\"${2}\""
-}
-
-setlic() { ##C BP_CONF Set default license
-  bpChSetting "${BP_SETTINGS}" "BP_LICENSE" "\"${2}\""
-}
-
-setorg() { ##C BP_CONF Set default organisation
-  bpChSetting "${BP_SETTINGS}" "BP_ORG" "\"${2}\""
-}
-
-setdiff() { ##C BP_CONF Set default diff program
-  bpChSetting "${BP_SETTINGS}" "BP_DIFF" "\"${2}\""
 }
 
 ##C- IHELP Bashrc path/module handling
@@ -1528,6 +1552,10 @@ bpLogInfo() { ##I Log Info message to file
   bpLog "[Info] $1"
 }
 
+bpLogDebug() { ##I Log Info message to file
+  bpLog "[Debg] $1"
+}
+
 bpLogWarning() { ##I Log Warning message to file
   bpLog "[Warn] $1"
 }
@@ -1550,7 +1578,6 @@ log() { ##C BP_LOGFILE View logfile
         -e "s/[-0-9]+/\\${BP_C_DATE}&\\${E_RESET}/1" \
         -e "s/[:0-9]+/\\${BP_C_TIME}&\\${E_RESET}/6" \
         -e "s|\[Crit\]|\[\\${E_BG_RED}\\${E_WHITE}Crit\\${E_RESET}\]|" <"${BP_LOGFILE}")
-
       echo -e "$D"
     fi
   else
@@ -1569,7 +1596,6 @@ mlog() { ##C BP_LOGFILE Monitor logfile
         -e "s/[-0-9]+/\\${E_GREEN}&\\${E_RESET}/1" \
         -e "s/[:0-9]+/\\${E_BR_GREEN}&\\${E_RESET}/6" \
         -e "s|\[Crit\]|\[\\${E_BG_RED}\\${E_WHITE}Crit\\${E_RESET}\]|"
-
     fi
   else
     bpInfo "Logging is not activated"
@@ -1593,7 +1619,7 @@ bpInfo() { ##I Info message
   echo -e "[${BP_C_INFO}Info${E_RESET}] $1"
 }
 
-bpDbg() { ##I Debug message
+bpDebug() { ##I Debug message
   if [ -z "$BP_DEBUG" ]; then
     return
   fi
@@ -1665,6 +1691,49 @@ bpAssertProgs() { ##I Assert that required programs are available on the system
   fi
 }
 
+##C- IHELP Misc
+
+#
+# $1 command to check
+#
+bpHasCmd() { ##I Check if command is available
+  if [ -x "$(command -v "${1}")" ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+bpIsFunction() { ##I Check if and identifier is declared as a function
+  if [ "$(type -t "$1")" == "function" ]; then
+    return 0
+  fi
+  return 1
+}
+
+#
+# Filter out function from script file
+#
+# $1 file
+# $2 function
+#
+bpGetFunction() {
+  grep --no-filename -A 60 "$1" -e "${2}()" | grep -B 60 -m 1 -x "}"
+}
+
+#
+# $1 command to execute
+#
+bpRun() { ##I Execute command
+  if bpHasCmd "${1}"; then
+    "$@"
+    return $?
+  else
+    bpError "Could not execute $1, command does not exist!"
+    return 1
+  fi
+}
+
 ##C- IHELP Debug/Controll
 
 icheck() { ##I Run shellcheck on script
@@ -1682,7 +1751,6 @@ printCommand() {
   IFS=$' '
   read -r -a arr <<<"$1"
   inf="${arr[*]:3}"
-  #IFS=$'\n'
   bpPrintInfo "${arr[0]}" "${inf}"
 }
 
@@ -1693,13 +1761,19 @@ printCondCommand() {
   COND=${arr[3]}
   eval "D=\$$COND"
 
+  if [ -n "$IHELP" ] && [ "$COND" != "IHELP" ]; then
+    return
+  fi
+
   if [ -n "$D" ]; then
     bpPrintInfo "${arr[0]}" "${help_info}"
-  else
-    if [ "$2" -eq 1 ]; then
-      bpPrintInfoAlt "${arr[0]}" "$help_info"
-    fi
+    return
   fi
+
+  if [ "$2" -eq 1 ]; then
+    bpPrintInfoAlt "${arr[0]}" "$help_info"
+  fi
+
 }
 
 printNamedLine() {
@@ -1782,12 +1856,11 @@ ihelp() { ##I Print internal help information
   IHELP=1      # Force ihelp documentations
   BP_LOGFILE=1 # Force log documentation
 
-  help_lines=$(grep -h '##[C|I|-]' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e 'printNamedLine' -e 'awk' -e 'bpPrintInfo' -e 'name')
+  help_lines=$(grep -h '##[C|I]' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e 'printNamedLine' -e 'awk' -e 'bpPrintInfo' -e 'name')
   help_lines=$(echo -e "$help_lines" | sed -s 's/()//g')
 
   for help_line in ${help_lines}; do
     case "$help_line" in
-    *"##-"*) printNamedLine "$help_line" ;;
     *"##C-"*) printCondNamedLine "$help_line" ;;
     *"##I"*) printCommand "$help_line" '##I' ;;
     *"##C"*) printCondCommand "$help_line" 0 ;;
@@ -1801,7 +1874,7 @@ ihelp() { ##I Print internal help information
   bpPrintInfo "##C COND Description" "Conditional subcommand comment (shown with help)"
   bpPrintInfo "##- [Text]" "Separator line (shown with help)"
   bpPrintInfo "##C- COND [Text]" "Conditional separator line (shown with help)"
-  bpPrintInfo "##I Description" "Internal function comment (shown ihelp)"
+  bpPrintInfo "##I Description" "Internal function comment (shown with ihelp)"
   bpPrintLine
 }
 
@@ -1827,16 +1900,6 @@ iinfo() { ##I Show information about script
   settings
 }
 
-#
-# Filter out function from script file
-#
-# $1 file
-# $2 function
-#
-bpGetFunction() {
-  grep --no-filename -A 60 "$1" -e "${2}()" | grep -B 60 -m 1 -x "}"
-}
-
 iview() { ##I View example
   # Singe command documentation
   if [ "$2" == "" ]; then
@@ -1846,9 +1909,8 @@ iview() { ##I View example
   echo
   if bpHasCmd batcat; then # Use batcat, if available, to view function
     bpGetFunction "$0" "${2}" | batcat --language bash --decorations never
-    #grep --no-filename -A 60 "$0" -e "${2}()" | grep -B 60 -m 1 -x "}" | batcat --language bash --decorations never
   else
-    grep --no-filename -A 60 "$0" -e "${2}()" | grep -B 60 -m 1 -x "}" |
+    bpGetFunction "$0" "${2}" |
       sed -e "s/#.*/\\${BP_C_COMMENT}&\\${E_RESET}/" \
         -e "s/\<echo\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
         -e "s/\<if\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
@@ -1872,7 +1934,7 @@ iview() { ##I View example
         -e "s/\".*\"/\\${BP_C_STRING}&\\${E_RESET}/" \
         -e "s/\([^=]*\)=/${BP_C_VAR}\1\\${E_RESET}=/"
   fi
-  echo
+  bpPrintLine
   bpExit
 }
 
@@ -2015,8 +2077,19 @@ trap 'signalErr ${FUNCNAME} ${LINENO}' ERR
 # Load settings and execute script handler
 #---------------------------------------------------------------------
 
+bp_settings_list=(
+  "${BP_SELF_DIR}/CONFTEST"
+  "Bashplates common settings"
+  "name" "BP_NAME" "John Doe" "Users name"
+  "email" "BP_EMAIL" "john.doe@foo.bar" "Users email"
+  "org" "BP_ORG" "ACME" "Organisation"
+  "license" "BP_LICENSE" "MIT" "Default license"
+  "editor" "BP_EDITOR" "vi" "Default editor"
+  "diff" "BP_DIFF" "meld" "Default diff program"
+)
+
 # Load configuration file settings
-bpLoadSettings
+bpLoadConfigFile "${bp_settings_list[@]}"
 
 # execute prescript hook if existing
 if [ -n "$PRE_SCRIPT_HOOK" ]; then

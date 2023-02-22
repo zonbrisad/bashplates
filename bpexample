@@ -369,17 +369,21 @@ spinner() { ##D Spinner example
 
 bpWait() { ##I Wait for n seconds
   echo "${E_HIDE}"
-  a=0
+  i=0
   tmp=${SECONDS}
-  while [ "$a" -lt "$1" ]; do
-    a=$((SECONDS - tmp))
-    print_spinner "Waiting... $a"
+  while [ "$i" -lt "$1" ]; do
+    i=$((SECONDS - tmp))
+    print_spinner "Waiting... $i"
     sleep 0.1
   done
   echo -e "${E_SHOW}"
 }
 
 wait() { ##D Wait for n seconds
+  if [ -z "$2" ]; then
+    bpInfo "You must enter a number"
+    return
+  fi
   bpWait "$2"
 }
 
@@ -1019,7 +1023,7 @@ E_UL_WHITE=$'\e[58;5;15m'      # White
 
 # ANSI Text attributes
 E_BOLD=$'\e[1m'               # Bold text
-E_LOWI=$'\e[2m'               # Low intensity
+E_DIM=$'\e[2m'                # Dim(low intensity) text
 E_ITALIC=$'\e[3m'             # Italic text
 E_UNDERLINE=$'\e[4m'          # Underlined text
 E_UNDERLINE_DOUBLE=$'\e[4:2m' # Double underline (limited support)
@@ -1671,8 +1675,6 @@ bpRmModule() { ##I Remove module
   bpRm "${BP_SETTINGS_MODULES}/${1}"
 }
 
-##-
-
 # Logging ---------------------------------------------------------
 
 ##C- IHELP Log functions
@@ -1698,6 +1700,10 @@ bpLogInfo() { ##I Log Info message to file
   bpLog "[Info] $1"
 }
 
+bpLogDebug() { ##I Log Info message to file
+  bpLog "[Debg] $1"
+}
+
 bpLogWarning() { ##I Log Warning message to file
   bpLog "[Warn] $1"
 }
@@ -1720,7 +1726,6 @@ log() { ##C BP_LOGFILE View logfile
         -e "s/[-0-9]+/\\${BP_C_DATE}&\\${E_RESET}/1" \
         -e "s/[:0-9]+/\\${BP_C_TIME}&\\${E_RESET}/6" \
         -e "s|\[Crit\]|\[\\${E_BG_RED}\\${E_WHITE}Crit\\${E_RESET}\]|" <"${BP_LOGFILE}")
-
       echo -e "$D"
     fi
   else
@@ -1763,7 +1768,7 @@ bpInfo() { ##I Info message
   echo -e "[${BP_C_INFO}Info${E_RESET}] $1"
 }
 
-bpDbg() { ##I Debug message
+bpDebug() { ##I Debug message
   if [ -z "$BP_DEBUG" ]; then
     return
   fi
@@ -1852,7 +1857,6 @@ printCommand() {
   IFS=$' '
   read -r -a arr <<<"$1"
   inf="${arr[*]:3}"
-  #IFS=$'\n'
   bpPrintInfo "${arr[0]}" "${inf}"
 }
 
@@ -1863,13 +1867,19 @@ printCondCommand() {
   COND=${arr[3]}
   eval "D=\$$COND"
 
+  if [ -n "$IHELP" ] && [ "$COND" != "IHELP" ]; then
+    return
+  fi
+
   if [ -n "$D" ]; then
     bpPrintInfo "${arr[0]}" "${help_info}"
-  else
-    if [ "$2" -eq 1 ]; then
-      bpPrintInfoAlt "${arr[0]}" "$help_info"
-    fi
+    return
   fi
+
+  if [ "$2" -eq 1 ]; then
+    bpPrintInfoAlt "${arr[0]}" "$help_info"
+  fi
+
 }
 
 printNamedLine() {
@@ -1952,12 +1962,11 @@ ihelp() { ##I Print internal help information
   IHELP=1      # Force ihelp documentations
   BP_LOGFILE=1 # Force log documentation
 
-  help_lines=$(grep -h '##[C|I|-]' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e 'printNamedLine' -e 'awk' -e 'bpPrintInfo' -e 'name')
+  help_lines=$(grep -h '##[C|I]' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e 'printNamedLine' -e 'awk' -e 'bpPrintInfo' -e 'name')
   help_lines=$(echo -e "$help_lines" | sed -s 's/()//g')
 
   for help_line in ${help_lines}; do
     case "$help_line" in
-    *"##-"*) printNamedLine "$help_line" ;;
     *"##C-"*) printCondNamedLine "$help_line" ;;
     *"##I"*) printCommand "$help_line" '##I' ;;
     *"##C"*) printCondCommand "$help_line" 0 ;;
@@ -1971,7 +1980,7 @@ ihelp() { ##I Print internal help information
   bpPrintInfo "##C COND Description" "Conditional subcommand comment (shown with help)"
   bpPrintInfo "##- [Text]" "Separator line (shown with help)"
   bpPrintInfo "##C- COND [Text]" "Conditional separator line (shown with help)"
-  bpPrintInfo "##I Description" "Internal function comment (shown ihelp)"
+  bpPrintInfo "##I Description" "Internal function comment (shown with ihelp)"
   bpPrintLine
 }
 
@@ -2044,11 +2053,8 @@ iview() { ##I View example
         -e "s/\<while\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
         -e "s/\".*\"/\\${BP_C_STRING}&\\${E_RESET}/" \
         -e "s/\([^=]*\)=/${BP_C_VAR}\1\\${E_RESET}=/"
-    #             -e $VF
-    #             -e 's/\$[{]?[a-zA-Z0-9]*[}]?/XXX/'
-    #             -e 's/$?/'"\\${BP_C_VAR}&\\${E_RESET}/" \
-    bpPrintLine
   fi
+  bpPrintLine
   bpExit
 }
 

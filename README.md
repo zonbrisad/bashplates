@@ -291,7 +291,7 @@ To montor the logfile simply enter the "mlog" command.
 - [ ] dictionary functions
 - [ ] Select from list function
 - [ ] Module system
-- [x] Merge bpLine and bpTextLine
+- [x] Merge bpLine and bpTextLine to bpPrintLine
 - [ ] Reformat messages to "straigt columns"
 - [x] rename bpRead to bpReadStr(ing)
 - [x] rename all bpRead?? to more apropriate
