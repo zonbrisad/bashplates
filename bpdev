@@ -1397,10 +1397,6 @@ bpCreateConfigFile() { ##I Create configuration file
   done
 }
 
-conftest() { ##D Conf test
-  bpCreateConfigFile "${bp_settings_list[@]}"
-}
-
 bpLoadConfigFile() { ##I Load config file
   if [ -n "${1}" ]; then
     if [ -e "${1}" ]; then
@@ -1460,14 +1456,14 @@ bpPrintConfigList() { ##I Print settings in config list
   done
 }
 
-bpset() { ##D Set variable in bp
+bpset() { ##D Change setting in bp config file
 
-  if bpInConfigList "$2" "${bp_settings_list[@]}"; then
+  if bpInConfigList "$2" "${BP_CONFIG_LIST[@]}"; then
     echo "${bpReturn}"
     bpChSetting "${BP_SETTINGS}" "${bpReturn}" "\"${3}\""
     return
   fi
-  bpPrintConfigList "" "" "${bp_settings_list[@]}"
+  bpPrintConfigList "" "" "${BP_CONFIG_LIST[@]}"
 }
 
 settings() { #C BP_CONF Print bashplate settings
@@ -2044,16 +2040,16 @@ BP_COLUMNS=$(tput cols)
 BP_LINES=$(tput lines)
 
 ##V Settings directory
-BP_SETTINGS_DIR=~/.config/bashplates
+BP_CONFIG_DIR=~/.config/bashplates
 
 ##V Settings file
-BP_SETTINGS=${BP_SETTINGS_DIR}/bashplates.conf
+BP_CONFIG_FILE=${BP_CONFIG_DIR}/bashplates.conf
 
 ##V System Path's
-BP_SETTINGS_PATHS="${BP_SETTINGS_DIR}/path"
+BP_CONFIG_PATHS="${BP_CONFIG_DIR}/path"
 
 ##V Links to modules
-BP_SETTINGS_MODULES="${BP_SETTINGS_DIR}/modules"
+BP_CONFIG_MODULES="${BP_CONFIG_DIR}/modules"
 
 # Initiate bashplate settings
 bpInitSettings
@@ -2077,8 +2073,8 @@ trap 'signalErr ${FUNCNAME} ${LINENO}' ERR
 # Load settings and execute script handler
 #---------------------------------------------------------------------
 
-bp_settings_list=(
-  "${BP_SELF_DIR}/CONFTEST"
+BP_CONFIG_LIST=(
+  "${BP_CONFIG_FILE}"
   "Bashplates common settings"
   "name" "BP_NAME" "John Doe" "Users name"
   "email" "BP_EMAIL" "john.doe@foo.bar" "Users email"
@@ -2089,7 +2085,7 @@ bp_settings_list=(
 )
 
 # Load configuration file settings
-bpLoadConfigFile "${bp_settings_list[@]}"
+bpLoadConfigFile "${BP_CONFIG_LIST[@]}"
 
 # execute prescript hook if existing
 if [ -n "$PRE_SCRIPT_HOOK" ]; then

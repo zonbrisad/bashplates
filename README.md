@@ -289,7 +289,7 @@ To montor the logfile simply enter the "mlog" command.
 - [ ] Use logrotate for logs
 - [ ] Mail feature
 - [ ] dictionary functions
-- [ ] Select from list function
+- [x] Select from list function
 - [ ] Module system
 - [x] Merge bpLine and bpTextLine to bpPrintLine
 - [ ] Reformat messages to "straigt columns"
