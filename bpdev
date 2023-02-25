@@ -46,7 +46,7 @@ bpUserSettings() {
 # User defined functions
 #---------------------------------------------------------------------
 
-##- Addons
+##- Addons (experimental)
 
 newa() { ##D Create a new bashplate addon (experimental)
   newScript "bashplate" "" "addon"
@@ -55,7 +55,7 @@ newa() { ##D Create a new bashplate addon (experimental)
 la() { ##D List addons
   bpPrintLine "Addons"
   for f in "${BP_ADDONS}"/*; do
-    bpPrintInfo "$(${f} getname)" "$(${f} getdesc)"
+    bpPrintDesc "$(${f} getname)" "$(${f} getdesc)"
   done
   bpPrintLine
 }
@@ -104,10 +104,10 @@ getaddon() { ##D Get addon
 
 info() { ##D Get addon information
   bpPrintLine "Addon information"
-  bpPrintInfo "Name" "$ADDON_NAME"
-  bpPrintInfo "Description" "$ADDON_DESC"
-  bpPrintInfo "Version" "$ADDON_VER"
-  bpPrintInfo "Link" "$ADDON_LINK"
+  bpPrintDesc "Name" "$ADDON_NAME"
+  bpPrintDesc "Description" "$ADDON_DESC"
+  bpPrintDesc "Version" "$ADDON_VER"
+  bpPrintDesc "Link" "$ADDON_LINK"
   bpPrintLine
 }
 
@@ -164,31 +164,7 @@ nocond() { ##D Ordinary function
 
 ##- Bp select from list
 
-bpReturn=""
-
-bpPrintChooseList() {
-  echo
-  arr=("${@}")
-  len=${#arr[@]}
-
-  echo "${arr[0]}"
-  i=1
-  while [ "$i" -lt "$len" ]; do
-    desc=${arr[$i]}
-    printf "${BP_C_ID}  %-5.24s${E_RESET} ${BP_C_DESCRIPTION}%s${E_RESET}\n" "${i}" "$desc"
-    ((i++))
-  done
-}
-
-bpChoose() {
-  while true; do
-    bpPrintChooseList "${@}"
-    x=$(bpReadStr "")
-
-  done
-}
-
-rl() { ##D Read list
+rl() { ##D Select from list
   list=(
     "1" ":" "Alternative 1"
     "2" ":" "Another alternative"
@@ -199,10 +175,6 @@ rl() { ##D Read list
 
   bpSelectFromList "2" "Choose your alternative" "${list[@]}"
   echo -e "\nChoice: ${bpReturn}"
-}
-
-ch() { ##D Choose from list
-  bpChoose "Select an alternative" "Alt 1" "Alt 2" "Alt 3"
 }
 
 ##- Dictionary
@@ -351,7 +323,7 @@ colorize() { ##D Test F="/use/local/var/log/messages"
 
   echo
   F="/use/local/var/log/messages"
-  echo -e "Default file colorize: $(bpColorizeFile $F)"
+  echo -e "Default file colorize: $(bpColorizeFile "$F")"
   echo -e "Default url colorize:  $(bpColorizeUrl https://zonbrisad@github.com:80/zonbrisad/bashplates)"
   echo
   echo "Examples"
@@ -373,8 +345,8 @@ colorize() { ##D Test F="/use/local/var/log/messages"
 
 aa() {
   bpPrintLine "$1"
-  bpPrintInfo "cmd1" "My command 1"
-  bpPrintInfo "cmd2" "My command 2"
+  bpPrintDesc "cmd1" "My command 1"
+  bpPrintDesc "cmd2" "My command 2"
   bpPrintVar "NoVar" "Somevariable"
   bpPrintVar "BP_SELF_DIR" "BP_SELF_DIR"
   echo
@@ -489,7 +461,7 @@ XXprintCommand() {
   inf="${arr[*]:3}"
   #IFS=$'\n'
   echo -n "${arr[0]} "
-  # bpPrintInfo "${arr[0]}" "${inf}"
+  # bpPrintDesc "${arr[0]}" "${inf}"
 }
 completion() { ##D Print help information
 
@@ -541,14 +513,14 @@ kwr() { ##D Keyword replace
     bpError "File ${2} does not exist"
     bpExit
   fi
-  bpReplace "$2" "bpTextLineC" "bpText_TEMP_LineC"
+  bpReplace "$2" "bpText_TEMP_LineC" "bpText_TEMP_LineC"
 
-  bpReplace "$2" "bpLine()" "bpLine_deprecated() "
-  bpReplace "$2" "bpLine" "bpPrintLine"
-  bpReplace "$2" "bpPrintLineC" "bpPrintLineGeneric"
-  bpReplace "$2" "bpTextLine" "bpPrintLine"
+  bpReplace "$2" "bpPrintLine_deprecated() " "bpPrintLine_deprecated() "
+  bpReplace "$2" "bpPrintLine" "bpPrintLine"
+  bpReplace "$2" "bpPrintLineGeneric" "bpPrintLineGeneric"
+  bpReplace "$2" "bpPrintLine" "bpPrintLine"
 
-  bpReplace "$2" "bpText_TEMP_LineC" "bpTextLineC"
+  bpReplace "$2" "bpText_TEMP_LineC" "bpText_TEMP_LineC"
 
   bpReplace "$2" "bpRead()" "bpReadStr()"
   bpReplace "$2" "bpRead " "bpReadStr "
@@ -560,12 +532,71 @@ kwr() { ##D Keyword replace
   bpReplace "$2" "_CUR_" "_"
 
   bpReplace "$2" "BP_E_OK" "BP_OK"
+  bpReplace "$2" "BP_C_LINE_TEXT" "BP_C_LINETEXT"
 
   bpReplace "$2" "_FG_" "_"
   bpReplaceLine "$2" "BP_C_FILENAME=" 'BP_C_FILENAME="${E_BR_CYAN}"'
   bpReplaceLine "$2" "BP_C_PATH=" 'BP_C_PATH="${E_CYAN}"'
 
-  bpReplaceLine "$2" "bpDbg" "bpDebug"
+  bpReplace "$2" "bpDbg" "bpDebug"
+
+  bpReplace "$2" "BP_SETTINGS" "BP_CONFIG"
+  bpReplace "$2" "bpPrintInfo" "bpPrintDesc"
+
+}
+
+BP_POS_DESC=24
+BP_LEFT_MARGIN=3
+BP_RIGHT_MARGIN=3
+
+##- Break into multiple lines
+#
+# $1 command color
+# $2 description color
+# $3 command text
+# $4 desccription text
+#
+bpPrintDescGenericXX() { # Generic command/description printout function
+  if [ -n "$5" ]; then
+    X="$5"
+  else
+    X=${BP_POS_DESC}
+  fi
+  len=${#}
+  a=$(("${BP_COLUMNS}" - "$X" - "$BP_RIGHT_MARGIN"))
+  #LINES=$(fmt -s -w"${a}" <<<"$4")
+  LINES=$(fold -w"${a}" <<<"$4")
+  IFS=$'\n'
+  Y=0
+  for line in ${LINES}; do
+    if [ "${Y}" -eq 0 ]; then
+      printf "${1}  %-${X}.${X}s${E_RESET} ${2}%s${E_RESET}\n" "$3" "$line"
+      Y=1
+    else
+      printf "${1}  %-${X}.${X}s${E_RESET} ${2}%s${E_RESET}\n" "" "$line"
+    fi
+  done
+}
+
+#
+# $1 text for column 1
+# $2 text for column 2
+# $3 (optional) left alignment
+#
+bpPrintDescXX() { ##I Print text into two columns
+  bpPrintDescGenericXX "${BP_C_ID}" "${BP_C_DESCRIPTION}" "$1" "$2" "$3"
+}
+
+LT="This is a very long text that does not fit into a single line, but have to be broken up with the help of an external command like for example fmt."
+bim() { ##D Break text inte multiple lines
+  SSH_KEY=~/.ssh/id_ed25519
+  bpPrintDesc "Default" "$LT"
+  bpPrintDescXX "Formated" "$LT"
+
+  bpPrintLine "SSH"
+  bpPrintDescXX "SSH public key location" "${SSH_KEY}.pub"
+  bpPrintDescXX "SSH public key" "$(cat "${SSH_KEY}.pub")"
+
 }
 
 #---------------------------------------------------------------------
@@ -675,7 +706,7 @@ bpCallStack() { ##I Print out BASH call stack
   bpPrintLine "Call stack"
   echo
   local frame=0
-  while caller $frame | sed -r -e "s/[0-9]*/${BP_C_VALUE}&${E_RESET}/"; do
+  while caller "$frame" | sed -r -e "s/[0-9]*/${BP_C_VALUE}&${E_RESET}/"; do
     ((frame++))
   done
   echo "$*"
@@ -865,7 +896,7 @@ bpPrintLineGeneric() { ##I Print text with adjusted line after with selectable c
 # $2 text color
 # $3 line color
 #
-bpTextLineC() { ##I Print text with adjusted line after with selectable colors
+bpText_TEMP_LineC() { ##I Print text with adjusted line after with selectable colors
   bpPrintLineGeneric "$1" "$2" "$3" " " "-"
 }
 
@@ -884,7 +915,7 @@ bpPrintLine() { ##I Print text with line after
 # $3 command text
 # $4 desccription text
 #
-bpPrintInfoGeneric() { # Generic command/description printout function
+bpPrintDescGeneric() { # Generic command/description printout function
   if [ -n "$5" ]; then
     X="$5"
   else
@@ -898,12 +929,12 @@ bpPrintInfoGeneric() { # Generic command/description printout function
 # $2 text for column 2
 # $3 (optional) left alignment
 #
-bpPrintInfo() { ##I Print text into two columns
-  bpPrintInfoGeneric "${BP_C_ID}" "${BP_C_DESCRIPTION}" "$1" "$2" "$3"
+bpPrintDesc() { ##I Print text into two columns
+  bpPrintDescGeneric "${BP_C_ID}" "${BP_C_DESCRIPTION}" "$1" "$2" "$3"
 }
 
-bpPrintInfoAlt() {
-  bpPrintInfoGeneric "${E_DARKGRAY}" "${BP_C_DESCRIPTION}" "$1" "$2"
+bpPrintDescAlt() {
+  bpPrintDescGeneric "${E_DARKGRAY}" "${BP_C_DESCRIPTION}" "$1" "$2"
 }
 
 #
@@ -920,7 +951,7 @@ bpPrintVar() { ##I Print variable value and description
     else
       X="${!var}"
     fi
-    bpPrintInfo "$1" "${X}"
+    bpPrintDesc "$1" "${X}"
   else
     printf "${BP_C_ID}  %-24s${E_RESET} ${BP_C_ERROR}N/A${E_RESET}\n" "$1"
   fi
@@ -1459,14 +1490,13 @@ bpPrintConfigList() { ##I Print settings in config list
 bpset() { ##D Change setting in bp config file
 
   if bpInConfigList "$2" "${BP_CONFIG_LIST[@]}"; then
-    echo "${bpReturn}"
-    bpChSetting "${BP_SETTINGS}" "${bpReturn}" "\"${3}\""
+    bpChSetting "${BP_CONFIG_FILE}" "${bpReturn}" "\"${3}\""
     return
   fi
   bpPrintConfigList "" "" "${BP_CONFIG_LIST[@]}"
 }
 
-settings() { #C BP_CONF Print bashplate settings
+settings() { ##C BP_CONF Print bashplate settings
   bpPrintLine "Bashplates settings"
   bpPrintVar "Name:" BP_NAME
   bpPrintVar "Email:" BP_EMAIL
@@ -1747,7 +1777,7 @@ printCommand() {
   IFS=$' '
   read -r -a arr <<<"$1"
   inf="${arr[*]:3}"
-  bpPrintInfo "${arr[0]}" "${inf}"
+  bpPrintDesc "${arr[0]}" "${inf}"
 }
 
 printCondCommand() {
@@ -1762,12 +1792,12 @@ printCondCommand() {
   fi
 
   if [ -n "$D" ]; then
-    bpPrintInfo "${arr[0]}" "${help_info}"
+    bpPrintDesc "${arr[0]}" "${help_info}"
     return
   fi
 
   if [ "$2" -eq 1 ]; then
-    bpPrintInfoAlt "${arr[0]}" "$help_info"
+    bpPrintDescAlt "${arr[0]}" "$help_info"
   fi
 
 }
@@ -1852,7 +1882,7 @@ ihelp() { ##I Print internal help information
   IHELP=1      # Force ihelp documentations
   BP_LOGFILE=1 # Force log documentation
 
-  help_lines=$(grep -h '##[C|I]' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e 'printNamedLine' -e 'awk' -e 'bpPrintInfo' -e 'name')
+  help_lines=$(grep -h '##[C|I]' "$0" | grep -v -e 'grep' -e '\*"##[ A-Z]"\*' -e 'help_line' -e 'printNamedLine' -e 'awk' -e 'bpPrintDesc' -e 'name')
   help_lines=$(echo -e "$help_lines" | sed -s 's/()//g')
 
   for help_line in ${help_lines}; do
@@ -1866,11 +1896,11 @@ ihelp() { ##I Print internal help information
   done
 
   bpPrintLine "Bashplates comments"
-  bpPrintInfo "##D Description" "Subcommand information comment (shown with help)"
-  bpPrintInfo "##C COND Description" "Conditional subcommand comment (shown with help)"
-  bpPrintInfo "##- [Text]" "Separator line (shown with help)"
-  bpPrintInfo "##C- COND [Text]" "Conditional separator line (shown with help)"
-  bpPrintInfo "##I Description" "Internal function comment (shown with ihelp)"
+  bpPrintDesc "##D Description" "Subcommand information comment (shown with help)"
+  bpPrintDesc "##C COND Description" "Conditional subcommand comment (shown with help)"
+  bpPrintDesc "##- [Text]" "Separator line (shown with help)"
+  bpPrintDesc "##C- COND [Text]" "Conditional separator line (shown with help)"
+  bpPrintDesc "##I Description" "Internal function comment (shown with ihelp)"
   bpPrintLine
 }
 
@@ -1883,7 +1913,7 @@ iinfo() { ##I Show information about script
   bpPrintVar "Log file" BP_LOGFILE "$(bpColorizeFile "${BP_LOGFILE}")"
   bpPrintVar "Lock file" BP_LOCK_FILE "$(bpColorizeFile "${BP_LOCK_FILE}")"
   bpPrintVar "Default function" DEFAULT_CMD_HOOK
-  bpPrintInfo "PID" $$
+  bpPrintDesc "PID" $$
   bpPrintVar "Date" BP_DATE
   bpPrintVar "Time" BP_TIME
   bpPrintVar "Character columns" BP_COLUMNS
