@@ -501,12 +501,6 @@ args() { ##D Test of arguments
   done
 }
 
-line() { ##D Some test
-  bpPrintLine
-  bpPrintLine "A text line"
-  bpPrintLine "XXX"
-}
-
 ##- Update script
 kwr() { ##D Keyword replace
   if [ ! -e "$2" ]; then
@@ -542,60 +536,17 @@ kwr() { ##D Keyword replace
 
   bpReplace "$2" "BP_SETTINGS" "BP_CONFIG"
   bpReplace "$2" "bpPrintInfo" "bpPrintDesc"
-
-}
-
-BP_POS_DESC=24
-BP_LEFT_MARGIN=3
-BP_RIGHT_MARGIN=3
-
-##- Break into multiple lines
-#
-# $1 command color
-# $2 description color
-# $3 command text
-# $4 desccription text
-#
-bpPrintDescGenericXX() { # Generic command/description printout function
-  if [ -n "$5" ]; then
-    X="$5"
-  else
-    X=${BP_POS_DESC}
-  fi
-  len=${#}
-  a=$(("${BP_COLUMNS}" - "$X" - "$BP_RIGHT_MARGIN"))
-  #LINES=$(fmt -s -w"${a}" <<<"$4")
-  LINES=$(fold -w"${a}" <<<"$4")
-  IFS=$'\n'
-  Y=0
-  for line in ${LINES}; do
-    if [ "${Y}" -eq 0 ]; then
-      printf "${1}  %-${X}.${X}s${E_RESET} ${2}%s${E_RESET}\n" "$3" "$line"
-      Y=1
-    else
-      printf "${1}  %-${X}.${X}s${E_RESET} ${2}%s${E_RESET}\n" "" "$line"
-    fi
-  done
-}
-
-#
-# $1 text for column 1
-# $2 text for column 2
-# $3 (optional) left alignment
-#
-bpPrintDescXX() { ##I Print text into two columns
-  bpPrintDescGenericXX "${BP_C_ID}" "${BP_C_DESCRIPTION}" "$1" "$2" "$3"
 }
 
 LT="This is a very long text that does not fit into a single line, but have to be broken up with the help of an external command like for example fmt."
-bim() { ##D Break text inte multiple lines
+bim() { ##D Break text into multiple lines
   SSH_KEY=~/.ssh/id_ed25519
   bpPrintDesc "Default" "$LT"
-  bpPrintDescXX "Formated" "$LT"
+  #  bpPrintDescXX "Formated" "$LT"
 
   bpPrintLine "SSH"
-  bpPrintDescXX "SSH public key location" "${SSH_KEY}.pub"
-  bpPrintDescXX "SSH public key" "$(cat "${SSH_KEY}.pub")"
+  # bpPrintDescXX "SSH public key location" "${SSH_KEY}.pub"
+  bpPrintDesc "SSH public key" "$(cat "${SSH_KEY}.pub")"
 
 }
 
@@ -735,7 +686,6 @@ bpExit() { ##I Function for safely exiting script
   else
     exit "$1"
   fi
-
 }
 
 bpErrorExit() { ##I Safely exit script with a error
@@ -846,7 +796,7 @@ BP_C_WARNING="${E_BR_YELLOW}"
 BP_C_ERROR="${E_BR_RED}"
 BP_C_CRITICAL="${E_BG_RED}${E_WHITE}"
 BP_C_LINE="${E_DARKGRAY}"
-BP_C_LINE_TEXT="${E_YELLOW}"
+BP_C_LINETEXT="${E_YELLOW}"
 BP_C_DESCRIPTION="${E_GREEN}"
 BP_C_ID="${E_CYAN}"
 
@@ -867,6 +817,12 @@ BP_C_VAR="${E_BR_YELLOW}"
 # Exit codes
 #
 BP_OK=0 # successful termination
+
+# Formating
+#
+BP_POS_DESC=24
+BP_LEFT_MARGIN=3
+BP_RIGHT_MARGIN=3
 
 #---------------------------------------------------------------------
 # Bashplate internal functions
@@ -896,40 +852,52 @@ bpPrintLineGeneric() { ##I Print text with adjusted line after with selectable c
 # $2 text color
 # $3 line color
 #
-bpText_TEMP_LineC() { ##I Print text with adjusted line after with selectable colors
+bpTextLineC() { ##I Print text with adjusted line after with selectable colors
   bpPrintLineGeneric "$1" "$2" "$3" " " "-"
 }
 
-bpPrintLine() { ##I Print text with line after
-  #  echo "$1 ${#1}"
+bpPrintLine() { ##I Print text with line
   if [ "${#1}" -eq 0 ]; then
     bpPrintLineGeneric "" "" "${BP_C_LINE}" "" "-"
   else
-    bpPrintLineGeneric "$1" "${BP_C_LINE_TEXT}" "${BP_C_LINE}" " " "-"
+    bpPrintLineGeneric "$1" "${BP_C_LINETEXT}" "${BP_C_LINE}" " " "-"
   fi
 }
 
 #
-# $1 command color
+# $1 key color
 # $2 description color
-# $3 command text
-# $4 desccription text
+# $3 key
+# $4 description
 #
-bpPrintDescGeneric() { # Generic command/description printout function
+bpPrintDescGeneric() { # Generic key/description printout function
   if [ -n "$5" ]; then
     X="$5"
   else
-    X=24
+    X=${BP_POS_DESC}
   fi
-  printf "${1}  %-${X}.${X}s${E_RESET} ${2}%s${E_RESET}\n" "$3" "$4"
+  len=${#}
+  a=$(("${BP_COLUMNS}" - "$X" - "$BP_RIGHT_MARGIN"))
+  #LINES=$(fmt -s -w"${a}" <<<"$4")
+  LINES=$(fold -w"${a}" <<<"$4")
+  IFS=$'\n'
+  Y=0
+  for line in ${LINES}; do
+    if [ "${Y}" -eq 0 ]; then
+      printf "${1}  %-${X}.${X}s${E_RESET} ${2}%s${E_RESET}\n" "$3" "$line"
+      Y=1
+    else
+      printf "${1}  %-${X}.${X}s${E_RESET} ${2}%s${E_RESET}\n" "" "$line"
+    fi
+  done
 }
 
 #
-# $1 text for column 1
-# $2 text for column 2
+# $1 key
+# $2 description
 # $3 (optional) left alignment
 #
-bpPrintDesc() { ##I Print text into two columns
+bpPrintDesc() { ##I Print key description
   bpPrintDescGeneric "${BP_C_ID}" "${BP_C_DESCRIPTION}" "$1" "$2" "$3"
 }
 
@@ -1385,7 +1353,7 @@ bpAddSetting() { ##I Add setting to config file
 # $2 key
 # $3 value
 #
-bpChSetting() { ##I # Change setting in config file
+bpChSetting() { ##I Change setting in config file
   SETTING="$2"
   VAL="$3"
 
@@ -1511,7 +1479,7 @@ settings() { ##C BP_CONF Print bashplate settings
 
 bpLsPaths() { ##I List paths
   shopt -s nullglob dotglob
-  for p in "${BP_SETTINGS_PATHS}"/*; do
+  for p in "${BP_CONFIG_PATHS}"/*; do
     echo "A: $(readlink "${p}")"
   done
 }
@@ -1524,17 +1492,17 @@ bpAddPath() { ##I Add dir to PATH variable
 
   bpInfo "Adding PATH \"${2}\""
   if [ ! -L "$1" ]; then
-    bpLn "${1}" "${BP_SETTINGS_PATHS}/${ll}"
+    bpLn "${1}" "${BP_CONFIG_PATHS}/${ll}"
   fi
 }
 
 bpRmPath() { ##I Remove path
-  bpRm "${BP_SETTINGS_PATHS}/${1}"
+  bpRm "${BP_CONFIG_PATHS}/${1}"
 }
 
 bpLsModules() { ##I List modules
   shopt -s nullglob dotglob
-  for p in "${BP_SETTINGS_MODULES}"/*; do
+  for p in "${BP_CONFIG_MODULES}"/*; do
     readlink "${p}"
   done
 }
@@ -1542,13 +1510,13 @@ bpLsModules() { ##I List modules
 bpAddModule() { ##I Add init script to
   m=$(realpath "${1}")
   if [ ! -L "$m" ]; then
-    rm -f "${BP_SETTINGS_MODULES}/$(basename "${m}")"
-    bpLn "$m" "${BP_SETTINGS_MODULES}/."
+    rm -f "${BP_CONFIG_MODULES}/$(basename "${m}")"
+    bpLn "$m" "${BP_CONFIG_MODULES}/."
   fi
 }
 
 bpRmModule() { ##I Remove module
-  bpRm "${BP_SETTINGS_MODULES}/${1}"
+  bpRm "${BP_CONFIG_MODULES}/${1}"
 }
 
 ##-
@@ -1827,7 +1795,7 @@ help() { ##D Print help information
 
   BP_HELP=1
 
-  if [ ! -e "${BP_SETTINGS_DIR}" ] && [ -n "${BP_SETTINGS}" ]; then
+  if [ ! -e "${BP_CONFIG_DIR}" ] && [ -n "${BP_CONFIG}" ]; then
     BPINIT=1
   fi
 
@@ -1909,7 +1877,7 @@ iinfo() { ##I Show information about script
   bpPrintVar "Script" BP_SELF "$(bpColorizeFile "${BP_SELF_DIR}/${BP_SELF}")"
   bpPrintVar "Script version" BP_VERSION
   bpPrintVar "Template version" BP_VERSION
-  bpPrintVar "Bashplate settings file" BP_SETTINGS "$(bpColorizeFile "${BP_SETTINGS}")"
+  bpPrintVar "Bashplate settings file" BP_CONFIG "$(bpColorizeFile "${BP_CONFIG}")"
   bpPrintVar "Log file" BP_LOGFILE "$(bpColorizeFile "${BP_LOGFILE}")"
   bpPrintVar "Lock file" BP_LOCK_FILE "$(bpColorizeFile "${BP_LOCK_FILE}")"
   bpPrintVar "Default function" DEFAULT_CMD_HOOK

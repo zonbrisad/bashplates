@@ -290,7 +290,7 @@ To montor the logfile simply enter the "mlog" command.
 - [ ] Mail feature
 - [ ] dictionary functions
 - [x] Select from list function
-- [ ] Module system
+- [ ] Plugin system
 - [x] Merge bpLine and bpTextLine to bpPrintLine
 - [ ] Reformat messages to "straigt columns"
 - [x] rename bpRead to bpReadStr(ing)
@@ -301,6 +301,7 @@ To montor the logfile simply enter the "mlog" command.
 - [ ] Add automatic completion generator
 - [x] Add keyword change function to bpdev
 - [ ] Add color theme override to setup file
+- [x] Format/fold long description texts
 
 
 ## Sugestions
