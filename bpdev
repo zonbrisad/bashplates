@@ -541,6 +541,8 @@ desc() { ##D bpPrintDesc bug test
   bpPrintDesc "AA" "asdf asdfad"
   bpPrintDesc "BB" ""
   bpPrintDesc "" "CC"
+  bpPrintDesc "DD" $'A\nB\nC\nD'
+  bpPrintDesc "ls" "$(ls -l /)"
 }
 
 #---------------------------------------------------------------------
@@ -869,6 +871,11 @@ bpPrintDescGeneric() { # Generic key/description printout function
   else
     X=${BP_POS_DESC}
   fi
+
+  if ((${#4} == 0)); then
+    printf "${1}  %-${X}.${X}s${E_RESET} ${2}%s${E_RESET}\n" "$3" ""
+  fi
+
   len=${#}
   a=$(("${BP_COLUMNS}" - "$X" - "$BP_RIGHT_MARGIN"))
   #LINES=$(fmt -s -w"${a}" <<<"$4")
