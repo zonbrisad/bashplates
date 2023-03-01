@@ -279,6 +279,8 @@ To montor the logfile simply enter the "mlog" command.
 [HISTORY.md](/doc/HISTORY.md)
 
 ## TODO
+- [ ] Bug: bpEscapeFilter does not work correctly
+- [ ] Bug: bpPrintDesc zero length description bug
 - [ ] Add option parser
 - [ ] Add verbose/debug option
 - [ ] Add quiet option
@@ -286,7 +288,6 @@ To montor the logfile simply enter the "mlog" command.
 - [ ] Add warning question to bpReadBool question
 - [X] Add override editor for "ied" command
 - [ ] Add trim string function
-- [ ] Use logrotate for logs
 - [ ] Mail feature
 - [ ] dictionary functions
 - [x] Select from list function
@@ -296,15 +297,16 @@ To montor the logfile simply enter the "mlog" command.
 - [x] rename bpRead to bpReadStr(ing)
 - [x] rename all bpRead?? to more apropriate
 - [ ] multi column output
-- [ ] Fix bpEscapeFilter
 - [ ] Change color of time and date in log view command from green/dark green to something else t.ex. magenta
 - [ ] Add automatic completion generator
 - [x] Add keyword change function to bpdev
 - [ ] Add color theme override to setup file
 - [x] Format/fold long description texts
+- [ ] Remove settings command and include it into bpset
 
 
 ## Sugestions
+ - Use logrotate for logs
  - rename iview to iv
  - rename ivars to ivar or iva 
  - rename iinfo to ii
