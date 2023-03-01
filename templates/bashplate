@@ -373,22 +373,29 @@ bpPrintDescAlt() {
 }
 
 #
-# $1 text for column 1
-# $2 variable for column 2
-# $3 optional text form column 2
-# $4 (optional) left alignment
+# $1 variablename
+# $2 alternative key text (optional)
+# $3 alternative value text (optional)
 #
 bpPrintVar() { ##I Print variable value and description
-  var="$2"
-  if [ "${!var}" ]; then
-    if [ -n "$3" ]; then
-      X=${3}
-    else
-      X="${!var}"
-    fi
-    bpPrintDesc "$1" "${X}"
+  VAR="$1"
+
+  if [ -n "$2" ]; then
+    KEY=${2}
   else
-    printf "${BP_C_KEY}  %-24s${E_RESET} ${BP_C_ERROR}N/A${E_RESET}\n" "$1"
+    KEY="${VAR}"
+  fi
+
+  if [ "${!VAR}" ]; then
+    if [ -n "$3" ]; then
+      VAL=${3}
+    else
+      VAL="${!VAR}"
+    fi
+
+    bpPrintDesc "${KEY}" "${VAL}"
+  else
+    bpPrintDescGeneric "${BP_C_KEY}" "${BP_C_ERROR}" "$KEY" "N/A"
   fi
 }
 
@@ -1385,24 +1392,38 @@ ihelp() { ##I Print internal help information
 
 iinfo() { ##I Show information about script
   bpPrintLine "Script information"
-  bpPrintVar "Script" BP_SELF "$(bpColorizeFile "${BP_SELF_DIR}/${BP_SELF}")"
-  bpPrintVar "Script version" BP_VERSION
-  bpPrintVar "Template version" BP_VERSION
-  bpPrintVar "Bashplate settings file" BP_CONFIG "$(bpColorizeFile "${BP_CONFIG}")"
-  bpPrintVar "Log file" BP_LOGFILE "$(bpColorizeFile "${BP_LOGFILE}")"
-  bpPrintVar "Lock file" BP_LOCK_FILE "$(bpColorizeFile "${BP_LOCK_FILE}")"
-  bpPrintVar "Default function" DEFAULT_CMD_HOOK
+  bpPrintVar BP_SELF "Script" "$(bpColorizeFile "${BP_SELF_DIR}/${BP_SELF}")"
+  bpPrintVar BP_VERSION "Script version"
+  bpPrintVar BP_VERSION "Template version"
+  bpPrintVar BP_CONFIG "Bashplate settings file" "$(bpColorizeFile "${BP_CONFIG}")"
+  bpPrintVar BP_LOGFILE "Log file" "$(bpColorizeFile "${BP_LOGFILE}")"
+  bpPrintVar BP_LOCK_FILE "Lock file" "$(bpColorizeFile "${BP_LOCK_FILE}")"
+  bpPrintVar DEFAULT_CMD_HOOK "Default function"
   bpPrintDesc "PID" $$
-  bpPrintVar "Date" BP_DATE
-  bpPrintVar "Time" BP_TIME
-  bpPrintVar "Character columns" BP_COLUMNS
-  bpPrintVar "Character lines" BP_LINES
+  bpPrintVar BP_DATE "Date"
+  bpPrintVar BP_TIME "Time"
+  bpPrintVar BP_COLUMNS "Terminal columns"
+  bpPrintVar BP_LINES "Terminal lines"
 
   if [ -n "${POST_INFO_HOOK}" ]; then
     bpPrintLine "App. information"
     ${POST_INFO_HOOK}
   fi
-  settings
+
+  if [ -z "$BP_CONF" ]; then
+    return
+  fi
+  bpPrintLine "Bashplate config"
+  i=2
+  while [ "$i" -lt ${#BP_CONFIG_LIST[@]} ]; do
+    KEY=${BP_CONFIG_LIST[$i]}
+    ((i++))
+    ((i++))
+    ((i++))
+    bpPrintVar "$KEY" "$KEY"
+  done
+
+  bpPrintLine
 }
 
 iview() { ##I View example
@@ -1591,7 +1612,6 @@ BP_CONFIG_LIST=(
   "BP_LICENSE" "MIT" "Default license"
   "BP_EDITOR" "vi" "Default editor"
   "BP_DIFF" "meld" "Default diff program"
-  "BP_TMP" "tmp" "Default temporary setting"
 )
 
 # Load configuration file settings

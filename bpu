@@ -70,7 +70,7 @@ kwr() { ##D Keyword replace
 
   bpReplace "$2" "BP_E_OK" "BP_OK"
   bpReplace "$2" "BP_C_LINE_TEXT" "BP_C_LINETEXT"
-	bpReplace "$2" "BP_C_ID" "BP_C_KEY"
+  bpReplace "$2" "BP_C_ID" "BP_C_KEY"
 
   bpReplace "$2" "_FG_" "_"
   bpReplaceLine "$2" "BP_C_FILENAME=" 'BP_C_FILENAME="${E_BR_CYAN}"'
