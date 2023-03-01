@@ -280,7 +280,7 @@ To montor the logfile simply enter the "mlog" command.
 
 ## TODO
 - [ ] Bug: bpEscapeFilter does not work correctly
-- [ ] Bug: bpPrintDesc zero length description bug
+- [x] Bug: bpPrintDesc zero length description bug
 - [ ] Add option parser
 - [ ] Add verbose/debug option
 - [ ] Add quiet option
@@ -293,16 +293,16 @@ To montor the logfile simply enter the "mlog" command.
 - [x] Select from list function
 - [ ] Plugin system
 - [x] Merge bpLine and bpTextLine to bpPrintLine
-- [ ] Reformat messages to "straigt columns"
+- [x] Reformat messages to "straigt columns"
 - [x] rename bpRead to bpReadStr(ing)
 - [x] rename all bpRead?? to more apropriate
 - [ ] multi column output
-- [ ] Change color of time and date in log view command from green/dark green to something else t.ex. magenta
+- [x] Change color of time and date in log view command from green/dark green to something else t.ex. magenta
 - [ ] Add automatic completion generator
 - [x] Add keyword change function to bpdev
 - [ ] Add color theme override to setup file
 - [x] Format/fold long description texts
-- [ ] Remove settings command and include it into bpset
+- [x] Remove settings command and include it into bpset
 
 
 ## Sugestions

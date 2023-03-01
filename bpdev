@@ -543,6 +543,8 @@ desc() { ##D bpPrintDesc bug test
   bpPrintDesc "" "CC"
   bpPrintDesc "DD" $'A\nB\nC\nD'
   bpPrintDesc "ls" "$(ls -l /)"
+  #bpPrintLine "Line"
+  bpPrintLine
 }
 
 #---------------------------------------------------------------------
@@ -1944,6 +1946,7 @@ iinfo() { ##I Show information about script
   fi
 
   if [ -z "$BP_CONF" ]; then
+    bpPrintLine
     return
   fi
   bpPrintLine "Bashplate config"
