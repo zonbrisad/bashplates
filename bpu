@@ -50,14 +50,15 @@ kwr() { ##D Keyword replace
     bpError "File ${2} does not exist"
     bpExit
   fi
-  bpReplace "$2" "bpText_TEMP_LineC" "bpText_TEMP_LineC"
+  bpReplace "$2" "bpTextLineC" "bpText_TEMP_LineC"
 
-  bpReplace "$2" "bpPrintLine_deprecated() " "bpPrintLine_deprecated() "
-  bpReplace "$2" "bpPrintLine" "bpPrintLine"
-  bpReplace "$2" "bpPrintLineGeneric" "bpPrintLineGeneric"
-  bpReplace "$2" "bpPrintLine" "bpPrintLine"
+  bpReplace "$2" "bpLine() " "bpLine_deprecated() "
+  bpReplace "$2" "bpLine" "bpPrintLine"
+  bpReplace "$2" "bpPrintLineC" "bpPrintLineGeneric"
+  bpReplace "$2" "bpTextLine" "bpPrintLine"
+  bpReplace "$2" "bpPrintInfo" "bpPrintDesc"
 
-  bpReplace "$2" "bpText_TEMP_LineC" "bpText_TEMP_LineC"
+  bpReplace "$2" "bpText_TEMP_LineC" "bpTextLineC"
 
   bpReplace "$2" "bpRead()" "bpReadStr()"
   bpReplace "$2" "bpRead " "bpReadStr "
@@ -65,6 +66,7 @@ kwr() { ##D Keyword replace
   bpReplace "$2" "bpReadY" "bpReadBoolDY"
   bpReplace "$2" "bpReadN" "bpReadBoolDN"
 
+  bpReplace "$2" "_FG_" "_"
   bpReplace "$2" "_ATTR_" "_"
   bpReplace "$2" "_CUR_" "_"
 
@@ -72,14 +74,13 @@ kwr() { ##D Keyword replace
   bpReplace "$2" "BP_C_LINE_TEXT" "BP_C_LINETEXT"
   bpReplace "$2" "BP_C_ID" "BP_C_KEY"
 
-  bpReplace "$2" "_FG_" "_"
   bpReplaceLine "$2" "BP_C_FILENAME=" 'BP_C_FILENAME="${E_BR_CYAN}"'
   bpReplaceLine "$2" "BP_C_PATH=" 'BP_C_PATH="${E_CYAN}"'
 
   bpReplace "$2" "bpDbg" "bpDebug"
 
   bpReplace "$2" "BP_SETTINGS" "BP_CONFIG"
-  bpReplace "$2" "bpPrintInfo" "bpPrintDesc"
+  bpReaplace "$2" "BPSCRIPTPATH" "BP_SELF_DIR"
 }
 
 #---------------------------------------------------------------------

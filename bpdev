@@ -538,11 +538,14 @@ conf() { ##D Config test
 }
 
 desc() { ##D bpPrintDesc bug test
-  bpPrintDesc "AA" "asdf asdfad"
-  bpPrintDesc "BB" ""
-  bpPrintDesc "" "CC"
-  bpPrintDesc "DD" $'A\nB\nC\nD'
-  bpPrintDesc "ls" "$(ls -l /)"
+  bpPrintDesc "Key" "Description"
+  bpPrintDesc "No description test" ""
+  bpPrintDesc "" "No key test"
+  bpPrintDesc "A very much too extra long key" "My description of a very much to long key"
+  bpPrintDesc "|-----------------------|" "My description of key"
+  bpPrintDesc "|----------------------|" "My description of key"
+  bpPrintDesc "Multiple lines desc." $'A\nB\nC\nD'
+  bpPrintDesc "\"ls -l /\"" "$(ls -l /)"
   #bpPrintLine "Line"
   bpPrintLine
 }
@@ -817,7 +820,7 @@ BP_OK=0 # successful termination
 
 # Formating
 #
-BP_POS_DESC=24
+BP_KEY_LENGTH=24
 BP_LEFT_MARGIN=3
 BP_RIGHT_MARGIN=3
 
@@ -866,12 +869,17 @@ bpPrintLine() { ##I Print text with line
 # $2 description color
 # $3 key
 # $4 description
+# $5
 #
 bpPrintDescGeneric() { # Generic key/description printout function
+  KEY_COLOR="$1"
+  DESC_COLOR="$2"
+  KEY="$3"
+  DESC="$4"
   if [ -n "$5" ]; then
     X="$5"
   else
-    X=${BP_POS_DESC}
+    X=${BP_KEY_LENGTH}
   fi
 
   if ((${#4} == 0)); then
@@ -881,15 +889,20 @@ bpPrintDescGeneric() { # Generic key/description printout function
   len=${#}
   a=$(("${BP_COLUMNS}" - "$X" - "$BP_RIGHT_MARGIN"))
   #LINES=$(fmt -s -w"${a}" <<<"$4")
-  LINES=$(fold -w"${a}" <<<"$4")
+  LINES=$(fold -w"${a}" <<<"$DESC")
   IFS=$'\n'
-  Y=0
+  L1=0
   for line in ${LINES}; do
-    if [ "${Y}" -eq 0 ]; then
-      printf "${1}  %-${X}.${X}s${E_RESET} ${2}%s${E_RESET}\n" "$3" "$line"
-      Y=1
-    else
-      printf "${1}  %-${X}.${X}s${E_RESET} ${2}%s${E_RESET}\n" "" "$line"
+    if [ "${L1}" -eq 0 ]; then                # First line
+      if ((${#KEY} > "$BP_KEY_LENGTH")); then # Oversized key
+        printf "${KEY_COLOR}  %-${X}s${E_RESET}\n" "$KEY"
+        printf "${KEY_COLOR}  %-${X}.${X}s${E_RESET} ${DESC_COLOR}%s${E_RESET}\n" "" "$line"
+      else # Normal key
+        printf "${KEY_COLOR}  %-${X}.${X}s${E_RESET} ${DESC_COLOR}%s${E_RESET}\n" "$KEY" "$line"
+      fi
+      L1=1
+    else # Rest of the lines
+      printf "${KEY_COLOR}  %-${X}.${X}s${E_RESET} ${DESC_COLOR}%s${E_RESET}\n" "" "$line"
     fi
   done
 }
@@ -1499,16 +1512,14 @@ bpConfPrint() { ##I Print settings in config list
   arr=("${@:4}")
   i=1
   while [ "$i" -lt ${#arr[@]} ]; do
-    key=${arr[$i]}
+    KEY=${arr[$i]}
     ((i++))
-    def=${arr[$i]}
+    DEF=${arr[$i]}
     ((i++))
-    desc=${arr[$i]}
+    DESC=${arr[$i]}
     ((i++))
-    eval "val=\$$key"
-    #bpPrintLine "${desc}"
-    printf "%s%s\n" "${E_DARKGRAY}" "${desc}"
-    bpPrintDesc "$key" "$val"
+    printf "%s%s\n" "${E_DARKGRAY}" "${DESC}"
+    bpPrintVar "$KEY" #"${!KEY}"
   done
 }
 
@@ -1802,13 +1813,12 @@ printCondCommand() {
   read -r -a LINE <<<"$1"
   DESC="${LINE[*]:4}"
   COND=${LINE[3]}
-  eval "D=\$$COND"
 
   if [ -n "$IHELP" ] && [ "$COND" != "IHELP" ]; then
     return
   fi
 
-  if [ -n "$D" ]; then
+  if [ -n "${!COND}" ]; then
     bpPrintDesc "${LINE[0]}" "${DESC}"
     return
   fi
@@ -1830,13 +1840,12 @@ printCondNamedLine() {
   read -r -a LINE <<<"$1"
   DESC=${LINE[*]:2}
   COND=${LINE[1]}
-  eval "D=\$$COND"
 
   if [ -n "$IHELP" ] && [ "$COND" != "IHELP" ]; then
     return
   fi
 
-  if [ -n "$D" ]; then
+  if [ -n "${!COND}" ]; then
     bpPrintLine "$DESC"
   fi
 }
@@ -2055,8 +2064,7 @@ bpRunCommand() {
     read -r -a ARR <<<"$CL"
     CV="${ARR[3]}"
     if [ -n "$CV" ]; then
-      eval "D=\$$CV"
-      if [ -n "$D" ]; then
+      if [ -n "${!CV}" ]; then
         # execute command
         "${command}" "$@"
       else
@@ -2148,7 +2156,9 @@ BP_CONFIG_LIST=(
   "BP_LICENSE" "MIT" "Default license"
   "BP_EDITOR" "vi" "Default editor"
   "BP_DIFF" "meld" "Default diff program"
-  "BP_TMP" "tmp" "Default temporary setting"
+  "BP_GITSERVER" "github.com" "Default git server"
+  "BP_GITUSER" "" "Default git user"
+  "BP_GITPROTO" "http" "Default git protocol"
 )
 
 # Load configuration file settings

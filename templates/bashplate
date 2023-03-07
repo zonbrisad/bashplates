@@ -969,16 +969,14 @@ bpConfPrint() { ##I Print settings in config list
   arr=("${@:4}")
   i=1
   while [ "$i" -lt ${#arr[@]} ]; do
-    key=${arr[$i]}
+    KEY=${arr[$i]}
     ((i++))
-    def=${arr[$i]}
+    DEF=${arr[$i]}
     ((i++))
-    desc=${arr[$i]}
+    DESC=${arr[$i]}
     ((i++))
-    eval "val=\$$key"
-    #bpPrintLine "${desc}"
-    printf "%s%s\n" "${E_DARKGRAY}" "${desc}"
-    bpPrintDesc "$key" "$val"
+    printf "%s%s\n" "${E_DARKGRAY}" "${DESC}"
+    bpPrintDesc "$KEY" "${!KEY}"
   done
 }
 
@@ -1272,13 +1270,12 @@ printCondCommand() {
   read -r -a LINE <<<"$1"
   DESC="${LINE[*]:4}"
   COND=${LINE[3]}
-  eval "D=\$$COND"
 
   if [ -n "$IHELP" ] && [ "$COND" != "IHELP" ]; then
     return
   fi
 
-  if [ -n "$D" ]; then
+  if [ -n "${!COND}" ]; then
     bpPrintDesc "${LINE[0]}" "${DESC}"
     return
   fi
@@ -1300,13 +1297,12 @@ printCondNamedLine() {
   read -r -a LINE <<<"$1"
   DESC=${LINE[*]:2}
   COND=${LINE[1]}
-  eval "D=\$$COND"
 
   if [ -n "$IHELP" ] && [ "$COND" != "IHELP" ]; then
     return
   fi
 
-  if [ -n "$D" ]; then
+  if [ -n "${!COND}" ]; then
     bpPrintLine "$DESC"
   fi
 }
@@ -1416,6 +1412,7 @@ iinfo() { ##I Show information about script
   fi
 
   if [ -z "$BP_CONF" ]; then
+    bpPrintLine
     return
   fi
   bpPrintLine "Bashplate config"
@@ -1524,8 +1521,7 @@ bpRunCommand() {
     read -r -a ARR <<<"$CL"
     CV="${ARR[3]}"
     if [ -n "$CV" ]; then
-      eval "D=\$$CV"
-      if [ -n "$D" ]; then
+      if [ -n "${!CV}" ]; then
         # execute command
         "${command}" "$@"
       else

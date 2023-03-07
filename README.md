@@ -285,7 +285,7 @@ To montor the logfile simply enter the "mlog" command.
 - [ ] Add verbose/debug option
 - [ ] Add quiet option
 - [ ] Add color suppression option
-- [ ] Add warning question to bpReadBool question
+- [ ] Add warning question(Are you sure?) to bpReadBool question
 - [X] Add override editor for "ied" command
 - [ ] Add trim string function
 - [ ] Mail feature

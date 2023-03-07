@@ -92,7 +92,7 @@ newScript() {
   author=$(bpReadStr "Enter author" "${BP_NAME} <${BP_EMAIL}>")
 
   echo "${BP_PREAMBLE}" >|"${script}"
-  echo "$(bpImport $BP_HEADER)" >>"${script}"
+  bpImport "$BP_HEADER" >>"${script}"
   cat "${BP_TEMPLATES}/$1" >>"${script}"
   chmod +x "${script}"
 
@@ -153,9 +153,8 @@ ei() { ##C BP_DEV Edit Bashplate init file
 }
 
 ec() { ##C BP_DEV Edit Bashplate config file
-  bpEdit ${BP_CONFIG} "$2"
+  bpEdit "${BP_CONFIG}" "$2"
 }
-
 
 dl() { ##C BP_DEV Make diff with latest bashtemplate
   ${BP_DIFF} "${BP_SELF_DIR}/templates/bashplate" "$2"
@@ -167,6 +166,10 @@ dd() { ##C BP_DEV Diff with bpdev
 
 dt() { ##C BP_DEV Diff bpdev with template
   ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "${BP_SELF_DIR}/templates/bashplate"
+}
+
+de() { ##C BP_DEV Diff bpdev with external file
+  ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "$2"
 }
 
 tabs() { ##C BP_DEV Remove tabs
@@ -188,7 +191,7 @@ clean() { ##C BP_DEV Remove leftover files
   find . -name "*.orig" -delete
 
   # Remove untraced files
-  git clean -df -e *.log
+  git clean -df -e "*.log"
   bpCd -
 }
 
@@ -226,7 +229,7 @@ pull() { ##C BP_DEV Pull project from GITHUB
 }
 
 bp_phh() {
-  if [ ! -n "${BP_INIT_RUN}" ]; then
+  if [ -z "${BP_INIT_RUN}" ]; then
     bpInfo "Make sure to do load bp_init ( source $(realpath bp_init) )"
     echo
   fi
@@ -1291,16 +1294,14 @@ bpConfPrint() { ##I Print settings in config list
   arr=("${@:4}")
   i=1
   while [ "$i" -lt ${#arr[@]} ]; do
-    key=${arr[$i]}
+    KEY=${arr[$i]}
     ((i++))
-    def=${arr[$i]}
+    DEF=${arr[$i]}
     ((i++))
-    desc=${arr[$i]}
+    DESC=${arr[$i]}
     ((i++))
-    eval "val=\$$key"
-    #bpPrintLine "${desc}"
-    printf "%s%s\n" "${E_DARKGRAY}" "${desc}"
-    bpPrintDesc "$key" "$val"
+    printf "%s%s\n" "${E_DARKGRAY}" "${DESC}"
+    bpPrintDesc "$KEY" "${!KEY}"
   done
 }
 
@@ -1521,7 +1522,7 @@ bpAssertProgs() { ##I Assert that required programs are available on the system
         e=1
       }
   done
-  if [ $e -eq 1 ]; then
+  if [ "$e" -eq 1 ]; then
     bpExit 1
   fi
 }
@@ -1594,13 +1595,12 @@ printCondCommand() {
   read -r -a LINE <<<"$1"
   DESC="${LINE[*]:4}"
   COND=${LINE[3]}
-  eval "D=\$$COND"
 
   if [ -n "$IHELP" ] && [ "$COND" != "IHELP" ]; then
     return
   fi
 
-  if [ -n "$D" ]; then
+  if [ -n "${!COND}" ]; then
     bpPrintDesc "${LINE[0]}" "${DESC}"
     return
   fi
@@ -1622,13 +1622,12 @@ printCondNamedLine() {
   read -r -a LINE <<<"$1"
   DESC=${LINE[*]:2}
   COND=${LINE[1]}
-  eval "D=\$$COND"
 
   if [ -n "$IHELP" ] && [ "$COND" != "IHELP" ]; then
     return
   fi
 
-  if [ -n "$D" ]; then
+  if [ -n "${!COND}" ]; then
     bpPrintLine "$DESC"
   fi
 }
@@ -1738,6 +1737,7 @@ iinfo() { ##I Show information about script
   fi
 
   if [ -z "$BP_CONF" ]; then
+    bpPrintLine
     return
   fi
   bpPrintLine "Bashplate config"
@@ -1846,8 +1846,7 @@ bpRunCommand() {
     read -r -a ARR <<<"$CL"
     CV="${ARR[3]}"
     if [ -n "$CV" ]; then
-      eval "D=\$$CV"
-      if [ -n "$D" ]; then
+      if [ -n "${!CV}" ]; then
         # execute command
         "${command}" "$@"
       else
