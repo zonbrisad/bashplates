@@ -278,9 +278,12 @@ To montor the logfile simply enter the "mlog" command.
 
 [HISTORY.md](/doc/HISTORY.md)
 
-## TODO
+## Bugs
 - [ ] Bug: bpEscapeFilter does not work correctly
 - [x] Bug: bpPrintDesc zero length description bug
+- [ ] Bug: bpPrintDesc formats key/desc wrong when including terminal characters in key
+
+## TODO
 - [ ] Add option parser
 - [ ] Add verbose/debug option
 - [ ] Add quiet option
@@ -288,8 +291,6 @@ To montor the logfile simply enter the "mlog" command.
 - [ ] Add warning question(Are you sure?) to bpReadBool question
 - [X] Add override editor for "ied" command
 - [ ] Add trim string function
-- [ ] Mail feature
-- [ ] dictionary functions
 - [x] Select from list function
 - [ ] Plugin system
 - [x] Merge bpLine and bpTextLine to bpPrintLine
@@ -306,12 +307,14 @@ To montor the logfile simply enter the "mlog" command.
 
 
 ## Sugestions
+ -  Mail feature
+ -  dictionary functions
  - Use logrotate for logs
  - rename iview to iv
  - rename ivars to ivar or iva 
  - rename iinfo to ii
  - rename icheck to ic
-
+ - Allow dynamic generation of subcommands via for example a generator function
 
 ## References and tutorials
 

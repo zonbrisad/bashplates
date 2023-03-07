@@ -287,7 +287,7 @@ BP_OK=0 # successful termination
 
 # Formating
 #
-BP_POS_DESC=24
+BP_KEY_LENGTH=24
 BP_LEFT_MARGIN=3
 BP_RIGHT_MARGIN=3
 
@@ -336,30 +336,40 @@ bpPrintLine() { ##I Print text with line
 # $2 description color
 # $3 key
 # $4 description
+# $5 key length override (optional)
 #
 bpPrintDescGeneric() { # Generic key/description printout function
+  KEY_COLOR="$1"
+  DESC_COLOR="$2"
+  KEY="$3"
+  DESC="$4"
   if [ -n "$5" ]; then
-    X="$5"
+    KL="$5"
   else
-    X=${BP_POS_DESC}
+    KL=${BP_KEY_LENGTH}
   fi
 
   if ((${#4} == 0)); then
-    printf "${1}  %-${X}.${X}s${E_RESET} ${2}%s${E_RESET}\n" "$3" ""
+    printf "${1}  %-${KL}.${KL}s${E_RESET} ${2}%s${E_RESET}\n" "$3" ""
   fi
 
   len=${#}
-  a=$(("${BP_COLUMNS}" - "$X" - "$BP_RIGHT_MARGIN"))
+  a=$(("${BP_COLUMNS}" - "$KL" - "$BP_RIGHT_MARGIN"))
   #LINES=$(fmt -s -w"${a}" <<<"$4")
-  LINES=$(fold -w"${a}" <<<"$4")
+  LINES=$(fold -w"${a}" <<<"$DESC")
   IFS=$'\n'
-  Y=0
+  L1=0
   for line in ${LINES}; do
-    if [ "${Y}" -eq 0 ]; then
-      printf "${1}  %-${X}.${X}s${E_RESET} ${2}%s${E_RESET}\n" "$3" "$line"
-      Y=1
-    else
-      printf "${1}  %-${X}.${X}s${E_RESET} ${2}%s${E_RESET}\n" "" "$line"
+    if [ "${L1}" -eq 0 ]; then                # First line
+      if ((${#KEY} > "$BP_KEY_LENGTH")); then # Oversized key
+        printf "${KEY_COLOR}  %-${KL}s${E_RESET}\n" "$KEY"
+        printf "${KEY_COLOR}  %-${KL}.${KL}s${E_RESET} ${DESC_COLOR}%s${E_RESET}\n" "" "$line"
+      else # Normal key
+        printf "${KEY_COLOR}  %-${KL}.${KL}s${E_RESET} ${DESC_COLOR}%s${E_RESET}\n" "$KEY" "$line"
+      fi
+      L1=1
+    else # Rest of the lines
+      printf "${KEY_COLOR}  %-${KL}.${KL}s${E_RESET} ${DESC_COLOR}%s${E_RESET}\n" "" "$line"
     fi
   done
 }
@@ -976,7 +986,7 @@ bpConfPrint() { ##I Print settings in config list
     DESC=${arr[$i]}
     ((i++))
     printf "%s%s\n" "${E_DARKGRAY}" "${DESC}"
-    bpPrintDesc "$KEY" "${!KEY}"
+    bpPrintVar "$KEY" #"${!KEY}"
   done
 }
 

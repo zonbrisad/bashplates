@@ -451,7 +451,6 @@ nl() { ##D New line test
 
   printf "New line test (NL)\n"
   printf "Carriage return test(CR)\r"
-
   printf "Whittnes row\n"
 }
 
@@ -463,6 +462,7 @@ XXprintCommand() {
   echo -n "${arr[0]} "
   # bpPrintDesc "${arr[0]}" "${inf}"
 }
+
 completion() { ##D Print help information
 
   BP_HELP=1
@@ -537,7 +537,10 @@ conf() { ##D Config test
   bpConfLoad "${BP_CONFIG_TEST[@]}"
 }
 
-desc() { ##D bpPrintDesc bug test
+##- System tests
+
+desc() { ##D bpPrintDesc tests
+  bpPrintLine
   bpPrintDesc "Key" "Description"
   bpPrintDesc "No description test" ""
   bpPrintDesc "" "No key test"
@@ -545,9 +548,9 @@ desc() { ##D bpPrintDesc bug test
   bpPrintDesc "|-----------------------|" "My description of key"
   bpPrintDesc "|----------------------|" "My description of key"
   bpPrintDesc "Multiple lines desc." $'A\nB\nC\nD'
-  bpPrintDesc "Keylen override" "Overrideing default keylen" 18
+  bpPrintDesc "Color description" "${E_BR_RED}Some ${E_BR_YELLOW}colorful ${E_BR_BLUE}description"
+  bpPrintDesc "Keylen override" "Overrideing default key-length" 18
   bpPrintDesc "\"ls -l /\"" "$(ls -l /)"
-
   bpPrintLine
 }
 
@@ -944,7 +947,7 @@ bpPrintVar() { ##I Print variable value and description
 
     bpPrintDesc "${KEY}" "${VAL}"
   else
-    bpPrintDescGeneric "${BP_C_KEY}" "${BP_C_ERROR}" "$KEY" "N/A"
+    bpPrintDesc "$KEY" "${BP_C_ERROR}N/A"
   fi
 }
 
