@@ -6,8 +6,7 @@
 #
 
 ##V Directory where script is located
-BP_SELF_DIR="${0%/*}"
-  
+BP_SELF_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )  
 
 #---------------------------------------------------------------------
 

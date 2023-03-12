@@ -69,6 +69,7 @@ kwr() { ##D Keyword replace
   bpReplace "$2" "_FG_" "_"
   bpReplace "$2" "_ATTR_" "_"
   bpReplace "$2" "_CUR_" "_"
+  bpReplace "$2" "E_END" "E_RESET"
 
   bpReplace "$2" "BP_E_OK" "BP_OK"
   bpReplace "$2" "BP_C_LINE_TEXT" "BP_C_LINETEXT"
@@ -80,7 +81,7 @@ kwr() { ##D Keyword replace
   bpReplace "$2" "bpDbg" "bpDebug"
 
   bpReplace "$2" "BP_SETTINGS" "BP_CONFIG"
-  bpReaplace "$2" "BPSCRIPTPATH" "BP_SELF_DIR"
+  bpReplace "$2" "BPSCRIPTPATH" "BP_SELF_DIR"
 }
 
 #---------------------------------------------------------------------

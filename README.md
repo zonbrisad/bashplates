@@ -279,9 +279,10 @@ To montor the logfile simply enter the "mlog" command.
 [HISTORY.md](/doc/HISTORY.md)
 
 ## Bugs
-- [ ] Bug: bpEscapeFilter does not work correctly
-- [x] Bug: bpPrintDesc zero length description bug
-- [ ] Bug: bpPrintDesc formats key/desc wrong when including terminal characters in key
+- [ ] bpEscapeFilter does not work correctly
+- [x] bpPrintDesc zero length description bug
+- [ ] bpPrintDesc formats key/desc wrong when including terminal characters in key
+- [ ] Fixing bpExit code handling in subcommand dispatcher
 
 ## TODO
 - [ ] Add option parser
@@ -304,21 +305,23 @@ To montor the logfile simply enter the "mlog" command.
 - [ ] Add color theme override to setup file
 - [x] Format/fold long description texts
 - [x] Remove settings command and include it into bpset
+- [ ] Update bpAssertProg to using bpHasCmd
 
 
 ## Sugestions
- -  Mail feature
- -  dictionary functions
+ - Mail feature
+ - dictionary functions?
  - Use logrotate for logs
- - rename iview to iv
- - rename ivars to ivar or iva 
- - rename iinfo to ii
- - rename icheck to ic
+ - Rename iview to iv
+ - Rename ivars to ivar or iva 
+ - Rename iinfo to ii
+ - Rename icheck to ic
  - Allow dynamic generation of subcommands via for example a generator function
 
 ## References and tutorials
 
 [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.html#Programmable-Completion)
+[Internal Variables](https://tldp.org/LDP/abs/html/internalvariables.html)
 [BASH arithmetics](https://www.shell-tips.com/bash/math-arithmetic-calculation/#gsc.tab=0)
 [Best Practices for Writing Bash Scripts](http://kvz.io/blog/2013/11/21/bash-best-practices/)
 [What are the best practices for writing shell scripts?](https://www.quora.com/What-are-the-best-practices-for-writing-shell-scripts)
