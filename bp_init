@@ -15,7 +15,7 @@
 #set -o pipefail # Exit script when pipe fails
 
 # Directory where script is located
-BP_SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+BP_SELF_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 #---------------------------------------------------------------------
 
@@ -68,14 +68,13 @@ bpLoadSettings() {
 bpLoadSettings
 																			
 # Add bashplate dir to search path
-export PATH=${PATH}:${BP_SCRIPT_PATH}
+export PATH=${PATH}:${BP_SELF_DIR}
 
 # Add variable pointing to bashplate dir
-export BP_PATH=${BP_SCRIPT_PATH}
+export BP_PATH=${BP_SELF_DIR}
 
 # Add alias for quick access to bashplate dir
-alias bpd='cd ${BP_SCRIPT_PATH}'
-
+#alias bpd='cd ${BP_SELF_DIR}'
 #alias bplsd="bprc lsd"
 
 _bp_completions() {
@@ -90,8 +89,10 @@ _bpdev_completions() {
 #complete -F _bpdev_completions bpdev
 
 
-
-
+if [ -f "${BP_SELF_DIR}/DEV" ]; then
+#  BP_DEV=1
+  alias cdb='cd "${BP_SELF_DIR}"'
+fi
 
 # Indicated that initscript was run
 export BP_INIT_RUN=1

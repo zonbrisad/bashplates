@@ -134,107 +134,6 @@ bp_install() { ##D Install bashplates init
   bpAddModule "${BP_SELF_DIR}/bp_init"
 }
 
-##C- BP_DEV Development (for developers only)
-
-et() { ##C BP_DEV Edit bashplate template
-  bpEdit "${BP_SELF_DIR}/templates/bashplate" "$2"
-}
-
-est() { ##C BP_DEV Edit simple bashplate template
-  bpEdit "${BP_SELF_DIR}/templates/bashplate-simple" "$2"
-}
-
-eh() { ##C BP_DEV Edit header template
-  bpEdit "${BP_SELF_DIR}/templates/header" "$2"
-}
-
-ei() { ##C BP_DEV Edit Bashplate init file
-  bpEdit "${BP_SELF_DIR}/bp_init" "$2"
-}
-
-ec() { ##C BP_DEV Edit Bashplate config file
-  bpEdit "${BP_CONFIG}" "$2"
-}
-
-dl() { ##C BP_DEV Make diff with latest bashtemplate
-  ${BP_DIFF} "${BP_SELF_DIR}/templates/bashplate" "$2"
-}
-
-dd() { ##C BP_DEV Diff with bpdev
-  ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "${BP_SELF_DIR}/bp"
-}
-
-dt() { ##C BP_DEV Diff bpdev with template
-  ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "${BP_SELF_DIR}/templates/bashplate"
-}
-
-de() { ##C BP_DEV Diff bpdev with external file
-  ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "$2"
-}
-
-tabs() { ##C BP_DEV Remove tabs
-  sed -e 's/[ \t]*//' "$0"
-}
-
-##C- BP_DEV Project management (git) (for developers only)
-
-status() { ##C BP_DEV Git status
-  bpCd "${BP_SELF_DIR}"
-  git status
-  bpCd -
-}
-
-clean() { ##C BP_DEV Remove leftover files
-  bpCd "${BP_SELF_DIR}"
-
-  find . -name "*~" -delete
-  find . -name "*.orig" -delete
-
-  # Remove untraced files
-  git clean -df -e "*.log"
-  bpCd -
-}
-
-commit() { ##C BP_DEV Commit project to repository
-  bpCd "${BP_SELF_DIR}"
-  git commit -a
-  #git push --tags -a
-  bpCd -
-}
-
-tag() { ##C BP_DEV Make a new tag
-  bpCd "${BP_SELF_DIR}"
-  # List existing tags
-  git tag
-
-  # read tag name/description
-  tag=$(bpReadStr "Tagname" "")
-  desc=$(bpReadStr "Description" "")
-
-  # Tag revision
-  git tag -a "$tag" -m "$desc"
-  bpCd -
-}
-
-push() { ##C BP_DEV Push project to GITHUB
-  bpCd "${BP_SELF_DIR}"
-  git push --progress
-  bpCd -
-}
-
-pull() { ##C BP_DEV Pull project from GITHUB
-  bpCd "${BP_SELF_DIR}"
-  git pull --progress
-  bpCd -
-}
-
-bp_phh() {
-  if [ -z "${BP_INIT_RUN}" ]; then
-    bpInfo "Make sure to do load bp_init ( source $(realpath bp_init) )"
-    echo
-  fi
-}
-
 ##- BASH Documentation
 
 cs() { ##D Cheat sheet for common BASH features
@@ -343,6 +242,13 @@ cs() { ##D Cheat sheet for common BASH features
   bpPrintDesc "\${STR:1}" "\"BCDE\""
 
   bpPrintLine
+}
+
+bp_phh() {
+  if [ -z "${BP_INIT_RUN}" ]; then
+    bpInfo "Make sure to do load bp_init ( source $(realpath bp_init) )"
+    echo
+  fi
 }
 
 #---------------------------------------------------------------------

@@ -2157,6 +2157,7 @@ BP_CONFIG_LIST=(
   "BP_NAME" "John Doe" "Users name"
   "BP_EMAIL" "john.doe@foo.bar" "Users email"
   "BP_ORG" "ACME" "Organisation"
+  "BP_HOME" "www.foo.bar" "Home"
   "BP_LICENSE" "MIT" "Default license"
   "BP_EDITOR" "vi" "Default editor"
   "BP_DIFF" "meld" "Default diff program"
