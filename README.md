@@ -306,6 +306,7 @@ To montor the logfile simply enter the "mlog" command.
 - [x] Format/fold long description texts
 - [x] Remove settings command and include it into bpset
 - [ ] Update bpAssertProg to using bpHasCmd
+- [ ] A more comprahensive cheat sheet
 
 
 ## Sugestions
@@ -317,6 +318,8 @@ To montor the logfile simply enter the "mlog" command.
  - Rename iinfo to ii
  - Rename icheck to ic
  - Allow dynamic generation of subcommands via for example a generator function
+ - History function for Query commands to allow qestions to remember
+   answers between runs
 
 ## References and tutorials
 

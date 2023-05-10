@@ -138,13 +138,6 @@ pull() { ##D Pull project from GITHUB
   bpCd -
 }
 
-bp_phh() {
-  if [ -z "${BP_INIT_RUN}" ]; then
-    bpInfo "Make sure to do load bp_init ( source $(realpath bp_init) )"
-    echo
-  fi
-}
-
 ##- Update script
 kwr() { ##D Keyword replace
   if [ ! -e "$2" ]; then

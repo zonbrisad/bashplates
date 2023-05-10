@@ -537,6 +537,66 @@ conf() { ##D Config test
   bpConfLoad "${BP_CONFIG_TEST[@]}"
 }
 
+ptq() { # Print test query
+  echo -e "${BP_C_QUERY}Query text with range${E_RESET} ${BP_C_QUERY_DEF}[${BP_C_DEEMPHASIS}y${E_RESET}${BP_C_QUERY_DEF}/${BP_C_EMPHASIS}N${E_RESET}${BP_C_QUERY_DEF}]${E_RESET}"
+  echo
+}
+
+qct() { ##D Query color test
+  BP_C_QUERY=$'\e[38;5;218m'
+  BP_C_QUERY_DEF=$'\e[38;5;240m'
+  BP_C_EMPHASIS=$'\e[38;5;255m'
+  BP_C_DEEMPHASIS=$'\e[38;5;250m'
+  ptq
+  BP_C_EMPHASIS=$'\e[38;5;255m'${E_REVERSE}
+  BP_C_DEEMPHASIS=$'\e[38;5;250m'
+  ptq
+  BP_C_EMPHASIS=$'\e[38;5;250m'${E_REVERSE}
+  BP_C_DEEMPHASIS=$'\e[38;5;250m'
+  ptq
+  BP_C_EMPHASIS=$'\e[38;5;87m'
+  BP_C_DEEMPHASIS=$'\e[38;5;75m'
+  ptq
+  BP_C_QUERY=$'\e[38;5;117m'
+  BP_C_QUERY_DEF=$'\e[38;5;240m'
+  BP_C_EMPHASIS=$'\e[38;5;255m'
+  BP_C_DEEMPHASIS=$'\e[38;5;250m'
+  ptq
+  BP_C_QUERY=$'\e[38;5;153m'
+  BP_C_QUERY_DEF=$'\e[38;5;240m'
+  BP_C_EMPHASIS=$'\e[38;5;255m'
+  BP_C_DEEMPHASIS=$'\e[38;5;250m'
+  ptq
+  BP_C_QUERY=$'\e[38;5;195m'
+  BP_C_QUERY_DEF=$'\e[38;5;240m'
+  BP_C_EMPHASIS=$'\e[38;5;255m'
+  BP_C_DEEMPHASIS=$'\e[38;5;250m'
+  ptq
+  BP_C_QUERY=$'\e[38;5;230m'
+  BP_C_QUERY_DEF=$'\e[38;5;237m'
+  BP_C_EMPHASIS=$'\e[38;5;255m'
+  BP_C_DEEMPHASIS=$'\e[38;5;250m'
+  ptq
+
+}
+
+cqt() { ##D Colored Query test.
+  # BP_C_QUERY=$'\e[38;5;218m'
+  # BP_C_QUERY_DEF=$'\e[38;5;240m'
+  # BP_C_EMPHASIS=$'\e[38;5;255m'
+  # BP_C_DEEMPHASIS=$'\e[38;5;251m'
+
+  R=$(bpReadStr "Read string test")
+  #echo "$R"
+  R=$(bpReadStr "Read string test with default" "default")
+  R=$(bpReadBoolDY "Read bool with color default yes")
+  R=$(bpReadBoolDN "Read bool with color default no")
+  R=$(bpReadInt "Read integer value with range" 42 22 50)
+  # echo "$R"
+  R=$(bpReadInt "Read integer value" 42)
+  R=$(bpReadStr "Read string with ${E_RED}color${BP_C_QUERY} test" "default")
+}
+
 ##- System tests
 
 desc() { ##D bpPrintDesc tests
@@ -553,6 +613,65 @@ desc() { ##D bpPrintDesc tests
   bpPrintDesc "\"ls -l /\"" "$(ls -l /)"
   bpPrintLine
 }
+
+##- Command problems
+
+new() { ##D Command
+  echo "new"
+}
+newa() { ##C COND Command
+  echo "newa"
+}
+newb() { ##C COND Command
+  echo "newb"
+}
+
+##- Signal 
+
+bpWritePID() {
+  echo $$ > "${BP_PID_FILE}"
+}
+
+bpRemovePID() {
+  rm -f "${BP_PID_FILE}"
+}
+
+bpLoadPID() {
+  cat "${BP_PID_FILE}" 
+}
+
+bpPIDExist() {
+  if [ -e "${BP_PID_FILE}" ]; then
+	  return 0
+	else
+	  return 1
+	fi
+}
+
+xxx() {
+  echo "$1"
+}
+
+waitx() { ##D Wait for signal
+  
+	#trap "kill $PID" INT TERM
+	trap "xxx ppp" USR2
+	bpWritePID
+	pid=$$
+	bpInfo "Sleeping...$pid"
+  #sleep infinity
+
+  quit=0
+	while [ "$quit" -ne 1 ]; do
+	  #printf 'Do "kill -USR1 %d" to exit this loop after the sleep\n' "$$"
+	  sleep 0.5
+	done
+
+	
+	bpInfo "Starting..."
+	wait
+}
+
 
 #---------------------------------------------------------------------
 # Bashplate modules
@@ -579,6 +698,8 @@ bpInitSettings() {
 
   ##V Lock file (uncomment to use lock file feature )
   #BP_LOCK_FILE=/tmp/${BP_SELF}.lock
+
+  BP_PID_FILE=/tmp/${BP_SELF}_${USER}.pid
 
   ##V Logging options (uncomment to activate logging parameters)
   BP_LOG_OK=1
@@ -630,6 +751,7 @@ signalInt() {
 
 signalHup() {
   bpCleanUp
+	exit "$BP_OK"
 }
 
 signalQuit() {
@@ -669,7 +791,9 @@ bpCallStack() { ##I Print out BASH call stack
 }
 
 bpCleanUp() {           ##I Cleanup function
-  rm -f "$BP_LOCK_FILE" # remove Lock file
+  
+	rm -f "${BP_LOCK_FILE}"  # remove Lock file
+	rm -f "${BP_PID_FILE}" # remove PID file
   #  echo -e "${E_SHOW}"     # Turn on cursor if turned of
 }
 
@@ -811,6 +935,11 @@ BP_C_URL_SCHEME="${E_DARKGRAY}"
 # BP_C_URL_HOST=""
 BP_C_TIME="${E_BR_MAGENTA}"
 BP_C_DATE="${E_MAGENTA}"
+
+BP_C_QUERY=$'\e[38;5;194m'
+BP_C_QUERY_DEF=$'\e[38;5;240m'
+BP_C_EMPHASIS=$'\e[38;5;255m'
+BP_C_DEEMPHASIS=$'\e[38;5;250m'
 
 # Shellscript colorize colors
 BP_C_RESERVED="${E_RED}"
@@ -1194,17 +1323,15 @@ bpInsert() { ##I Insert text into file
 # return string read from cmdline/default if enter pressed
 #
 bpReadStr() { ##I Read string from commandline
+  QUERY="$1"
+  DEFAULT="$2"
 
-  if [ "${2}" == "" ]; then
-    read -erp "${1} > " result
-  else
-    read -erp "${1} [$2] > " result
-    if [ "${result}" == "" ]; then
-      result="${2}"
-    fi
+  read -er -i "$DEFAULT" -p "${BP_C_QUERY}${1}${E_RESET} > " RESULT
+  if [ "${RESULT}" == "" ]; then
+    RESULT="${2}"
   fi
 
-  echo "${result}"
+  echo "${RESULT}"
 }
 
 #
@@ -1215,23 +1342,29 @@ bpReadStr() { ##I Read string from commandline
 # return integer read from cmdline/default if enter pressed
 #
 bpReadInt() { ##I Read integer from commandline
+  QUERY="$1"
+  DEFAULT="$2"
+  MIN="$3"
+  MAX="$4"
+
+  RANGE=""
+  if [ -n "$MIN" ] || [ -n "$MAX" ]; then
+    RANGE=" ${BP_C_QUERY_DEF}[${E_RESET}$3-$4${BP_C_QUERY_DEF}]${E_RESET}"
+  fi
+
   while true; do
-    if [ "${2}" == "" ]; then
-      read -erp "${1} ($3-$4) >" result
-      if [ "${result}" == "" ]; then
-        result=$(($3 - 1))
+    read -er -i "$DEFAULT" -p "${BP_C_QUERY}${1}${E_RESET}${RANGE} > " RESULT
+
+    if [ -n "${RANGE}" ]; then
+      #if [ -n "$MIN" ] && [ -n "$MAX" ]; then
+      if [ $((RESULT)) -ge "$MIN" ] && [ $((RESULT)) -le "$MAX" ]; then
+        break
       fi
     else
-      read -erp "${1} ($3-$4) [$2] >" result
-      if [ "${result}" == "" ]; then
-        result="${2}"
-      fi
-    fi
-    if [ $((result)) -ge "$3" ] && [ $((result)) -le "$4" ]; then
       break
     fi
   done
-  echo "${result}"
+  echo "${RESULT}"
 }
 
 #
@@ -1240,12 +1373,14 @@ bpReadInt() { ##I Read integer from commandline
 # return 0 = Yes, 1=No
 #
 bpReadBool() { ##I Ask yes/no question generic
+  QUERY="$1"
+  DEFAULT="$2"
   while true; do
 
     if [ "$2" -eq 1 ]; then
-      yn=$(bpReadStr "${1} [y/N]")
+      yn=$(bpReadStr "${BP_C_QUERY}${1}${E_RESET} ${BP_C_QUERY_DEF}[${BP_C_DEEMPHASIS}y${BP_C_QUERY_DEF}/${BP_C_EMPHASIS}N${BP_C_QUERY_DEF}]${E_RESET}")
     else
-      yn=$(bpReadStr "${1} [Y/n]")
+      yn=$(bpReadStr "${BP_C_QUERY}${1}${E_RESET} ${BP_C_QUERY_DEF}[${E_RESET}${BP_C_EMPHASIS}Y${BP_C_QUERY_DEF}/${BP_C_DEEMPHASIS}n${BP_C_QUERY_DEF}]${E_RESET}")
     fi
 
     case "$yn" in
@@ -1330,6 +1465,7 @@ bpSelectFromList() { ##I Select from list
 
   while true; do
     bpPrintChoiceList "$1" "${@:2}"
+    echo
     x=$(bpReadStr "$2" "$1")
 
     arr=("${@}")
@@ -2061,7 +2197,8 @@ bpRunCommand() {
   fi
 
   # Check if command is conditional
-  CL=$(grep -E "${command}().*##C" "$0")
+  # CL=$(grep -E "${command}().*##C" "$0")
+  CL=$(grep "${command}().*##C" "$0")
   if [[ "$CL" = *"##C"* ]]; then
 
     # Check if condition is true and then execute else printout error message

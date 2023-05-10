@@ -289,7 +289,17 @@ c256() { ##D Show example of all 256 colors
   echo
   #  bpPrintLine "256 Colors foreground"
   echo
-  for i in {0..231}; do
+	for i in {0..15}; do
+    printf "\x1b[38;5;%sm  %3d ${E_RESET}" "$i" "$i"
+    if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
+      echo
+      if ((i == 15)); then
+        echo
+      fi
+    fi
+  done
+
+  for i in {16..231}; do
     printf "\x1b[38;5;%sm  %3d  ${E_RESET} " "$i" "$i"
     if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
       echo
@@ -302,17 +312,27 @@ c256() { ##D Show example of all 256 colors
 
   echo
   for i in {232..255}; do
-    printf "\x1b[38;5;%sm %3d ${E_RESET}" "$i" "$i"
-    if ((i == 243)); then
+		printf "\x1b[38;5;%sm  %3d  ${E_RESET} " "$i" "$i"
+    if ((i == 237)) || ((i == 243)) || ((i == 249)) ; then
       echo
     fi
   done
   echo -e "\n"
+  echo
+  
+	#  bpPrintLine "256 Colors background"
+  echo
+  for i in {0..15}; do
+    printf "\x1b[48;5;%sm  %3d ${E_RESET}" "$i" "$i"
+    if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
+      echo
+      if ((i == 15)); then
+        echo
+      fi
+    fi
+  done
 
-  echo
-  #  bpPrintLine "256 Colors background"
-  echo
-  for i in {0..231}; do
+  for i in {16..231}; do
     printf "\x1b[48;5;%sm  %3d  ${E_RESET} " "$i" "$i"
     if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
       echo
@@ -324,8 +344,8 @@ c256() { ##D Show example of all 256 colors
 
   echo
   for i in {232..255}; do
-    printf "\x1b[48;5;%sm %3d ${E_RESET}" "$i" "$i"
-    if ((i == 243)); then
+		printf "\x1b[48;5;%sm  %3d  ${E_RESET} " "$i" "$i"
+    if ((i == 237)) || ((i == 243)) || ((i == 249)) ; then
       echo
     fi
   done
