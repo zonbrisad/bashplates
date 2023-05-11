@@ -626,52 +626,30 @@ newb() { ##C COND Command
   echo "newb"
 }
 
-##- Signal 
-
-bpWritePID() {
-  echo $$ > "${BP_PID_FILE}"
-}
-
-bpRemovePID() {
-  rm -f "${BP_PID_FILE}"
-}
-
-bpLoadPID() {
-  cat "${BP_PID_FILE}" 
-}
-
-bpPIDExist() {
-  if [ -e "${BP_PID_FILE}" ]; then
-	  return 0
-	else
-	  return 1
-	fi
-}
+##- Signal
 
 xxx() {
   echo "$1"
 }
 
 waitx() { ##D Wait for signal
-  
-	#trap "kill $PID" INT TERM
-	trap "xxx ppp" USR2
-	bpWritePID
-	pid=$$
-	bpInfo "Sleeping...$pid"
+
+  #trap "kill $PID" INT TERM
+  trap "xxx ppp" USR2
+  bpPIDWrite
+  pid=$$
+  bpInfo "Sleeping...$pid"
   #sleep infinity
 
   quit=0
-	while [ "$quit" -ne 1 ]; do
-	  #printf 'Do "kill -USR1 %d" to exit this loop after the sleep\n' "$$"
-	  sleep 0.5
-	done
+  while [ "$quit" -ne 1 ]; do
+    #printf 'Do "kill -USR1 %d" to exit this loop after the sleep\n' "$$"
+    sleep 0.5
+  done
 
-	
-	bpInfo "Starting..."
-	wait
+  bpInfo "Starting..."
+  wait
 }
-
 
 #---------------------------------------------------------------------
 # Bashplate modules
@@ -699,6 +677,7 @@ bpInitSettings() {
   ##V Lock file (uncomment to use lock file feature )
   #BP_LOCK_FILE=/tmp/${BP_SELF}.lock
 
+  ##V PID file
   BP_PID_FILE=/tmp/${BP_SELF}_${USER}.pid
 
   ##V Logging options (uncomment to activate logging parameters)
@@ -751,7 +730,7 @@ signalInt() {
 
 signalHup() {
   bpCleanUp
-	exit "$BP_OK"
+  exit "$BP_OK"
 }
 
 signalQuit() {
@@ -790,10 +769,10 @@ bpCallStack() { ##I Print out BASH call stack
   bpPrintLine
 }
 
-bpCleanUp() {           ##I Cleanup function
-  
-	rm -f "${BP_LOCK_FILE}"  # remove Lock file
-	rm -f "${BP_PID_FILE}" # remove PID file
+bpCleanUp() { ##I Cleanup function
+
+  rm -f "${BP_LOCK_FILE}" # remove Lock file
+  rm -f "${BP_PID_FILE}"  # remove PID file
   #  echo -e "${E_SHOW}"     # Turn on cursor if turned of
 }
 
@@ -1487,6 +1466,30 @@ bpSelectFromList() { ##I Select from list
       fi
     done
   done
+}
+
+##C- IHELP PID file management
+
+bpPIDWrite() { ##I Write PID file to disk
+  echo $$ >"${BP_PID_FILE}"
+}
+
+bpPIDRemove() { ##I Remove PID file
+  rm -f "${BP_PID_FILE}"
+}
+
+bpPIDLoad() { ##I Load PID from file
+  if [ -e "${BP_PID_FILE}" ]; then
+    cat "${BP_PID_FILE}"
+  fi
+}
+
+bpPIDExist() { ##I Check if PID file exist
+  if [ -e "${BP_PID_FILE}" ]; then
+    return 0
+  else
+    return 1
+  fi
 }
 
 # Settings file ------------------------------------------------------
