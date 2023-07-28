@@ -1065,10 +1065,20 @@ bpPrintVar() { ##I Print variable value and description
 # $1 string with filename to colorize
 # ret colorized string
 #
-bpColorizeFile() { ##I Colorize string containing filename
-  echo "${BP_C_PATH}$(dirname "$1")/${BP_C_FILENAME}$(basename "$1")${E_RESET}"
+#bpColorizeFile() { ##I Colorize string containing filename
+#  echo "${BP_C_PATH}$(dirname "$1")/${BP_C_FILENAME}$(basename "$1")${E_RESET}"
+#}
+bpColorizeFile() { ##I Colorize string with filename
+  if [ -n "$1" ]; then
+    if [ -d  "$1" ]; then
+	    echo "${BP_C_PATH}${1}${E_RESET}"
+		  return
+    fi
+	  echo "${BP_C_PATH}$(dirname "$1")/${BP_C_FILENAME}$(basename "$1")${E_RESET}"
+	fi
 }
-
+														
+														
 #
 # $1 string with url to colorize
 # ret colorized string
@@ -1109,8 +1119,8 @@ bpCd() { ##I Safe cd function (exits on fail)
 # $1 Directory to be created
 #
 bpMkDir() { ##I Create a directory if it does not exist
-  if [ ! -d "$1" ]; then
-    if mkdir -p "$1"; then
+  if [ ! -d $1 ]; then
+    if mkdir -p $1; then
       bpOk "Creating directory $(bpColorizeFile "${1}")."
       return 0
     else

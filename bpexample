@@ -650,6 +650,38 @@ readselect() { ##D Test select from list read command
   bpReadSelect "Please choose an alternative" "3" "${slist[@]}"
 }
 
+##- BASH
+
+array() { ##D Array test
+  
+	FRUITS=('Apple' 'Carrot' 'Banana' 'Orange' 'Lemon')
+	bpPrintDesc "Fruits:" "${FRUITS[*]}"
+	
+
+	XX="fasdf dwefg 34fasd asdf 234sdfg"
+	bpPrintDesc "A:" "$XX"
+	bpPrintDesc "A:" "$XX"
+
+  unset FRUITS[1]
+	bpPrintDesc "Fruits:" "${FRUITS[*]}"
+	bpPrintDesc "Fruits:" "${FRUITS[*]}"
+	
+	FRUITS+=('Grape')
+	bpPrintDesc "Fruits:" "${FRUITS[*]}"
+	
+	BERRIES=('Raspberry' 'Strawberry' 'Blueberry')
+	bpPrintDesc "Berries:" "${BERRIES[*]}"
+	
+#	bpPrintDesc "More fruits:" "${FRUITS[*]}"
+	
+	bpPrintDesc "Last:" "${FRUITS[-1]}"
+	bpPrintDesc "Citrus:" "${FRUITS[*]:3:2}"
+	
+	GOODIES=("${FRUITS[@]}" "${BERRIES[@]}")
+	bpPrintDesc "Goodies:"  "${GOODIES[*]}"
+}
+
+
 ##- Experiments
 
 bpShow() {
@@ -1154,7 +1186,8 @@ bpPrintLine() { ##I Print text with line
 # $4 description
 #
 bpPrintDescGeneric() { # Generic key/description printout function
-  if [ -n "$5" ]; then
+  #IFS=' '
+	if [ -n "$5" ]; then
     X="$5"
   else
     X=${BP_POS_DESC}
@@ -1169,6 +1202,7 @@ bpPrintDescGeneric() { # Generic key/description printout function
   #LINES=$(fmt -s -w"${a}" <<<"$4")
   LINES=$(fold -w"${a}" <<<"$4")
   IFS=$'\n'
+	#IFS=' '
   Y=0
   for line in ${LINES}; do
     if [ "${Y}" -eq 0 ]; then
@@ -1186,6 +1220,8 @@ bpPrintDescGeneric() { # Generic key/description printout function
 # $3 (optional) left alignment
 #
 bpPrintDesc() { ##I Print key description
+  echo $2
+  #echo $3
   bpPrintDescGeneric "${BP_C_KEY}" "${BP_C_DESCRIPTION}" "$1" "$2" "$3"
 }
 

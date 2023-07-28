@@ -238,7 +238,7 @@ cs() { ##D Cheat sheet for common BASH features
 
   bpPrintLine "String operations"
   bpPrintDesc "STR=\"ABCDE\"" "Assignment"
-  bpPrintDesc "\${#STR}" "5  # String length"
+  bpPrintDesc "\${#STR}" "String length"
   bpPrintDesc "\${STR:1}" "\"BCDE\""
 
   bpPrintLine
