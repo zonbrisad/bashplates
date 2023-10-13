@@ -614,6 +614,16 @@ desc() { ##D bpPrintDesc tests
   bpPrintLine
 }
 
+runtest() { ##D Test bprun
+
+  bpRun "${BP_SELF_DIR}/tests/file_do_not_exist"
+
+  bpRun "${BP_SELF_DIR}/tests/non_executable"
+
+  bpRun "${BP_SELF_DIR}/tests/empty_execute"
+
+}
+
 ##- Command problems
 
 new() { ##D Command
@@ -1070,15 +1080,14 @@ bpPrintVar() { ##I Print variable value and description
 #}
 bpColorizeFile() { ##I Colorize string with filename
   if [ -n "$1" ]; then
-    if [ -d  "$1" ]; then
-	    echo "${BP_C_PATH}${1}${E_RESET}"
-		  return
+    if [ -d "$1" ]; then
+      echo "${BP_C_PATH}${1}${E_RESET}"
+      return
     fi
-	  echo "${BP_C_PATH}$(dirname "$1")/${BP_C_FILENAME}$(basename "$1")${E_RESET}"
-	fi
+    echo "${BP_C_PATH}$(dirname "$1")/${BP_C_FILENAME}$(basename "$1")${E_RESET}"
+  fi
 }
-														
-														
+
 #
 # $1 string with url to colorize
 # ret colorized string
@@ -1903,7 +1912,7 @@ bpAssertProgs() { ##I Assert that required programs are available on the system
 #
 # $1 command to check
 #
-bpHasCmd() { ##I Check if command is available
+bpHasCmd() { ##I Check whether a command exists in path and is executable
   if [ -x "$(command -v "${1}")" ]; then
     return 0
   else
@@ -1932,13 +1941,18 @@ bpGetFunction() {
 # $1 command to execute
 #
 bpRun() { ##I Execute command
-  if bpHasCmd "${1}"; then
-    "$@"
-    return $?
-  else
+  if ! bpHasCmd "${1}"; then
     bpError "Could not execute $1, command does not exist!"
     return 1
   fi
+
+  # if [ ! -x "${1}" ]; then
+  #   bpError "Could not execute $1, file is not executable!"
+  #   return 1
+  #fi
+
+  "$@"
+  return $?
 }
 
 ##C- IHELP Debug/Controll

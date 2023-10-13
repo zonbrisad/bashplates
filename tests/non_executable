@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# shellcheck disable=2034
+# shellcheck disable=2317
+# shellcheck disable=1090
+#---------------------------------------------------------------------
+#
+#  empty_execute
+#
+#  [Description]
+#    Do nothing script
+#
+#  [Author]
+#    Peter Malmberg <peter.malmberg@gmail.com>
+#
+#  [Date]
+#    2023-10-13
+#
+#  [License]
+#    MIT
+#
+#---------------------------------------------------------------------
+# Generated with bashplates. [https://github.com/zonbrisad/bashplates]
+#---------------------------------------------------------------------
+#
+
+
+#set -o xtrace   # Display commands as they are executed
+#set -o pipefail # Exit script when pipe fails
+
+##V Directory where script is located
+BP_SELF_DIR="${0%/*}"
+  
+
+#---------------------------------------------------------------------
+
