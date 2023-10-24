@@ -138,6 +138,8 @@ bp_install() { ##D Install bashplates init
 
 cs() { ##D Cheat sheet for common BASH features
 
+  # https://devhints.io/bash
+
   bpPrintLine "Arithmetic operators"
   bpPrintDesc "(( N1 + N2 ))" "Addition"
   bpPrintDesc "(( N1 - N2 ))" "Subtraction"
@@ -208,6 +210,8 @@ cs() { ##D Cheat sheet for common BASH features
   bpPrintDesc '> FILE' "write to file"
   bpPrintDesc '>> FILE' "append to file"
   bpPrintDesc '>| FILE' "overwrite file"
+  bpPrintDesc '2> FILE1 1> FILE2' "stdout and stderr redirected to separate files"
+
   bpPrintDesc '2>&1' "stderr to stdout"
   bpPrintDesc '&> /dev/null' "stdout and stderr to /dev/null"
   bpPrintDesc '< FILE' "Pipe file to command"
@@ -236,10 +240,27 @@ cs() { ##D Cheat sheet for common BASH features
   bpPrintDesc "\${!Fruits[@]}" "Keys of all elements"
   # x=($(cat "kalle"))
 
-  bpPrintLine "String operations"
+  bpPrintLine "Parameter basics"
   bpPrintDesc "STR=\"ABCDE\"" "Assignment"
-  bpPrintDesc "\${#STR}" "String length"
-  bpPrintDesc "\${STR:1}" "\"BCDE\""
+  bpPrintDesc "\${#STR}      # 5" "Length"
+  bpPrintLine "Parameter slicing"
+  bpPrintDesc "\${STR:1}     # \"BCDE\"" ""
+  bpPrintDesc "\${STR::-1}   # \"ABCD\"" ""
+  bpPrintDesc "\${STR:1:-1}  # \"BCD\"" ""
+  bpPrintDesc "\${STR:^^}    # \"ABCDE\"" "To uppercase"
+  bpPrintDesc "\${STR:,,}    # \"abcde\"" "To lowercase"
+  bpPrintLine "Parameter substitution"
+  bpPrintDesc "\${STR%suffix}" "Remove suffix"
+  bpPrintDesc "\${STR#prefix}" "Remove prefix"
+  bpPrintDesc "\${STR%%suffix}" "Remove long suffix"
+  bpPrintDesc "\${STR##prefix}" "Remove long prefix"
+  bpPrintDesc "\${STR/from/to}" "Replace first match"
+  bpPrintDesc "\${STR//from/to}" "Replace all"
+  bpPrintDesc "\${STR/%from/to}" "Replace suffix"
+  bpPrintDesc "\${STR/#from/to}" "Replace prefix"
+  bpPrintLine "Parameter default values"
+  bpPrintDesc "\${STR:-val}" '$STR, or val if STR is unset'
+  bpPrintDesc "\${STR:=val}" 'set $STR to val if unset'
 
   bpPrintLine
 }
