@@ -289,7 +289,7 @@ c256() { ##D Show example of all 256 colors
   echo
   #  bpPrintLine "256 Colors foreground"
   echo
-	for i in {0..15}; do
+  for i in {0..15}; do
     printf "\x1b[38;5;%sm  %3d ${E_RESET}" "$i" "$i"
     if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
       echo
@@ -312,15 +312,15 @@ c256() { ##D Show example of all 256 colors
 
   echo
   for i in {232..255}; do
-		printf "\x1b[38;5;%sm  %3d  ${E_RESET} " "$i" "$i"
-    if ((i == 237)) || ((i == 243)) || ((i == 249)) ; then
+    printf "\x1b[38;5;%sm  %3d  ${E_RESET} " "$i" "$i"
+    if ((i == 237)) || ((i == 243)) || ((i == 249)); then
       echo
     fi
   done
   echo -e "\n"
   echo
-  
-	#  bpPrintLine "256 Colors background"
+
+  #  bpPrintLine "256 Colors background"
   echo
   for i in {0..15}; do
     printf "\x1b[48;5;%sm  %3d ${E_RESET}" "$i" "$i"
@@ -344,12 +344,48 @@ c256() { ##D Show example of all 256 colors
 
   echo
   for i in {232..255}; do
-		printf "\x1b[48;5;%sm  %3d  ${E_RESET} " "$i" "$i"
-    if ((i == 237)) || ((i == 243)) || ((i == 249)) ; then
+    printf "\x1b[48;5;%sm  %3d  ${E_RESET} " "$i" "$i"
+    if ((i == 237)) || ((i == 243)) || ((i == 249)); then
       echo
     fi
   done
   echo -e "\n"
+}
+
+tl() {
+
+  for i in {1..24}; do
+    if [ "$i" -eq 1 ] || [ "$i" -eq 24 ]; then
+      echo "+---------+---------+---------+---------+---------+---------+---------+---------+"
+    else
+      echo "$i"
+    fi
+  done
+}
+
+E_INSERT_LINE=$'\e[1L' # Insert line at cursor, current line move down
+E_DELETE_LINE=$'\e[1M' # Delete line at cursor, lines bellow move up
+deltest() {            ##D Terminal delete row test
+  reset
+  tl
+  echo -e "$E_SAVE_CURSOR_POS"
+  echo -en "\e[12;1H"
+  for i in {1..6}; do
+    echo -en "$E_DELETE_LINE"
+    sleep 0.3
+  done
+  echo -e "$E_RESTORE_CURSOR_POS"
+}
+instest() { ##D Terminal insert row test
+  reset
+  tl
+  echo -e "$E_SAVE_CURSOR_POS"
+  echo -en "\e[12;1H"
+  for i in {1..6}; do
+    echo -en "$E_INSERT_LINE"
+    sleep 0.3
+  done
+  echo -e "$E_RESTORE_CURSOR_POS"
 }
 
 ##- Some fun
@@ -653,34 +689,32 @@ readselect() { ##D Test select from list read command
 ##- BASH
 
 array() { ##D Array test
-  
-	FRUITS=('Apple' 'Carrot' 'Banana' 'Orange' 'Lemon')
-	bpPrintDesc "Fruits:" "${FRUITS[*]}"
-	
 
-	XX="fasdf dwefg 34fasd asdf 234sdfg"
-	bpPrintDesc "A:" "$XX"
-	bpPrintDesc "A:" "$XX"
+  FRUITS=('Apple' 'Carrot' 'Banana' 'Orange' 'Lemon')
+  bpPrintDesc "Fruits:" "${FRUITS[*]}"
+
+  XX="fasdf dwefg 34fasd asdf 234sdfg"
+  bpPrintDesc "A:" "$XX"
+  bpPrintDesc "A:" "$XX"
 
   unset FRUITS[1]
-	bpPrintDesc "Fruits:" "${FRUITS[*]}"
-	bpPrintDesc "Fruits:" "${FRUITS[*]}"
-	
-	FRUITS+=('Grape')
-	bpPrintDesc "Fruits:" "${FRUITS[*]}"
-	
-	BERRIES=('Raspberry' 'Strawberry' 'Blueberry')
-	bpPrintDesc "Berries:" "${BERRIES[*]}"
-	
-#	bpPrintDesc "More fruits:" "${FRUITS[*]}"
-	
-	bpPrintDesc "Last:" "${FRUITS[-1]}"
-	bpPrintDesc "Citrus:" "${FRUITS[*]:3:2}"
-	
-	GOODIES=("${FRUITS[@]}" "${BERRIES[@]}")
-	bpPrintDesc "Goodies:"  "${GOODIES[*]}"
-}
+  bpPrintDesc "Fruits:" "${FRUITS[*]}"
+  bpPrintDesc "Fruits:" "${FRUITS[*]}"
 
+  FRUITS+=('Grape')
+  bpPrintDesc "Fruits:" "${FRUITS[*]}"
+
+  BERRIES=('Raspberry' 'Strawberry' 'Blueberry')
+  bpPrintDesc "Berries:" "${BERRIES[*]}"
+
+  #	bpPrintDesc "More fruits:" "${FRUITS[*]}"
+
+  bpPrintDesc "Last:" "${FRUITS[-1]}"
+  bpPrintDesc "Citrus:" "${FRUITS[*]:3:2}"
+
+  GOODIES=("${FRUITS[@]}" "${BERRIES[@]}")
+  bpPrintDesc "Goodies:" "${GOODIES[*]}"
+}
 
 ##- Experiments
 
@@ -1100,6 +1134,10 @@ E_FORWARD=$'\e[C' # Move cursor forward
 E_BACK=$'\e[D'    # Move cursor backward
 E_HIDE=$'\e[?25l' # Hide cursor
 E_SHOW=$'\e[?25h' # Show cursor
+E_CUR_NEXT_LINE=$'\e[E'
+E_CUR_PREVIOUS_LINE=$'\e[F'
+E_SAVE_CURSOR_POS=$'\e[s'
+E_RESTORE_CURSOR_POS=$'\e[u'
 
 E_RESET=$'\e[0m' # Clear Attributes
 
@@ -1187,7 +1225,7 @@ bpPrintLine() { ##I Print text with line
 #
 bpPrintDescGeneric() { # Generic key/description printout function
   #IFS=' '
-	if [ -n "$5" ]; then
+  if [ -n "$5" ]; then
     X="$5"
   else
     X=${BP_POS_DESC}
@@ -1202,7 +1240,7 @@ bpPrintDescGeneric() { # Generic key/description printout function
   #LINES=$(fmt -s -w"${a}" <<<"$4")
   LINES=$(fold -w"${a}" <<<"$4")
   IFS=$'\n'
-	#IFS=' '
+  #IFS=' '
   Y=0
   for line in ${LINES}; do
     if [ "${Y}" -eq 0 ]; then
@@ -1220,7 +1258,7 @@ bpPrintDescGeneric() { # Generic key/description printout function
 # $3 (optional) left alignment
 #
 bpPrintDesc() { ##I Print key description
-  echo $2
+  #echo $2
   #echo $3
   bpPrintDescGeneric "${BP_C_KEY}" "${BP_C_DESCRIPTION}" "$1" "$2" "$3"
 }
