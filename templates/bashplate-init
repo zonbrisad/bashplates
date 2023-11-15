@@ -1,4 +1,5 @@
-#
+#!/usr/bin/env bash
+# shellcheck disable=2034
 #---------------------------------------------------------------------
 # __DESC__ 
 #    
@@ -6,9 +7,274 @@
 #
 
 ##V Directory where script is located
-BP_SELF_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )  
+BP_SELF_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
+#---------------------------------------------------------------------
+InitSettings() {
+    MODULE="${BP_SELF_DIR}/${BP_SELF}"
+}
+
+direct_exec() {
+    if bpModuleIsInstalled "$MODULE"; then
+        if [ -n "$BP_QUIET" ] || bpReadBoolDY "Do you want to remove init module?"; then
+            bpRmModule "$(basename ${MODULE})"
+        fi
+    else
+        if [ -n "$BP_QUIET" ] || bpReadBoolDY "Do you want to install init module?"; then
+            bpAddModule "${MODULE}"
+        fi
+    fi
+}
+
+source_exec() {
+    # Add script path to global path
+    export PATH=${PATH}:${BP_SELF_DIR}
+}
 
 #---------------------------------------------------------------------
 
-# Add script path to global path
-export PATH=${PATH}:${BP_SELF_DIR}
+# ANSI foreground colors codes
+#
+E_BLACK=$'\e[38:5:0m'       # Black
+E_RED=$'\e[38:5:1m'         # Red
+E_GREEN=$'\e[38:5:2m'       # Green
+E_YELLOW=$'\e[38:5:3m'      # Yellow
+E_BLUE=$'\e[38:5:4m'        # Blue
+E_MAGENTA=$'\e[38:5:5m'     # Magenta
+E_CYAN=$'\e[38:5:6m'        # Cyan
+E_GRAY=$'\e[38:5:7m'        # Gray
+E_DARKGRAY=$'\e[38:5:8m'    # Dark Gray
+E_BR_RED=$'\e[38:5:9m'      # Bright Red
+E_BR_GREEN=$'\e[38:5:10m'   # Bright Green
+E_BR_YELLOW=$'\e[38:5:11m'  # Bright Yellow
+E_BR_BLUE=$'\e[38:5:12m'    # Bright Blue
+E_BR_MAGENTA=$'\e[38:5:13m' # Bright Magenta
+E_BR_CYAN=$'\e[38:5:14m'    # Bright Cyan
+E_WHITE=$'\e[38:5:15m'      # White
+
+# ANSI background color codes
+#
+E_BG_BLACK=$'\e[48;5;0m'       # Black
+E_BG_RED=$'\e[48;5;1m'         # Red
+E_BG_GREEN=$'\e[48;5;2m'       # Green
+E_BG_YELLOW=$'\e[48;5;3m'      # Yellow
+E_BG_BLUE=$'\e[48;5;4m'        # Blue
+E_BG_MAGENTA=$'\e[48;5;5m'     # Magenta
+E_BG_CYAN=$'\e[48;5;6m'        # Cyan
+E_BG_GRAY=$'\e[48;5;7m'        # Gray
+E_BG_DARK_GRAY=$'\e[48;5;8m'   # Dark gray
+E_BG_BR_RED=$'\e[48;5;9m'      # Bright Red
+E_BG_BR_GREEN=$'\e[48;5;10m'   # Bright Green
+E_BG_BR_YELLOW=$'\e[48;5;11m'  # Bright Yellow
+E_BG_BR_BLUE=$'\e[48;5;12m'    # Bright Blue
+E_BG_BR_MAGENTA=$'\e[48;5;13m' # Bright Magenta
+E_BG_BR_CYAN=$'\e[48;5;14m'    # Bright Cyan
+E_BG_WHITE=$'\e[48;5;15m'      # White
+
+E_RESET=$'\e[0m' # Clear Attributes
+
+# Default Bashplate colortheme
+BP_C_OK="${E_BR_GREEN}"
+BP_C_INFO="${E_BR_CYAN}"
+BP_C_DEBUG="${E_BG_GREEN}${E_WHITE}"
+BP_C_WARNING="${E_BR_YELLOW}"
+BP_C_ERROR="${E_BR_RED}"
+BP_C_CRITICAL="${E_BG_RED}${E_WHITE}"
+
+#
+# Colorize string containing filename
+#
+# $1 string with filename to colorize
+# ret colorized string
+#
+bpColorizeFile() { ##I Colorize string containing filename
+    echo "${BP_C_PATH}$(dirname "$1")/${BP_C_FILENAME}$(basename "$1")${E_RESET}"
+}
+
+#
+# $1  Question string
+# $2  Default value
+# return string read from cmdline/default if enter pressed
+#
+bpReadStr() { ##I Read string from commandline
+
+    if [ "${2}" == "" ]; then
+        read -erp "${1} > " result
+    else
+        read -erp "${1} [$2] > " result
+        if [ "${result}" == "" ]; then
+            result="${2}"
+        fi
+    fi
+
+    echo "${result}"
+}
+
+#
+# $1  Question string
+# $2  Default value
+# $3  min value
+# $4  max value
+# return integer read from cmdline/default if enter pressed
+#
+bpReadInt() { ##I Read integer from commandline
+    while true; do
+        if [ "${2}" == "" ]; then
+            read -erp "${1} ($3-$4) >" result
+            if [ "${result}" == "" ]; then
+                result=$(($3 - 1))
+            fi
+        else
+            read -erp "${1} ($3-$4) [$2] >" result
+            if [ "${result}" == "" ]; then
+                result="${2}"
+            fi
+        fi
+        if [ $((result)) -ge "$3" ] && [ $((result)) -le "$4" ]; then
+            break
+        fi
+    done
+    echo "${result}"
+}
+
+#
+# $1 question text
+# $2 default answer 0 = yes, 1 = no
+# return 0 = Yes, 1=No
+#
+bpReadBool() { ##I Ask yes/no question generic
+    while true; do
+
+        if [ "$2" -eq 1 ]; then
+            yn=$(bpReadStr "${1} [y/N]")
+        else
+            yn=$(bpReadStr "${1} [Y/n]")
+        fi
+
+        case "$yn" in
+        [Yy]*)
+            return 0
+            ;;
+        [Nn]*)
+            return 1
+            ;;
+        "")
+            return "$2"
+            ;;
+        *) echo "Please answer yes or no." ;;
+        esac
+    done
+}
+
+#
+# $1 Question text
+# return 0 = Yes, 1=No
+#
+bpReadBoolDY() { ##I Ask yes/no question default yes
+    bpReadBool "$1" 0
+    return $?
+}
+
+#
+# $1 Question text
+# return 0 = Yes, 1=No
+#
+bpReadBoolDN() { ##I Ask yes/no question default no
+    bpReadBool "$1" 1
+    return $?
+}
+
+bpOk() { ##I Success message
+    echo -e "[${BP_C_OK}Ok${E_RESET}] $1"
+}
+
+bpInfo() { ##I Info message
+    echo -e "[${BP_C_INFO}Info${E_RESET}] $1"
+}
+
+bpDebug() { ##I Debug message
+    echo -e "[${BP_C_DEBUG}Dbg${E_RESET}] $1"
+}
+
+bpWarning() { ##I Warning message
+    echo -e "[${BP_C_WARNING}Warning${E_RESET}] $1"
+}
+
+bpError() { ##I Error message
+    echo -e "[${BP_C_ERROR}Error${E_RESET}] $1"
+}
+
+#
+# $1 target file/dir
+# $2 link
+#
+bpLn() { ##I Create symbolic link
+    if [ ! -L "$1" ]; then
+        if ln -sf "${1}" "${2}"; then
+            bpOk "Creating link $(bpColorizeFile "${2}")."
+            return 0
+        else
+            bpError "Failed to create link $(bpColorizeFile "${2}")."
+            return 1
+        fi
+    fi
+}
+
+#
+# $1 file(s) to be removed
+#
+bpRm() { ##I Remove file(s)
+    if rm -rf "${1}"; then
+        bpOk "Removing file $(bpColorizeFile "${1}")."
+        return 0
+    else
+        bpError "Failed removing file $(bpColorizeFile "${1}")."
+        return 1
+    fi
+}
+
+bpModuleIsInstalled() {
+    if [ -e "${BP_CONFIG_MODULES}/"$(basename "$1") ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+bpAddModule() { ##I Add init script to
+    m=$(realpath "${1}")
+    if [ ! -L "$m" ]; then
+        rm -f "${BP_CONFIG_MODULES}/$(basename "${m}")"
+        bpLn "$m" "${BP_CONFIG_MODULES}/."
+    fi
+}
+
+bpRmModule() { ##I Remove module
+    bpRm "${BP_CONFIG_MODULES}/${1}"
+}
+
+#---------------------------------------------------------------------
+# Internal variables
+#---------------------------------------------------------------------
+
+##V Name of script
+BP_SELF=$(basename "$0")
+
+##V Settings directory
+BP_CONFIG_DIR=~/.config/bashplates
+
+##V Links to modules
+BP_CONFIG_MODULES="${BP_CONFIG_DIR}/modules"
+
+InitSettings
+
+getopts ":q" option
+if [ "$option" == "q" ]; then
+    BP_QUIET=1
+fi
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    direct_exec
+else
+    source_exec
+fi

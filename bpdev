@@ -247,6 +247,24 @@ tdim() { ##D Terminal dimensions
 
 }
 
+##- Output formating
+
+# https://www.thegeekdiary.com/column-format-standard-input-or-a-file-into-multiple-columns/
+# https://stackoverflow.com/questions/60821571/how-to-split-one-long-columns-into-multiple-columns-shell-script
+# https://stackoverflow.com/questions/47272474/how-to-redirect-output-in-multiple-columns-in-bash
+dcf() { ##D D column formatting test
+  BP_LINE_CHAR=""
+  # almost working
+  ihelp | awk 'BEGIN{w=0;}{lines[NR]=$0;l=length($0);w=l>w?l:w;}END{wd=W>0?W:w;h=rshift(NR,1)+(NR%2);for (i=1;i<=h;i++){printf "%*s %s %*s\n",-wd,lines[i],sep,-wd,lines[i+h];}}'
+
+  #ihelp | awk -v W=50 -v sep='|:|' 'BEGIN{w=0;}{lines[NR]=$0;l=length($0);w=l>w?l:w;}END{wd=W>0?W:w;h=rshift(NR,1)+(NR%2);for (i=1;i<=h;i++){printf "%*s %s %*s\n",-wd,lines[i],sep,-wd,lines[i+h];}}'
+  #ihelp | pr --omit-pagination --columns=2 --width="$BP_COLUMNS"
+
+  # almost working
+  #ihelp | column
+  #ihelp
+}
+
 ##- Test of print messages
 
 msg() { ##D Messsages format test
@@ -936,6 +954,9 @@ BP_C_COMMENT="${E_CYAN}"
 BP_C_STRING="${E_GREEN}"
 BP_C_VAR="${E_BR_YELLOW}"
 
+# Separator line character
+BP_LINE_CHAR="-"
+
 # Exit codes
 #
 BP_OK=0 # successful termination
@@ -957,16 +978,20 @@ BP_RIGHT_MARGIN=3
 # $2 text color
 # $3 line color
 # $4 middle character
-# $5 line character
 #
 bpPrintLineGeneric() { ##I Print text with adjusted line after with selectable colors
   len1="${#1}"
   len4="${#4}"
-
+  #echo "XXXX"
+  #return
   echo -en "${2}${1}${4}${3}"
-  l=$((BP_COLUMNS - len1 - len4))
-  seq -s"${5}" "${l}" | tr -d '[:digit:]'
-  echo -en "${E_RESET}"
+  if [ "${BP_LINE_CHAR}" != "" ]; then
+    l=$((BP_COLUMNS - len1 - len4))
+    seq -s"${BP_LINE_CHAR}" "${l}" | tr -d '[:digit:]'
+    echo -en "${E_RESET}"
+  else
+    echo -e "${E_RESET}"
+  fi
 }
 
 #
@@ -975,14 +1000,16 @@ bpPrintLineGeneric() { ##I Print text with adjusted line after with selectable c
 # $3 line color
 #
 bpTextLineC() { ##I Print text with adjusted line after with selectable colors
-  bpPrintLineGeneric "$1" "$2" "$3" " " "-"
+  bpPrintLineGeneric "$1" "$2" "$3" " "
 }
 
 bpPrintLine() { ##I Print text with line
+  bpPrintDesc "  $1" ""
+  return
   if [ "${#1}" -eq 0 ]; then
-    bpPrintLineGeneric "" "" "${BP_C_LINE}" "" "-"
+    bpPrintLineGeneric "" "" "${BP_C_LINE}" ""
   else
-    bpPrintLineGeneric "$1" "${BP_C_LINETEXT}" "${BP_C_LINE}" " " "-"
+    bpPrintLineGeneric "$1" "${BP_C_LINETEXT}" "${BP_C_LINE}" " "
   fi
 }
 

@@ -307,6 +307,8 @@ To montor the logfile simply enter the "mlog" command.
 - [x] Remove settings command and include it into bpset
 - [ ] Update bpAssertProg to using bpHasCmd
 - [ ] A more comprahensive cheat sheet
+- [ ] Add exit codes to cheat sheet https://www.redhat.com/sysadmin/exit-codes-demystified
+- [ ] Multiple column presentation for cheat sheet
 
 
 ## Sugestions
