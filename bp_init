@@ -10,9 +10,6 @@
 #
 #
 
-#set -o xtrace   # Display commands as they are executed
-#set -o pipefail # Exit script when pipe fails
-
 # Directory where script is located
 BP_SELF_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
@@ -47,12 +44,8 @@ source_exec() {
   # Add variable pointing to bashplate dir
   export BP_PATH=${BP_SELF_DIR}
 
-  # Add alias for quick access to bashplate dir
-  #alias bpd='cd ${BP_SELF_DIR}'
-  #alias bplsd="bprc lsd"
-
+  # Development mode
   if [ -f "${BP_SELF_DIR}/DEV" ]; then
-    #  BP_DEV=1
     export PATH=${PATH}:${BP_SELF_DIR}/dev
     alias cdb='cd "${BP_SELF_DIR}"'
   fi
