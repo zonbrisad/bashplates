@@ -402,6 +402,23 @@ instest() { ##D Terminal insert row test
 spc() { ##D Special characters
   echo -en "\x1b(A"
 }
+
+rntest() { ##D R
+  echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  echo -en "$E_CUR_PREVIOUS_LINE"
+  sleep 0.3
+  echo -en "Some text added later \r\n"
+  sleep 1
+}
+
+nlat() { ##D New line attribute test
+  # printf "${ATTR}%-30s ${E_GREEN}%-20s${E_RESET}\n" "${2}${E_RESET}" "${1}"
+  echo -en "${E_REVERSE}Reverse text  \n${E_RESET}"
+  echo -en "${E_BOLD}Bold text  \n${E_RESET}"
+  echo -en "${E_UNDERLINE}Underlined text  \n${E_RESET}"
+  echo -en "${E_CROSSED}Crossed text  \n${E_RESET}"
+}
+
 ##- Some fun
 
 bpElapsedTime() { ##D Return elapsed time
