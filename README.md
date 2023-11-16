@@ -115,7 +115,7 @@ $ bp
 Bashplates does have some configuration settings. To view these settings use the `bp info` command as below.
 
 ```bash
-$ bp info
+$ bp iinfo
 ```
 ![alt text][bp-info]
 
@@ -189,7 +189,7 @@ and a short description of their function.
 In the example below the standard way to document a command function is shown.
 
 ```bash
-myCommand() { ## Command description
+myCommand() { ##D Command description
   do-stuff
 }
 ```
