@@ -47,19 +47,19 @@ bpUserSettings() {
 ##- Project files
 
 et() { ##D Edit bashplate template
-  bpEdit "${BP_SELF_DIR}/templates/bashplate" "$2"
+  bpEdit "${BP_SELF_DIR}/../templates/bashplate" "$2"
 }
 
 est() { ##D Edit simple bashplate template
-  bpEdit "${BP_SELF_DIR}/templates/bashplate-simple" "$2"
+  bpEdit "${BP_SELF_DIR}/../templates/bashplate-simple" "$2"
 }
 
 eh() { ##D Edit header template
-  bpEdit "${BP_SELF_DIR}/templates/header" "$2"
+  bpEdit "${BP_SELF_DIR}/../templates/header" "$2"
 }
 
 ei() { ##D Edit Bashplate init file
-  bpEdit "${BP_SELF_DIR}/bp_init" "$2"
+  bpEdit "${BP_SELF_DIR}/../bp_init" "$2"
 }
 
 ec() { ##D Edit Bashplate config file
@@ -67,15 +67,15 @@ ec() { ##D Edit Bashplate config file
 }
 
 dl() { ##D Make diff with latest bashtemplate
-  ${BP_DIFF} "${BP_SELF_DIR}/templates/bashplate" "$2"
+  ${BP_DIFF} "${BP_SELF_DIR}/../templates/bashplate" "$2"
 }
 
 dd() { ##D Diff with bpdev
-  ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "${BP_SELF_DIR}/bp"
+  ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "${BP_SELF_DIR}/../bp"
 }
 
 dt() { ##D Diff bpdev with template
-  ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "${BP_SELF_DIR}/templates/bashplate"
+  ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "${BP_SELF_DIR}/../templates/bashplate"
 }
 
 de() { ##D Diff bpdev with external file

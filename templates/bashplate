@@ -149,7 +149,7 @@ bpExit() { ##I Function for safely exiting script
 
   # Check if argument is given
   if [ -z "$1" ]; then
-    exit 0 # Success
+    exit "$BP_OK"
   else
     exit "$1"
   fi
@@ -410,7 +410,7 @@ bpPrintVar() { ##I Print variable value and description
 
     bpPrintDesc "${KEY}" "${VAL}"
   else
-    bpPrintDescGeneric "${BP_C_KEY}" "${BP_C_ERROR}" "$KEY" "N/A"
+    bpPrintDesc "${KEY}" "${BP_C_ERROR}N/A"
   fi
 }
 
@@ -854,7 +854,7 @@ bpChangeSetting() { ##I Change setting in config file
   if ! bpStrExist "${1}" "${KEY}"; then
     bpAddSetting "$FILE" "$KEY" "$VAL" "$DESC"
   fi
-  sed -i "s/^\(${KEY}\s*=\s*\).*\$/\1\"${VAL}\"/" "${FILE}"
+  sed -i "s/^\(${KEY}\s*=\s*\).*\$/\1${VAL}/" "${FILE}"
   bpOk "Changing ${KEY} to ${VAL}"
 }
 
@@ -956,7 +956,7 @@ bpConfInList() { ##I Check if key exist in config file list
   arr=("${@:1}")
   len=${#arr[@]}
   bpReturn=""
-  i=1
+  i=3
   while [ "$i" -lt "$len" ]; do
     key=${arr[$i]}
     ((i++))
@@ -966,6 +966,7 @@ bpConfInList() { ##I Check if key exist in config file list
     ((i++))
     #echo "$key"
     if [ "$key" == "$1" ]; then
+      bpReturn="$key"
       return 0
     fi
   done
@@ -986,7 +987,7 @@ bpConfPrint() { ##I Print settings in config list
     DESC=${arr[$i]}
     ((i++))
     printf "%s%s\n" "${E_DARKGRAY}" "${DESC}"
-    bpPrintVar "$KEY" #"${!KEY}"
+    bpPrintVar "$KEY"
   done
 }
 
@@ -1207,7 +1208,7 @@ bpAssertProgs() { ##I Assert that required programs are available on the system
         e=1
       }
   done
-  if [ $e -eq 1 ]; then
+  if [ "$e" -eq 1 ]; then
     bpExit 1
   fi
 }
@@ -1217,7 +1218,7 @@ bpAssertProgs() { ##I Assert that required programs are available on the system
 #
 # $1 command to check
 #
-bpHasCmd() { ##I Check if command is available
+bpHasCmd() { ##I Check whether a command exists in path and is executable
   if [ -x "$(command -v "${1}")" ]; then
     return 0
   else
@@ -1246,13 +1247,13 @@ bpGetFunction() {
 # $1 command to execute
 #
 bpRun() { ##I Execute command
-  if bpHasCmd "${1}"; then
-    "$@"
-    return $?
-  else
+  if ! bpHasCmd "${1}"; then
     bpError "Could not execute $1, command does not exist!"
     return 1
   fi
+
+  "$@"
+  return $?
 }
 
 ##C- IHELP Debug/Controll
@@ -1432,7 +1433,7 @@ iinfo() { ##I Show information about script
     ((i++))
     ((i++))
     ((i++))
-    bpPrintVar "$KEY" "$KEY"
+    bpPrintVar "$KEY"
   done
 
   bpPrintLine
@@ -1620,6 +1621,7 @@ BP_CONFIG_LIST=(
   "BP_NAME" "John Doe" "Users name"
   "BP_EMAIL" "john.doe@foo.bar" "Users email"
   "BP_ORG" "ACME" "Organisation"
+  "BP_HOME" "www.foo.bar" "Home"
   "BP_LICENSE" "MIT" "Default license"
   "BP_EDITOR" "vi" "Default editor"
   "BP_DIFF" "meld" "Default diff program"

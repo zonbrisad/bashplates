@@ -52,25 +52,23 @@ MIT
 
 
 ## About
-Bashplates is a bashscript template generator to enable rappid development of
-subcommandbased shellscripts.
 
-## Features
+Bashplates is a tool for quickly creating advanced and feature rich shellscripts. It is essentialy a template that provides a number of selfcontained features like subcommand handler, documentation parser, logging, pretty printouts etc.. 
 
-- Handler for commands
-- Built in Documantation handling of commands (help command)
-- logfile function
-- Simple error/message handling
-- Check if root user
-- Check for required installed programs
-- lock file feature
-- Signal trap handling
-- Cleanup handling
-- ANSI Color codes
-- Numerous internal variables setup on default
+
+## Features (not exhaustive)
+
+- Subcommand handler
+- Documentation parser
+- Error/message handling
+- Logfile 
+- Configuration file 
+- Lock file 
+- Signal traps
+- File operations (cp, mv, rm, etc)
+- File editing 
+- User input
 - Execution hooks
-- default function
-- Selfcontained
 - Few external dependencies (grep, sed, awk, date, tail, tput)
 
 
@@ -87,7 +85,7 @@ subcommandbased shellscripts.
 
 ### Download
 
-Get bashplates from github with the following command.
+Bashplates is available at [github](https://github.com/zonbrisad/bashplates.git).
 
 ```bash
 $ git clone https://github.com/zonbrisad/bashplates.git
@@ -309,6 +307,7 @@ To montor the logfile simply enter the "mlog" command.
 - [ ] A more comprahensive cheat sheet
 - [ ] Add exit codes to cheat sheet https://www.redhat.com/sysadmin/exit-codes-demystified
 - [ ] Multiple column presentation for cheat sheet
+- [ ] Logg user calls to User input operation
 
 
 ## Sugestions
