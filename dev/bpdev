@@ -164,14 +164,14 @@ nocond() { ##D Ordinary function
 
 ##- Bp select from list
 
+list=(
+  "1" ":" "Alternative 1"
+  "2" ":" "Another alternative"
+  "c" ":" "Alternative C"
+  "1c" ":" "Alt. 1C"
+  "d" "valueD" ":"
+)
 rl() { ##D Select from list
-  list=(
-    "1" ":" "Alternative 1"
-    "2" ":" "Another alternative"
-    "c" ":" "Alternative C"
-    "1c" ":" "Alt. 1C"
-    "d" "valueD" ":"
-  )
 
   bpSelectFromList "2" "Choose your alternative" "${list[@]}"
   echo -e "\nChoice: ${bpReturn}"
@@ -622,6 +622,15 @@ runtest() { ##D Test bprun
 
   bpRun "${BP_SELF_DIR}/tests/empty_execute"
 
+}
+
+querytests() { ##D Test querys
+  RESULT=$(bpReadStr "Enter string?")
+  RESULT=$(bpReadInt "Enter integer?" "10" "0" "100")
+  RESULT=$(bpReadBoolDY "Are you sure?")
+  RESULT=$(bpReadBoolDN "Are you sure?")
+  bpSelectFromList "2" "Choose your alternative" "${list[@]}"
+  #rl
 }
 
 ##- Command problems
@@ -1131,8 +1140,8 @@ bpCd() { ##I Safe cd function (exits on fail)
 # $1 Directory to be created
 #
 bpMkDir() { ##I Create a directory if it does not exist
-  if [ ! -d $1 ]; then
-    if mkdir -p $1; then
+  if [ ! -d "$1" ]; then
+    if mkdir -p "$1"; then
       bpOk "Creating directory $(bpColorizeFile "${1}")."
       return 0
     else
@@ -1323,7 +1332,7 @@ bpInsert() { ##I Insert text into file
 # $2  Default value
 # return string read from cmdline/default if enter pressed
 #
-bpReadStr() { ##I Read string from commandline
+bpReadGeneric() { ##I Read from commandline
   QUERY="$1"
   DEFAULT="$2"
 
@@ -1331,7 +1340,20 @@ bpReadStr() { ##I Read string from commandline
   if [ "${RESULT}" == "" ]; then
     RESULT="${2}"
   fi
+  echo "${RESULT}"
+}
 
+#
+# $1  Question string
+# $2  Default value
+# return string read from cmdline/default if enter pressed
+#
+bpReadStr() { ##I Read string from commandline
+  QUERY="$1"
+  DEFAULT="$2"
+
+  RESULT=$(bpReadGeneric "$QUERY" "$DEFAULT")
+  bpLogInfo "User entered: $RESULT  ($QUERY)"
   echo "${RESULT}"
 }
 
@@ -1356,15 +1378,19 @@ bpReadInt() { ##I Read integer from commandline
   while true; do
     read -er -i "$DEFAULT" -p "${BP_C_QUERY}${1}${E_RESET}${RANGE} > " RESULT
 
-    if [ -n "${RANGE}" ]; then
-      #if [ -n "$MIN" ] && [ -n "$MAX" ]; then
-      if [ $((RESULT)) -ge "$MIN" ] && [ $((RESULT)) -le "$MAX" ]; then
+    if [ "$RESULT" -eq "$RESULT" ] 2>/dev/null; then
+
+      if [ -n "${RANGE}" ]; then
+        #if [ -n "$MIN" ] && [ -n "$MAX" ]; then
+        if [ $((RESULT)) -ge "$MIN" ] && [ $((RESULT)) -le "$MAX" ]; then
+          break
+        fi
+      else
         break
       fi
-    else
-      break
     fi
   done
+  bpLogInfo "User entered: $RESULT  ($QUERY)"
   echo "${RESULT}"
 }
 
@@ -1379,21 +1405,28 @@ bpReadBool() { ##I Ask yes/no question generic
   while true; do
 
     if [ "$2" -eq 1 ]; then
-      yn=$(bpReadStr "${BP_C_QUERY}${1}${E_RESET} ${BP_C_QUERY_DEF}[${BP_C_DEEMPHASIS}y${BP_C_QUERY_DEF}/${BP_C_EMPHASIS}N${BP_C_QUERY_DEF}]${E_RESET}")
+      yn=$(bpReadGeneric "${BP_C_QUERY}${1}${E_RESET} ${BP_C_QUERY_DEF}[${BP_C_DEEMPHASIS}y${BP_C_QUERY_DEF}/${BP_C_EMPHASIS}N${BP_C_QUERY_DEF}]${E_RESET}")
     else
-      yn=$(bpReadStr "${BP_C_QUERY}${1}${E_RESET} ${BP_C_QUERY_DEF}[${E_RESET}${BP_C_EMPHASIS}Y${BP_C_QUERY_DEF}/${BP_C_DEEMPHASIS}n${BP_C_QUERY_DEF}]${E_RESET}")
+      yn=$(bpReadGeneric "${BP_C_QUERY}${1}${E_RESET} ${BP_C_QUERY_DEF}[${E_RESET}${BP_C_EMPHASIS}Y${BP_C_QUERY_DEF}/${BP_C_DEEMPHASIS}n${BP_C_QUERY_DEF}]${E_RESET}")
     fi
 
     case "$yn" in
     [Yy]*)
+      bpLogInfo "User entered: Yes  ($QUERY)"
       return 0
       break
       ;;
     [Nn]*)
+      bpLogInfo "User entered: No  ($QUERY)"
       return 1
       break
       ;;
     "")
+      if [ "$2" -eq 0 ]; then
+        bpLogInfo "User entered: Yes  ($QUERY)"
+      else
+        bpLogInfo "User entered: No  ($QUERY)"
+      fi
       return "$2"
       break
       ;;
@@ -1463,11 +1496,11 @@ bpPrintChoiceList() { # Print items in selection list
 #  "c" ":" "Choice C"
 # )
 bpSelectFromList() { ##I Select from list
-
+  QUERY="$2"
   while true; do
     bpPrintChoiceList "$1" "${@:2}"
     echo
-    x=$(bpReadStr "$2" "$1")
+    x=$(bpReadGeneric "$2" "$1")
 
     arr=("${@}")
     len=${#arr[@]}
@@ -1484,6 +1517,7 @@ bpSelectFromList() { ##I Select from list
         else
           bpReturn="${val}"
         fi
+        bpLogInfo "User entered: $bpReturn  ($QUERY)"
         return 0
       fi
     done
@@ -2106,7 +2140,7 @@ iinfo() { ##I Show information about script
   bpPrintLine "Script information"
   bpPrintVar BP_SELF "Script" "$(bpColorizeFile "${BP_SELF_DIR}/${BP_SELF}")"
   bpPrintVar BP_VERSION "Script version"
-  bpPrintVar BP_VERSION "Template version"
+  bpPrintVar BP_TEMPLATE_VERSION "Template version"
   bpPrintVar BP_CONFIG "Bashplate settings file" "$(bpColorizeFile "${BP_CONFIG}")"
   bpPrintVar BP_LOGFILE "Log file" "$(bpColorizeFile "${BP_LOGFILE}")"
   bpPrintVar BP_LOCK_FILE "Lock file" "$(bpColorizeFile "${BP_LOCK_FILE}")"
@@ -2259,7 +2293,7 @@ bpRunCommand() {
 #---------------------------------------------------------------------
 
 ##V Bashplate version
-BP_VERSION="1.20"
+BP_TEMPLATE_VERSION="1.40"
 
 ##V Directory where script is located
 BP_SELF_DIR="${0%/*}"

@@ -22,7 +22,6 @@ bpUserSettings() {
 
 ##-
 
-
 #---------------------------------------------------------------------
 # Bashplate settings
 #---------------------------------------------------------------------
@@ -93,6 +92,7 @@ signalInt() {
 
 signalHup() {
   bpCleanUp
+  exit "$BP_OK"
 }
 
 signalQuit() {
@@ -274,6 +274,11 @@ BP_C_URL_SCHEME="${E_DARKGRAY}"
 # BP_C_URL_HOST=""
 BP_C_TIME="${E_BR_MAGENTA}"
 BP_C_DATE="${E_MAGENTA}"
+
+BP_C_QUERY=$'\e[38;5;194m'
+BP_C_QUERY_DEF=$'\e[38;5;240m'
+BP_C_EMPHASIS=$'\e[38;5;255m'
+BP_C_DEEMPHASIS=$'\e[38;5;250m'
 
 # Shellscript colorize colors
 BP_C_RESERVED="${E_RED}"
@@ -656,18 +661,29 @@ bpInsert() { ##I Insert text into file
 # $2  Default value
 # return string read from cmdline/default if enter pressed
 #
-bpReadStr() { ##I Read string from commandline
+bpReadGeneric() { ##I Read from commandline
+  QUERY="$1"
+  DEFAULT="$2"
 
-  if [ "${2}" == "" ]; then
-    read -erp "${1} > " result
-  else
-    read -erp "${1} [$2] > " result
-    if [ "${result}" == "" ]; then
-      result="${2}"
-    fi
+  read -er -i "$DEFAULT" -p "${BP_C_QUERY}${1}${E_RESET} > " RESULT
+  if [ "${RESULT}" == "" ]; then
+    RESULT="${2}"
   fi
+  echo "${RESULT}"
+}
 
-  echo "${result}"
+#
+# $1  Question string
+# $2  Default value
+# return string read from cmdline/default if enter pressed
+#
+bpReadStr() { ##I Read string from commandline
+  QUERY="$1"
+  DEFAULT="$2"
+
+  RESULT=$(bpReadGeneric "$QUERY" "$DEFAULT")
+  bpLogInfo "User entered: $RESULT  ($QUERY)"
+  echo "${RESULT}"
 }
 
 #
@@ -678,23 +694,33 @@ bpReadStr() { ##I Read string from commandline
 # return integer read from cmdline/default if enter pressed
 #
 bpReadInt() { ##I Read integer from commandline
+  QUERY="$1"
+  DEFAULT="$2"
+  MIN="$3"
+  MAX="$4"
+
+  RANGE=""
+  if [ -n "$MIN" ] || [ -n "$MAX" ]; then
+    RANGE=" ${BP_C_QUERY_DEF}[${E_RESET}$3-$4${BP_C_QUERY_DEF}]${E_RESET}"
+  fi
+
   while true; do
-    if [ "${2}" == "" ]; then
-      read -erp "${1} ($3-$4) >" result
-      if [ "${result}" == "" ]; then
-        result=$(($3 - 1))
+    read -er -i "$DEFAULT" -p "${BP_C_QUERY}${1}${E_RESET}${RANGE} > " RESULT
+
+    if [ "$RESULT" -eq "$RESULT" ] 2>/dev/null; then
+
+      if [ -n "${RANGE}" ]; then
+        #if [ -n "$MIN" ] && [ -n "$MAX" ]; then
+        if [ $((RESULT)) -ge "$MIN" ] && [ $((RESULT)) -le "$MAX" ]; then
+          break
+        fi
+      else
+        break
       fi
-    else
-      read -erp "${1} ($3-$4) [$2] >" result
-      if [ "${result}" == "" ]; then
-        result="${2}"
-      fi
-    fi
-    if [ $((result)) -ge "$3" ] && [ $((result)) -le "$4" ]; then
-      break
     fi
   done
-  echo "${result}"
+  bpLogInfo "User entered: $RESULT  ($QUERY)"
+  echo "${RESULT}"
 }
 
 #
@@ -703,24 +729,33 @@ bpReadInt() { ##I Read integer from commandline
 # return 0 = Yes, 1=No
 #
 bpReadBool() { ##I Ask yes/no question generic
+  QUERY="$1"
+  DEFAULT="$2"
   while true; do
 
     if [ "$2" -eq 1 ]; then
-      yn=$(bpReadStr "${1} [y/N]")
+      yn=$(bpReadGeneric "${BP_C_QUERY}${1}${E_RESET} ${BP_C_QUERY_DEF}[${BP_C_DEEMPHASIS}y${BP_C_QUERY_DEF}/${BP_C_EMPHASIS}N${BP_C_QUERY_DEF}]${E_RESET}")
     else
-      yn=$(bpReadStr "${1} [Y/n]")
+      yn=$(bpReadGeneric "${BP_C_QUERY}${1}${E_RESET} ${BP_C_QUERY_DEF}[${E_RESET}${BP_C_EMPHASIS}Y${BP_C_QUERY_DEF}/${BP_C_DEEMPHASIS}n${BP_C_QUERY_DEF}]${E_RESET}")
     fi
 
     case "$yn" in
     [Yy]*)
+      bpLogInfo "User entered: Yes  ($QUERY)"
       return 0
       break
       ;;
     [Nn]*)
+      bpLogInfo "User entered: No  ($QUERY)"
       return 1
       break
       ;;
     "")
+      if [ "$2" -eq 0 ]; then
+        bpLogInfo "User entered: Yes  ($QUERY)"
+      else
+        bpLogInfo "User entered: No  ($QUERY)"
+      fi
       return "$2"
       break
       ;;
@@ -790,10 +825,11 @@ bpPrintChoiceList() { # Print items in selection list
 #  "c" ":" "Choice C"
 # )
 bpSelectFromList() { ##I Select from list
-
+  QUERY="$2"
   while true; do
     bpPrintChoiceList "$1" "${@:2}"
-    x=$(bpReadStr "$2" "$1")
+    echo
+    x=$(bpReadGeneric "$2" "$1")
 
     arr=("${@}")
     len=${#arr[@]}
@@ -810,6 +846,7 @@ bpSelectFromList() { ##I Select from list
         else
           bpReturn="${val}"
         fi
+        bpLogInfo "User entered: $bpReturn  ($QUERY)"
         return 0
       fi
     done
@@ -964,7 +1001,7 @@ bpConfInList() { ##I Check if key exist in config file list
     ((i++))
     desc=${arr[$i]}
     ((i++))
-    #echo "$key"
+    #echo "Key = $key  Default = $def  Desc = $desc"
     if [ "$key" == "$1" ]; then
       bpReturn="$key"
       return 0
@@ -1406,7 +1443,7 @@ iinfo() { ##I Show information about script
   bpPrintLine "Script information"
   bpPrintVar BP_SELF "Script" "$(bpColorizeFile "${BP_SELF_DIR}/${BP_SELF}")"
   bpPrintVar BP_VERSION "Script version"
-  bpPrintVar BP_VERSION "Template version"
+  bpPrintVar BP_TEMPLATE_VERSION "Template version"
   bpPrintVar BP_CONFIG "Bashplate settings file" "$(bpColorizeFile "${BP_CONFIG}")"
   bpPrintVar BP_LOGFILE "Log file" "$(bpColorizeFile "${BP_LOGFILE}")"
   bpPrintVar BP_LOCK_FILE "Lock file" "$(bpColorizeFile "${BP_LOCK_FILE}")"
@@ -1558,7 +1595,7 @@ bpRunCommand() {
 #---------------------------------------------------------------------
 
 ##V Bashplate version
-BP_VERSION="1.20"
+BP_TEMPLATE_VERSION="1.40beta1"
 
 ##V Directory where script is located
 BP_SELF_DIR="${0%/*}"
@@ -1625,6 +1662,9 @@ BP_CONFIG_LIST=(
   "BP_LICENSE" "MIT" "Default license"
   "BP_EDITOR" "vi" "Default editor"
   "BP_DIFF" "meld" "Default diff program"
+  "BP_GITSERVER" "github.com" "Default git server"
+  "BP_GITUSER" "" "Default git user"
+  "BP_GITPROTO" "http" "Default git protocol"
 )
 
 # Load configuration file settings

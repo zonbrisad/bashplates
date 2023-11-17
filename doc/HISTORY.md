@@ -1,3 +1,19 @@
+# Version 1.40 beta 1
+- Added colored queries
+- Added logged queries
+- Added bpd script for handling project
+- Added description formatting
+- fix: set variable command 
+- fix: bpPrintDesc zero input bug
+- fix: iinfo missing line   
+- updated init script
+- updated config file management
+- updated printvar
+- new directory structure
+- new examples added
+- updated documnation
+
+
 # Version 1.30 beta 2
 - doc: major performace improvements for doc generation
 - doc: added cheat cheet to bp

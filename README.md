@@ -103,8 +103,9 @@ $ source path_to_bashplates/bp_init
 
 If everything is setup correctly test it by entering the `bp` command.
 ```bash
-$ bp
+$ bp 
 ```
+The following output should appear.
 
 ![alt text][bp]
 
@@ -120,8 +121,8 @@ $ bp iinfo
 Set your personal like below.
 
 ```bash
-$ bp setname "John Doe"
-$ bp setemail "john.doe@foo.bar"
+$ bp BP_NAME "John Doe"
+$ bp BP_EMAIL "john.doe@foo.bar"
 ```
 
 ## Getting started
@@ -173,11 +174,9 @@ Included in the package is an example command `bpexample`.
 ## Documentation
 
 BP has a very simple tag based documentation feature that is acivated 
-when invoking `scriptname help` subcommand. It will output formated list of all subcommands
-and a short description of their function.
+when invoking `scriptname help` subcommand. It will output formated list of all subcommands available and a short description of their function.
  
-### Documentation tags
-- *##*    Documentation tag for userdefined function
+### Documentation tag
 - ##D   Documentation tag for internal functions
 - ##C   Conditional documentation tag
 - ##-   Separator line tag
@@ -203,33 +202,25 @@ myCommand() { ##C MYVAR Command description
 
 ## Log
 
-BP has an inbuilt log feature. 
-
-### Activate log feature
-
-Edit script and uncomment the LOGFILE variable. Also uncomment the
-different log source you want to log.
+BP has an builtin log feature. It can be activated by uncommenting the `BP_LOGFILE` variable in the settings section.
 
 ```bash
 ##V logfile (uncomment to use logfile)
-#LOGFILE=${scriptPath}/${scriptName}.log
-
-##V Logging options (uncomment to activate logging parameters)
-#LOG_INFO=1
-#LOG_WARNING=1
-#LOG_ERROR=1
-#LOG_CRITICAL=1
+BP_LOGFILE=${BP_SELF_DIR}/${BP_SELF}.log
 ```
+
+Many builtin functions like fileoperations and queries will now automaticly log their actions to file
+
 
 ### Usage
 
 To log a message to file use any of the commands below. 
 ```bash
-bpLogOk       "logmsg"
-bpLogInfo     "logmsg"
-bpLogWarning  "logmsg"
-bpLogError    "logmsg"
-bpLogCritical "logmsg"
+bpLogOk       "msg"
+bpLogInfo     "msg"
+bpLogWarning  "msg"
+bpLogError    "msg"
+bpLogCritical "msg"
 ```
 
 It is also possible to log via the following commands. In additiont to
@@ -237,11 +228,11 @@ log a message to a logfile these commands will also print the message
 on the terminal.
 
 ```bash
-bpOk       "logmsg"
-bpInfo     "logmsg"
-bpWarning  "logmsg"
-bpError    "logmsg"
-bpCritical "logmsg"
+bpOk       "msg"
+bpInfo     "msg"
+bpWarning  "msg"
+bpError    "msg"
+bpCritical "msg"
 ```
 						
 ### View log
@@ -250,14 +241,14 @@ There is a builtin log view command that will colorize output for
 easier interpretation.
 
 ```bash
-  bpexample log
+$ bpexample log
 ```
 ![alt text][bp-log]
 
 
 ### Monitor log
 
-To montor the logfile simply enter the "mlog" command.
+To monitor the logfile simply enter the "mlog" command and `tail` will be run on the logfile
 
 ```bash
   bpexample mlog
@@ -268,7 +259,7 @@ To montor the logfile simply enter the "mlog" command.
 - `bpexample  ` example bashplate script
 - `templates/bashplate` bashplate template
 - `bp`        bashplate project management script
-- `history.txt` history file 
+- `doc/HISTORY.md` history file 
 - `README.md` this documentation
 
 
@@ -287,18 +278,15 @@ To montor the logfile simply enter the "mlog" command.
 - [ ] Add verbose/debug option
 - [ ] Add quiet option
 - [ ] Add color suppression option
-- [ ] Add warning question(Are you sure?) to bpReadBool question
+- [ ] Add warning/guard question(Are you sure?) to bpReadBool question (bpReadGuardBool?)
 - [X] Add override editor for "ied" command
 - [ ] Add trim string function
 - [x] Select from list function
-- [ ] Plugin system
 - [x] Merge bpLine and bpTextLine to bpPrintLine
 - [x] Reformat messages to "straigt columns"
 - [x] rename bpRead to bpReadStr(ing)
 - [x] rename all bpRead?? to more apropriate
-- [ ] multi column output
 - [x] Change color of time and date in log view command from green/dark green to something else t.ex. magenta
-- [ ] Add automatic completion generator
 - [x] Add keyword change function to bpdev
 - [ ] Add color theme override to setup file
 - [x] Format/fold long description texts
@@ -306,11 +294,14 @@ To montor the logfile simply enter the "mlog" command.
 - [ ] Update bpAssertProg to using bpHasCmd
 - [ ] A more comprahensive cheat sheet
 - [ ] Add exit codes to cheat sheet https://www.redhat.com/sysadmin/exit-codes-demystified
-- [ ] Multiple column presentation for cheat sheet
-- [ ] Logg user calls to User input operation
+- [ ] multi column output (cheat sheet)
+- [x] Logg query answers
+- [x] Add color to queries
 
 
 ## Sugestions
+ - Plugin system
+ - automatic completion generator
  - Mail feature
  - dictionary functions?
  - Use logrotate for logs
@@ -319,8 +310,9 @@ To montor the logfile simply enter the "mlog" command.
  - Rename iinfo to ii
  - Rename icheck to ic
  - Allow dynamic generation of subcommands via for example a generator function
- - History function for Query commands to allow qestions to remember
+ - History cache for Query commands to allow questions to remember
    answers between runs
+ - Rewrite hook system to elliminate hook variables
 
 ## References and tutorials
 
