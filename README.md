@@ -292,13 +292,18 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [x] Format/fold long description texts
 - [x] Remove settings command and include it into bpset
 - [ ] Update bpAssertProg to using bpHasCmd
-- [ ] A more comprahensive cheat sheet
-- [ ] Add exit codes to cheat sheet https://www.redhat.com/sysadmin/exit-codes-demystified
-- [ ] multi column output (cheat sheet)
+- [x] A more comprehensive cheat sheet
+- [x] Add exit codes to cheat sheet https://www.redhat.com/sysadmin/exit-codes-demystified
+- [x] multi column output (cheat sheet)
 - [x] Logg query answers
 - [x] Add color to queries
 - [ ] idiff internal command
-
+- [ ] Add a log complete command command, like bpExecLog that logs the entire command string and exit code
+- [ ] Logg exit code of executed commands
+- [ ] logg when bpRun i called
+- [ ] Added BP_SELF_NAME, to eventually replate BP_SELF
+- [ ] Change BP_SELF to $BP_SELF_DIR/$BP_SELF_NAME, for clarity
+- [ ] Add a BP_TEMPLATE variable pointing to main bashplate template
 
 ## Sugestions
  - Plugin system
@@ -314,7 +319,8 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
  - History cache for Query commands to allow questions to remember
    answers between runs
  - Rewrite hook system to elliminate hook variables
- -  move code from bp_init to bp
+ - move code from bp_init to bp
+ - make columnize.py to a sepparate project
 
 
 ## References and tutorials
@@ -325,6 +331,8 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 [Best Practices for Writing Bash Scripts](http://kvz.io/blog/2013/11/21/bash-best-practices/)
 [What are the best practices for writing shell scripts?](https://www.quora.com/What-are-the-best-practices-for-writing-shell-scripts)
 [Command completion](https://opensource.com/article/18/3/creating-bash-completion-script)
+[Exit codes demystified](https://www.redhat.com/sysadmin/exit-codes-demystified)
+[Bash exit code](https://www.cyberciti.biz/faq/linux-bash-exit-status-set-exit-statusin-bash/)
 
 # Example scripts
 

@@ -1,3 +1,28 @@
+#!/usr/bin/env bash
+# shellcheck disable=2034
+# shellcheck disable=2317
+# shellcheck disable=1090
+#---------------------------------------------------------------------
+#
+#  bpaddon
+#
+#  [Description]
+#    Addon development script
+#
+#  [Author]
+#    Peter Malmberg <peter.malmberg@gmail.com>
+#
+#  [Date]
+#    2023-11-19
+#
+#  [License]
+#    MIT
+#
+#---------------------------------------------------------------------
+# Generated with bashplates. [https://github.com/zonbrisad/bashplates]
+#---------------------------------------------------------------------
+#
+
 # Display commands as they are executed
 #set -o xtrace
 # Display shell input lines as they are read
@@ -14,13 +39,100 @@ set -o pipefail
 # User defined Settings
 #---------------------------------------------------------------------
 bpUserSettings() {
-  :
+  BP_ADDONS="${BP_SELF_DIR}/addons"
+  BP_TEMPLATES="${BP_SELF_DIR}/templates"
 }
 #---------------------------------------------------------------------
 # User defined functions
 #---------------------------------------------------------------------
 
-##-
+##- Addons (experimental)
+
+newa() { ##D Create a new bashplate addon (experimental)
+  newScript "bashplate" "" "addon"
+}
+
+la() { ##D List addons
+  bpPrintLine "Addons"
+  for f in "${BP_ADDONS}"/*; do
+    bpPrintDesc "$(${f} getname)" "$(${f} getdesc)"
+  done
+  bpPrintLine
+}
+
+aa() { ##D Add addon
+  :
+}
+
+ia() { ##D Install addon
+  :
+}
+
+ea() { ##D Edit addon
+  bpEdit "${BP_ADDONS}/${2}.bpaddon"
+}
+
+####BPAddonTemplateBegin####
+
+ADDON_NAME="__NAME__"
+ADDON_VER=""
+ADDON_LINK=""
+ADDON_DESC="__DESC__"
+ADDON_AUTHOR="__AUTHOR__"
+ADDON_DATE="__DATE__"
+
+###BPAddonBegin###
+
+###BPAddonEnd###
+
+getname() { ##D Get addon name
+  echo "${ADDON_NAME}"
+}
+
+getversion() { ##D Get addon version
+  echo "${ADDON_VERSION}"
+}
+
+getdesc() { ##D Get addon description
+  echo "${ADDON_DESC}"
+}
+
+getaddon() { ##D Get addon
+  #  cat $0 | grep -A 1000 -m 1 "###BPAddonBegin###" | grep -B 1000 -m 1 "###BPAddonEnd###" | grep -v "###BPAddonBegin###" | grep -v  "###BPAddonEnd###"
+  bpGetSection "${0}" "###BPAddonBegin###" "###BPAddonEnd###"
+}
+
+info() { ##D Get addon information
+  bpPrintLine "Addon information"
+  bpPrintDesc "Name" "$ADDON_NAME"
+  bpPrintDesc "Description" "$ADDON_DESC"
+  bpPrintDesc "Version" "$ADDON_VER"
+  bpPrintDesc "Link" "$ADDON_LINK"
+  bpPrintLine
+}
+
+#
+# $1 file
+# $2 start match
+# $3 ending match
+#
+bpGetSection() { ##
+  grep -A 10000 -m 1 "$2" <"$1" | grep -B 10000 -m 1 "$3" | grep -v "$2" | grep -v "$3"
+}
+
+####BPAddonTemplateEnd####
+
+##- Addon template
+
+getaddontemp() { ##D Get addon template
+  bpGetSection "${0}" "####BPAddonTemplateBegin####" "####BPAddonTemplateEnd####"
+}
+
+#---------------------------------------------------------------------
+# Bashplate modules
+#---------------------------------------------------------------------
+
+#__MODULES__
 
 #---------------------------------------------------------------------
 # Bashplate settings
@@ -1535,6 +1647,25 @@ ied() { ##I Open this file with default editor
   bpEdit "$0" "$2"
 }
 
+#
+# $1 File to diff with, if not given diff with bashplate template
+#
+idiff() { ##I Run diff with file or bashplate template
+
+  if [ -z "$BP_DIFF" ]; then
+    bpError "Diff program not declared (BP_DIFF)"
+    return
+  fi
+
+  if [ -z "$2" ]; then
+    if [ -n "${BP_PATH}" ]; then
+      bpRun "${BP_DIFF}" "${BP_SELF_DIR}/${BP_SELF}" "${BP_PATH}/templates/bashplate"
+      return
+    fi
+  fi
+  bpRun "${BP_DIFF}" "${BP_SELF_DIR}/${BP_SELF}" "$2"
+}
+
 version() { ##D Print version information
   echo "$BP_VERSION"
 }
@@ -1601,6 +1732,9 @@ BP_TEMPLATE_VERSION="1.40beta2"
 BP_SELF_DIR="${0%/*}"
 
 ##V Name of script
+BP_SELF_NAME=$(basename "$0")
+
+##V Name of script (to be repurposed)
 BP_SELF=$(basename "$0")
 
 ##V Number of arguments given to script

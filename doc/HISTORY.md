@@ -1,3 +1,8 @@
+# Version 1.40 beta 2
+- Added columnize.py
+- bp cs now columnizes output if terminal is wide enough
+- Added documentation about exit codes
+
 # Version 1.40 beta 1
 - Added colored queries
 - Added logged queries

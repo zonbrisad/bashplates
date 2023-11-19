@@ -138,9 +138,29 @@ bp_install() { ##D Install bashplates init
 
 cs() { ##D Cheat sheet for common BASH features
   BP_LINE_CHAR=""
-  cs-print
+
+  if [ "$BP_COLUMNS" -ge 200 ]; then
+    BP_COLUMNS=$(("$BP_COLUMNS" / 4 - 1))
+    cs-cheat-sheet | "${BP_SELF_DIR}"/dev/columnize.py --columns 4
+    return
+  fi
+
+  if [ "$BP_COLUMNS" -ge 150 ]; then
+    BP_COLUMNS=$(("$BP_COLUMNS" / 3 - 1))
+    cs-cheat-sheet | "${BP_SELF_DIR}"/dev/columnize.py --columns 3
+    return
+  fi
+
+  if [ "$BP_COLUMNS" -ge 100 ]; then
+    BP_COLUMNS=$(("$BP_COLUMNS" / 2 - 1))
+    cs-cheat-sheet | "${BP_SELF_DIR}"/dev/columnize.py --columns 2
+    return
+
+  fi
+  cs-cheat-sheet
 }
-cs-print() {
+
+cs-cheat-sheet() {
 
   # https://devhints.io/bash
 
@@ -269,6 +289,167 @@ cs-print() {
   bpPrintLine
 }
 
+cse() { ##D List bash exit codes
+  BP_LINE_CHAR=""
+  BP_KEY_LENGTH="6"
+
+  if [ "$BP_COLUMNS" -ge 200 ]; then
+    BP_COLUMNS=$(("$BP_COLUMNS" / 4 - 1))
+    cs-exit-codes | "${BP_SELF_DIR}"/dev/columnize.py --columns 4
+    return
+  fi
+
+  if [ "$BP_COLUMNS" -ge 150 ]; then
+    BP_COLUMNS=$(("$BP_COLUMNS" / 3 - 1))
+    cs-exit-codes | "${BP_SELF_DIR}"/dev/columnize.py --columns 3
+    return
+  fi
+
+  if [ "$BP_COLUMNS" -ge 100 ]; then
+    BP_COLUMNS=$(("$BP_COLUMNS" / 2 - 1))
+    cs-exit-codes | "${BP_SELF_DIR}"/dev/columnize.py --columns 2
+    return
+
+  fi
+  cs-exit-codes
+}
+
+cs-exit-codes() {
+  bpPrintLine "Bash exit codes"
+  bpPrintDesc "0" "Success"
+  bpPrintDesc "1" "Operation not permitted"
+  bpPrintDesc "2" "No such file or directory"
+  bpPrintDesc "3" "No such process"
+  bpPrintDesc "4" "Interrupted system call"
+  bpPrintDesc "5" "Input/output error"
+  bpPrintDesc "6" "No such device or address"
+  bpPrintDesc "7" "Argument list too long"
+  bpPrintDesc "8" "Exec format error"
+  bpPrintDesc "9" "Bad file descriptor"
+  bpPrintDesc "10" "No child processes"
+  bpPrintDesc "11" "Resource temporarily unavailable"
+  bpPrintDesc "12" "Cannot allocate memory"
+  bpPrintDesc "13" "Permission denied"
+  bpPrintDesc "14" "Bad address"
+  bpPrintDesc "15" "Block device required"
+  bpPrintDesc "16" "Device or resource busy"
+  bpPrintDesc "17" "File exists"
+  bpPrintDesc "18" "Invalid cross-device link"
+  bpPrintDesc "19" "No such device"
+  bpPrintDesc "20" "Not a directory"
+  bpPrintDesc "21" "Is a directory"
+  bpPrintDesc "22" "Invalid argument"
+  bpPrintDesc "23" "Too many open files in system"
+  bpPrintDesc "24" "Too many open files"
+  bpPrintDesc "25" "Inappropriate ioctl for device"
+  bpPrintDesc "26" "Text file busy"
+  bpPrintDesc "27" "File too large"
+  bpPrintDesc "28" "No space left on device"
+  bpPrintDesc "29" "Illegal seek"
+  bpPrintDesc "30" "Read-only file system"
+  bpPrintDesc "31" "Too many links"
+  bpPrintDesc "32" "Broken pipe"
+  bpPrintDesc "33" "Numerical argument out of domain"
+  bpPrintDesc "34" "Numerical result out of range"
+  bpPrintDesc "35" "Resource deadlock avoided"
+  bpPrintDesc "36" "File name too long"
+  bpPrintDesc "37" "No locks available"
+  bpPrintDesc "38" "Function not implemented"
+  bpPrintDesc "39" "Directory not empty"
+  bpPrintDesc "40" "Too many levels of symbolic links"
+  bpPrintDesc "42" "No message of desired type"
+  bpPrintDesc "43" "Identifier removed"
+  bpPrintDesc "44" "Channel number out of range"
+  bpPrintDesc "45" "Level 2 not synchronized"
+  bpPrintDesc "46" "Level 3 halted"
+  bpPrintDesc "47" "Level 3 reset"
+  bpPrintDesc "48" "Link number out of range"
+  bpPrintDesc "49" "Protocol driver not attached"
+  bpPrintDesc "50" "No CSI structure available"
+  bpPrintDesc "51" "Level 2 halted"
+  bpPrintDesc "52" "Invalid exchange"
+  bpPrintDesc "53" "Invalid request descriptor"
+  bpPrintDesc "54" "Exchange full"
+  bpPrintDesc "55" "No anode"
+  bpPrintDesc "56" "Invalid request code"
+  bpPrintDesc "57" "Invalid slot"
+  bpPrintDesc "59" "Bad font file format"
+  bpPrintDesc "60" "Device not a stream"
+  bpPrintDesc "61" "No data available"
+  bpPrintDesc "62" "Timer expired"
+  bpPrintDesc "63" "Out of streams resources"
+  bpPrintDesc "64" "Machine is not on the network"
+  bpPrintDesc "65" "Package not installed"
+  bpPrintDesc "66" "Object is remote"
+  bpPrintDesc "67" "Link has been severed"
+  bpPrintDesc "68" "Advertise error"
+  bpPrintDesc "69" "Srmount error"
+  bpPrintDesc "70" "Communication error on send"
+  bpPrintDesc "71" "Protocol error"
+  bpPrintDesc "72" "Multihop attempted"
+  bpPrintDesc "73" "RFS specific error"
+  bpPrintDesc "74" "Bad message"
+  bpPrintDesc "75" "Value too large for defined data type"
+  bpPrintDesc "76" "Name not unique on network"
+  bpPrintDesc "77" "File descriptor in bad state"
+  bpPrintDesc "78" "Remote address changed"
+  bpPrintDesc "79" "Can not access a needed shared library"
+  bpPrintDesc "80" "Accessing a corrupted shared library"
+  bpPrintDesc "81" ".lib section in a.out corrupted"
+  bpPrintDesc "82" "Attempting to link in too many shared libraries"
+  bpPrintDesc "83" "Cannot exec a shared library directly"
+  bpPrintDesc "84" "Invalid or incomplete multibyte or wide character"
+  bpPrintDesc "85" "Interrupted system call should be restarted"
+  bpPrintDesc "86" "Streams pipe error"
+  bpPrintDesc "87" "Too many users"
+  bpPrintDesc "88" "Socket operation on non-socket"
+  bpPrintDesc "89" "Destination address required"
+  bpPrintDesc "90" "Message too long"
+  bpPrintDesc "91" "Protocol wrong type for socket"
+  bpPrintDesc "92" "Protocol not available"
+  bpPrintDesc "93" "Protocol not supported"
+  bpPrintDesc "94" "Socket type not supported"
+  bpPrintDesc "95" "Operation not supported"
+  bpPrintDesc "96" "Protocol family not supported"
+  bpPrintDesc "97" "Address family not supported by protocol"
+  bpPrintDesc "98" "Address already in use"
+  bpPrintDesc "99" "Cannot assign requested address"
+  bpPrintDesc "100" "Network is down"
+  bpPrintDesc "101" "Network is unreachable"
+  bpPrintDesc "102" "Network dropped connection on reset"
+  bpPrintDesc "103" "Software caused connection abort"
+  bpPrintDesc "104" "Connection reset by peer"
+  bpPrintDesc "105" "No buffer space available"
+  bpPrintDesc "106" "Transport endpoint is already connected"
+  bpPrintDesc "107" "Transport endpoint is not connected"
+  bpPrintDesc "108" "Cannot send after transport endpoint shutdown"
+  bpPrintDesc "109" "Too many references"
+  bpPrintDesc "110" "Connection timed out"
+  bpPrintDesc "111" "Connection refused"
+  bpPrintDesc "112" "Host is down"
+  bpPrintDesc "113" "No route to host"
+  bpPrintDesc "114" "Operation already in progress"
+  bpPrintDesc "115" "Operation now in progress"
+  bpPrintDesc "116" "Stale file handle"
+  bpPrintDesc "117" "Structure needs cleaning"
+  bpPrintDesc "118" "Not a XENIX named type file"
+  bpPrintDesc "119" "No XENIX semaphores available"
+  bpPrintDesc "120" "Is a named type file"
+  bpPrintDesc "121" "Remote I/O error"
+  bpPrintDesc "122" "Disk quota exceeded"
+  bpPrintDesc "123" "No medium found"
+  bpPrintDesc "125" "Operation canceled"
+  bpPrintDesc "126" "Required key not available"
+  bpPrintDesc "127" "Key has expired"
+  bpPrintDesc "128" "Key has been revoked"
+  bpPrintDesc "129" "Key was rejected by service"
+  bpPrintDesc "130" "Owner died"
+  bpPrintDesc "131" "State not recoverable"
+  bpPrintDesc "132" "Operation not possible due to RF-kill"
+  bpPrintDesc "133" "Memory page has hardware error"
+  bpPrintLine
+}
+
 bp_phh() {
   if [ -z "${BP_INIT_RUN}" ]; then
     bpInfo "Make sure to do load bp_init ( source $(realpath bp_init) )"
@@ -285,16 +466,16 @@ bpInitSettings() {
   BP_VERSION="1.10"
 
   ##V Usage info
-  BP_USAGE="Usage: ${BP_SELF} command [option]"
+  BP_USAGE="Usage: ${BP_SELF_NAME} command [option]"
 
   ##V Description text
   BP_DESC="Generate bash scripts from templates"
 
   ##V logfile (uncomment to use logfile)
-  BP_LOGFILE=${BP_SELF_DIR}/${BP_SELF}.log
+  BP_LOGFILE=${BP_SELF_DIR}/${BP_SELF_NAME}.log
 
   ##V Lock file (uncomment to use lock file feature )
-  BP_LOCK_FILE=/tmp/${BP_NAME}.lock
+  BP_LOCK_FILE=/tmp/${BP_SELF_NAME}.lock
 
   ##V Logging options (uncomment to activate logging parameters)
   BP_LOG_OK=1
@@ -385,8 +566,8 @@ bpCallStack() { ##I Print out BASH call stack
   bpPrintLine
 }
 
-bpCleanUp() {           ##I Cleanup function
-  rm -f "$BP_LOCK_FILE" # remove Lock file
+bpCleanUp() { ##I Cleanup function
+  rm -f "${BP_LOCK_FILE}" # remove Lock file
   #  echo -e "${E_SHOW}"     # Turn on cursor if turned of
 }
 
@@ -568,6 +749,7 @@ BP_RIGHT_MARGIN=3
 bpPrintLineGeneric() { ##I Print text with adjusted line after with selectable colors
   len1="${#1}"
   len4="${#4}"
+
   echo -en "${2}${1}${4}${3}"
   if [ "${BP_LINE_CHAR}" != "" ]; then
     l=$((BP_COLUMNS - len1 - len4))
@@ -1794,6 +1976,25 @@ ied() { ##I Open this file with default editor
   bpEdit "$0" "$2"
 }
 
+#
+# $1 File to diff with, if not given diff with bashplate template
+#
+idiff() { ##I Run diff with file or bashplate template
+
+  if [ -z "$BP_DIFF" ]; then
+    bpError "Diff program not declared (BP_DIFF)"
+    return
+  fi
+
+  if [ -z "$2" ]; then
+    if [ -n "${BP_PATH}" ]; then
+      bpRun "${BP_DIFF}" "${BP_SELF_DIR}/${BP_SELF}" "${BP_PATH}/templates/bashplate"
+      return
+    fi
+  fi
+  bpRun "${BP_DIFF}" "${BP_SELF_DIR}/${BP_SELF}" "$2"
+}
+
 version() { ##D Print version information
   echo "$BP_VERSION"
 }
@@ -1854,12 +2055,15 @@ bpRunCommand() {
 #---------------------------------------------------------------------
 
 ##V Bashplate version
-BP_TEMPLATE_VERSION="1.40"
+BP_TEMPLATE_VERSION="1.40beta2"
 
 ##V Directory where script is located
 BP_SELF_DIR="${0%/*}"
 
 ##V Name of script
+BP_SELF_NAME=$(basename "$0")
+
+##V Name of script (to be repurposed)
 BP_SELF=$(basename "$0")
 
 ##V Number of arguments given to script

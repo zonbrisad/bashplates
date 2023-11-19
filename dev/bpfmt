@@ -69,7 +69,7 @@ dcf() { ##D D column formatting test
 }
 
 cs() { ##D Formatted cheat sheet
-  bp cs | columnize.py --columns 3
+  bp cs | columnize.py --columns 4 --truncate
 }
 
 #---------------------------------------------------------------------

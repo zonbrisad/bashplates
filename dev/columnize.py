@@ -78,6 +78,9 @@ def main() -> None:
         "--debug", action="store_true", default=False, help="Print debug messages"
     )
     parser.add_argument(
+        "--truncate", action="store_true", default=False, help="Truncate long lines"
+    )
+    parser.add_argument(
         "--columns", action="store", type=int, default=2, help="Number of columns"
     )
 
@@ -93,6 +96,9 @@ def main() -> None:
     while True:
         try:
             line = input()
+            if args.truncate is True:
+                if len(line) > col_width:
+                    line = line[0:col_width]
             lines.append(line)
         except EOFError:
             break

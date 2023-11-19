@@ -46,88 +46,6 @@ bpUserSettings() {
 # User defined functions
 #---------------------------------------------------------------------
 
-##- Addons (experimental)
-
-newa() { ##D Create a new bashplate addon (experimental)
-  newScript "bashplate" "" "addon"
-}
-
-la() { ##D List addons
-  bpPrintLine "Addons"
-  for f in "${BP_ADDONS}"/*; do
-    bpPrintDesc "$(${f} getname)" "$(${f} getdesc)"
-  done
-  bpPrintLine
-}
-
-aa() { ##D Add addon
-  :
-}
-
-ia() { ##D Install addon
-  :
-}
-
-ea() { ##D Edit addon
-  bpEdit "${BP_ADDONS}/${2}.bpaddon"
-}
-
-####BPAddonTemplateBegin####
-
-ADDON_NAME="__NAME__"
-ADDON_VER=""
-ADDON_LINK=""
-ADDON_DESC="__DESC__"
-ADDON_AUTHOR="__AUTHOR__"
-ADDON_DATE="__DATE__"
-
-###BPAddonBegin###
-
-###BPAddonEnd###
-
-getname() { ##D Get addon name
-  echo "${ADDON_NAME}"
-}
-
-getversion() { ##D Get addon version
-  echo "${ADDON_VERSION}"
-}
-
-getdesc() { ##D Get addon description
-  echo "${ADDON_DESC}"
-}
-
-getaddon() { ##D Get addon
-  #  cat $0 | grep -A 1000 -m 1 "###BPAddonBegin###" | grep -B 1000 -m 1 "###BPAddonEnd###" | grep -v "###BPAddonBegin###" | grep -v  "###BPAddonEnd###"
-  bpGetSection "${0}" "###BPAddonBegin###" "###BPAddonEnd###"
-}
-
-info() { ##D Get addon information
-  bpPrintLine "Addon information"
-  bpPrintDesc "Name" "$ADDON_NAME"
-  bpPrintDesc "Description" "$ADDON_DESC"
-  bpPrintDesc "Version" "$ADDON_VER"
-  bpPrintDesc "Link" "$ADDON_LINK"
-  bpPrintLine
-}
-
-#
-# $1 file
-# $2 start match
-# $3 ending match
-#
-bpGetSection() { ##
-  grep -A 10000 -m 1 "$2" <"$1" | grep -B 10000 -m 1 "$3" | grep -v "$2" | grep -v "$3"
-}
-
-####BPAddonTemplateEnd####
-
-##- Addon template
-
-getaddontemp() { ##D Get addon template
-  bpGetSection "${0}" "####BPAddonTemplateBegin####" "####BPAddonTemplateEnd####"
-}
-
 ##- En named line
 
 #
@@ -670,11 +588,7 @@ waitx() { ##D Wait for signal
   wait
 }
 
-#---------------------------------------------------------------------
-# Bashplate modules
-#---------------------------------------------------------------------
-
-#__MODULES__
+##- New feature sugestions
 
 #---------------------------------------------------------------------
 # Bashplate settings
@@ -685,19 +599,19 @@ bpInitSettings() {
   BP_VERSION="1.00"
 
   ##V Usage info
-  BP_USAGE="Usage: ${BP_SELF} command [option]"
+  BP_USAGE="Usage: ${BP_SELF_NAME} command [option]"
 
   ##V Description text
   BP_DESC="Sandbox for testing new experimental bashplate features."
 
   ##V logfile (uncomment to use logfile)
-  BP_LOGFILE=${BP_SELF_DIR}/${BP_SELF}.log
+  BP_LOGFILE=${BP_SELF_DIR}/${BP_SELF_NAME}.log
 
   ##V Lock file (uncomment to use lock file feature )
-  #BP_LOCK_FILE=/tmp/${BP_SELF}.lock
+  #BP_LOCK_FILE=/tmp/${BP_SELF_NAME}.lock
 
   ##V PID file
-  BP_PID_FILE=/tmp/${BP_SELF}_${USER}.pid
+  BP_PID_FILE=/tmp/${BP_SELF_NAME}_${USER}.pid
 
   ##V Logging options (uncomment to activate logging parameters)
   BP_LOG_OK=1
@@ -788,8 +702,7 @@ bpCallStack() { ##I Print out BASH call stack
   bpPrintLine
 }
 
-bpCleanUp() { ##I Cleanup function
-
+bpCleanUp() {             ##I Cleanup function
   rm -f "${BP_LOCK_FILE}" # remove Lock file
   rm -f "${BP_PID_FILE}"  # remove PID file
   #  echo -e "${E_SHOW}"     # Turn on cursor if turned of
@@ -2232,6 +2145,25 @@ ied() { ##I Open this file with default editor
   bpEdit "$0" "$2"
 }
 
+#
+# $1 File to diff with, if not given diff with bashplate template
+#
+idiff() { ##I Run diff with file or bashplate template
+
+  if [ -z "$BP_DIFF" ]; then
+    bpError "Diff program not declared (BP_DIFF)"
+    return
+  fi
+
+  if [ -z "$2" ]; then
+    if [ -n "${BP_PATH}" ]; then
+      bpRun "${BP_DIFF}" "${BP_SELF_DIR}/${BP_SELF}" "${BP_PATH}/templates/bashplate"
+      return
+    fi
+  fi
+  bpRun "${BP_DIFF}" "${BP_SELF_DIR}/${BP_SELF}" "$2"
+}
+
 version() { ##D Print version information
   echo "$BP_VERSION"
 }
@@ -2293,12 +2225,15 @@ bpRunCommand() {
 #---------------------------------------------------------------------
 
 ##V Bashplate version
-BP_TEMPLATE_VERSION="1.40"
+BP_TEMPLATE_VERSION="1.40beta2"
 
 ##V Directory where script is located
 BP_SELF_DIR="${0%/*}"
 
 ##V Name of script
+BP_SELF_NAME=$(basename "$0")
+
+##V Name of script (to be repurposed)
 BP_SELF=$(basename "$0")
 
 ##V Number of arguments given to script
