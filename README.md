@@ -297,6 +297,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] multi column output (cheat sheet)
 - [x] Logg query answers
 - [x] Add color to queries
+- [ ] idiff internal command
 
 
 ## Sugestions
@@ -313,6 +314,8 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
  - History cache for Query commands to allow questions to remember
    answers between runs
  - Rewrite hook system to elliminate hook variables
+ -  move code from bp_init to bp
+
 
 ## References and tutorials
 

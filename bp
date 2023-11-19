@@ -137,6 +137,10 @@ bp_install() { ##D Install bashplates init
 ##- BASH Documentation
 
 cs() { ##D Cheat sheet for common BASH features
+  BP_LINE_CHAR=""
+  cs-print
+}
+cs-print() {
 
   # https://devhints.io/bash
 
@@ -560,16 +564,18 @@ BP_RIGHT_MARGIN=3
 # $2 text color
 # $3 line color
 # $4 middle character
-# $5 line character
 #
 bpPrintLineGeneric() { ##I Print text with adjusted line after with selectable colors
   len1="${#1}"
   len4="${#4}"
-
   echo -en "${2}${1}${4}${3}"
-  l=$((BP_COLUMNS - len1 - len4))
-  seq -s"${5}" "${l}" | tr -d '[:digit:]'
-  echo -en "${E_RESET}"
+  if [ "${BP_LINE_CHAR}" != "" ]; then
+    l=$((BP_COLUMNS - len1 - len4))
+    seq -s"${BP_LINE_CHAR}" "${l}" | tr -d '[:digit:]'
+    echo -en "${E_RESET}"
+  else
+    echo -e "${E_RESET}"
+  fi
 }
 
 #
@@ -578,14 +584,14 @@ bpPrintLineGeneric() { ##I Print text with adjusted line after with selectable c
 # $3 line color
 #
 bpTextLineC() { ##I Print text with adjusted line after with selectable colors
-  bpPrintLineGeneric "$1" "$2" "$3" " " "-"
+  bpPrintLineGeneric "$1" "$2" "$3" " "
 }
 
 bpPrintLine() { ##I Print text with line
   if [ "${#1}" -eq 0 ]; then
-    bpPrintLineGeneric "" "" "${BP_C_LINE}" "" "-"
+    bpPrintLineGeneric "" "" "${BP_C_LINE}" ""
   else
-    bpPrintLineGeneric "$1" "${BP_C_LINETEXT}" "${BP_C_LINE}" " " "-"
+    bpPrintLineGeneric "$1" "${BP_C_LINETEXT}" "${BP_C_LINE}" " "
   fi
 }
 

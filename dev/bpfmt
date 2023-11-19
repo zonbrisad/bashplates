@@ -52,15 +52,24 @@ bpUserSettings() {
 # https://stackoverflow.com/questions/47272474/how-to-redirect-output-in-multiple-columns-in-bash
 dcf() { ##D D column formatting test
   BP_LINE_CHAR=""
+  BP_COLUMNS=65
   # almost working
-  ihelp | awk 'BEGIN{w=0;}{lines[NR]=$0;l=length($0);w=l>w?l:w;}END{wd=W>0?W:w;h=rshift(NR,1)+(NR%2);for (i=1;i<=h;i++){printf "%*s %s %*s\n",-wd,lines[i],sep,-wd,lines[i+h];}}'
-
+  # ihelp | awk 'BEGIN{w=0;}{lines[NR]=$0;l=length($0);w=l>w?l:w;}END{wd=W>0?W:w;h=rshift(NR,1)+(NR%2);for (i=1;i<=h;i++){printf "%*s %s %*s\n",-wd,lines[i],sep,-wd,lines[i+h];}}'
+  #ihelp | awk -f columnize.awk
+  # Not so good
   #ihelp | awk -v W=50 -v sep='|:|' 'BEGIN{w=0;}{lines[NR]=$0;l=length($0);w=l>w?l:w;}END{wd=W>0?W:w;h=rshift(NR,1)+(NR%2);for (i=1;i<=h;i++){printf "%*s %s %*s\n",-wd,lines[i],sep,-wd,lines[i+h];}}'
+
+  # Meh..
   #ihelp | pr --omit-pagination --columns=2 --width="$BP_COLUMNS"
 
-  # almost working
+  # almost working not
   #ihelp | column
-  #ihelp
+
+  ihelp | columnize.py --columns 3
+}
+
+cs() { ##D Formatted cheat sheet
+  bp cs | columnize.py --columns 3
 }
 
 #---------------------------------------------------------------------
@@ -94,7 +103,7 @@ bpInitSettings() {
   BP_LOG_CRITICAL=1
 
   ##V Activate settings function (will create settings file when run)
-  BP_CONF=1
+  #BP_CONF=1
 
 }
 #---------------------------------------------------------------------
@@ -360,8 +369,6 @@ BP_RIGHT_MARGIN=3
 bpPrintLineGeneric() { ##I Print text with adjusted line after with selectable colors
   len1="${#1}"
   len4="${#4}"
-  #echo "XXXX"
-  #return
   echo -en "${2}${1}${4}${3}"
   if [ "${BP_LINE_CHAR}" != "" ]; then
     l=$((BP_COLUMNS - len1 - len4))
@@ -382,8 +389,6 @@ bpTextLineC() { ##I Print text with adjusted line after with selectable colors
 }
 
 bpPrintLine() { ##I Print text with line
-  bpPrintDesc "  $1" ""
-  return
   if [ "${#1}" -eq 0 ]; then
     bpPrintLineGeneric "" "" "${BP_C_LINE}" ""
   else
@@ -1350,11 +1355,6 @@ bpRun() { ##I Execute command
     bpError "Could not execute $1, command does not exist!"
     return 1
   fi
-
-  # if [ ! -x "${1}" ]; then
-  #   bpError "Could not execute $1, file is not executable!"
-  #   return 1
-  #fi
 
   "$@"
   return $?
