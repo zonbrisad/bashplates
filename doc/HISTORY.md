@@ -1,13 +1,13 @@
-# Version 1.40 beta 3
-- Added bpfun
-- Cleanup of bpexamples
-- Fixed config file directory creation fail
-- updated bpPrintGeneric
+
 
 # Version 1.40 beta 2
 - Added columnize.py
 - bp cs now columnizes output if terminal is wide enough
 - Added documentation about exit codes
+- Added bpfun
+- Cleanup of bpexamples
+- Fixed config file directory creation fail
+- updated bpPrintGeneric
 
 # Version 1.40 beta 1
 - Added colored queries
