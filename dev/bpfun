@@ -4,19 +4,19 @@
 # shellcheck disable=1090
 #---------------------------------------------------------------------
 #
-#  bp
+#  bpfun
 #
 #  [Description]
-#    Bashplate management script
+#    __DESC__
 #
 #  [Author]
 #    Peter Malmberg <peter.malmberg@gmail.com>
 #
 #  [Date]
-#    2016-xx-xx
+#    2023-12-26
 #
 #  [License]
-#     MIT
+#    MIT
 #
 #---------------------------------------------------------------------
 # Generated with bashplates. [https://github.com/zonbrisad/bashplates]
@@ -39,424 +39,378 @@ set -o pipefail
 # User defined Settings
 #---------------------------------------------------------------------
 bpUserSettings() {
-  BP_ADDONS="${BP_SELF_DIR}/addons"
-  BP_TEMPLATES="${BP_SELF_DIR}/templates"
-
-  BP_PREAMBLE="#!/usr/bin/env bash"
-  BP_HEADER="${BP_TEMPLATES}/header"
-
-  if [ -f "${BP_SELF_DIR}/DEV" ]; then
-    BP_DEV=1
-  fi
+  :
 }
 #---------------------------------------------------------------------
 # User defined functions
 #---------------------------------------------------------------------
 
-##- Bashplates
+##- Terminal graphics
 
-#
-# $1 source file
-# $2 destination file
-#
-bpAppend() { ##I Append file to file
-  if [ ! -f "$1" ]; then
-    bpError "Can't append file $(bpColorizeFile "${1}") to $(bpColorizeFile "${2}")."
-  fi
-  cat "$1" >>"$2"
+bpElapsedTime() { ## Return elapsed time
+  #dt=$((etime - stime))
+  sleep 4
+  sleep 2
+  dt=$SECONDS # total time elapsed in seconds
+  ds=$((dt % 60))
+  dm=$(((dt / 60) % 60))
+  dh=$((dt / 3600))
+  printf '%02d:%02d:%02d' "$dh" "$dm" "$ds"
 }
 
-#
-# Create a new script
-#
-# $1 template file
-# $2
-# $3 type
-#
-newScript() {
-  t=$3
-  name=$(bpReadStr "Enter name of new ${t}" "")
+print_spinner() {
 
-  if [ "$3" == "addon" ]; then
-    script="${name}.bpaddon"
+  XX=("|" "/" "-" "\\")
+  if [ -n "$SPINNER" ]; then
+    SPINNER=$((SPINNER + 1))
+    if [ "$SPINNER" -gt 3 ]; then
+      SPINNER=0
+    fi
   else
-    script="${name}"
+    SPINNER=0
   fi
+  echo " ${XX[$SPINNER]} $1"
+  echo -e "$E_RETURN $E_UP"
+}
 
-  if [ -e "${script}" ]; then
-    bpError "File ${E_BR_CYAN}${script}${E_END} already exists"
+spinner() { ##D Spinner example
+  echo "$E_HIDE"
+  for i in {1..100}; do
+    print_spinner "Processing... $(bpElapsedTime)"
+    sleep 0.1
+  done
+  echo -e "${E_SHOW}"
+}
+
+bpWait() { ##I Wait for n seconds
+  echo "${E_HIDE}"
+  i=0
+  tmp=${SECONDS}
+  while [ "$i" -lt "$1" ]; do
+    i=$((SECONDS - tmp))
+    print_spinner "Waiting... $i"
+    sleep 0.1
+  done
+  echo -e "${E_SHOW}"
+}
+
+wait() { ##D Wait for n seconds
+  if [ -z "$2" ]; then
+    bpInfo "You must enter a number"
     return
   fi
-
-  desc=$(bpReadStr "Enter description")
-  author=$(bpReadStr "Enter author" "${BP_NAME} <${BP_EMAIL}>")
-
-  echo "${BP_PREAMBLE}" >|"${script}"
-  bpImport "$BP_HEADER" >>"${script}"
-  cat "${BP_TEMPLATES}/$1" >>"${script}"
-  chmod +x "${script}"
-
-  if [ "$3" == "addon" ]; then
-    bpInsert "${script}" "#__MODULES__" "$(bpaddon getaddontemp)"
-  fi
-
-  bpReplace "${script}" "__NAME__" "${name}"
-  bpReplace "${script}" "__DATE__" "${BP_DATE}"
-  bpReplace "${script}" "__LICENSE__" "${BP_LICENSE}"
-  bpReplace "${script}" "__AUTHOR__" "${author}"
-  bpReplace "${script}" "__DESC__" "${desc}"
-
-  bpOk "Created file $script"
+  bpWait "$2"
 }
 
-new() { ##D Create a new standard bashplate project
-  newScript "bashplate" "" "script"
+print_bar() {
+
+  echo -n " ["
+  for jx in $(seq 1 "${2}"); do
+    echo -n "="
+  done
+  for jx in $(seq 1 $((${1} - ${2}))); do
+    echo -n " "
+  done
+  echo -n "] ${2}"
 }
 
-news() { ##D Create a new simple bashplate project
-  newScript "bashplate-simple" "" "script"
+bar() { ##D print a testbar (ANSI)
+  bpPrintLine "Bar test"
+  echo -en "$E_HIDE"
+  for i in {1..60}; do
+    sleep 0.03
+    print_bar 60 "$i"
+    #echo -e "$E_RETURN $E_UP"
+    echo -en "$E_RETURN$E_DOWN"
+  done
+  echo -e "$E_SHOW"
 }
 
-newi() { ##C BP_DEV Create new init script
-  name=$(bpReadStr "Enter name of new ${t}" "")
-  script="${name}_init"
-  #	bpCp "${BP_TEMPLATES}/bashplate-init" "${script}"
-  cat "${BP_TEMPLATES}/bashplate-init" >>"${script}"
-  desc=$(bpReadStr "Enter description")
-  bpReplace "${script}" "__DESC__" "${desc}"
-  chmod +x "${script}"
-  bpOk "Created file $script"
+barcr() { ##D print a testbar using carriage return(ANSI)
+  bpPrintLine "Bar test"
+  echo -en "$E_HIDE"
+  for i in {1..60}; do
+    sleep 0.03
+    print_bar 60 "$i"
+    echo -en "\r"
+  done
+  echo -e "$E_SHOW"
 }
 
-##- Setup
-
-bp_install() { ##D Install bashplates init
-  bpAddModule "${BP_SELF_DIR}/bp_init"
+shade() { ##D Shade demo (256 color terminal required)
+  #echo -en '\033]1 Kalle \007'
+  #echo
+  bpPrintLine "B/W shading"
+  echo -en "$E_HIDE"
+  echo
+  echo -en "$E_RETURN"
+  for i in {232..255} {255..232}; do
+    sleep 0.05
+    printf "\x1b[38;5;%sm _____ Shading text _____ ${E_RESET}" "$i"
+    echo -en "$E_RETURN$E_DOWN"
+  done
+  echo -e "$E_SHOW"
 }
 
-##- BASH Documentation
+FLAG_BLUE="\x1b[48;5;20m"
+FLAG_YELLOW="\x1b[48;5;226m"
 
-cs() { ##D Cheat sheet for common BASH features
-  BP_LINE_CHAR=""
-
-  if [ "$BP_COLUMNS" -ge 200 ]; then
-    BP_COLUMNS=$(("$BP_COLUMNS" / 4 - 1))
-    cs-cheat-sheet | "${BP_SELF_DIR}"/dev/columnize.py --columns 4
-    return
-  fi
-
-  if [ "$BP_COLUMNS" -ge 150 ]; then
-    BP_COLUMNS=$(("$BP_COLUMNS" / 3 - 1))
-    cs-cheat-sheet | "${BP_SELF_DIR}"/dev/columnize.py --columns 3
-    return
-  fi
-
-  if [ "$BP_COLUMNS" -ge 100 ]; then
-    BP_COLUMNS=$(("$BP_COLUMNS" / 2 - 1))
-    cs-cheat-sheet | "${BP_SELF_DIR}"/dev/columnize.py --columns 2
-    return
-
-  fi
-  cs-cheat-sheet
+smallFlag() {
+  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_RESET}"
+  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_RESET}"
+  echo -e "${FLAG_YELLOW}                 ${E_RESET}"
+  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_RESET}"
+  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_RESET}"
 }
 
-cs-cheat-sheet() {
-
-  # https://devhints.io/bash
-
-  bpPrintLine "Arithmetic operators"
-  bpPrintDesc "(( N1 + N2 ))" "Addition"
-  bpPrintDesc "(( N1 - N2 ))" "Subtraction"
-  bpPrintDesc "(( N1 * N2 ))" "Multiplication"
-  bpPrintDesc "(( N1 / N2 ))" "Division"
-  bpPrintDesc "(( N1 % N2 ))" "Modulo"
-  bpPrintDesc "(( N1 ** N2 ))" "Exponentiation"
-  bpPrintDesc "(( N1++ ))" "Variable increment"
-  bpPrintDesc "(( N1-- ))" "Variable decrement"
-  bpPrintLine "Bitwise operators"
-  bpPrintDesc "(( N1 >> N2 ))" "Bitwise shift left"
-  bpPrintDesc "(( N1 << N2 ))" "Bitwise shift right"
-  bpPrintDesc "(( N1 & N2 ))" "Bitwise and"
-  bpPrintDesc "(( N1 | N2 ))" "Bitwise or"
-  bpPrintDesc "(( N1 ^ N2 ))" "Bitwise xor"
-  bpPrintDesc "(( N1 ~ N2 ))" "Bitwise negation"
-  bpPrintLine "Logical operators"
-  bpPrintDesc "(( N1 && N2 ))" "Logical and"
-  bpPrintDesc "(( N1 || N2 ))" "Logical or"
-  bpPrintLine "String tests"
-  bpPrintDesc "[ \"\$STR1\" == \"\$STR2\" ]" "Strings equal"
-  bpPrintDesc "[ \"\$STR1\" != \"\$STR2\" ]" "Strings not equal"
-  bpPrintDesc "[ -z STRING ]" "Empty string"
-  bpPrintDesc "[ -n STRING ]" "Not empty string (string exists)"
-  bpPrintDesc "[[ STRING =~ STRING ]]" "Regexp"
-  bpPrintLine "Numerical tests"
-  bpPrintDesc "[ NUM -eq NUM ]" "Equal"
-  bpPrintDesc "[ NUM -ne NUM ]" "Not equal"
-  bpPrintDesc "[ NUM -lt NUM ]" "Less than"
-  bpPrintDesc "[ NUM -le NUM ]" "Less than or equal"
-  bpPrintDesc "[ NUM -gt NUM ]" "Greater than"
-  bpPrintDesc "[ NUM -ge NUM ]" "Greater than or equal"
-  bpPrintDesc "(( NUM < NUM ))" "Numeric conditions"
-  bpPrintLine "Logical tests"
-  bpPrintDesc "[ ! EXPR ]" "Not"
-  bpPrintDesc "[ X ] && [ Y ]" "And"
-  bpPrintDesc "[ X ] || [ Y ]" "Or"
-  bpPrintLine "Other tests"
-  bpPrintDesc "[ -o noclobber ]" "If OPTIONNAME is enabled"
-  bpPrintLine "File conditions"
-  bpPrintDesc "[ -e FILE ]" "File exists"
-  bpPrintDesc "[ -f FILE ]" "Is regular file"
-  bpPrintDesc "[ -d FILE ]" "Is directory"
-  bpPrintDesc "[ -h FILE ]" "Is symlink"
-  bpPrintDesc "[ -r FILE ]" "Is readble"
-  bpPrintDesc "[ -w FILE ]" "Is writable"
-  bpPrintDesc "[ -x FILE ]" "Is executable"
-  bpPrintDesc "[ -s FILE ]" "Size>0"
-
-  bpPrintDesc "[ -S FILE ]" "Is socket"
-  bpPrintDesc "[ -g FILE ]" "sgid bit set"
-  bpPrintDesc "[ -u FILE ]" "suid bit set"
-
-  bpPrintDesc "[ FILE1 -nt FILE2 ]" "1 is more recent than 2"
-  bpPrintDesc "[ FILE1 -ot FILE2 ]" "2 is more recent than 1"
-  bpPrintDesc "[ FILE1 -ef FILE2 ]" "Same files"
-
-  #bpPrintLine "\e]8;;https://tiswww.case.edu/php/chet/bash/bashref.html#Special-Parameters\aSpecial parameters\e]8;;\a"
-  bpPrintLine "Special parameters"
-  bpPrintDesc '$#' "Number of arguments"
-  bpPrintDesc '$*' "All arguments"
-  bpPrintDesc '$@' "All arguments, starting from first"
-  bpPrintDesc "\$1" "First argument"
-  bpPrintDesc '$?' "Exit status of last task"
-  bpPrintDesc '$-' "Current option flags"
-  bpPrintDesc '$!' "PID of last background task"
-  bpPrintDesc '$$' "PID of shell"
-
-  bpPrintLine "Redirect"
-  bpPrintDesc '> FILE' "write to file"
-  bpPrintDesc '>> FILE' "append to file"
-  bpPrintDesc '>| FILE' "overwrite file"
-  bpPrintDesc '2> FILE1 1> FILE2' "stdout and stderr redirected to separate files"
-
-  bpPrintDesc '2>&1' "stderr to stdout"
-  bpPrintDesc '&> /dev/null' "stdout and stderr to /dev/null"
-  bpPrintDesc '< FILE' "Pipe file to command"
-  bpPrintDesc '<<< VAR' "Pipe variable to command"
-
-  bpPrintLine "Array defining"
-  bpPrintDesc "Fruits=('Apple' 'Banana' 'Orange')" "" "35"
-  bpPrintLine
-  bpPrintDesc "Fruits[0]=\"Apple\""
-  bpPrintDesc "Fruits[1]=\"Banana\""
-  bpPrintDesc "Fruits[2]=\"Orange\""
-  bpPrintLine
-  bpPrintDesc "FS=\"Apple Banana Orange\""
-  bpPrintDesc "read -r -a Fruits <<< \$FS" "" "35"
-
-  bpPrintLine "Array operations"
-  #bpPrintDesc "Fruits=(\"\${Fruits[@]}\" \"Grape\")"
-  #  bpPrintDesc "Fruits=(\"\${Fruits[@]}\" \"Grape\")" "Append element" "35"
-  bpPrintDesc "Fruits+=(\"Grape\")" "Append element"
-  bpPrintDesc "\${Fruits[n]}" "Element n"
-  bpPrintDesc "\${Fruits[-1]}" "Last element"
-  bpPrintDesc "\${Fruits[@]}" "All elements, space separated"
-  bpPrintDesc "\${#Fruits[@]}" "Nr of elements"
-  bpPrintDesc "\${#Fruits[n]}" "String lenght of nth element"
-  bpPrintDesc "\${Fruits[@]:3:2}" "Range (from pos 3, length 2)"
-  bpPrintDesc "\${!Fruits[@]}" "Keys of all elements"
-  # x=($(cat "kalle"))
-
-  bpPrintLine "Parameter basics"
-  bpPrintDesc "STR=\"ABCDE\"" "Assignment"
-  bpPrintDesc "\${#STR}      # 5" "Length"
-  bpPrintLine "Parameter slicing"
-  bpPrintDesc "\${STR:1}     # \"BCDE\"" ""
-  bpPrintDesc "\${STR::-1}   # \"ABCD\"" ""
-  bpPrintDesc "\${STR:1:-1}  # \"BCD\"" ""
-  bpPrintDesc "\${STR:^^}    # \"ABCDE\"" "To uppercase"
-  bpPrintDesc "\${STR:,,}    # \"abcde\"" "To lowercase"
-  bpPrintLine "Parameter substitution"
-  bpPrintDesc "\${STR%suffix}" "Remove suffix"
-  bpPrintDesc "\${STR#prefix}" "Remove prefix"
-  bpPrintDesc "\${STR%%suffix}" "Remove long suffix"
-  bpPrintDesc "\${STR##prefix}" "Remove long prefix"
-  bpPrintDesc "\${STR/from/to}" "Replace first match"
-  bpPrintDesc "\${STR//from/to}" "Replace all"
-  bpPrintDesc "\${STR/%from/to}" "Replace suffix"
-  bpPrintDesc "\${STR/#from/to}" "Replace prefix"
-  bpPrintLine "Parameter default values"
-  bpPrintDesc "\${STR:-val}" '$STR, or val if STR is unset'
-  bpPrintDesc "\${STR:=val}" 'set $STR to val if unset'
-
-  bpPrintLine
+mediumFlag() {
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}              ${E_RESET}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}              ${E_RESET}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}              ${E_RESET}"
+  echo -e "${FLAG_YELLOW}                        ${E_RESET}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}              ${E_RESET}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}              ${E_RESET}"
+  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}              ${E_RESET}"
 }
 
-cse() { ##D List bash exit codes
-  BP_LINE_CHAR=""
-  BP_KEY_LENGTH="6"
-
-  if [ "$BP_COLUMNS" -ge 200 ]; then
-    BP_COLUMNS=$(("$BP_COLUMNS" / 4 - 1))
-    cs-exit-codes | "${BP_SELF_DIR}"/dev/columnize.py --columns 4
-    return
-  fi
-
-  if [ "$BP_COLUMNS" -ge 150 ]; then
-    BP_COLUMNS=$(("$BP_COLUMNS" / 3 - 1))
-    cs-exit-codes | "${BP_SELF_DIR}"/dev/columnize.py --columns 3
-    return
-  fi
-
-  if [ "$BP_COLUMNS" -ge 100 ]; then
-    BP_COLUMNS=$(("$BP_COLUMNS" / 2 - 1))
-    cs-exit-codes | "${BP_SELF_DIR}"/dev/columnize.py --columns 2
-    return
-
-  fi
-  cs-exit-codes
+largeFlag() {
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
+  echo -e "${FLAG_YELLOW}                                      ${E_RESET}"
+  echo -e "${FLAG_YELLOW}                                      ${E_RESET}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
+  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
 }
 
-cs-exit-codes() {
-  bpPrintLine "Bash exit codes"
-  bpPrintDesc "0" "Success"
-  bpPrintDesc "1" "Operation not permitted"
-  bpPrintDesc "2" "No such file or directory"
-  bpPrintDesc "3" "No such process"
-  bpPrintDesc "4" "Interrupted system call"
-  bpPrintDesc "5" "Input/output error"
-  bpPrintDesc "6" "No such device or address"
-  bpPrintDesc "7" "Argument list too long"
-  bpPrintDesc "8" "Exec format error"
-  bpPrintDesc "9" "Bad file descriptor"
-  bpPrintDesc "10" "No child processes"
-  bpPrintDesc "11" "Resource temporarily unavailable"
-  bpPrintDesc "12" "Cannot allocate memory"
-  bpPrintDesc "13" "Permission denied"
-  bpPrintDesc "14" "Bad address"
-  bpPrintDesc "15" "Block device required"
-  bpPrintDesc "16" "Device or resource busy"
-  bpPrintDesc "17" "File exists"
-  bpPrintDesc "18" "Invalid cross-device link"
-  bpPrintDesc "19" "No such device"
-  bpPrintDesc "20" "Not a directory"
-  bpPrintDesc "21" "Is a directory"
-  bpPrintDesc "22" "Invalid argument"
-  bpPrintDesc "23" "Too many open files in system"
-  bpPrintDesc "24" "Too many open files"
-  bpPrintDesc "25" "Inappropriate ioctl for device"
-  bpPrintDesc "26" "Text file busy"
-  bpPrintDesc "27" "File too large"
-  bpPrintDesc "28" "No space left on device"
-  bpPrintDesc "29" "Illegal seek"
-  bpPrintDesc "30" "Read-only file system"
-  bpPrintDesc "31" "Too many links"
-  bpPrintDesc "32" "Broken pipe"
-  bpPrintDesc "33" "Numerical argument out of domain"
-  bpPrintDesc "34" "Numerical result out of range"
-  bpPrintDesc "35" "Resource deadlock avoided"
-  bpPrintDesc "36" "File name too long"
-  bpPrintDesc "37" "No locks available"
-  bpPrintDesc "38" "Function not implemented"
-  bpPrintDesc "39" "Directory not empty"
-  bpPrintDesc "40" "Too many levels of symbolic links"
-  bpPrintDesc "42" "No message of desired type"
-  bpPrintDesc "43" "Identifier removed"
-  bpPrintDesc "44" "Channel number out of range"
-  bpPrintDesc "45" "Level 2 not synchronized"
-  bpPrintDesc "46" "Level 3 halted"
-  bpPrintDesc "47" "Level 3 reset"
-  bpPrintDesc "48" "Link number out of range"
-  bpPrintDesc "49" "Protocol driver not attached"
-  bpPrintDesc "50" "No CSI structure available"
-  bpPrintDesc "51" "Level 2 halted"
-  bpPrintDesc "52" "Invalid exchange"
-  bpPrintDesc "53" "Invalid request descriptor"
-  bpPrintDesc "54" "Exchange full"
-  bpPrintDesc "55" "No anode"
-  bpPrintDesc "56" "Invalid request code"
-  bpPrintDesc "57" "Invalid slot"
-  bpPrintDesc "59" "Bad font file format"
-  bpPrintDesc "60" "Device not a stream"
-  bpPrintDesc "61" "No data available"
-  bpPrintDesc "62" "Timer expired"
-  bpPrintDesc "63" "Out of streams resources"
-  bpPrintDesc "64" "Machine is not on the network"
-  bpPrintDesc "65" "Package not installed"
-  bpPrintDesc "66" "Object is remote"
-  bpPrintDesc "67" "Link has been severed"
-  bpPrintDesc "68" "Advertise error"
-  bpPrintDesc "69" "Srmount error"
-  bpPrintDesc "70" "Communication error on send"
-  bpPrintDesc "71" "Protocol error"
-  bpPrintDesc "72" "Multihop attempted"
-  bpPrintDesc "73" "RFS specific error"
-  bpPrintDesc "74" "Bad message"
-  bpPrintDesc "75" "Value too large for defined data type"
-  bpPrintDesc "76" "Name not unique on network"
-  bpPrintDesc "77" "File descriptor in bad state"
-  bpPrintDesc "78" "Remote address changed"
-  bpPrintDesc "79" "Can not access a needed shared library"
-  bpPrintDesc "80" "Accessing a corrupted shared library"
-  bpPrintDesc "81" ".lib section in a.out corrupted"
-  bpPrintDesc "82" "Attempting to link in too many shared libraries"
-  bpPrintDesc "83" "Cannot exec a shared library directly"
-  bpPrintDesc "84" "Invalid or incomplete multibyte or wide character"
-  bpPrintDesc "85" "Interrupted system call should be restarted"
-  bpPrintDesc "86" "Streams pipe error"
-  bpPrintDesc "87" "Too many users"
-  bpPrintDesc "88" "Socket operation on non-socket"
-  bpPrintDesc "89" "Destination address required"
-  bpPrintDesc "90" "Message too long"
-  bpPrintDesc "91" "Protocol wrong type for socket"
-  bpPrintDesc "92" "Protocol not available"
-  bpPrintDesc "93" "Protocol not supported"
-  bpPrintDesc "94" "Socket type not supported"
-  bpPrintDesc "95" "Operation not supported"
-  bpPrintDesc "96" "Protocol family not supported"
-  bpPrintDesc "97" "Address family not supported by protocol"
-  bpPrintDesc "98" "Address already in use"
-  bpPrintDesc "99" "Cannot assign requested address"
-  bpPrintDesc "100" "Network is down"
-  bpPrintDesc "101" "Network is unreachable"
-  bpPrintDesc "102" "Network dropped connection on reset"
-  bpPrintDesc "103" "Software caused connection abort"
-  bpPrintDesc "104" "Connection reset by peer"
-  bpPrintDesc "105" "No buffer space available"
-  bpPrintDesc "106" "Transport endpoint is already connected"
-  bpPrintDesc "107" "Transport endpoint is not connected"
-  bpPrintDesc "108" "Cannot send after transport endpoint shutdown"
-  bpPrintDesc "109" "Too many references"
-  bpPrintDesc "110" "Connection timed out"
-  bpPrintDesc "111" "Connection refused"
-  bpPrintDesc "112" "Host is down"
-  bpPrintDesc "113" "No route to host"
-  bpPrintDesc "114" "Operation already in progress"
-  bpPrintDesc "115" "Operation now in progress"
-  bpPrintDesc "116" "Stale file handle"
-  bpPrintDesc "117" "Structure needs cleaning"
-  bpPrintDesc "118" "Not a XENIX named type file"
-  bpPrintDesc "119" "No XENIX semaphores available"
-  bpPrintDesc "120" "Is a named type file"
-  bpPrintDesc "121" "Remote I/O error"
-  bpPrintDesc "122" "Disk quota exceeded"
-  bpPrintDesc "123" "No medium found"
-  bpPrintDesc "125" "Operation canceled"
-  bpPrintDesc "126" "Required key not available"
-  bpPrintDesc "127" "Key has expired"
-  bpPrintDesc "128" "Key has been revoked"
-  bpPrintDesc "129" "Key was rejected by service"
-  bpPrintDesc "130" "Owner died"
-  bpPrintDesc "131" "State not recoverable"
-  bpPrintDesc "132" "Operation not possible due to RF-kill"
-  bpPrintDesc "133" "Memory page has hardware error"
-  bpPrintLine
+hugeFlag() {
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_YELLOW}                                                 ${E_RESET}"
+  echo -e "${FLAG_YELLOW}                                                 ${E_RESET}"
+  echo -e "${FLAG_YELLOW}                                                 ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
+  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
 }
 
-bp_phh() {
-  if [ -z "${BP_INIT_RUN}" ]; then
-    bpInfo "Make sure to do load bp_init ( source $(realpath bp_init) )"
-    echo
-  fi
+flags() { ##D Print swedish flags
+  echo
+  smallFlag
+  echo
+  mediumFlag
+  echo
+  largeFlag
+  echo
+  hugeFlag
+  echo
+}
+
+fret() {
+  sleep 0.1
+  echo "$E_RETURN" "$E_UP" "$E_UP" "$E_UP" "$E_UP" "$E_UP" "$E_UP" "$E_UP"
+  mediumFlag
+}
+
+fadeflag() { ##D Fade flag
+
+  FLAG_BLUE="\x1b[48;5;16m"
+  FLAG_YELLOW="\x1b[48;5;58m"
+  mediumFlag
+  FLAG_BLUE="\x1b[48;5;17m"
+  FLAG_YELLOW="\x1b[48;5;94m"
+  fret
+  FLAG_BLUE="\x1b[48;5;18m"
+  FLAG_YELLOW="\x1b[48;5;142m"
+  fret
+  FLAG_BLUE="\x1b[48;5;19m"
+  FLAG_YELLOW="\x1b[48;5;178m"
+  fret
+  FLAG_BLUE="\x1b[48;5;20m"
+  FLAG_YELLOW="\x1b[48;5;220m"
+  fret
+  FLAG_BLUE="\x1b[48;5;21m"
+  FLAG_YELLOW="\x1b[48;5;226m"
+  fret
+
+  echo "$E_DOWN $E_DOWN $E_DOWN $E_DOWN $E_DOWN"
+}
+
+flash() { ##D Flash screen
+  while true; do
+    printf \\e[?5h
+    sleep 0.1
+    printf \\e[?5l
+    read -s -n1 -t1 && break
+  done
+}
+
+bpShow() {
+  for a in {1..10}; do
+    echo -e "${E_RED}$1${E_RESET}"
+    sleep 0.3
+    echo -e "${E_UP}${E_RETURN}"
+    echo -e "${E_BR_RED}$1${E_RESET}"
+    sleep 0.3
+    # echo -e "${E_UP}${E_RETURN}"
+    echo -e "${E_UP}${E_RETURN}"
+    #		echo -e "${E_RETURN}"
+
+  done
+}
+
+blink() { ##D Test
+  bpShow "Blinking message"
+}
+
+##- Terminal cursor tests
+
+tl() {
+
+  for i in {1..24}; do
+    if [ "$i" -eq 1 ] || [ "$i" -eq 24 ]; then
+      echo "+---------+---------+---------+---------+---------+---------+---------+---------+"
+    else
+      echo "$i"
+    fi
+  done
+}
+
+prn() { ##D Print row numbers over screen
+  i=1
+  while [ "$i" -lt $(("$BP_LINES")) ]; do
+    echo -en $"\e[${i};1H"
+    printf "%02d        %02d        %02d        %02d        %02d        %02d        %02d        %02d" "$i" "$i" "$i" "$i" "$i" "$i" "$i" "$i"
+    # printf "%02d        %02d        %02d        %02d        %02d        %02d        %02d\n" "$i" "$i" "$i" "$i" "$i" "$i" "$i"
+    i=$(("$i" + 1))
+  done
+}
+
+E_INSERT_LINE=$'\e[1L' # Insert line at cursor, current line move down
+E_DELETE_LINE=$'\e[1M' # Delete line at cursor, lines bellow move up
+deltest() {            ##D Terminal delete row test
+  clear
+  prn
+  echo -e "$E_SAVE_CURSOR_POS"
+  echo -en "\e[12;1H"
+  for i in {1..6}; do
+    echo -en "$E_DELETE_LINE"
+    sleep 0.3
+  done
+  echo -e "$E_RESTORE_CURSOR_POS"
+}
+
+instest() { ##D Terminal insert row test
+  clear
+  prn
+  echo -e "$E_SAVE_CURSOR_POS"
+  echo -en "\e[12;1H"
+  for i in {1..6}; do
+    echo -en "$E_INSERT_LINE"
+    sleep 0.3
+  done
+  echo -e "$E_RESTORE_CURSOR_POS"
+}
+
+rntest() { ##D R
+  echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  echo -en "$E_CUR_PREVIOUS_LINE"
+  sleep 0.3
+  echo -en "Some text added later \r\n"
+  sleep 1
+}
+
+##- Advanced examples
+
+# Directory where to store archives
+ARCHIVEDIR="archive"
+BACKUP_DIR="backup"
+OUTDIR="output"
+BUILDDIR="build"
+
+#TARGET="kalle"
+#
+# Archive makeplate project
+#
+# $1 Target name
+#
+archive() { ##D Make a tar archive of the source code
+  DT=$(date +"%Y%m%d-%H%M%S")
+  bpMkDir "${ARCHIVEDIR}"
+  tar -cvzf "${ARCHIVEDIR}/${1}_${DT}.tar.gz" ./* \
+    --exclude="${ARCHIVEDIR}" \
+    --exclude="${BACKUP_DIR}" \
+    --exclude="${OUTDIR}" \
+    --exclude="${BUILDDIR}" \
+    --exclude='*.a' \
+    --exclude='*.o' \
+    --exclude='*.ko' \
+    --exclude='*.obj' \
+    --exclude='*.a' \
+    --exclude='*.la' \
+    --exclude='*.lo' \
+    --exclude='*.slo' \
+    --exclude='*.lib' \
+    --exclude='*.so' \
+    --exclude='*.so*' \
+    --exclude='.dep' \
+    --exclude='.svn' \
+    --exclude='.git' \
+    --exclude='*.elf' \
+    --exclude='*.hex' \
+    --exclude='*.bin' \
+    --exclude='*.exe' \
+    --exclude='*.sym' \
+    --exclude='*.lss' \
+    --exclude='*.map' \
+    --exclude='*.app' \
+    --exclude='*.i*86' \
+    --exclude='*.x86_64' \
+    --exclude='*~' \
+    --exclude="*.old" \
+    --exclude="*.tmp"
+}
+
+# Max number of backups
+BACKUPS=100
+
+backup() { ##D Make an incremental backup
+  bpMkDir "${BACKUP_DIR}"
+  # remove oldest backup
+  bpRm "${BACKUP_DIR}/backup_${BACKUPS}"
+  # rotate backups
+  for ((x = BACKUPS; x > 0; x--)); do
+    bdir=${BACKUP_DIR}/backup_$((x - 1))
+    # check if directory exist before renameing  it
+    if [ -d "${bdir}" ]; then
+      mv -f "${bdir}" "${BACKUP_DIR}/backup_${x}"
+    fi
+  done
+  rsync --archive \
+    --delete \
+    --relative \
+    --exclude="${BACKUP_DIR}" \
+    --exclude="${ARCHIVEDIR}" \
+    --exclude="${OUTDIR}" \
+    --link-dest="${PWD}/${BACKUP_DIR}/backup_1" \
+    . \
+    "${BACKUP_DIR}/backup_0"
+}
+
+backupfile() { ##D Backup file
+  bpBackup "$2"
 }
 
 #---------------------------------------------------------------------
@@ -465,19 +419,19 @@ bp_phh() {
 bpInitSettings() {
 
   ##V Script version info
-  BP_VERSION="1.10"
+  BP_VERSION="1.00"
 
   ##V Usage info
-  BP_USAGE="Usage: ${BP_SELF_NAME} command [option]"
+  BP_USAGE="Usage: ${BP_SELF} command [option]"
 
   ##V Description text
-  BP_DESC="Generate bash scripts from templates"
+  BP_DESC="Description goes here"
 
   ##V logfile (uncomment to use logfile)
-  BP_LOGFILE=${BP_SELF_DIR}/${BP_SELF_NAME}.log
+  #BP_LOGFILE=${BP_SELF_DIR}/${BP_SELF}.log
 
   ##V Lock file (uncomment to use lock file feature )
-  BP_LOCK_FILE=/tmp/${BP_SELF_NAME}.lock
+  #BP_LOCK_FILE=/tmp/${BP_SELF}.lock
 
   ##V Logging options (uncomment to activate logging parameters)
   BP_LOG_OK=1
@@ -487,7 +441,7 @@ bpInitSettings() {
   BP_LOG_CRITICAL=1
 
   ##V Activate settings function (will create settings file when run)
-  BP_CONF=1
+  #BP_CONF=1
 
 }
 #---------------------------------------------------------------------
@@ -513,7 +467,7 @@ DEFAULT_CMD_HOOK=help
 #POST_INFO_HOOK=
 
 ##V Function run before help command is executed
-PRE_HELP_HOOK=bp_phh
+#PRE_HELP_HOOK=
 
 ##V Function run after help command is executed
 #POST_HELP_HOOK=
@@ -568,8 +522,8 @@ bpCallStack() { ##I Print out BASH call stack
   bpPrintLine
 }
 
-bpCleanUp() { ##I Cleanup function
-  rm -f "${BP_LOCK_FILE}" # remove Lock file
+bpCleanUp() {           ##I Cleanup function
+  rm -f "$BP_LOCK_FILE" # remove Lock file
   #  echo -e "${E_SHOW}"     # Turn on cursor if turned of
 }
 
@@ -723,9 +677,6 @@ BP_C_COMMENT="${E_CYAN}"
 BP_C_STRING="${E_GREEN}"
 BP_C_VAR="${E_BR_YELLOW}"
 
-# Separator line character
-BP_LINE_CHAR="-"
-
 # Exit codes
 #
 BP_OK=0 # successful termination
@@ -747,19 +698,16 @@ BP_RIGHT_MARGIN=3
 # $2 text color
 # $3 line color
 # $4 middle character
+# $5 line character
 #
 bpPrintLineGeneric() { ##I Print text with adjusted line after with selectable colors
   len1="${#1}"
   len4="${#4}"
 
   echo -en "${2}${1}${4}${3}"
-  if [ "${BP_LINE_CHAR}" != "" ]; then
-    l=$((BP_COLUMNS - len1 - len4))
-    seq -s"${BP_LINE_CHAR}" "${l}" | tr -d '[:digit:]'
-    echo -en "${E_RESET}"
-  else
-    echo -e "${E_RESET}"
-  fi
+  l=$((BP_COLUMNS - len1 - len4))
+  seq -s"${5}" "${l}" | tr -d '[:digit:]'
+  echo -en "${E_RESET}"
 }
 
 #
@@ -768,14 +716,14 @@ bpPrintLineGeneric() { ##I Print text with adjusted line after with selectable c
 # $3 line color
 #
 bpTextLineC() { ##I Print text with adjusted line after with selectable colors
-  bpPrintLineGeneric "$1" "$2" "$3" " "
+  bpPrintLineGeneric "$1" "$2" "$3" " " "-"
 }
 
 bpPrintLine() { ##I Print text with line
   if [ "${#1}" -eq 0 ]; then
-    bpPrintLineGeneric "" "" "${BP_C_LINE}" ""
+    bpPrintLineGeneric "" "" "${BP_C_LINE}" "" "-"
   else
-    bpPrintLineGeneric "$1" "${BP_C_LINETEXT}" "${BP_C_LINE}" " "
+    bpPrintLineGeneric "$1" "${BP_C_LINETEXT}" "${BP_C_LINE}" " " "-"
   fi
 }
 
@@ -1245,9 +1193,9 @@ bpPrintChoiceList() { # Print items in selection list
     fi
 
     if [ "${desc}" == ":" ]; then
-      printf "%1s ${BP_C_KEY}%-7s  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$default" "$key" "$val"
+      printf "${BP_C_KEY} %-5s${E_RESET}%1s  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$key" "$default" "$val"
     else
-      printf "%1s ${BP_C_KEY}%-7s  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$default" "$key" "$desc"
+      printf "${BP_C_KEY} %-5s${E_RESET}%1s  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$key" "$default" "$desc"
     fi
   done
 }
@@ -1395,9 +1343,6 @@ bpConfChangeSetting() {
 #
 bpConfCreate() { ##I Create configuration file
   FILE="$1"
-  bpMkDir "${BP_CONFIG_DIR}"
-  bpMkDir "${BP_CONFIG_PATHS}"
-  bpMkDir "${BP_CONFIG_MODULES}"
   {
     echo "# "
     echo "# $2"
@@ -1981,25 +1926,6 @@ ied() { ##I Open this file with default editor
   bpEdit "$0" "$2"
 }
 
-#
-# $1 File to diff with, if not given diff with bashplate template
-#
-idiff() { ##I Run diff with file or bashplate template
-
-  if [ -z "$BP_DIFF" ]; then
-    bpError "Diff program not declared (BP_DIFF)"
-    return
-  fi
-
-  if [ -z "$2" ]; then
-    if [ -n "${BP_PATH}" ]; then
-      bpRun "${BP_DIFF}" "${BP_SELF_DIR}/${BP_SELF}" "${BP_PATH}/templates/bashplate"
-      return
-    fi
-  fi
-  bpRun "${BP_DIFF}" "${BP_SELF_DIR}/${BP_SELF}" "$2"
-}
-
 version() { ##D Print version information
   echo "$BP_VERSION"
 }
@@ -2066,9 +1992,6 @@ BP_TEMPLATE_VERSION="1.40beta2"
 BP_SELF_DIR="${0%/*}"
 
 ##V Name of script
-BP_SELF_NAME=$(basename "$0")
-
-##V Name of script (to be repurposed)
 BP_SELF=$(basename "$0")
 
 ##V Number of arguments given to script

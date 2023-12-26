@@ -48,26 +48,27 @@ bpUserSettings() {
 # User defined functions
 #---------------------------------------------------------------------
 
-##- Bashplate tests
+##- Output and logs
 
 logtest() { ##D Test of log function
-  bpRm "${LOGFILE}"
-  bpLogInfo "Some information log"
-  bpLogWarning "Oh no a warning"
+  bpRm "${BP_LOGFILE}"
+  bpLogInfo "Boring"
+  bpLogWarning "Oh no"
   bpLogError "F#\$ck"
   bpLogCritical "SNAFU"
-  bpLogOk "Ahh"
+  bpLogOk "Nice"
   log
 }
 
-traptest() { ##D Trap signal test
-  TRAPTEST=1
-  bpReadStr "Press CTRL-C"
-}
+##- Assert
 
 roottest() { ##D Test assert root
   bpAssertRoot
   bpOk "Great you are root"
+}
+
+assertProgs() { ##D Assert required programs test
+  bpAssertRequiredProgs
 }
 
 locktest() { ##D Lock file test
@@ -75,9 +76,41 @@ locktest() { ##D Lock file test
   "${BP_SELF_DIR}/bpexample" locktest
 }
 
-assertProgs() { ##D Assert required programs test
-  bpAssertRequiredProgs
+errorTest() { ##D Test of error messages
+  echo "$BP_LOGFILE"
+  bpInfo "Info test"
+  bpWarning "Warning test"
+  bpError "Error test"
+  bpCritical "Critical test"
 }
+
+##- File examples
+
+append() { ##D Testing append and removing lines in file
+  FILE="APPEND_TEST_FILE"
+  rm -f "${FILE}"
+  touch "${FILE}"
+
+  bpAppendIfNoSuchLine "${FILE}" "Line to append1"
+  bpAppendIfNoSuchLine "${FILE}" "Line to append2"
+
+  bpInfo "Appending 1 and 2"
+  cat "${FILE}"
+
+  bpAppendIfNoSuchLine "${FILE}" "Line to append1"
+  bpAppendIfNoSuchLine "${FILE}" "Line to append3"
+
+  echo
+  bpInfo "Appending 1 and 3"
+  cat "${FILE}"
+
+  bpRemoveLineContaining "${FILE}" "append2"
+  echo
+  bpInfo "Removing 2"
+  cat "${FILE}"
+}
+
+##- Hook and trap examples
 
 prefunc() {
   echo -e "${E_WHITE}Prefunc${E_RESET} -------------------------------------------------------"
@@ -93,39 +126,6 @@ infoHook() {
   bpPrintVar "Test1" "Information test1"
   bpPrintVar "Test2" "Information test2"
 }
-
-appendTest() { ##D Testing append line to file function
-  rm -f append
-  touch append
-
-  bpAppendIfNoSuchLine "append" "Line to append1"
-  bpAppendIfNoSuchLine "append" "Line to append2"
-  bpAppendIfNoSuchLine "append" "Line to append3"
-
-  echo "File first time"
-  cat append
-
-  bpAppendIfNoSuchLine "append" "Line to append1"
-  bpAppendIfNoSuchLine "append" "Line to append2"
-  bpAppendIfNoSuchLine "append" "Line to append3"
-
-  echo -e "\nFile second time"
-  cat append
-
-  bpRemoveLineContaining "append" "append2"
-  echo -e "\nFile third time"
-  cat append
-}
-
-errorTest() { ##D Test of error messages
-  echo "$LOGFILE"
-  bpInfo "Info test"
-  bpWarning "Warning test"
-  bpError "Error test"
-  bpCritical "Critical test"
-}
-
-##- Hook tests
 
 precmd() { ##D Test preCmdHook
   echo
@@ -147,15 +147,94 @@ postCmdHook() {
   fi
 }
 
-##- Misc
+traptest() { ##D Trap signal test
+  TRAPTEST=1
+  bpReadStr "Press CTRL-C"
+}
 
-pipe() { ##D Pipe data to script
+##- User input examples
+
+readstr() { ##D Test string read from cmdline
+  x=$(bpReadStr "Enter a string" "Default value")
+  echo "You entered \"$x\""
+  x=$(bpReadStr "Just press enter" "Default value")
+  echo "You entered \"$x\""
+}
+
+readint() { ##D Test integer read from cmdline
+  x=$(bpReadInt "Enter value" "12" "0" "100")
+  echo "You entered \"$x\""
+  x=$(bpReadInt "Just press enter" "45" "0" "100")
+  echo "You entered \"$x\""
+}
+
+readbool() { ##D Test Yes/No question from cmdline
+  if bpReadBoolDY "Default yes"; then
+    echo "YES"
+  else
+    echo "NO"
+  fi
+
+  if bpReadBoolDN "Default no"; then
+    echo "YES"
+  else
+    echo "NO"
+  fi
+}
+
+readselect() { ##D Test select from list read command
+
+  slist=(
+    "a" ":" "First alternative"
+    "b" ":" "Second alternative"
+    "aa" ":" "Third alternative"
+    "4" "four" "Fourth alternative"
+    "penta" ":" "Fifth alternative"
+    "hexa" ":" "Sixth alternative"
+  )
+
+  bpSelectFromList "aa" "Please choose an alternative" "${slist[@]}"
+
+  echo "You selected '$bpReturn'"
+}
+
+##- BASH scripting
+
+array() { ##D Array example
+
+  FRUITS=('Apple' 'Carrot' 'Banana' 'Orange' 'Lemon')
+  bpPrintDesc "Fruits:" "${FRUITS[*]}"
+
+  XX="fasdf dwefg 34fasd asdf 234sdfg"
+  bpPrintDesc "A:" "$XX"
+  bpPrintDesc "A:" "$XX"
+
+  unset FRUITS[1]
+  bpPrintDesc "Fruits:" "${FRUITS[*]}"
+  bpPrintDesc "Fruits:" "${FRUITS[*]}"
+
+  FRUITS+=('Grape')
+  bpPrintDesc "Fruits:" "${FRUITS[*]}"
+
+  BERRIES=('Raspberry' 'Strawberry' 'Blueberry')
+  bpPrintDesc "Berries:" "${BERRIES[*]}"
+
+  #	bpPrintDesc "More fruits:" "${FRUITS[*]}"
+
+  bpPrintDesc "Last:" "${FRUITS[-1]}"
+  bpPrintDesc "Citrus:" "${FRUITS[*]:3:2}"
+
+  GOODIES=("${FRUITS[@]}" "${BERRIES[@]}")
+  bpPrintDesc "Goodies:" "${GOODIES[*]}"
+}
+
+pipe() { ##D Pipe to script example
   stdin=$(cat)
   bpInfo "The follwing text was \"piped\" to the script"
   echo -e "$stdin"
 }
 
-##- ANSI Terminal
+##- ANSI Terminal examples
 
 print_attr() {
   eval "ATTR=\$${1}"
@@ -167,7 +246,7 @@ print_attr2() {
   printf "${E_UNDERLINE}${ATTR}%-30s ${E_GREEN}%-20s${E_RESET}\n" "${2}${E_RESET}" "${1}"
 }
 
-attr() { ##D demonstrate font attributes
+attr() { ##D Font attributes
   echo
   bpPrintLine "Font style attributes"
   echo
@@ -180,7 +259,7 @@ attr() { ##D demonstrate font attributes
   print_attr "E_UNDERLINE" "Underline text"
   print_attr "E_CROSSED" "Crossed text"
   echo
-  bpPrintLine "Extended font style attributes(limited support)"
+  bpPrintLine "Extended font style attributes(only supported on certain terminals)"
   echo
   print_attr "E_FRACTUR" "Fractur/gothic"
   print_attr "E_UNDERLINE_CURLY" "Underline curly"
@@ -196,7 +275,7 @@ attr() { ##D demonstrate font attributes
   echo
 }
 
-textc() { ##D Font color
+attrc() { ##D Font color attributes
 
   echo
   bpPrintLine "Foreground color attributes"
@@ -255,7 +334,7 @@ textc() { ##D Font color
   echo
 }
 
-c16() { ##D Standard 16 colors
+c16() { ##D 16 color table
   FCOLORS=(E_BLACK E_RED E_GREEN E_YELLOW E_BLUE E_MAGENTA E_CYAN E_GRAY E_DARKGRAY E_BR_RED E_BR_GREEN E_BR_YELLOW E_BR_BLUE E_BR_MAGENTA E_BR_CYAN E_WHITE)
   BCOLORS=(E_BG_BLACK E_BG_RED E_BG_GREEN E_BG_YELLOW E_BG_BLUE E_BG_MAGENTA E_BG_CYAN E_BG_WHITE)
   BCOLORS_BR=(E_BG_DARK_GRAY E_BG_BR_RED E_BG_BR_GREEN E_BG_BR_YELLOW E_BG_BR_BLUE E_BG_BR_MAGENTA E_BG_BR_CYAN E_BG_GRAY)
@@ -286,7 +365,7 @@ c16() { ##D Standard 16 colors
   echo
 }
 
-c256() { ##D Show example of all 256 colors
+c256() { ##D 256 color table
 
   echo
   #  bpPrintLine "256 Colors foreground"
@@ -354,128 +433,6 @@ c256() { ##D Show example of all 256 colors
   echo -e "\n"
 }
 
-tl() {
-
-  for i in {1..24}; do
-    if [ "$i" -eq 1 ] || [ "$i" -eq 24 ]; then
-      echo "+---------+---------+---------+---------+---------+---------+---------+---------+"
-    else
-      echo "$i"
-    fi
-  done
-}
-
-prn() { ##D Print row numbers over screen
-  i=1
-  while [ "$i" -lt $(("$BP_LINES")) ]; do
-    echo -en $"\e[${i};1H"
-    printf "%02d        %02d        %02d        %02d        %02d        %02d        %02d        %02d" "$i" "$i" "$i" "$i" "$i" "$i" "$i" "$i"
-    # printf "%02d        %02d        %02d        %02d        %02d        %02d        %02d\n" "$i" "$i" "$i" "$i" "$i" "$i" "$i"
-    i=$(("$i" + 1))
-  done
-}
-
-E_INSERT_LINE=$'\e[1L' # Insert line at cursor, current line move down
-E_DELETE_LINE=$'\e[1M' # Delete line at cursor, lines bellow move up
-deltest() {            ##D Terminal delete row test
-  clear
-  prn
-  echo -e "$E_SAVE_CURSOR_POS"
-  echo -en "\e[12;1H"
-  for i in {1..6}; do
-    echo -en "$E_DELETE_LINE"
-    sleep 0.3
-  done
-  echo -e "$E_RESTORE_CURSOR_POS"
-}
-
-instest() { ##D Terminal insert row test
-  clear
-  prn
-  echo -e "$E_SAVE_CURSOR_POS"
-  echo -en "\e[12;1H"
-  for i in {1..6}; do
-    echo -en "$E_INSERT_LINE"
-    sleep 0.3
-  done
-  echo -e "$E_RESTORE_CURSOR_POS"
-}
-
-spc() { ##D Special characters
-  echo -en "\x1b(A"
-}
-
-rntest() { ##D R
-  echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-  echo -en "$E_CUR_PREVIOUS_LINE"
-  sleep 0.3
-  echo -en "Some text added later \r\n"
-  sleep 1
-}
-
-nlat() { ##D New line attribute test
-  # printf "${ATTR}%-30s ${E_GREEN}%-20s${E_RESET}\n" "${2}${E_RESET}" "${1}"
-  echo -en "${E_REVERSE}Reverse text  \n${E_RESET}"
-  echo -en "${E_BOLD}Bold text  \n${E_RESET}"
-  echo -en "${E_UNDERLINE}Underlined text  \n${E_RESET}"
-  echo -en "${E_CROSSED}Crossed text  \n${E_RESET}"
-}
-
-##- Some fun
-
-bpElapsedTime() { ##D Return elapsed time
-  #dt=$((etime - stime))
-  dt=$SECONDS # total time elapsed in seconds
-  ds=$((dt % 60))
-  dm=$(((dt / 60) % 60))
-  dh=$((dt / 3600))
-  printf '%02d:%02d:%02d' "$dh" "$dm" "$ds"
-}
-
-print_spinner() {
-
-  XX=("|" "/" "-" "\\")
-  if [ -n "$SPINNER" ]; then
-    SPINNER=$((SPINNER + 1))
-    if [ "$SPINNER" -gt 3 ]; then
-      SPINNER=0
-    fi
-  else
-    SPINNER=0
-  fi
-  echo " ${XX[$SPINNER]} $1"
-  echo -e "$E_RETURN $E_UP"
-}
-
-spinner() { ##D Spinner example
-  echo "$E_HIDE"
-  for i in {1..100}; do
-    print_spinner "Processing... $(bpElapsedTime)"
-    sleep 0.1
-  done
-  echo -e "${E_SHOW}"
-}
-
-bpWait() { ##I Wait for n seconds
-  echo "${E_HIDE}"
-  i=0
-  tmp=${SECONDS}
-  while [ "$i" -lt "$1" ]; do
-    i=$((SECONDS - tmp))
-    print_spinner "Waiting... $i"
-    sleep 0.1
-  done
-  echo -e "${E_SHOW}"
-}
-
-wait() { ##D Wait for n seconds
-  if [ -z "$2" ]; then
-    bpInfo "You must enter a number"
-    return
-  fi
-  bpWait "$2"
-}
-
 print_bar() {
 
   echo -n " ["
@@ -488,8 +445,8 @@ print_bar() {
   echo -n "] ${2}"
 }
 
-bar() { ##D print a testbar (ANSI)
-  bpPrintLine "Bar test"
+bar() { ##D Show progressbar
+  bpPrintLine "Progressbar"
   echo -en "$E_HIDE"
   for i in {1..60}; do
     sleep 0.03
@@ -500,440 +457,6 @@ bar() { ##D print a testbar (ANSI)
   echo -e "$E_SHOW"
 }
 
-barcr() { ##D print a testbar using carriage return(ANSI)
-  bpPrintLine "Bar test"
-  echo -en "$E_HIDE"
-  for i in {1..60}; do
-    sleep 0.03
-    print_bar 60 "$i"
-    echo -en "\r"
-  done
-  echo -e "$E_SHOW"
-}
-
-shade() { ##D Shade demo (256 color terminal required)
-  #echo -en '\033]1 Kalle \007'
-  #echo
-  bpPrintLine "B/W shading"
-  echo -en "$E_HIDE"
-  echo
-  echo -en "$E_RETURN"
-  for i in {232..255} {255..232}; do
-    sleep 0.05
-    printf "\x1b[38;5;%sm _____ Shading text _____ ${E_RESET}" "$i"
-    echo -en "$E_RETURN$E_DOWN"
-  done
-  echo -e "$E_SHOW"
-}
-
-FLAG_BLUE="\x1b[48;5;20m"
-FLAG_YELLOW="\x1b[48;5;226m"
-
-smallFlag() {
-  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_RESET}"
-  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_RESET}"
-  echo -e "${FLAG_YELLOW}                 ${E_RESET}"
-  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_RESET}"
-  echo -e "${FLAG_BLUE}     ${FLAG_YELLOW}  ${FLAG_BLUE}          ${E_RESET}"
-}
-
-mediumFlag() {
-  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}              ${E_RESET}"
-  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}              ${E_RESET}"
-  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}              ${E_RESET}"
-  echo -e "${FLAG_YELLOW}                        ${E_RESET}"
-  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}              ${E_RESET}"
-  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}              ${E_RESET}"
-  echo -e "${FLAG_BLUE}        ${FLAG_YELLOW}  ${FLAG_BLUE}              ${E_RESET}"
-}
-
-largeFlag() {
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
-  echo -e "${FLAG_YELLOW}                                      ${E_RESET}"
-  echo -e "${FLAG_YELLOW}                                      ${E_RESET}"
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
-  echo -e "${FLAG_BLUE}           ${FLAG_YELLOW}    ${FLAG_BLUE}                       ${E_RESET}"
-}
-
-hugeFlag() {
-  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
-  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
-  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
-  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
-  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
-  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
-  echo -e "${FLAG_YELLOW}                                                 ${E_RESET}"
-  echo -e "${FLAG_YELLOW}                                                 ${E_RESET}"
-  echo -e "${FLAG_YELLOW}                                                 ${E_RESET}"
-  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
-  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
-  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
-  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
-  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
-  echo -e "${FLAG_BLUE}               ${FLAG_YELLOW}      ${FLAG_BLUE}                            ${E_RESET}"
-}
-
-flags() { ##D Print swedish flags
-  echo
-  smallFlag
-  echo
-  mediumFlag
-  echo
-  largeFlag
-  echo
-  hugeFlag
-  echo
-}
-
-fret() {
-  sleep 0.1
-  echo "$E_RETURN" "$E_UP" "$E_UP" "$E_UP" "$E_UP" "$E_UP" "$E_UP" "$E_UP"
-  mediumFlag
-}
-
-fadeflag() { ##D Fade flag
-
-  FLAG_BLUE="\x1b[48;5;16m"
-  FLAG_YELLOW="\x1b[48;5;58m"
-  mediumFlag
-  FLAG_BLUE="\x1b[48;5;17m"
-  FLAG_YELLOW="\x1b[48;5;94m"
-  fret
-  FLAG_BLUE="\x1b[48;5;18m"
-  FLAG_YELLOW="\x1b[48;5;142m"
-  fret
-  FLAG_BLUE="\x1b[48;5;19m"
-  FLAG_YELLOW="\x1b[48;5;178m"
-  fret
-  FLAG_BLUE="\x1b[48;5;20m"
-  FLAG_YELLOW="\x1b[48;5;220m"
-  fret
-  FLAG_BLUE="\x1b[48;5;21m"
-  FLAG_YELLOW="\x1b[48;5;226m"
-  fret
-
-  echo "$E_DOWN $E_DOWN $E_DOWN $E_DOWN $E_DOWN"
-}
-
-flash() { ##D Flash screen
-  while true; do
-    printf \\e[?5h
-    sleep 0.1
-    printf \\e[?5l
-    read -s -n1 -t1 && break
-  done
-}
-
-E_RGB=$'\e[0;36m' # RGB
-rgb() {           ##D Many colors
-  echo -e "\e[0;38;2;123;132;123m AA"
-  echo -e "\e[0;38;2;123;132;240m AA"
-  echo -e "\e[0;38;2;12;13;10m AA"
-}
-
-##- Read tests
-
-readstr() { ##D Test string read from cmdline
-  x=$(bpReadStr "Enter a string" "Default value")
-  echo "You entered \"$x\""
-  x=$(bpReadStr "Just press enter" "Default value")
-  echo "You entered \"$x\""
-}
-
-readint() { ##D Test integer read from cmdline
-  x=$(bpReadInt "Enter value" "12" "0" "100")
-  echo "You entered \"$x\""
-  x=$(bpReadInt "Just press enter" "45" "0" "100")
-  echo "You entered \"$x\""
-}
-
-readbool() { ##D Test Yes/No question from cmdline
-  if bpReadBoolDY "Default yes"; then
-    echo "YES"
-  else
-    echo "NO"
-  fi
-
-  if bpReadBoolDN "Default no"; then
-    echo "YES"
-  else
-    echo "NO"
-  fi
-}
-
-#
-# $1 Question
-# $2 default value
-# $3 question array
-#
-bpReadSelect() {
-  arr=("${@}")
-  len=${#arr[@]}
-
-  while [ true ]; do
-    echo "$1"
-
-    i=2
-    while [ "$i" -lt "$len" ]; do
-      choice=${arr[$i]}
-      ((i++))
-      desc=${arr[$i]}
-      ((i++))
-      bpPrintDesc "${choice}) " "${desc}"
-    done
-
-    ans=$(bpReadStr "Choice" "${2}")
-
-    i=2
-    while [ "$i" -lt "$len" ]; do
-      choice=${arr[$i]}
-      if [ "${choice}" == "${ans}" ]; then
-        echo "$ans"
-        return 0
-
-      fi
-      ((i++))
-      ((i++))
-    done
-  done
-}
-
-readselect() { ##D Test select from list read command
-
-  slist=(
-    "a" "First choice"
-    "b" "Second choice"
-    "3" "Third alternative"
-    "4" "Fourth alternative"
-    "penta" "Fifth choice"
-    "hexa" "Sixth choice"
-  )
-
-  bpReadSelect "Please choose an alternative" "3" "${slist[@]}"
-}
-
-##- BASH
-
-array() { ##D Array test
-
-  FRUITS=('Apple' 'Carrot' 'Banana' 'Orange' 'Lemon')
-  bpPrintDesc "Fruits:" "${FRUITS[*]}"
-
-  XX="fasdf dwefg 34fasd asdf 234sdfg"
-  bpPrintDesc "A:" "$XX"
-  bpPrintDesc "A:" "$XX"
-
-  unset FRUITS[1]
-  bpPrintDesc "Fruits:" "${FRUITS[*]}"
-  bpPrintDesc "Fruits:" "${FRUITS[*]}"
-
-  FRUITS+=('Grape')
-  bpPrintDesc "Fruits:" "${FRUITS[*]}"
-
-  BERRIES=('Raspberry' 'Strawberry' 'Blueberry')
-  bpPrintDesc "Berries:" "${BERRIES[*]}"
-
-  #	bpPrintDesc "More fruits:" "${FRUITS[*]}"
-
-  bpPrintDesc "Last:" "${FRUITS[-1]}"
-  bpPrintDesc "Citrus:" "${FRUITS[*]:3:2}"
-
-  GOODIES=("${FRUITS[@]}" "${BERRIES[@]}")
-  bpPrintDesc "Goodies:" "${GOODIES[*]}"
-}
-
-##- Experiments
-
-bpShow() {
-  for a in {1..10}; do
-    echo -e "${E_RED}$1${E_RESET}"
-    sleep 0.3
-    echo -e "${E_UP}${E_RETURN}"
-    echo -e "${E_BR_RED}$1${E_RESET}"
-    sleep 0.3
-    # echo -e "${E_UP}${E_RETURN}"
-    echo -e "${E_UP}${E_RETURN}"
-    #		echo -e "${E_RETURN}"
-
-  done
-}
-
-blink() { ##D Test
-  bpShow "Blinking message"
-}
-
-listfiles() { ##D list files
-  for file in ./*; do
-    echo "$file"
-    if [ -L "$file" ]; then
-      echo "A"
-    else
-      echo "B"
-    fi
-  done
-}
-
-#
-# $1 Number of iterations
-# $2 Command to execute
-#
-bpRepeat() { ##I Repeat command n times
-  local i max
-  max=$1
-  shift
-  for ((i = 1; i <= max; i++)); do # --> C-like syntax
-    eval "$@"
-  done
-
-}
-
-repeat() { ##D Test repeat
-  bpRepeat 10 "ls ; sleep 1"
-}
-
-#
-# $1 Text to set as title
-#
-bpTitle() { ##I Set terminal window title
-  case "$TERM" in
-  *term* | rxvt)
-    echo -en "\e]0;$*\a"
-    ;;
-  *) ;;
-  esac
-}
-
-title() { ##D Set title
-  bpTitle "Kalle"
-  bpWait 10
-}
-
-#
-# String contains
-#
-# $1 Substring to search
-# $2 String to search in
-#
-bpInString() {
-
-  if [[ "$1" = *"$2"* ]]; then
-    echo 1
-  else
-    echo 0
-  fi
-}
-
-inString() { ##D String contains test
-  A="Hello world"
-
-  if [ "$(bpInString HelloX "$A")" = "1" ]; then
-    #  if  $( bpInString "Hello" "$A" ) ; then
-    echo "A"
-  else
-    echo "B"
-  fi
-
-  bpInString "Hello" "$A"
-  bpInString "Kalle" "$A"
-}
-
-aVeryLongCommandTestCommand() { ##D Testing truncation of long command strings
-  echo
-}
-
-#ICMD=10
-inactiveCommand() { ##CV ICMD Inactive command test
-  echo "Only possible if ICMD is set."
-}
-
-# Directory where to store archives
-ARCHIVEDIR="archive"
-BACKUP_DIR="backup"
-OUTDIR="output"
-BUILDDIR="build"
-
-#TARGET="kalle"
-#
-# Archive makeplate project
-#
-# $1 Target name
-#
-archive() { ##D Make a tar archive of the source code
-  DT=$(date +"%Y%m%d-%H%M%S")
-  bpMkDir "${ARCHIVEDIR}"
-  tar -cvzf "${ARCHIVEDIR}/${1}_${DT}.tar.gz" ./* \
-    --exclude="${ARCHIVEDIR}" \
-    --exclude="${BACKUP_DIR}" \
-    --exclude="${OUTDIR}" \
-    --exclude="${BUILDDIR}" \
-    --exclude='*.a' \
-    --exclude='*.o' \
-    --exclude='*.ko' \
-    --exclude='*.obj' \
-    --exclude='*.a' \
-    --exclude='*.la' \
-    --exclude='*.lo' \
-    --exclude='*.slo' \
-    --exclude='*.lib' \
-    --exclude='*.so' \
-    --exclude='*.so*' \
-    --exclude='.dep' \
-    --exclude='.svn' \
-    --exclude='.git' \
-    --exclude='*.elf' \
-    --exclude='*.hex' \
-    --exclude='*.bin' \
-    --exclude='*.exe' \
-    --exclude='*.sym' \
-    --exclude='*.lss' \
-    --exclude='*.map' \
-    --exclude='*.app' \
-    --exclude='*.i*86' \
-    --exclude='*.x86_64' \
-    --exclude='*~' \
-    --exclude="*.old" \
-    --exclude="*.tmp"
-}
-
-# Max number of backups
-BACKUPS=100
-
-backup() { ##D Make an incremental backup
-  bpMkDir "${BACKUP_DIR}"
-  # remove oldest backup
-  bpRm "${BACKUP_DIR}/backup_${BACKUPS}"
-  # rotate backups
-  for ((x = BACKUPS; x > 0; x--)); do
-    bdir=${BACKUP_DIR}/backup_$((x - 1))
-    # check if directory exist before renameing  it
-    if [ -d "${bdir}" ]; then
-      mv -f "${bdir}" "${BACKUP_DIR}/backup_${x}"
-    fi
-  done
-  rsync --archive \
-    --delete \
-    --relative \
-    --exclude="${BACKUP_DIR}" \
-    --exclude="${ARCHIVEDIR}" \
-    --exclude="${OUTDIR}" \
-    --link-dest="${PWD}/${BACKUP_DIR}/backup_1" \
-    . \
-    "${BACKUP_DIR}/backup_0"
-}
-
-backupfile() { ##D Backup file
-  bpBackup "$2"
-}
-
-#XXX=-e 's/[0-9]*/\\${BP_C_VALUE}&\\${E_RESET}/' \
-
 #---------------------------------------------------------------------
 # Bashplate settings
 #---------------------------------------------------------------------
@@ -943,13 +466,13 @@ bpInitSettings() {
   BP_VERSION="1.00"
 
   ##V Usage info
-  BP_USAGE="Usage: ${BP_NAME} command [option]"
+  BP_USAGE="Usage: ${BP_SELF_NAME} command [option]"
 
   ##V Description text
   BP_DESC="Examples of how to use bashplates."
 
   ##V logfile (uncomment to use logfile)
-  BP_LOGFILE=${BP_SELF_DIR}/${BP_SELF}.log
+  BP_LOGFILE=${BP_SELF_DIR}/${BP_SELF_NAME}.log
 
   ##V Lock file (uncomment to use lock file feature )
   BP_LOCK_FILE=/tmp/${BP_NAME}.lock
@@ -962,7 +485,7 @@ bpInitSettings() {
   BP_LOG_CRITICAL=1
 
   ##V Activate settings function (will create settings file when run)
-  BP_CONF=1
+  #BP_CONF=1
 
 }
 #---------------------------------------------------------------------
@@ -1725,9 +1248,9 @@ bpPrintChoiceList() { # Print items in selection list
     fi
 
     if [ "${desc}" == ":" ]; then
-      printf "${BP_C_KEY} %-5s${E_RESET}%1s  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$key" "$default" "$val"
+      printf "%1s ${BP_C_KEY}%-7s  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$default" "$key" "$val"
     else
-      printf "${BP_C_KEY} %-5s${E_RESET}%1s  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$key" "$default" "$desc"
+      printf "%1s ${BP_C_KEY}%-7s  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$default" "$key" "$desc"
     fi
   done
 }
@@ -2460,6 +1983,25 @@ ied() { ##I Open this file with default editor
   bpEdit "$0" "$2"
 }
 
+#
+# $1 File to diff with, if not given diff with bashplate template
+#
+idiff() { ##I Run diff with file or bashplate template
+
+  if [ -z "$BP_DIFF" ]; then
+    bpError "Diff program not declared (BP_DIFF)"
+    return
+  fi
+
+  if [ -z "$2" ]; then
+    if [ -n "${BP_PATH}" ]; then
+      bpRun "${BP_DIFF}" "${BP_SELF_DIR}/${BP_SELF}" "${BP_PATH}/templates/bashplate"
+      return
+    fi
+  fi
+  bpRun "${BP_DIFF}" "${BP_SELF_DIR}/${BP_SELF}" "$2"
+}
+
 version() { ##D Print version information
   echo "$BP_VERSION"
 }
@@ -2527,6 +2069,9 @@ BP_TEMPLATE_VERSION="1.40"
 BP_SELF_DIR="${0%/*}"
 
 ##V Name of script
+BP_SELF_NAME=$(basename "$0")
+
+##V Name of script (to be repurposed)
 BP_SELF=$(basename "$0")
 
 ##V Number of arguments given to script

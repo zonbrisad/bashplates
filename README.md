@@ -60,7 +60,8 @@ Bashplates is a tool for quickly creating advanced and feature rich shellscripts
 
 - Subcommand handler
 - Documentation parser
-- Error/message handling
+- Error handling
+- Message output
 - Logfile 
 - Configuration file 
 - Lock file 
@@ -304,12 +305,15 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] Added BP_SELF_NAME, to eventually replate BP_SELF
 - [ ] Change BP_SELF to $BP_SELF_DIR/$BP_SELF_NAME, for clarity
 - [ ] Add a BP_TEMPLATE variable pointing to main bashplate template
+- [ ] Declare local variables local by using local keyword `local MY_VAR=XXX`
+- [ ] improved error/crash information printout https://unix.stackexchange.com/questions/39623/trap-err-and-echoing-the-error-line
+- [ ] add all? errorcodes in cleartext in a large table 
 
 ## Sugestions
  - Plugin system
  - automatic completion generator
  - Mail feature
- - dictionary functions?
+ - dictionary abstract datatype
  - Use logrotate for logs
  - Rename iview to iv
  - Rename ivars to ivar or iva 
@@ -321,6 +325,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
  - Rewrite hook system to elliminate hook variables
  - move code from bp_init to bp
  - make columnize.py to a sepparate project
+ - presentation mode that shows separated in/out data in hex
 
 
 ## References and tutorials

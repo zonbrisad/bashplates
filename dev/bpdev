@@ -39,61 +39,11 @@ set -o pipefail
 # User defined Settings
 #---------------------------------------------------------------------
 bpUserSettings() {
-  BP_ADDONS="${BP_SELF_DIR}/addons"
-  BP_TEMPLATES="${BP_SELF_DIR}/templates"
+  :
 }
 #---------------------------------------------------------------------
 # User defined functions
 #---------------------------------------------------------------------
-
-##- En named line
-
-#
-# $1 hook name
-#
-bpExecHook() {
-  # execute prescript hook if existing
-  if [ -n "$1" ]; then
-    if bpIsFunction "${1}"; then
-      ${1} "$@"
-      return 0
-    fi
-
-  fi
-  return 1
-}
-
-my_hook() {
-  echo "My hook"
-}
-
-hook() { ##D Test bpExecHook
-  bpExecHook "my_hook"
-  bpExecHook "does_not_exist_hook"
-}
-
-cond() { ##C CND Conditional function
-  echo "Conditional function"
-}
-
-nocond() { ##D Ordinary function
-  echo "Non conditional function"
-}
-
-##- Bp select from list
-
-list=(
-  "1" ":" "Alternative 1"
-  "2" ":" "Another alternative"
-  "c" ":" "Alternative C"
-  "1c" ":" "Alt. 1C"
-  "d" "valueD" ":"
-)
-rl() { ##D Select from list
-
-  bpSelectFromList "2" "Choose your alternative" "${list[@]}"
-  echo -e "\nChoice: ${bpReturn}"
-}
 
 ##- Dictionary
 
@@ -112,10 +62,59 @@ bpDictKey() { ##I aa
   done
 }
 
-dtest() { ##D Test dictionary test
-  :
+bpDictPrint() { ##I
+  DICT=("${@}")
+  LEN=${#DICT[@]}
+  i=0
+  while [ "$i" -lt "$LEN" ]; do
+    KEY=${DICT[$i]}
+    ((i++))
+    VALUE=${DICT[$i]}
+    ((i++))
+    bpPrintDesc "$KEY" "$VALUE"
+  done
 }
 
+#
+# $1 key
+# $2 dictionary
+# return Value
+#
+bpDictFind() {
+  DICT=("${@:2}")
+  FKEY="${1}"
+  LEN=${#DICT[@]}
+  i=0
+  while [ "$i" -lt "$LEN" ]; do
+    KEY=${DICT[$i]}
+    ((i++))
+    VALUE=${DICT[$i]}
+    ((i++))
+    bpDebug "$KEY = $VALUE  ($FKEY)"
+
+    if [ "$KEY" == "$FKEY" ]; then
+      echo "$VALUE"
+      return
+    fi
+  done
+  echo ""
+}
+
+my_dict=(
+  "A" "Value A"
+  "B" "Value B"
+  "C" "Value C"
+  "D" "Value D"
+  "E" "Value E"
+)
+
+dtest() { ##D Test dictionary test
+  bpDictPrint "${my_dict[@]}"
+  echo "Dict: $(bpDictFind "C" "${my_dict[@]}")"
+  echo "Dict: $(bpDictFind "A" "${my_dict[@]}")"
+  echo "Dict: $(bpDictFind "E" "${my_dict[@]}")"
+  echo "Dict: $(bpDictFind "XX" "${my_dict[@]}")"
+}
 ##- New ANSII escape functions
 
 icons_() { ## Unicode icons
@@ -165,7 +164,7 @@ tdim() { ##D Terminal dimensions
 
 }
 
-##- Test of print messages
+##- Layout and color
 
 msg() { ##D Messsages format test
 
@@ -233,11 +232,49 @@ msg() { ##D Messsages format test
   echo -e "[${E_BG_GREEN}${E_BR_GREEN} Debug  ${E_RESET}] Green bg, Br green fg"
 }
 
+qct() { ##D Query color test
+  BP_C_QUERY=$'\e[38;5;218m'
+  BP_C_QUERY_DEF=$'\e[38;5;240m'
+  BP_C_EMPHASIS=$'\e[38;5;255m'
+  BP_C_DEEMPHASIS=$'\e[38;5;250m'
+  ptq
+  BP_C_EMPHASIS=$'\e[38;5;255m'${E_REVERSE}
+  BP_C_DEEMPHASIS=$'\e[38;5;250m'
+  ptq
+  BP_C_EMPHASIS=$'\e[38;5;250m'${E_REVERSE}
+  BP_C_DEEMPHASIS=$'\e[38;5;250m'
+  ptq
+  BP_C_EMPHASIS=$'\e[38;5;87m'
+  BP_C_DEEMPHASIS=$'\e[38;5;75m'
+  ptq
+  BP_C_QUERY=$'\e[38;5;117m'
+  BP_C_QUERY_DEF=$'\e[38;5;240m'
+  BP_C_EMPHASIS=$'\e[38;5;255m'
+  BP_C_DEEMPHASIS=$'\e[38;5;250m'
+  ptq
+  BP_C_QUERY=$'\e[38;5;153m'
+  BP_C_QUERY_DEF=$'\e[38;5;240m'
+  BP_C_EMPHASIS=$'\e[38;5;255m'
+  BP_C_DEEMPHASIS=$'\e[38;5;250m'
+  ptq
+  BP_C_QUERY=$'\e[38;5;195m'
+  BP_C_QUERY_DEF=$'\e[38;5;240m'
+  BP_C_EMPHASIS=$'\e[38;5;255m'
+  BP_C_DEEMPHASIS=$'\e[38;5;250m'
+  ptq
+  BP_C_QUERY=$'\e[38;5;230m'
+  BP_C_QUERY_DEF=$'\e[38;5;237m'
+  BP_C_EMPHASIS=$'\e[38;5;255m'
+  BP_C_DEEMPHASIS=$'\e[38;5;250m'
+  ptq
+
+}
+
 url() {
   echo -e "${1}https${7}://${2}zonbrisad${7}@${3}github.com${7}:${4}80${7}${5}/zonbrisad${7}/${6}bashplates.git${E_RESET}\n"
 }
 
-colorize() { ##D Test F="/use/local/var/log/messages"
+colorize() { ##D Url/file colorize tests
 
   echo
   F="/use/local/var/log/messages"
@@ -286,6 +323,17 @@ cst() { ##D Color scheme tests
 
 }
 
+aVeryLongCommandTestCommand() { ##D Testing truncation of long command strings
+  :
+}
+
+#ICMD=10
+inactiveCommand() { ##CV ICMD Inactive command test
+  echo "Only possible if ICMD is set."
+}
+
+##- Misc
+
 s2a() { ##D String to array
   X=$'Rad 1\nRad 2\nRad 3'
   #X="Rad 1|Rad 2|Rad 3"
@@ -297,28 +345,6 @@ s2a() { ##D String to array
   done
 
 }
-
-#xx() {
-
-# OPTS=$(getopt --longoptions idebug -- "$@")
-# echo $OPTS
-# eval set --$OPTS
-
-# while true; do
-#   case "$1" in
-#     --idebug)
-#       set -o xtrace
-#         ;;
-#     --)
-#         shift
-#         break
-#         ;;
-#     esac
-#     shift
-# done
-#}
-#echo $@
-#xx
 
 bp1=(
   "██████╗  █████╗ ███████╗██╗  ██╗██████╗ ██╗      █████╗ ████████╗███████╗███████╗"
@@ -365,13 +391,6 @@ bpb() { ##D Print banner
 
 }
 
-nl() { ##D New line test
-
-  printf "New line test (NL)\n"
-  printf "Carriage return test(CR)\r"
-  printf "Whittnes row\n"
-}
-
 XXprintCommand() {
   IFS=$' '
   read -r -a arr <<<"$1"
@@ -381,7 +400,7 @@ XXprintCommand() {
   # bpPrintDesc "${arr[0]}" "${inf}"
 }
 
-completion() { ##D Print help information
+completion() { ##D Command completion
 
   BP_HELP=1
 
@@ -408,116 +427,9 @@ completion() { ##D Print help information
   fi
 }
 
-args() { ##D Test of arguments
-  bpInfo "All options: $*"
-  while getopts ':abc' opt; do
-    case "${opt}" in
-    a) echo "A" ;;
-    b) echo "B" ;;
-    c) echo "C" ;;
-    esac
-  done
-}
+##- Function tests
 
-LT="This is a very long text that does not fit into a single line, but have to be broken up with the help of an external command like for example fmt."
-bim() { ##D Break text into multiple lines
-  SSH_KEY=~/.ssh/id_ed25519
-  bpPrintDesc "Default" "$LT"
-  #  bpPrintDescXX "Formated" "$LT"
-
-  bpPrintLine "SSH"
-  bpPrintDesc "SSH public key" "$(cat "${SSH_KEY}.pub")"
-}
-
-set() { ##D Change setting in bp config file
-  BP_CONFIG_TEST=(
-    "config"
-    "Test config file"
-    "Setting1" "Default1" "Description 1"
-    "Setting2" "Default2" "Description 2"
-    "Setting3" "Default3" "Description 3"
-    "Setting4" "Default4" "Description 4"
-    "Setting5" "Default5" "Description 5"
-    "Setting6" "Default6" "Description 6"
-    "Setting7" "Default7" "Description 7"
-    "Setting8" "Default8" "Description 8"
-    "Setting9" "Default9" "Description 9"
-    "Setting10" "Default10" "Description 10"
-  )
-  if [ -z "$2" ]; then
-    bpConfPrint "" "" "${BP_CONFIG_TEST[@]}"
-    return
-  fi
-  bpConfChangeSetting "${2}" "${3}" "${BP_CONFIG_TEST[@]}"
-}
-
-conf() { ##D Config test
-  bpConfLoad "${BP_CONFIG_TEST[@]}"
-}
-
-ptq() { # Print test query
-  echo -e "${BP_C_QUERY}Query text with range${E_RESET} ${BP_C_QUERY_DEF}[${BP_C_DEEMPHASIS}y${E_RESET}${BP_C_QUERY_DEF}/${BP_C_EMPHASIS}N${E_RESET}${BP_C_QUERY_DEF}]${E_RESET}"
-  echo
-}
-
-qct() { ##D Query color test
-  BP_C_QUERY=$'\e[38;5;218m'
-  BP_C_QUERY_DEF=$'\e[38;5;240m'
-  BP_C_EMPHASIS=$'\e[38;5;255m'
-  BP_C_DEEMPHASIS=$'\e[38;5;250m'
-  ptq
-  BP_C_EMPHASIS=$'\e[38;5;255m'${E_REVERSE}
-  BP_C_DEEMPHASIS=$'\e[38;5;250m'
-  ptq
-  BP_C_EMPHASIS=$'\e[38;5;250m'${E_REVERSE}
-  BP_C_DEEMPHASIS=$'\e[38;5;250m'
-  ptq
-  BP_C_EMPHASIS=$'\e[38;5;87m'
-  BP_C_DEEMPHASIS=$'\e[38;5;75m'
-  ptq
-  BP_C_QUERY=$'\e[38;5;117m'
-  BP_C_QUERY_DEF=$'\e[38;5;240m'
-  BP_C_EMPHASIS=$'\e[38;5;255m'
-  BP_C_DEEMPHASIS=$'\e[38;5;250m'
-  ptq
-  BP_C_QUERY=$'\e[38;5;153m'
-  BP_C_QUERY_DEF=$'\e[38;5;240m'
-  BP_C_EMPHASIS=$'\e[38;5;255m'
-  BP_C_DEEMPHASIS=$'\e[38;5;250m'
-  ptq
-  BP_C_QUERY=$'\e[38;5;195m'
-  BP_C_QUERY_DEF=$'\e[38;5;240m'
-  BP_C_EMPHASIS=$'\e[38;5;255m'
-  BP_C_DEEMPHASIS=$'\e[38;5;250m'
-  ptq
-  BP_C_QUERY=$'\e[38;5;230m'
-  BP_C_QUERY_DEF=$'\e[38;5;237m'
-  BP_C_EMPHASIS=$'\e[38;5;255m'
-  BP_C_DEEMPHASIS=$'\e[38;5;250m'
-  ptq
-
-}
-
-cqt() { ##D Colored Query test.
-  # BP_C_QUERY=$'\e[38;5;218m'
-  # BP_C_QUERY_DEF=$'\e[38;5;240m'
-  # BP_C_EMPHASIS=$'\e[38;5;255m'
-  # BP_C_DEEMPHASIS=$'\e[38;5;251m'
-
-  R=$(bpReadStr "Read string test")
-  #echo "$R"
-  R=$(bpReadStr "Read string test with default" "default")
-  R=$(bpReadBoolDY "Read bool with color default yes")
-  R=$(bpReadBoolDN "Read bool with color default no")
-  R=$(bpReadInt "Read integer value with range" 42 22 50)
-  # echo "$R"
-  R=$(bpReadInt "Read integer value" 42)
-  R=$(bpReadStr "Read string with ${E_RED}color${BP_C_QUERY} test" "default")
-}
-
-##- System tests
-
-desc() { ##D bpPrintDesc tests
+desctest() { ##D Test bpPrintDesc output
   bpPrintLine
   bpPrintDesc "Key" "Description"
   bpPrintDesc "No description test" ""
@@ -532,38 +444,68 @@ desc() { ##D bpPrintDesc tests
   bpPrintLine
 }
 
-runtest() { ##D Test bprun
-
+runtest() { ##D Test bpRun
   bpRun "${BP_SELF_DIR}/tests/file_do_not_exist"
-
   bpRun "${BP_SELF_DIR}/tests/non_executable"
-
   bpRun "${BP_SELF_DIR}/tests/empty_execute"
-
 }
 
-querytests() { ##D Test querys
+readtests() { ##D Test read commands
+  slist=(
+    "a" ":" "First choice"
+    "b" ":" "Second choice"
+    "3" ":" "Third alternative"
+    "4" ":" "Fourth alternative"
+    "penta" ":" "Fifth choice"
+    "hexa" ":" "Sixth choice"
+  )
+
   RESULT=$(bpReadStr "Enter string?")
-  RESULT=$(bpReadInt "Enter integer?" "10" "0" "100")
+  RESULT=$(bpReadStr "Enter string with default value?" "defval")
+  RESULT=$(bpReadInt "Read integer value" 42)
+  RESULT=$(bpReadInt "Read integer value with range" 42 22 50)
   RESULT=$(bpReadBoolDY "Are you sure?")
   RESULT=$(bpReadBoolDN "Are you sure?")
-  bpSelectFromList "2" "Choose your alternative" "${list[@]}"
-  #rl
+  bpSelectFromList "3" "Choose your alternative" "${slist[@]}"
 }
 
-##- Command problems
+##- Argument
+#xx() {
 
-new() { ##D Command
-  echo "new"
-}
-newa() { ##C COND Command
-  echo "newa"
-}
-newb() { ##C COND Command
-  echo "newb"
+# OPTS=$(getopt --longoptions idebug -- "$@")
+# echo $OPTS
+# eval set --$OPTS
+
+# while true; do
+#   case "$1" in
+#     --idebug)
+#       set -o xtrace
+#         ;;
+#     --)
+#         shift
+#         break
+#         ;;
+#     esac
+#     shift
+# done
+#}
+#echo $@
+#xx
+
+args() { ##D Argument parsing with (getopts)
+  bpInfo "Arguments#: $#"
+  bpInfo "Arguments star: $*"
+  bpInfo "Arguments at: $@"
+  while getopts ':abc' opt; do
+    case "${opt}" in
+    a) echo "A" ;;
+    b) echo "B" ;;
+    c) echo "C" ;;
+    esac
+  done
 }
 
-##- Signal
+##- Hooks & Signals
 
 xxx() {
   echo "$1"
@@ -588,7 +530,118 @@ waitx() { ##D Wait for signal
   wait
 }
 
+#
+# $1 hook name
+#
+bpExecHook() {
+  # execute prescript hook if existing
+  if [ -n "$1" ]; then
+    if bpIsFunction "${1}"; then
+      ${1} "$@"
+      return 0
+    fi
+
+  fi
+  return 1
+}
+
+my_hook() {
+  echo "My hook"
+}
+
+hook() { ##D Test bpExecHook
+  bpExecHook "my_hook"
+  bpExecHook "does_not_exist_hook"
+}
+
+##- Simmilar named command problem
+
+new() { ##D Command
+  echo "new"
+}
+newa() { ##C COND Command
+  echo "newa"
+}
+newb() { ##C COND Command
+  echo "newb"
+}
+
 ##- New feature sugestions
+
+listfiles() { ##D list files
+  for file in ./*; do
+    echo "$file"
+    if [ -L "$file" ]; then
+      echo "A"
+    else
+      echo "B"
+    fi
+  done
+}
+
+#
+# $1 Number of iterations
+# $2 Command to execute
+#
+bpRepeat() { ##I Repeat command n times
+  local i max
+  max=$1
+  shift
+  for ((i = 1; i <= max; i++)); do # --> C-like syntax
+    eval "$@"
+  done
+
+}
+
+repeat() { ##D Repeat function test
+  bpRepeat 10 "ls ; sleep 1"
+}
+
+#
+# $1 Text to set as title
+#
+bpTitle() { ##I Set terminal window title
+  case "$TERM" in
+  *term* | rxvt)
+    echo -en "\e]0;$*\a"
+    ;;
+  *) ;;
+  esac
+}
+
+title() { ##D bpTitle test
+  bpTitle "Kalle"
+  bpWait 10
+}
+
+#
+# String contains
+#
+# $1 Substring to search
+# $2 String to search in
+#
+bpInString() {
+
+  if [[ "$1" = *"$2"* ]]; then
+    echo 1
+  else
+    echo 0
+  fi
+}
+
+inString() { ##D String contains test
+  A="Hello world"
+
+  if [ "$(bpInString HelloX "$A")" = "1" ]; then
+    #  if  $( bpInString "Hello" "$A" ) ; then
+    echo "A"
+  else
+    echo "B"
+  fi
+
+  bpInString "Hello" "$A"
+  bpInString "Kalle" "$A"
+}
 
 #---------------------------------------------------------------------
 # Bashplate settings
@@ -679,7 +732,7 @@ signalTerm() {
 signalErr() {
   echo
   echo
-  bpError "Trace error Row: $2  Function: $1"
+  bpError "Trace error Row: $2  Function: $1  ErrorCode: $3"
   echo
   bpCallStack "$*"
   bpExit 1
@@ -1386,9 +1439,9 @@ bpPrintChoiceList() { # Print items in selection list
     fi
 
     if [ "${desc}" == ":" ]; then
-      printf "${BP_C_KEY} %-5s${E_RESET}%1s  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$key" "$default" "$val"
+      printf "%1s ${BP_C_KEY}%-7s  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$default" "$key" "$val"
     else
-      printf "${BP_C_KEY} %-5s${E_RESET}%1s  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$key" "$default" "$desc"
+      printf "%1s ${BP_C_KEY}%-7s  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$default" "$key" "$desc"
     fi
   done
 }
@@ -2277,7 +2330,7 @@ trap signalQuit SIGQUIT
 trap signalInt SIGINT
 trap signalHup SIGHUP
 trap signalTerm SIGTERM
-trap 'signalErr ${FUNCNAME} ${LINENO}' ERR
+trap 'signalErr ${FUNCNAME} ${LINENO} $?' ERR
 
 #trap  'signalDbg ${FUNCNAME} ${LINENO}' DEBUG
 
@@ -2310,6 +2363,57 @@ fi
 
 # Run command parser
 bpRunCommand "$@"
+
+# if [ "$BP_ARGUMENTS" -eq 0 ]; then
+
+#   # check for a default command
+#   if [ -n "$DEFAULT_CMD_HOOK" ]; then
+#     "$DEFAULT_CMD_HOOK" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
+#     bpExit
+#   fi
+#   bpErrorExit "No command given"
+# fi
+
+# if [ "$(type -t "$1")" != "function" ]; then # Check if subcommand is declared as function
+#   bpErrorExit "Command \"$1\" not found"
+# fi
+
+# command="$1"
+# # execute pre command hook  if existing
+# if [ -n "$PRE_CMD_HOOK" ]; then
+#   "${PRE_CMD_HOOK}" "$command"
+# fi
+
+# echo "Dollar 0: $0"
+# echo "Command: $command"
+# # Check if command is conditional
+# # CL=$(grep -E "${command}().*##C" "$0")
+# CL=$(grep "${command}().*##C" "${0}")
+# echo "CL: $CL  $?"
+# if [[ "$CL" = *"##C"* ]]; then
+
+#   # Check if condition is true and then execute else printout error message
+#   read -r -a ARR <<<"$CL"
+#   CV="${ARR[3]}"
+#   if [ -n "$CV" ]; then
+#     if [ -n "${!CV}" ]; then
+#       # execute command
+#       "${command}" "$@"
+#     else
+#       bpError "Command \"$command\" not available right now."
+#     fi
+#   else
+#     bpError "Command \"$command\" is conditional, but is missing conditional variable"
+#   fi
+# else
+#   # command is not conditional, execute
+#   "${command}" "$@"
+# fi
+
+# # execute post command hook  if existing
+# if [ -n "$POST_CMD_HOOK" ]; then
+#   "${POST_CMD_HOOK}" "$command"
+# fi
 
 # Exit cleanly
 bpExit
