@@ -643,6 +643,36 @@ inString() { ##D String contains test
   bpInString "Kalle" "$A"
 }
 
+bpGPIOSet() {
+  gpio="$1"
+	state="$2"
+	
+	if [ ! -e /sys/class/gpio/gpio$gpio ]; then
+	  echo $gpio > /sys/class/gpio/export
+	fi
+	
+	echo "out" >> /sys/class/gpio/gpio$gpio/direction
+	echo $state >> /sys/class/gpio/gpio$gpio/value
+}
+
+gpio() { ##D GPIO interface test on gpio4
+  bpGPIOSet 4 1
+	sleep 1
+	bpGPIOSet 4 0
+}
+
+
+gpioblink() { ##D blink gpio4
+  
+	while true; do
+	bpGPIOSet 4 1
+	sleep 0.2
+	bpGPIOSet 4 0
+	sleep 0.2
+	done
+}
+
+
 #---------------------------------------------------------------------
 # Bashplate settings
 #---------------------------------------------------------------------
