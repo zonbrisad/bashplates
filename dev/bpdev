@@ -822,6 +822,7 @@ bpErrorExit() { ##I Safely exit script with a error
 
 # ANSI foreground colors codes
 #
+
 E_BLACK=$'\e[38:5:0m'       # Black
 E_RED=$'\e[38:5:1m'         # Red
 E_GREEN=$'\e[38:5:2m'       # Green
@@ -909,6 +910,52 @@ E_HIDE=$'\e[?25l' # Hide cursor
 E_SHOW=$'\e[?25h' # Show cursor
 
 E_RESET=$'\e[0m' # Clear Attributes
+
+
+# Check if terminal is 16 color only
+if [[ "linux" = *${TERM}* ]]; then
+  
+	# ANSI foreground colors codes
+	#
+
+E_BLACK=$'\e[30m'       # Black
+E_RED=$'\e[31m'         # Red
+E_GREEN=$'\e[32m'       # Green
+E_YELLOW=$'\e[33m'      # Yellow
+E_BLUE=$'\e[34m'        # Blue
+E_MAGENTA=$'\e[35m'     # Magenta
+E_CYAN=$'\e[36m'        # Cyan
+E_GRAY=$'\e[37m'        # Gray
+E_DARKGRAY=$'\e[1;30m'    # Dark Gray
+E_BR_RED=$'\e[1;31m'      # Bright Red
+E_BR_GREEN=$'\e[1;32m'   # Bright Green
+E_BR_YELLOW=$'\e[1;33m'  # Bright Yellow
+E_BR_BLUE=$'\e[1;34m'    # Bright Blue
+E_BR_MAGENTA=$'\e[1;35m' # Bright Magenta
+E_BR_CYAN=$'\e[1;35m'    # Bright Cyan
+E_WHITE=$'\e[1;37m'      # White
+
+# ANSI background color codes
+#
+E_BG_BLACK=$'\e[40m'       # Black
+E_BG_RED=$'\e[41m'         # Red
+E_BG_GREEN=$'\e[42m'       # Green
+E_BG_YELLOW=$'\e[43m'      # Yellow
+E_BG_BLUE=$'\e[44m'        # Blue
+E_BG_MAGENTA=$'\e[45m'     # Magenta
+E_BG_CYAN=$'\e[46m'        # Cyan
+E_BG_GRAY=$'\e[47m'        # Gray
+E_BG_DARK_GRAY=$'\e[40m'   # Dark gray
+E_BG_BR_RED=$'\e[41m'      # Bright Red
+E_BG_BR_GREEN=$'\e[42m'   # Bright Green
+E_BG_BR_YELLOW=$'\e[43m'  # Bright Yellow
+E_BG_BR_BLUE=$'\e[43m'    # Bright Blue
+E_BG_BR_MAGENTA=$'\e[45m' # Bright Magenta
+E_BG_BR_CYAN=$'\e[46m'    # Bright Cyan
+E_BG_WHITE=$'\e[47m'      # White
+fi
+
+
 
 # Default Bashplate colortheme
 BP_C_OK="${E_BR_GREEN}"
@@ -2144,6 +2191,7 @@ iinfo() { ##I Show information about script
   bpPrintDesc "PID" $$
   bpPrintVar BP_DATE "Date"
   bpPrintVar BP_TIME "Time"
+	bpPrintVar TERM "Terminal"
   bpPrintVar BP_COLUMNS "Terminal columns"
   bpPrintVar BP_LINES "Terminal lines"
 
