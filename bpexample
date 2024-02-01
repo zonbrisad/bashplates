@@ -607,8 +607,8 @@ bpErrorExit() { ##I Safely exit script with a error
 # Check if terminal is 16 color only
 if [[ "linux rxvt-16color" = *${TERM}* ]]; then
   
-	# ANSI foreground colors codes
-	#
+  # ANSI foreground colors codes
+  #
   E_BLACK=$'\e[30m'        # Black
   E_RED=$'\e[31m'          # Red
   E_GREEN=$'\e[32m'        # Green 
@@ -640,7 +640,7 @@ if [[ "linux rxvt-16color" = *${TERM}* ]]; then
   E_BG_BR_RED=$'\e[41m'     # Bright Red
   E_BG_BR_GREEN=$'\e[42m'   # Bright Green
   E_BG_BR_YELLOW=$'\e[43m'  # Bright Yellow
-  E_BG_BR_BLUE=$'\e[43m'    # Bright Blue
+  E_BG_BR_BLUE=$'\e[44m'    # Bright Blue
   E_BG_BR_MAGENTA=$'\e[45m' # Bright Magenta
   E_BG_BR_CYAN=$'\e[46m'    # Bright Cyan
   E_BG_WHITE=$'\e[47m'      # White
