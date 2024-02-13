@@ -10,17 +10,11 @@
 #
 #
 
-# Directory where script is located
-BP_SELF_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 #---------------------------------------------------------------------
 
-#V Directory where script is located
-BP_SELF_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-
-#---------------------------------------------------------------------
 InitSettings() {
-  MODULE="${BP_SELF_DIR}/${BP_SELF}"
+  MODULE="${BP_SELF_DIR}/${BP_SELF_NAME}"
 }
 
 direct_exec() {
@@ -91,7 +85,7 @@ bpLoadSettings() {
       source ${bpSettings}
     fi
   fi
-
+	
   export BP_NAME
   export BP_EMAIL
   export BP_EDITOR
@@ -337,8 +331,11 @@ bpRmModule() { ##I Remove module
 # Internal variables
 #---------------------------------------------------------------------
 
+# Directory where script is located
+BP_SELF_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
 ##V Name of script
-BP_SELF=$(basename "$0")
+BP_SELF_NAME=bp_init
 
 ##V Settings directory
 BP_CONFIG_DIR=~/.config/bashplates
@@ -354,7 +351,8 @@ if [ "$option" == "q" ]; then
 fi
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-  direct_exec
+  BP_SELF_NAME=$(basename "$0")
+	direct_exec
 else
   source_exec
 fi
