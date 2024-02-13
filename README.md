@@ -326,6 +326,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
  - move code from bp_init to bp
  - make columnize.py to a sepparate project
  - presentation mode that shows separated in/out data in hex
+ - Enable certain commands as bpMkDir, bpLn, bpRm, bpMv to execute as root using a variable like bpSudo=true
 
 
 ## References and tutorials

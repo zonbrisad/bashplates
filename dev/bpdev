@@ -320,7 +320,6 @@ cst() { ##D Color scheme tests
   BP_C_URL_SCHEME="${E_DARKGRAY}"
 
   aa "Makeplates color scheme"
-
 }
 
 aVeryLongCommandTestCommand() { ##D Testing truncation of long command strings
@@ -1214,7 +1213,11 @@ bpReplaceLine() { ##I Replace entire line matching pattern
 # $2 line to append
 #
 bpAppendIfNoSuchLine() { ##I Append a line if it does not exist in file
-  grep -q -F "$2" "$1" || echo "$2" >>"$1"
+  if [ "$BP_SUDO" == true ]; then
+    sudo grep -q -F "$2" "$1" || echo -e "$2" | sudo tee -a "$1" >/dev/null
+  else
+    grep -q -F "$2" "$1" || echo -e "$2" >>"$1"
+  fi
 }
 
 #
@@ -1947,12 +1950,21 @@ bpGetFunction() {
 # $1 command to execute
 #
 bpRun() { ##I Execute command
+
   if ! bpHasCmd "${1}"; then
-    bpError "Could not execute $1, command does not exist!"
+    if [ "$BP_SUDO" == true ]; then
+      bpError "Could not execute \"sudo $1\", command does not exist!"
+    else
+      bpError "Could not execute \"$1\", command does not exist!"
+    fi
     return 1
   fi
 
-  "$@"
+  if [ "$BP_SUDO" == true ]; then
+    sudo "$@"
+  else
+    "$@"
+  fi
   return $?
 }
 
@@ -2315,6 +2327,8 @@ BP_CONFIG_PATHS="${BP_CONFIG_DIR}/path"
 
 ##V Links to modules
 BP_CONFIG_MODULES="${BP_CONFIG_DIR}/modules"
+
+BP_SUDO=false
 
 # Initiate bashplate settings
 bpInitSettings
