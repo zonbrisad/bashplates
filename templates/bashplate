@@ -34,7 +34,7 @@ bpInitSettings() {
   BP_USAGE="Usage: ${BP_SELF_NAME} command [option]"
 
   ##V Description text
-  BP_DESC="Description goes here"
+  BP_DESC="__DESC__"
 
   ##V logfile (uncomment to use logfile)
   BP_LOGFILE=${BP_SELF_DIR}/${BP_SELF_NAME}.log
@@ -131,7 +131,7 @@ bpCallStack() { ##I Print out BASH call stack
   bpPrintLine
 }
 
-bpCleanUp() { ##I Cleanup function
+bpCleanUp() {             ##I Cleanup function
   rm -f "${BP_LOCK_FILE}" # remove Lock file
   #  echo -e "${E_SHOW}"     # Turn on cursor if turned of
 }
