@@ -308,6 +308,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] Declare local variables local by using local keyword `local MY_VAR=XXX`
 - [ ] improved error/crash information printout https://unix.stackexchange.com/questions/39623/trap-err-and-echoing-the-error-line
 - [ ] add all? errorcodes in cleartext in a large table 
+- [ ] Rename bpHasCmd to something like bpIsCmd/bpIsCommand see bpIsFunction
 
 ## Sugestions
  - Plugin system
