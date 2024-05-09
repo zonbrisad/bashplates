@@ -553,6 +553,18 @@ hook() { ##D Test bpExecHook
   bpExecHook "does_not_exist_hook"
 }
 
+pipedream() {
+  echo "From function"
+  while read -r data; do
+    printf "%s" "$data"
+  done
+
+}
+
+pipe2function() { ##D
+  echo "From caller" | pipedream
+}
+
 ##- Simmilar named command problem
 
 new() { ##D Command
@@ -644,33 +656,31 @@ inString() { ##D String contains test
 
 bpGPIOSet() {
   gpio="$1"
-	state="$2"
-	
-	if [ ! -e /sys/class/gpio/gpio$gpio ]; then
-	  echo $gpio > /sys/class/gpio/export
-	fi
-	
-	echo "out" >> /sys/class/gpio/gpio$gpio/direction
-	echo $state >> /sys/class/gpio/gpio$gpio/value
+  state="$2"
+
+  if [ ! -e /sys/class/gpio/gpio$gpio ]; then
+    echo $gpio >/sys/class/gpio/export
+  fi
+
+  echo "out" >>/sys/class/gpio/gpio$gpio/direction
+  echo $state >>/sys/class/gpio/gpio$gpio/value
 }
 
 gpio() { ##D GPIO interface test on gpio4
   bpGPIOSet 4 1
-	sleep 1
-	bpGPIOSet 4 0
+  sleep 1
+  bpGPIOSet 4 0
 }
-
 
 gpioblink() { ##D blink gpio4
-  
-	while true; do
-	bpGPIOSet 4 1
-	sleep 0.2
-	bpGPIOSet 4 0
-	sleep 0.2
-	done
-}
 
+  while true; do
+    bpGPIOSet 4 1
+    sleep 0.2
+    bpGPIOSet 4 0
+    sleep 0.2
+  done
+}
 
 #---------------------------------------------------------------------
 # Bashplate settings
@@ -821,12 +831,12 @@ bpErrorExit() { ##I Safely exit script with a error
 
 # Check if terminal is 16 color only
 if [[ "linux rxvt-16color" = *${TERM}* ]]; then
-  
+
   # ANSI foreground colors codes
   #
   E_BLACK=$'\e[30m'        # Black
   E_RED=$'\e[31m'          # Red
-  E_GREEN=$'\e[32m'        # Green 
+  E_GREEN=$'\e[32m'        # Green
   E_YELLOW=$'\e[33m'       # Yellow
   E_BLUE=$'\e[34m'         # Blue
   E_MAGENTA=$'\e[35m'      # Magenta
@@ -841,7 +851,7 @@ if [[ "linux rxvt-16color" = *${TERM}* ]]; then
   E_BR_CYAN=$'\e[1;36m'    # Bright Cyan
   E_WHITE=$'\e[1;37m'      # White
 
-  # ANSI background color codes 
+  # ANSI background color codes
   #
   E_BG_BLACK=$'\e[40m'      # Black
   E_BG_RED=$'\e[41m'        # Red
@@ -951,7 +961,6 @@ E_FORWARD=$'\e[C' # Move cursor forward
 E_BACK=$'\e[D'    # Move cursor backward
 E_HIDE=$'\e[?25l' # Hide cursor
 E_SHOW=$'\e[?25h' # Show cursor
-
 
 # Default Bashplate colortheme
 BP_C_OK="${E_BR_GREEN}"
@@ -1603,14 +1612,18 @@ bpPIDExist() { ##I Check if PID file exist
 # $4 description
 #
 bpAddSetting() { ##I Add setting to config file
-  if ! bpStrExist "${1}" "${2}"; then
+  local FILE="$1"
+  local KEY="$2"
+  local VAL="$3"
+  local DESC="$4"
+  if ! bpStrExist "${FILE}" "${KEY}"; then
     {
-      echo "# ${4}"
-      echo "${2}=\"${3}\""
+      echo "# ${DESC}"
+      echo "${KEY}=\"${VAL}\""
       echo
-    } >>"${1}"
+    } >>"${FILE}"
 
-    bpOk "Added setting \"$2=$3\""
+    bpOk "Added setting \"$KEY=$VAL\""
   fi
 }
 
@@ -1622,12 +1635,11 @@ bpAddSetting() { ##I Add setting to config file
 # $4 description
 #
 bpChangeSetting() { ##I Change setting in config file
-  FILE="$1"
-  KEY="$2"
-  VAL="$3"
-  DESC="$4"
-  #echo "File = $FILE  Key = $KEY   Value = $VAL"
-  if ! bpStrExist "${1}" "${KEY}"; then
+  local FILE="$1"
+  local KEY="$2"
+  local VAL="$3"
+  local DESC="$4"
+  if ! bpStrExist "${FILE}" "${KEY}"; then
     bpAddSetting "$FILE" "$KEY" "$VAL" "$DESC"
   fi
   # sed -i "s/^\(${KEY}\s*=\s*\).*\$/\1\"${VAL}\"/" "${FILE}"
@@ -1666,11 +1678,11 @@ bpConfGetDesc() { ##I Get config desription
 # $3 config array
 #
 bpConfChangeSetting() {
-  KEY="$1"
-  VAL="$2"
-  CONF=("${@:2}")
-  FILE=${CONF[1]}
-  DESC=$(bpConfGetDesc "$KEY" "${CONF[@]}")
+  local KEY="$1"
+  local VAL="$2"
+  local CONF=("${@:2}")
+  local FILE=${CONF[1]}
+  local DESC=$(bpConfGetDesc "$KEY" "${CONF[@]}")
 
   if ! bpConfInList "$KEY" "${CONF[@]}"; then
     bpError "\"$KEY\" is not a valid setting"
@@ -1691,7 +1703,7 @@ bpConfChangeSetting() {
 # $3 config array
 #
 bpConfCreate() { ##I Create configuration file
-  FILE="$1"
+  local FILE="$1"
   {
     echo "# "
     echo "# $2"
@@ -1699,8 +1711,8 @@ bpConfCreate() { ##I Create configuration file
     echo
   } >>"${FILE}"
 
-  arr=("${@:2}")
-  len=${#arr[@]}
+  local arr=("${@:2}")
+  local len=${#arr[@]}
   i=1
   while [ "$i" -lt "$len" ]; do
     key=${arr[$i]}
