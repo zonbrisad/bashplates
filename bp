@@ -160,49 +160,55 @@ cs() { ##D Cheat sheet for common BASH features
   cs-cheat-sheet
 }
 
+# shellcheck disable=2016
 cs-cheat-sheet() {
-
   # https://devhints.io/bash
 
   bpPrintLine "Arithmetic operators"
-  bpPrintDesc "\$(( N1 + N2 ))" "Addition"
-  bpPrintDesc "\$(( N1 - N2 ))" "Subtraction"
-  bpPrintDesc "\$(( N1 * N2 ))" "Multiplication"
-  bpPrintDesc "\$(( N1 / N2 ))" "Division"
-  bpPrintDesc "\$(( N1 % N2 ))" "Modulo"
-  bpPrintDesc "\$(( N1 ** N2 ))" "Exponentiation"
-  bpPrintDesc "\$(( N1++ ))" "Variable increment"
-  bpPrintDesc "\$(( N1-- ))" "Variable decrement"
+  bpPrintDesc '$(( N1 + N2 ))' "Addition"
+  bpPrintDesc '$(( N1 - N2 ))' "Subtraction"
+  bpPrintDesc '$(( N1 * N2 ))' "Multiplication"
+  bpPrintDesc '$(( N1 / N2 ))' "Division"
+  bpPrintDesc '$(( N1 % N2 ))' "Modulo"
+  bpPrintDesc '$(( N1 ** N2 ))' "Exponentiation"
+  bpPrintDesc '$(( N1++ ))' "Variable increment"
+  bpPrintDesc '$(( N1-- ))' "Variable decrement"
+
   bpPrintLine "Bitwise operators"
-  bpPrintDesc "\$(( N1 << N2 ))" "Bitwise shift left"
-  bpPrintDesc "\$(( N1 >> N2 ))" "Bitwise shift right"
-  bpPrintDesc "\$(( N1 & N2 ))" "Bitwise and"
-  bpPrintDesc "\$(( N1 | N2 ))" "Bitwise or"
-  bpPrintDesc "\$(( N1 ^ N2 ))" "Bitwise xor"
-  bpPrintDesc "\$(( N1 ~ N2 ))" "Bitwise negation"
+  bpPrintDesc '$(( N1 << N2 ))' "Bitwise shift left"
+  bpPrintDesc '$(( N1 >> N2 ))' "Bitwise shift right"
+  bpPrintDesc '$(( N1 & N2 ))' "Bitwise and"
+  bpPrintDesc '$(( N1 | N2 ))' "Bitwise or"
+  bpPrintDesc '$(( N1 ^ N2 ))' "Bitwise xor"
+  bpPrintDesc '$(( N1 ~ N2 ))' "Bitwise negation"
+
   bpPrintLine "Logical operators"
-  bpPrintDesc "\$(( N1 && N2 ))" "Logical and"
-  bpPrintDesc "\$(( N1 || N2 ))" "Logical or"
+  bpPrintDesc '$(( N1 && N2 ))' "Logical and"
+  bpPrintDesc '$(( N1 || N2 ))' "Logical or"
+
+  bpPrintLine "Arithmetic tests"
+  bpPrintDesc '$(( N1 == N2 ))' "Equal"
+  bpPrintDesc '$(( N1 != N2 ))' "Not equal"
+  bpPrintDesc '$(( N1 < N2 ))' "Less than"
+  bpPrintDesc '$(( N1 <= N2 ))' "Less than or equal"
+  bpPrintDesc '$(( N1 > N2 ))' "Greater than"
+  bpPrintDesc '$(( N1 >= N2 ))' "Greater than or equal"
+
   bpPrintLine "String tests"
-  bpPrintDesc "[ \"\$STR1\" == \"\$STR2\" ]" "Strings equal"
-  bpPrintDesc "[ \"\$STR1\" != \"\$STR2\" ]" "Strings not equal"
-  bpPrintDesc "[ -z STRING ]" "Empty string"
-  bpPrintDesc "[ -n STRING ]" "Not empty string (string exists)"
-  bpPrintDesc "[[ STRING =~ STRING ]]" "Regexp"
-  bpPrintLine "Numerical tests"
-  bpPrintDesc "[ NUM -eq NUM ]" "Equal"
-  bpPrintDesc "[ NUM -ne NUM ]" "Not equal"
-  bpPrintDesc "[ NUM -lt NUM ]" "Less than"
-  bpPrintDesc "[ NUM -le NUM ]" "Less than or equal"
-  bpPrintDesc "[ NUM -gt NUM ]" "Greater than"
-  bpPrintDesc "[ NUM -ge NUM ]" "Greater than or equal"
-  bpPrintDesc "(( NUM < NUM ))" "Numeric conditions"
+  bpPrintDesc '[ "$STR1" == "$STR2" ]' "Strings equal"
+  bpPrintDesc '[ "$STR1" != "$STR2" ]' "Strings not equal"
+  bpPrintDesc '[ -z STRING ]' "Empty string"
+  bpPrintDesc '[ -n STRING ]' "Not empty string (string exists)"
+  bpPrintDesc '[[ STRING =~ STRING ]]' "Regexp"
+
   bpPrintLine "Logical tests"
   bpPrintDesc "[ ! EXPR ]" "Not"
   bpPrintDesc "[ X ] && [ Y ]" "And"
   bpPrintDesc "[ X ] || [ Y ]" "Or"
+
   bpPrintLine "Other tests"
   bpPrintDesc "[ -o noclobber ]" "If OPTIONNAME is enabled"
+
   bpPrintLine "File conditions"
   bpPrintDesc "[ -e FILE ]" "File exists"
   bpPrintDesc "[ -f FILE ]" "Is regular file"
@@ -212,11 +218,9 @@ cs-cheat-sheet() {
   bpPrintDesc "[ -w FILE ]" "Is writable"
   bpPrintDesc "[ -x FILE ]" "Is executable"
   bpPrintDesc "[ -s FILE ]" "Size>0"
-
   bpPrintDesc "[ -S FILE ]" "Is socket"
   bpPrintDesc "[ -g FILE ]" "sgid bit set"
   bpPrintDesc "[ -u FILE ]" "suid bit set"
-
   bpPrintDesc "[ FILE1 -nt FILE2 ]" "1 is more recent than 2"
   bpPrintDesc "[ FILE1 -ot FILE2 ]" "2 is more recent than 1"
   bpPrintDesc "[ FILE1 -ef FILE2 ]" "Same files"
@@ -226,18 +230,18 @@ cs-cheat-sheet() {
   bpPrintDesc '$#' "Number of arguments"
   bpPrintDesc '$*' "All arguments"
   bpPrintDesc '$@' "All arguments, starting from first"
-  bpPrintDesc "\$1" "First argument"
+  bpPrintDesc '$1' "First argument"
   bpPrintDesc '$?' "Exit status of last task"
   bpPrintDesc '$-' "Current option flags"
   bpPrintDesc '$!' "PID of last background task"
   bpPrintDesc '$$' "PID of shell"
+  bpPrintDesc '$_' "Last argument of the previous command"
 
   bpPrintLine "Redirect"
   bpPrintDesc '> FILE' "write to file"
   bpPrintDesc '>> FILE' "append to file"
   bpPrintDesc '>| FILE' "overwrite file"
   bpPrintDesc '2> FILE1 1> FILE2' "stdout and stderr redirected to separate files"
-
   bpPrintDesc '2>&1' "stderr to stdout"
   bpPrintDesc '&> /dev/null' "stdout and stderr to /dev/null"
   bpPrintDesc '< FILE' "Pipe file to command"
@@ -246,47 +250,49 @@ cs-cheat-sheet() {
   bpPrintLine "Array defining"
   bpPrintDesc "Fruits=('Apple' 'Banana' 'Orange')" "" "35"
   bpPrintLine
-  bpPrintDesc "Fruits[0]=\"Apple\""
-  bpPrintDesc "Fruits[1]=\"Banana\""
-  bpPrintDesc "Fruits[2]=\"Orange\""
+  bpPrintDesc 'Fruits[0]="Apple"'
+  bpPrintDesc 'Fruits[1]="Banana"'
+  bpPrintDesc 'Fruits[2]="Orange"'
   bpPrintLine
-  bpPrintDesc "FS=\"Apple Banana Orange\""
-  bpPrintDesc "read -r -a Fruits <<< \$FS" "" "35"
+  bpPrintDesc 'FS="Apple Banana Orange"'
+  bpPrintDesc 'read -r -a Fruits <<< $FS' "" "35"
 
   bpPrintLine "Array operations"
   #bpPrintDesc "Fruits=(\"\${Fruits[@]}\" \"Grape\")"
   #  bpPrintDesc "Fruits=(\"\${Fruits[@]}\" \"Grape\")" "Append element" "35"
-  bpPrintDesc "Fruits+=(\"Grape\")" "Append element"
-  bpPrintDesc "\${Fruits[n]}" "Element n"
-  bpPrintDesc "\${Fruits[-1]}" "Last element"
-  bpPrintDesc "\${Fruits[@]}" "All elements, space separated"
-  bpPrintDesc "\${#Fruits[@]}" "Nr of elements"
-  bpPrintDesc "\${#Fruits[n]}" "String lenght of nth element"
-  bpPrintDesc "\${Fruits[@]:3:2}" "Range (from pos 3, length 2)"
-  bpPrintDesc "\${!Fruits[@]}" "Keys of all elements"
+  bpPrintDesc 'Fruits+=("Grape")' "Append element"
+  bpPrintDesc '${Fruits[n]}' "Element n"
+  bpPrintDesc '${Fruits[-1]}' "Last element"
+  bpPrintDesc '${Fruits[@]}' "All elements, space separated"
+  bpPrintDesc '${#Fruits[@]}' "Nr of elements"
+  bpPrintDesc '${#Fruits[n]}' "String lenght of nth element"
+  bpPrintDesc '${Fruits[@]:3:2}' "Range (from pos 3, length 2)"
+  bpPrintDesc '${!Fruits[@]}' "Keys of all elements"
   # x=($(cat "kalle"))
 
   bpPrintLine "Parameter basics"
-  bpPrintDesc "STR=\"ABCDE\"" "Assignment"
-  bpPrintDesc "\${#STR}      # 5" "Length"
-  bpPrintLine "Parameter slicing"
-  bpPrintDesc "\${STR:1}     # \"BCDE\"" ""
-  bpPrintDesc "\${STR::-1}   # \"ABCD\"" ""
-  bpPrintDesc "\${STR:1:-1}  # \"BCD\"" ""
-  bpPrintDesc "\${STR:^^}    # \"ABCDE\"" "To uppercase"
-  bpPrintDesc "\${STR:,,}    # \"abcde\"" "To lowercase"
-  bpPrintLine "Parameter substitution"
-  bpPrintDesc "\${STR%suffix}" "Remove suffix"
-  bpPrintDesc "\${STR#prefix}" "Remove prefix"
-  bpPrintDesc "\${STR%%suffix}" "Remove long suffix"
-  bpPrintDesc "\${STR##prefix}" "Remove long prefix"
-  bpPrintDesc "\${STR/from/to}" "Replace first match"
-  bpPrintDesc "\${STR//from/to}" "Replace all"
-  bpPrintDesc "\${STR/%from/to}" "Replace suffix"
-  bpPrintDesc "\${STR/#from/to}" "Replace prefix"
-  bpPrintLine "Parameter default values"
-  bpPrintDesc "\${STR:-val}" '$STR, or val if STR is unset'
-  bpPrintDesc "\${STR:=val}" 'set $STR to val if unset'
+  bpPrintDesc 'STR="ABCDE"' "Assignment"
+  bpPrintDesc '${#STR}      # 5' "Length"
+  bpPrintDesc 'POINTER=STR' ""
+  bpPrintDesc '${!POINTER}  # ABCDE' ""
+  bpPrintLine 'Parameter slicing'
+  bpPrintDesc '${STR:1}     # "BCDE"' ""
+  bpPrintDesc '${STR::-1}   # "ABCD"' ""
+  bpPrintDesc '${STR:1:-1}  # "BCD"' ""
+  bpPrintDesc '${STR:^^}    # "ABCDE"' "To uppercase"
+  bpPrintDesc '${STR:,,}    # "abcde"' "To lowercase"
+  bpPrintLine 'Parameter substitution'
+  bpPrintDesc '${STR%suffix}' "Remove suffix"
+  bpPrintDesc '${STR#prefix}' "Remove prefix"
+  bpPrintDesc '${STR%%suffix}' "Remove long suffix"
+  bpPrintDesc '${STR##prefix}' "Remove long prefix"
+  bpPrintDesc '${STR/from/to}' "Replace first match"
+  bpPrintDesc '${STR//from/to}' "Replace all"
+  bpPrintDesc '${STR/%from/to}' "Replace suffix"
+  bpPrintDesc '${STR/#from/to}' "Replace prefix"
+  bpPrintLine 'Parameter default values'
+  bpPrintDesc '${STR:-val}' '$STR, or val if STR is unset'
+  bpPrintDesc '${STR:=val}' 'set $STR to val if unset'
 
   bpPrintLine
 }
@@ -568,7 +574,7 @@ bpCallStack() { ##I Print out BASH call stack
   bpPrintLine
 }
 
-bpCleanUp() { ##I Cleanup function
+bpCleanUp() {             ##I Cleanup function
   rm -f "${BP_LOCK_FILE}" # remove Lock file
   #  echo -e "${E_SHOW}"     # Turn on cursor if turned of
 }
@@ -604,12 +610,12 @@ bpErrorExit() { ##I Safely exit script with a error
 
 # Check if terminal is 16 color only
 if [[ "linux rxvt-16color" = *${TERM}* ]]; then
-  
+
   # ANSI foreground colors codes
   #
   E_BLACK=$'\e[30m'        # Black
   E_RED=$'\e[31m'          # Red
-  E_GREEN=$'\e[32m'        # Green 
+  E_GREEN=$'\e[32m'        # Green
   E_YELLOW=$'\e[33m'       # Yellow
   E_BLUE=$'\e[34m'         # Blue
   E_MAGENTA=$'\e[35m'      # Magenta
@@ -624,7 +630,7 @@ if [[ "linux rxvt-16color" = *${TERM}* ]]; then
   E_BR_CYAN=$'\e[1;36m'    # Bright Cyan
   E_WHITE=$'\e[1;37m'      # White
 
-  # ANSI background color codes 
+  # ANSI background color codes
   #
   E_BG_BLACK=$'\e[40m'      # Black
   E_BG_RED=$'\e[41m'        # Red
@@ -734,7 +740,6 @@ E_FORWARD=$'\e[C' # Move cursor forward
 E_BACK=$'\e[D'    # Move cursor backward
 E_HIDE=$'\e[?25l' # Hide cursor
 E_SHOW=$'\e[?25h' # Show cursor
-
 
 # Default Bashplate colortheme
 BP_C_OK="${E_BR_GREEN}"
