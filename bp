@@ -165,34 +165,34 @@ cs-cheat-sheet() {
   # https://devhints.io/bash
 
   bpPrintLine "Arithmetic operators"
-  bpPrintDesc '$(( N1 + N2 ))' "Addition"
-  bpPrintDesc '$(( N1 - N2 ))' "Subtraction"
-  bpPrintDesc '$(( N1 * N2 ))' "Multiplication"
-  bpPrintDesc '$(( N1 / N2 ))' "Division"
-  bpPrintDesc '$(( N1 % N2 ))' "Modulo"
-  bpPrintDesc '$(( N1 ** N2 ))' "Exponentiation"
-  bpPrintDesc '$(( N1++ ))' "Variable increment"
-  bpPrintDesc '$(( N1-- ))' "Variable decrement"
+  bpPrintDesc '(( N1 + N2 ))' "Addition"
+  bpPrintDesc '(( N1 - N2 ))' "Subtraction"
+  bpPrintDesc '(( N1 * N2 ))' "Multiplication"
+  bpPrintDesc '(( N1 / N2 ))' "Division"
+  bpPrintDesc '(( N1 % N2 ))' "Modulo"
+  bpPrintDesc '(( N1 ** N2 ))' "Exponentiation"
+  bpPrintDesc '(( N1++ ))' "Variable increment"
+  bpPrintDesc '(( N1-- ))' "Variable decrement"
 
   bpPrintLine "Bitwise operators"
-  bpPrintDesc '$(( N1 << N2 ))' "Bitwise shift left"
-  bpPrintDesc '$(( N1 >> N2 ))' "Bitwise shift right"
-  bpPrintDesc '$(( N1 & N2 ))' "Bitwise and"
-  bpPrintDesc '$(( N1 | N2 ))' "Bitwise or"
-  bpPrintDesc '$(( N1 ^ N2 ))' "Bitwise xor"
-  bpPrintDesc '$(( N1 ~ N2 ))' "Bitwise negation"
+  bpPrintDesc '(( N1 << N2 ))' "Bitwise shift left"
+  bpPrintDesc '(( N1 >> N2 ))' "Bitwise shift right"
+  bpPrintDesc '(( N1 & N2 ))' "Bitwise and"
+  bpPrintDesc '(( N1 | N2 ))' "Bitwise or"
+  bpPrintDesc '(( N1 ^ N2 ))' "Bitwise xor"
+  bpPrintDesc '(( N1 ~ N2 ))' "Bitwise negation"
 
   bpPrintLine "Logical operators"
-  bpPrintDesc '$(( N1 && N2 ))' "Logical and"
-  bpPrintDesc '$(( N1 || N2 ))' "Logical or"
+  bpPrintDesc '(( N1 && N2 ))' "Logical and"
+  bpPrintDesc '(( N1 || N2 ))' "Logical or"
 
   bpPrintLine "Arithmetic tests"
-  bpPrintDesc '$(( N1 == N2 ))' "Equal"
-  bpPrintDesc '$(( N1 != N2 ))' "Not equal"
-  bpPrintDesc '$(( N1 < N2 ))' "Less than"
-  bpPrintDesc '$(( N1 <= N2 ))' "Less than or equal"
-  bpPrintDesc '$(( N1 > N2 ))' "Greater than"
-  bpPrintDesc '$(( N1 >= N2 ))' "Greater than or equal"
+  bpPrintDesc '(( N1 == N2 ))' "Equal"
+  bpPrintDesc '(( N1 != N2 ))' "Not equal"
+  bpPrintDesc '(( N1 < N2 ))' "Less than"
+  bpPrintDesc '(( N1 <= N2 ))' "Less than or equal"
+  bpPrintDesc '(( N1 > N2 ))' "Greater than"
+  bpPrintDesc '(( N1 >= N2 ))' "Greater than or equal"
 
   bpPrintLine "String tests"
   bpPrintDesc '[ "$STR1" == "$STR2" ]' "Strings equal"
@@ -250,17 +250,17 @@ cs-cheat-sheet() {
   bpPrintLine "Array defining"
   bpPrintDesc "Fruits=('Apple' 'Banana' 'Orange')" "" "35"
   bpPrintLine
-  bpPrintDesc 'Fruits[0]="Apple"'
-  bpPrintDesc 'Fruits[1]="Banana"'
-  bpPrintDesc 'Fruits[2]="Orange"'
-  bpPrintLine
   bpPrintDesc 'FS="Apple Banana Orange"'
   bpPrintDesc 'read -r -a Fruits <<< $FS' "" "35"
+  bpPrintLine
+  bpPrintDesc 'Fruits[0]="Apple"' "Append element"
+  bpPrintDesc 'Fruits[1]="Banana"' "Append element"
+  bpPrintDesc 'Fruits[2]="Orange"' "Append element"
+  bpPrintDesc 'Fruits+=("Grape")' "Append element"
 
   bpPrintLine "Array operations"
   #bpPrintDesc "Fruits=(\"\${Fruits[@]}\" \"Grape\")"
   #  bpPrintDesc "Fruits=(\"\${Fruits[@]}\" \"Grape\")" "Append element" "35"
-  bpPrintDesc 'Fruits+=("Grape")' "Append element"
   bpPrintDesc '${Fruits[n]}' "Element n"
   bpPrintDesc '${Fruits[-1]}' "Last element"
   bpPrintDesc '${Fruits[@]}' "All elements, space separated"
@@ -271,14 +271,14 @@ cs-cheat-sheet() {
   # x=($(cat "kalle"))
 
   bpPrintLine "Parameter basics"
-  bpPrintDesc 'STR="ABCDE"' "Assignment"
+  bpPrintDesc 'STR="ABcDE"' "Assignment"
   bpPrintDesc '${#STR}      # 5' "Length"
   bpPrintDesc 'POINTER=STR' ""
-  bpPrintDesc '${!POINTER}  # ABCDE' ""
+  bpPrintDesc '${!POINTER}  # ABcDE' ""
   bpPrintLine 'Parameter slicing'
-  bpPrintDesc '${STR:1}     # "BCDE"' ""
-  bpPrintDesc '${STR::-1}   # "ABCD"' ""
-  bpPrintDesc '${STR:1:-1}  # "BCD"' ""
+  bpPrintDesc '${STR:1}     # "BcDE"' ""
+  bpPrintDesc '${STR::-1}   # "ABcD"' ""
+  bpPrintDesc '${STR:1:-1}  # "BcD"' ""
   bpPrintDesc '${STR:^^}    # "ABCDE"' "To uppercase"
   bpPrintDesc '${STR:,,}    # "abcde"' "To lowercase"
   bpPrintLine 'Parameter substitution'
