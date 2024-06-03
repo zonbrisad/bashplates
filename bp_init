@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=2034
 #---------------------------------------------------------------------
 # Bashplate environment init script
 #
@@ -7,13 +8,12 @@
 # Run this from .bashrc file.
 #
 # source pathToThisFile/bp_init
-#
-#
-
-
 #---------------------------------------------------------------------
 
 InitSettings() {
+
+  BP_SELF_NAME=bp_init
+
   MODULE="${BP_SELF_DIR}/${BP_SELF_NAME}"
 }
 
@@ -33,14 +33,14 @@ source_exec() {
   bpLoadSettings
 
   # Add script path to global path
-  export PATH=${PATH}:${BP_SELF_DIR}
+  bpAddToPath "${BP_SELF_DIR}"
 
   # Add variable pointing to bashplate dir
   export BP_PATH=${BP_SELF_DIR}
 
   # Development mode
   if [ -f "${BP_SELF_DIR}/DEV" ]; then
-    export PATH=${PATH}:${BP_SELF_DIR}/dev
+    bpAddToPath "${BP_SELF_DIR}/dev"
     alias cdb='cd "${BP_SELF_DIR}"'
   fi
 
@@ -85,7 +85,7 @@ bpLoadSettings() {
       source ${bpSettings}
     fi
   fi
-	
+
   export BP_NAME
   export BP_EMAIL
   export BP_EDITOR
@@ -327,15 +327,23 @@ bpRmModule() { ##I Remove module
   bpRm "${BP_CONFIG_MODULES}/${1}"
 }
 
+#
+# $1 directory to add to PATH
+#
+bpAddToPath() { ##I Add directory to global PATH
+  NEW_PATH="$1"
+  if [[ ! $PATH == *"$NEW_PATH"* ]]; then
+    export PATH=${PATH}:${NEW_PATH}
+    #bpInfo "Adding path $NEW_PATH"
+  fi
+}
+
 #---------------------------------------------------------------------
 # Internal variables
 #---------------------------------------------------------------------
 
-# Directory where script is located
+##V Directory where script is located
 BP_SELF_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-
-##V Name of script
-BP_SELF_NAME=bp_init
 
 ##V Settings directory
 BP_CONFIG_DIR=~/.config/bashplates
@@ -352,7 +360,7 @@ fi
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   BP_SELF_NAME=$(basename "$0")
-	direct_exec
+  direct_exec
 else
   source_exec
 fi

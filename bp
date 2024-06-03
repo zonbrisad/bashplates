@@ -118,12 +118,12 @@ news() { ##D Create a new simple bashplate project
 }
 
 newi() { ##C BP_DEV Create new init script
-  name=$(bpReadStr "Enter name of new ${t}" "")
-  script="${name}_init"
-  #	bpCp "${BP_TEMPLATES}/bashplate-init" "${script}"
-  cat "${BP_TEMPLATES}/bashplate-init" >>"${script}"
+  name=$(bpReadStr "Enter name of init script" "")
   desc=$(bpReadStr "Enter description")
+  script="${name}"
+  cat "${BP_TEMPLATES}/bashplate-init" >>"${script}"
   bpReplace "${script}" "__DESC__" "${desc}"
+  bpReplace "${script}" "__NAME__" "${name}"
   chmod +x "${script}"
   bpOk "Created file $script"
 }
@@ -293,6 +293,7 @@ cs-cheat-sheet() {
   bpPrintLine 'Parameter default values'
   bpPrintDesc '${STR:-val}' '$STR, or val if STR is unset'
   bpPrintDesc '${STR:=val}' 'set $STR to val if unset'
+  bpPrintDesc '${STR:?message}' 'Show error message and exit if $STR is unset (or null)'
 
   bpPrintLine
 }

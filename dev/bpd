@@ -44,7 +44,7 @@ bpUserSettings() {
 # User defined functions
 #---------------------------------------------------------------------
 
-##- Project files
+##- Open project files in editor
 
 et() { ##D Edit bashplate template
   bpEdit "${BP_SELF_DIR}/../templates/bashplate" "$2"
@@ -66,19 +66,21 @@ ec() { ##D Edit Bashplate config file
   bpEdit "${BP_CONFIG}" "$2"
 }
 
-dl() { ##D Make diff with latest bashtemplate
+
+##- Open project files with diff program
+dl() { ##D Diff template with [file]
   ${BP_DIFF} "${BP_SELF_DIR}/../templates/bashplate" "$2"
 }
 
-dd() { ##D Diff with bpdev
+dd() { ##D Diff template with bpdev
   ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "${BP_SELF_DIR}/../bp"
 }
 
-dt() { ##D Diff bpdev with template
+dt() { ##D Diff template witdh bpdev
   ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "${BP_SELF_DIR}/../templates/bashplate"
 }
 
-de() { ##D Diff bpdev with external file
+de() { ##D Diff bpdev with [file]
   ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "$2"
 }
 
@@ -386,6 +388,7 @@ E_UL_BR_CYAN=$'\e[58;5;14m'    # Bright Cyan
 E_UL_WHITE=$'\e[58;5;15m'      # White
 
 # ANSI Text attributes
+E_RESET=$'\e[0m'              # Clear all attributes
 E_BOLD=$'\e[1m'               # Bold text
 E_DIM=$'\e[2m'                # Dim(low intensity) text
 E_ITALIC=$'\e[3m'             # Italic text
@@ -414,8 +417,6 @@ E_BACK=$'\e[D'    # Move cursor backward
 E_HIDE=$'\e[?25l' # Hide cursor
 E_SHOW=$'\e[?25h' # Show cursor
 
-E_RESET=$'\e[0m' # Clear Attributes
-
 # Default Bashplate colortheme
 BP_C_OK="${E_BR_GREEN}"
 BP_C_INFO="${E_BR_CYAN}"
@@ -436,11 +437,19 @@ BP_C_URL_SCHEME="${E_DARKGRAY}"
 BP_C_TIME="${E_BR_MAGENTA}"
 BP_C_DATE="${E_MAGENTA}"
 
+BP_C_QUERY=$'\e[38;5;194m'
+BP_C_QUERY_DEF=$'\e[38;5;240m'
+BP_C_EMPHASIS=$'\e[38;5;255m'
+BP_C_DEEMPHASIS=$'\e[38;5;250m'
+
 # Shellscript colorize colors
 BP_C_RESERVED="${E_RED}"
 BP_C_COMMENT="${E_CYAN}"
 BP_C_STRING="${E_GREEN}"
 BP_C_VAR="${E_BR_YELLOW}"
+
+# Separator line character
+BP_LINE_CHAR="-"
 
 # Exit codes
 #
@@ -455,6 +464,7 @@ BP_RIGHT_MARGIN=3
 #---------------------------------------------------------------------
 # Bashplate internal functions
 #---------------------------------------------------------------------
+# shellcheck disable=2155
 
 ##C- IHELP Printing functions
 

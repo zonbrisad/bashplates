@@ -1,34 +1,34 @@
 #!/usr/bin/env bash
 # shellcheck disable=2034
 #---------------------------------------------------------------------
-# __DESC__ 
-#    
+# __DESC__
+#
 #---------------------------------------------------------------------
 #
 
-##V Directory where script is located
-BP_SELF_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-
-#---------------------------------------------------------------------
 InitSettings() {
-    MODULE="${BP_SELF_DIR}/${BP_SELF}"
+
+  BP_SELF_NAME=__NAME__
+
+  MODULE="${BP_SELF_DIR}/${BP_SELF_NAME}"
 }
 
 direct_exec() {
-    if bpModuleIsInstalled "$MODULE"; then
-        if [ -n "$BP_QUIET" ] || bpReadBoolDY "Do you want to remove init module?"; then
-            bpRmModule "$(basename ${MODULE})"
-        fi
-    else
-        if [ -n "$BP_QUIET" ] || bpReadBoolDY "Do you want to install init module?"; then
-            bpAddModule "${MODULE}"
-        fi
+  if bpModuleIsInstalled "$MODULE"; then
+    if [ -n "$BP_QUIET" ] || bpReadBoolDY "Do you want to remove init module?"; then
+      bpRmModule "$(basename ${MODULE})"
     fi
+  else
+    if [ -n "$BP_QUIET" ] || bpReadBoolDY "Do you want to install init module?"; then
+      bpAddModule "${MODULE}"
+    fi
+  fi
 }
 
 source_exec() {
-    # Add script path to global path
-    export PATH=${PATH}:${BP_SELF_DIR}
+
+  # Add script path to global path
+  bpAddToPath "${BP_SELF_DIR}"
 }
 
 #---------------------------------------------------------------------
@@ -88,7 +88,7 @@ BP_C_CRITICAL="${E_BG_RED}${E_WHITE}"
 # ret colorized string
 #
 bpColorizeFile() { ##I Colorize string containing filename
-    echo "${BP_C_PATH}$(dirname "$1")/${BP_C_FILENAME}$(basename "$1")${E_RESET}"
+  echo "${BP_C_PATH}$(dirname "$1")/${BP_C_FILENAME}$(basename "$1")${E_RESET}"
 }
 
 #
@@ -98,16 +98,16 @@ bpColorizeFile() { ##I Colorize string containing filename
 #
 bpReadStr() { ##I Read string from commandline
 
-    if [ "${2}" == "" ]; then
-        read -erp "${1} > " result
-    else
-        read -erp "${1} [$2] > " result
-        if [ "${result}" == "" ]; then
-            result="${2}"
-        fi
+  if [ "${2}" == "" ]; then
+    read -erp "${1} > " result
+  else
+    read -erp "${1} [$2] > " result
+    if [ "${result}" == "" ]; then
+      result="${2}"
     fi
+  fi
 
-    echo "${result}"
+  echo "${result}"
 }
 
 #
@@ -118,23 +118,23 @@ bpReadStr() { ##I Read string from commandline
 # return integer read from cmdline/default if enter pressed
 #
 bpReadInt() { ##I Read integer from commandline
-    while true; do
-        if [ "${2}" == "" ]; then
-            read -erp "${1} ($3-$4) >" result
-            if [ "${result}" == "" ]; then
-                result=$(($3 - 1))
-            fi
-        else
-            read -erp "${1} ($3-$4) [$2] >" result
-            if [ "${result}" == "" ]; then
-                result="${2}"
-            fi
-        fi
-        if [ $((result)) -ge "$3" ] && [ $((result)) -le "$4" ]; then
-            break
-        fi
-    done
-    echo "${result}"
+  while true; do
+    if [ "${2}" == "" ]; then
+      read -erp "${1} ($3-$4) >" result
+      if [ "${result}" == "" ]; then
+        result=$(($3 - 1))
+      fi
+    else
+      read -erp "${1} ($3-$4) [$2] >" result
+      if [ "${result}" == "" ]; then
+        result="${2}"
+      fi
+    fi
+    if [ $((result)) -ge "$3" ] && [ $((result)) -le "$4" ]; then
+      break
+    fi
+  done
+  echo "${result}"
 }
 
 #
@@ -143,27 +143,27 @@ bpReadInt() { ##I Read integer from commandline
 # return 0 = Yes, 1=No
 #
 bpReadBool() { ##I Ask yes/no question generic
-    while true; do
+  while true; do
 
-        if [ "$2" -eq 1 ]; then
-            yn=$(bpReadStr "${1} [y/N]")
-        else
-            yn=$(bpReadStr "${1} [Y/n]")
-        fi
+    if [ "$2" -eq 1 ]; then
+      yn=$(bpReadStr "${1} [y/N]")
+    else
+      yn=$(bpReadStr "${1} [Y/n]")
+    fi
 
-        case "$yn" in
-        [Yy]*)
-            return 0
-            ;;
-        [Nn]*)
-            return 1
-            ;;
-        "")
-            return "$2"
-            ;;
-        *) echo "Please answer yes or no." ;;
-        esac
-    done
+    case "$yn" in
+    [Yy]*)
+      return 0
+      ;;
+    [Nn]*)
+      return 1
+      ;;
+    "")
+      return "$2"
+      ;;
+    *) echo "Please answer yes or no." ;;
+    esac
+  done
 }
 
 #
@@ -171,8 +171,8 @@ bpReadBool() { ##I Ask yes/no question generic
 # return 0 = Yes, 1=No
 #
 bpReadBoolDY() { ##I Ask yes/no question default yes
-    bpReadBool "$1" 0
-    return $?
+  bpReadBool "$1" 0
+  return $?
 }
 
 #
@@ -180,28 +180,28 @@ bpReadBoolDY() { ##I Ask yes/no question default yes
 # return 0 = Yes, 1=No
 #
 bpReadBoolDN() { ##I Ask yes/no question default no
-    bpReadBool "$1" 1
-    return $?
+  bpReadBool "$1" 1
+  return $?
 }
 
 bpOk() { ##I Success message
-    echo -e "[${BP_C_OK}Ok${E_RESET}] $1"
+  echo -e "[${BP_C_OK}Ok${E_RESET}] $1"
 }
 
 bpInfo() { ##I Info message
-    echo -e "[${BP_C_INFO}Info${E_RESET}] $1"
+  echo -e "[${BP_C_INFO}Info${E_RESET}] $1"
 }
 
 bpDebug() { ##I Debug message
-    echo -e "[${BP_C_DEBUG}Dbg${E_RESET}] $1"
+  echo -e "[${BP_C_DEBUG}Dbg${E_RESET}] $1"
 }
 
 bpWarning() { ##I Warning message
-    echo -e "[${BP_C_WARNING}Warning${E_RESET}] $1"
+  echo -e "[${BP_C_WARNING}Warning${E_RESET}] $1"
 }
 
 bpError() { ##I Error message
-    echo -e "[${BP_C_ERROR}Error${E_RESET}] $1"
+  echo -e "[${BP_C_ERROR}Error${E_RESET}] $1"
 }
 
 #
@@ -209,56 +209,67 @@ bpError() { ##I Error message
 # $2 link
 #
 bpLn() { ##I Create symbolic link
-    if [ ! -L "$1" ]; then
-        if ln -sf "${1}" "${2}"; then
-            bpOk "Creating link $(bpColorizeFile "${2}")."
-            return 0
-        else
-            bpError "Failed to create link $(bpColorizeFile "${2}")."
-            return 1
-        fi
+  if [ ! -L "$1" ]; then
+    if ln -sf "${1}" "${2}"; then
+      bpOk "Creating link $(bpColorizeFile "${2}")."
+      return 0
+    else
+      bpError "Failed to create link $(bpColorizeFile "${2}")."
+      return 1
     fi
+  fi
 }
 
 #
 # $1 file(s) to be removed
 #
 bpRm() { ##I Remove file(s)
-    if rm -rf "${1}"; then
-        bpOk "Removing file $(bpColorizeFile "${1}")."
-        return 0
-    else
-        bpError "Failed removing file $(bpColorizeFile "${1}")."
-        return 1
-    fi
+  if rm -rf "${1}"; then
+    bpOk "Removing file $(bpColorizeFile "${1}")."
+    return 0
+  else
+    bpError "Failed removing file $(bpColorizeFile "${1}")."
+    return 1
+  fi
 }
 
 bpModuleIsInstalled() {
-    if [ -e "${BP_CONFIG_MODULES}/"$(basename "$1") ]; then
-        return 0
-    else
-        return 1
-    fi
+  if [ -e "${BP_CONFIG_MODULES}/"$(basename "$1") ]; then
+    return 0
+  else
+    return 1
+  fi
 }
 
 bpAddModule() { ##I Add init script to
-    m=$(realpath "${1}")
-    if [ ! -L "$m" ]; then
-        rm -f "${BP_CONFIG_MODULES}/$(basename "${m}")"
-        bpLn "$m" "${BP_CONFIG_MODULES}/."
-    fi
+  m=$(realpath "${1}")
+  if [ ! -L "$m" ]; then
+    rm -f "${BP_CONFIG_MODULES}/$(basename "${m}")"
+    bpLn "$m" "${BP_CONFIG_MODULES}/."
+  fi
 }
 
 bpRmModule() { ##I Remove module
-    bpRm "${BP_CONFIG_MODULES}/${1}"
+  bpRm "${BP_CONFIG_MODULES}/${1}"
+}
+
+#
+# $1 directory to add to PATH
+#
+bpAddToPath() { ##I Add directory to global PATH
+  NEW_PATH="$1"
+  if [[ ! $PATH == *"$NEW_PATH"* ]]; then
+    export PATH=${PATH}:${NEW_PATH}
+    #bpInfo "Adding path $NEW_PATH"
+  fi
 }
 
 #---------------------------------------------------------------------
 # Internal variables
 #---------------------------------------------------------------------
 
-##V Name of script
-BP_SELF=$(basename "$0")
+##V Directory where script is located
+BP_SELF_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 ##V Settings directory
 BP_CONFIG_DIR=~/.config/bashplates
@@ -270,11 +281,12 @@ InitSettings
 
 getopts ":q" option
 if [ "$option" == "q" ]; then
-    BP_QUIET=1
+  BP_QUIET=1
 fi
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    direct_exec
+  BP_SELF_NAME=$(basename "$0")
+  direct_exec
 else
-    source_exec
+  source_exec
 fi

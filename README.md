@@ -273,6 +273,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [x] bpPrintDesc zero length description bug
 - [ ] bpPrintDesc formats key/desc wrong when including terminal characters in key
 - [ ] Fixing bpExit code handling in subcommand dispatcher
+- [ ] Fix PRE_SCRIPT_HOOK 
 
 ## TODO
 - [ ] Add option parser
@@ -292,7 +293,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] Add color theme override to setup file
 - [x] Format/fold long description texts
 - [x] Remove settings command and include it into bpset
-- [ ] Update bpAssertProg to using bpHasCmd
+- [x] Update bpAssertProg to using bpHasCmd
 - [x] A more comprehensive cheat sheet
 - [x] Add exit codes to cheat sheet https://www.redhat.com/sysadmin/exit-codes-demystified
 - [x] multi column output (cheat sheet)
@@ -302,13 +303,15 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] Add a log complete command command, like bpExecLog that logs the entire command string and exit code
 - [ ] Logg exit code of executed commands
 - [ ] logg when bpRun i called
-- [ ] Added BP_SELF_NAME, to eventually replate BP_SELF
+- [ ] Added BP_SELF_NAME, to eventually replace BP_SELF
 - [ ] Change BP_SELF to $BP_SELF_DIR/$BP_SELF_NAME, for clarity
 - [ ] Add a BP_TEMPLATE variable pointing to main bashplate template
 - [ ] Declare local variables local by using local keyword `local MY_VAR=XXX`
 - [ ] improved error/crash information printout https://unix.stackexchange.com/questions/39623/trap-err-and-echoing-the-error-line
 - [ ] add all? errorcodes in cleartext in a large table 
 - [ ] Rename bpHasCmd to something like bpIsCmd/bpIsCommand see bpIsFunction
+- [ ] Save and restore IFS variable in functions setting/using the IFS variable
+
 
 ## Sugestions
  - Plugin system
