@@ -20,7 +20,7 @@ InitSettings() {
 direct_exec() {
   if bpModuleIsInstalled "$MODULE"; then
     if [ -n "$BP_QUIET" ] || bpReadBoolDY "Do you want to remove init module?"; then
-      bpRmModule "$(basename ${MODULE})"
+      bpRmModule "$(basename "${MODULE}")"
     fi
   else
     if [ -n "$BP_QUIET" ] || bpReadBoolDY "Do you want to install init module?"; then
