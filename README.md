@@ -337,10 +337,11 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 ## Documentation overhaul(again)
 The documentation system is confusing and not particularly consistent. A new revised model is needed.
 ### Sugestion 1
-\##F for function documentation
-##I for internal documentation
-##- For line documentation
-##V for variable documentation
+
+- ##F for function documentation
+- ##I for internal documentation
+- ##- For line documentation
+- ##V for variable documentation
 
 Behaviour can be changed with different suffixes.
 - C for conditional display.
