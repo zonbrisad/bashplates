@@ -311,6 +311,8 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] add all? errorcodes in cleartext in a large table 
 - [ ] Rename bpHasCmd to something like bpIsCmd/bpIsCommand see bpIsFunction
 - [ ] Save and restore IFS variable in functions setting/using the IFS variable
+- [ ] Rename function bpRemoveLineContainging to bpRemoveLine to better match bpReplaceLine
+- [ ] Add commenttype that is always dissabled but visible, like comment or "to be implemented" something like ##DN or ##DV
 
 
 ## Sugestions
@@ -330,7 +332,22 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
  - move code from bp_init to bp
  - make columnize.py to a sepparate project
  - presentation mode that shows separated in/out data in hex
- - Enable certain commands as bpMkDir, bpLn, bpRm, bpMv to execute as root using a variable like bpSudo=true
+ - Enable certain commands as bpMkDir, bpLn, bpRm, bpMv, bpReplace, bpReplaceLine, bpRemoveLineContaining to execute as root using a variable like bpSudo=true
+
+## Documentation overhaul(again)
+The documentation system is confusing and not particularly consistent. A new revised model is needed.
+### Sugestion 1
+##F for function documentation
+##I for internal documentation
+##- For line documentation
+##V for variable documentation
+
+Behaviour can be changed with different suffixes.
+- C for conditional display.
+A conditional function will therefore be ##FC "CONDVAR", and a conditional line is ##-C "CONDVAR"
+Other useful suffixes might be deprecated and unavailable
+
+
 
 
 ## References and tutorials
