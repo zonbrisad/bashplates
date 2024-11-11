@@ -277,12 +277,18 @@ cs-cheat-sheet() {
   bpPrintDesc '${#STR}      # 5' "Length"
   bpPrintDesc 'POINTER=STR' ""
   bpPrintDesc '${!POINTER}  # ABcDE' ""
+
   bpPrintLine 'Parameter slicing'
   bpPrintDesc '${STR:1}     # "BcDE"' ""
   bpPrintDesc '${STR::-1}   # "ABcD"' ""
   bpPrintDesc '${STR:1:-1}  # "BcD"' ""
+
+  bpPrintDesc '${STR::1}    # "A"' "First char(s)"
+  bpPrintDesc '${STR: -1}   # "E"' "Last char(s)"
+
   bpPrintDesc '${STR:^^}    # "ABCDE"' "To uppercase"
   bpPrintDesc '${STR:,,}    # "abcde"' "To lowercase"
+
   bpPrintLine 'Parameter substitution'
   bpPrintDesc '${STR%suffix}' "Remove suffix"
   bpPrintDesc '${STR#prefix}' "Remove prefix"
@@ -292,11 +298,16 @@ cs-cheat-sheet() {
   bpPrintDesc '${STR//from/to}' "Replace all"
   bpPrintDesc '${STR/%from/to}' "Replace suffix"
   bpPrintDesc '${STR/#from/to}' "Replace prefix"
+
   bpPrintLine 'Parameter default values'
   bpPrintDesc '${STR:-val}' '$STR, or val if STR is unset'
   bpPrintDesc '${STR:=val}' 'set $STR to val if unset'
   bpPrintDesc '${STR:?message}' 'Show error message and exit if $STR is unset (or null)'
+  bpPrintLine
 
+  bpPrintLine "Variables"
+  bpPrintDesc "FUNCNAME[0]" "List of callstack, [0] = current executing function"
+  bpPrintDesc "LINENO" "Current executing line of code"
   bpPrintLine
 }
 
@@ -459,6 +470,153 @@ cs-exit-codes() {
   bpPrintDesc "132" "Operation not possible due to RF-kill"
   bpPrintDesc "133" "Memory page has hardware error"
   bpPrintLine
+}
+
+csv() { ##D List bash internal variables
+  # https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html
+  # https://tldp.org/LDP/abs/html/internalvariables.html
+
+  BP_LINE_CHAR=""
+  #BP_KEY_LENGTH="6"
+
+  # if [ "$BP_COLUMNS" -ge 200 ]; then
+  #   BP_COLUMNS=$(("$BP_COLUMNS" / 4 - 1))
+  #   cs-variables | "${BP_SELF_DIR}"/dev/columnize.py --columns 4
+  #   return
+  # fi
+
+  if ((BP_COLUMNS > 150)); then
+    BP_COLUMNS=$(("$BP_COLUMNS" / 3 - 1))
+    cs-variables | "${BP_SELF_DIR}"/dev/columnize.py --columns 3
+    return
+  fi
+
+  if ((BP_COLUMNS > 100)); then
+    BP_COLUMNS=$(("$BP_COLUMNS" / 2 - 1))
+    cs-variables | "${BP_SELF_DIR}"/dev/columnize.py --columns 2
+    return
+  fi
+  cs-variables
+}
+
+#shellcheck disable=2016
+cs-variables() {
+  # https://devhints.io/bash
+
+  bpPrintLine "BASH variables"
+  bpPrintDesc "BASH" ""
+  bpPrintDesc "BASHOPTS" ""
+  bpPrintDesc "BASHPID" ""
+  bpPrintDesc "BASH_ALIASES" ""
+  bpPrintDesc "BASH_ARGC" ""
+  bpPrintDesc "BASH_ARGV" ""
+  bpPrintDesc "BASH_ARGV0" ""
+  bpPrintDesc "BASH_CMDS" ""
+  bpPrintDesc "BASH_COMMAND" ""
+  bpPrintDesc "BASH_COMPAT" ""
+  bpPrintDesc "BASH_ENV" ""
+  bpPrintDesc "BASH_EXECUTION_STRING" ""
+  bpPrintDesc "BASH_LINENO" ""
+  bpPrintDesc "BASH_LOADABLES_PATH" ""
+  bpPrintDesc "BASH_REMATCH" ""
+  bpPrintDesc "BASH_SOURCE" ""
+  bpPrintDesc "BASH_SUBSHELL" ""
+  bpPrintDesc "BASH_VERSIONINFO[]" ""
+  bpPrintDesc "BASH_VERSION" ""
+  bpPrintDesc "BASH_XTRACEFD" ""
+  bpPrintDesc "CHILD_MAX" ""
+  bpPrintDesc "COLUMNS" ""
+  bpPrintDesc "COMP_CWORD" ""
+  bpPrintDesc "COMP_LINE" ""
+  bpPrintDesc "COMP_POINT" ""
+  bpPrintDesc "COMP_TYPE" ""
+  bpPrintDesc "COMP_KEY" ""
+  bpPrintDesc "COMP_WORDBREAKS" ""
+  bpPrintDesc "COMP_WORD" ""
+  bpPrintDesc "COMREPLY" ""
+  bpPrintDesc "COPROC" ""
+  bpPrintDesc "DIRSTACK" ""
+  bpPrintDesc "EMACS" ""
+  bpPrintDesc "ENV" ""
+  bpPrintDesc "EPOCHREALTIME" ""
+  bpPrintDesc "EPOCHSECONDS" ""
+  bpPrintDesc "EUID" ""
+  bpPrintDesc "EXECIGNORE" ""
+  bpPrintDesc "FCEDIT" ""
+  bpPrintDesc "FIGNORE" ""
+  bpPrintDesc "FUNCNAME" ""
+  bpPrintDesc "FUNCNEST" ""
+  bpPrintDesc "GLOBIGNORE" ""
+  bpPrintDesc "GROUPS" ""
+  bpPrintDesc "HOME" ""
+  bpPrintDesc "histchars" ""
+  bpPrintDesc "HISTCMD" ""
+  bpPrintDesc "HISTCONTROL" ""
+  bpPrintDesc "HISTFILE" ""
+  bpPrintDesc "HISTFILESIZE" ""
+  bpPrintDesc "HISTIGNORE" ""
+  bpPrintDesc "HISTSIZE" ""
+  bpPrintDesc "HISTTIMEFORMAT" ""
+  bpPrintDesc "HOSTFILE" ""
+  bpPrintDesc "HOSTNAME" ""
+  bpPrintDesc "HOSTTYPE" ""
+  bpPrintDesc "IFS" ""
+  bpPrintDesc "IGNOREEOF" ""
+  bpPrintDesc "INPUTRC" ""
+  bpPrintDesc "INSIDE_EMACS" ""
+  bpPrintDesc "LANG" ""
+  bpPrintDesc "LC_ALL" ""
+  bpPrintDesc "LC_COLLATE" ""
+  bpPrintDesc "LC_CTYPE" ""
+  bpPrintDesc "LC_MESSAGES" ""
+  bpPrintDesc "LC_NUMERIC" ""
+  bpPrintDesc "LC_TIME" ""
+  bpPrintDesc "LINENO" ""
+  bpPrintDesc "LINES" ""
+  bpPrintDesc "MACHTYPE" ""
+  bpPrintDesc "MAILCHECK" ""
+  bpPrintDesc "MAPFILE" ""
+  bpPrintDesc "OLDPWD" ""
+  bpPrintDesc "OPTERR" ""
+  bpPrintDesc "OSTYPE" ""
+  bpPrintDesc "PIPETYPE" ""
+  bpPrintDesc "POSIXLY_CORRECT" ""
+  bpPrintDesc "PPID" ""
+  bpPrintDesc "PROMPT_COMMAND" ""
+  bpPrintDesc "PROMPT_DIRTRIM" ""
+  bpPrintDesc "PS0" ""
+  bpPrintDesc "PS1" ""
+  bpPrintDesc "PS2" ""
+  bpPrintDesc "PS3" ""
+  bpPrintDesc "PWD" ""
+  bpPrintDesc "RANDOM" ""
+  bpPrintDesc "READLINE_ARGUMENT" ""
+  bpPrintDesc "READLINE_LINE" ""
+  bpPrintDesc "READLINE_MARK" ""
+  bpPrintDesc "READLINE_POINT" ""
+  bpPrintDesc "REPLY" ""
+  bpPrintDesc "SECONDS" ""
+  bpPrintDesc "SHELL" ""
+  bpPrintDesc "SHELLOPTS" ""
+  bpPrintDesc "SHLVL" ""
+  bpPrintDesc "SRANDOM" ""
+  bpPrintDesc "TIMEFORMAT" ""
+  bpPrintDesc "TMOUT" ""
+  bpPrintDesc "TMPDIR" ""
+  bpPrintDesc "UID" ""
+
+  bpPrintLine "Positional parameters"
+  bpPrintDesc '$0, $1, $2, etc' ""
+  bpPrintDesc '$#' ""
+  bpPrintDesc '$*' ""
+  bpPrintDesc '$@' ""
+
+  bpPrintLine "Other special parameters"
+  bpPrintDesc '$-' ""
+  bpPrintDesc '$!' ""
+  bpPrintDesc '$_' ""
+  bpPrintDesc '$?' ""
+  bpPrintDesc '$$' ""
 }
 
 bp_phh() {

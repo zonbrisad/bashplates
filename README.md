@@ -313,6 +313,10 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] Save and restore IFS variable in functions setting/using the IFS variable
 - [ ] Rename function bpRemoveLineContainging to bpRemoveLine to better match bpReplaceLine
 - [ ] Add commenttype that is always dissabled but visible, like comment or "to be implemented" something like ##DN or ##DV
+- [ ] Add internal BASH variables to cheatsheet  https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html
+- [ ] Improve output from bpCallStack
+- [ ] Change bpCallStack to bpPrintCallStack
+
 
 
 ## Sugestions
@@ -354,6 +358,7 @@ Other useful suffixes might be deprecated and unavailable
 ## References and tutorials
 
 [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.html#Programmable-Completion)
+[Bash Variables](https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html)
 [Internal Variables](https://tldp.org/LDP/abs/html/internalvariables.html)
 [BASH arithmetics](https://www.shell-tips.com/bash/math-arithmetic-calculation/#gsc.tab=0)
 [Best Practices for Writing Bash Scripts](http://kvz.io/blog/2013/11/21/bash-best-practices/)

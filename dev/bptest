@@ -46,12 +46,26 @@ bpUserSettings() {
   BP_PREAMBLE="#!/usr/bin/env bash"
   BP_HEADER=${BP_TEMPLATES}/header
 
-  if [ -f ${BP_DIR}/BP_DEV ]; then
+  if [ -f "${BP_DIR}/BP_DEV" ]; then
     BP_DEV=1
-  fi 
-	
-  TDIR=${BP_SELF_DIR}/bp_test_directory
-	RO_DIR=${TDIR}/read_only_dir
+  fi
+
+  TEST_DIR=${BP_SELF_DIR}/bp_test_directory
+  CREATE_DIR=${TEST_DIR}/create_dir
+  RO_DIR=${TEST_DIR}/read_only_dir
+
+  FILE1=${TEST_DIR}/file1
+  FILE1COPY="${FILE1}-copy"
+  FILE1LINK="${FILE1}-link"
+
+  #FILE2=${TEST_DIR}/file2
+  FILE2REMOVE=${TEST_DIR}/file_to_remove
+  FILE2RENAME=${TEST_DIR}/file_to_rename
+  FILE2BACKUP=${TEST_DIR}/file_to_backup
+
+  FNE=${TEST_DIR}/file_not_exist
+  FNECOPY="${FNE}-copy"
+  FNELINK="${FNE}-link"
 }
 #---------------------------------------------------------------------
 # User defined functions
@@ -62,134 +76,162 @@ bpUserSettings() {
 S=0
 F=0
 
-
 test_cleanup() { ## Test cleanup
-  rm -rf ${TDIR}
+  rm -rf "${TEST_DIR}"
 }
 
 test_setup() { ## Test setup
   test_cleanup
-	
-	mkdir  ${TDIR}
-	mkdir  ${RO_DIR}
-	
-	chmod -w ${RO_DIR}
+
+  mkdir "${TEST_DIR}"
+  mkdir "${RO_DIR}"
+
+  chmod -w "${RO_DIR}"
+
+  # Creating file1
+  echo -e "Some text for testing.\n\nSome more text" >"${FILE1}"
+
+  #touch "${FILE2}"
+  touch "${FILE2REMOVE}"
+  touch "${FILE2RENAME}"
+  touch "${FILE2BACKUP}"
 }
 
+TEST_SUCCESS() {
+  ((S++))
+  printf "${BP_C_OK}%-8s${E_RESET} %-30s %-20s\n" "Success" "$1" "${FUNCNAME[1]}"
+}
 
-update_test() {
+TEST_FAIL() {
+  ((F++))
+  printf "${BP_C_ERROR}%-8s${E_RESET} %-30s %-20s\n" "Fail" "$1" "${FUNCNAME[1]}"
+  # echo ${FUNCNAME[@]}
+  # echo ${BASH_LINENO[@]}
+}
 
-  echo "XXXXXXXXXX $1"
-  if $?; then
-    (( S++ ))
+ASSERT_COMMAND_FAIL() {
+  if [ $? != 0 ]; then
+    TEST_SUCCESS "$1"
   else
-    (( F++ ))
+    TEST_FAIL "$1"
   fi
+}
+
+ASSERT_COMMAND_SUCCESS() {
+  if [ $? == 0 ]; then
+    TEST_SUCCESS "$1"
+  else
+    TEST_FAIL "$1"
+  fi
+}
+
+ASSERT_FILE_EXISTS() {
+  #bpInfo "$1"
+  if [ -e "$1" ]; then
+    TEST_SUCCESS "$2"
+  else
+    TEST_FAIL "$2"
+  fi
+}
+
+ASSERT_FILE_NOT_EXISTS() {
+  if [ ! -e "$1" ]; then
+    TEST_SUCCESS "$2"
+  else
+    TEST_FAIL "$2"
+  fi
+}
+
+ASSERT_DIRECTORY_EXISTS() {
+  if [ -d "$1" ]; then
+    TEST_SUCCESS "$2"
+  else
+    TEST_FAIL "$2"
+  fi
+}
+
+ASSERT_DIRECTORY_NOT_EXISTS() {
+  if [ ! -d "$1" ]; then
+    TEST_SUCCESS "$2"
+  else
+    TEST_FAIL "$2"
+  fi
+}
+
+ASSERT_LINK_EXISTS() {
+  if [ -h "$1" ]; then
+    TEST_SUCCESS "$2"
+  else
+    TEST_FAIL "$2"
+  fi
+}
+
+prePrint() {
+  printf "%80s" ""
 }
 
 tf() { ##D Test file manipulation functions
-  local CREATE_DIR=${TDIR}/create_dir
-  local F1=${TDIR}/file1
-  local F2=${TDIR}/file2
-  local F3=${TDIR}/file3
-  local FL=${TDIR}/file1_link
-  local FNE=${TDIR}/file_not_exist
-#  local S=0
-#  local F=0
- 
+
   test_setup
-  
-  if  bpMkDir ${CREATE_DIR} ; then
-    (( S++ ))
-  else
-    (( F++ ))
-  fi
-  
-  # Creating test file
-  echo -e "Some text for testing.\n\nSome more text" > $F1
 
-  bpMkDir ${RO_DIR}/fail_to_create_dir
-#	update_test $( [ -d ${RO_DIR}/fail_to_create_dir ] )
-	update_test $( [ ! $? ] )
-	update_test $( [ $? ] )
+  bpMkDir "${CREATE_DIR}" &>/dev/null
+  ASSERT_COMMAND_SUCCESS "Create dir"
+  ASSERT_DIRECTORY_EXISTS "${CREATE_DIR}" "Create dir"
 
+  bpMkDir "${RO_DIR}/fail_to_create_dir" &>/dev/null
+  ASSERT_COMMAND_FAIL "Create dir in RO dir"
+  ASSERT_DIRECTORY_NOT_EXISTS "${RO_DIR}/fail_to_create_dir" "Create dir in RO dir"
 
-#	if bpMkDir ${RO_DIR}/fail_to_create_dir ; then
-#    (( F++ ))
-#  else 
-#    (( S++ ))
-#  fi
-  
-  if bpCp ${F1} ${F2} ; then
-    (( S++ ))
-  else
-    (( F++ ))
-  fi
+  bpCp "${FILE1}" "${FILE1COPY}" &>/dev/null
+  ASSERT_COMMAND_SUCCESS "Copy file"
+  ASSERT_FILE_EXISTS "${FILE1COPY}" "Copy file"
 
-  if bpCp ${FNE} ${F2} ; then
-    (( F++ ))
-  else
-    (( S++ ))
-  fi
+  bpCp "${FNE}" "${FNECOPY}" &>/dev/null
+  ASSERT_COMMAND_FAIL "Copy non existing file"
+  ASSERT_FILE_NOT_EXISTS "${FNECOPY}" "Copy non existing file"
 
-  if bpBackup ${F1} ; then
-    (( S++ ))
-  else
-    (( F++ ))
-  fi
+  bpBackup "${FILE2BACKUP}" &>/dev/null
+  ASSERT_COMMAND_SUCCESS "File backup"
+  ASSERT_FILE_EXISTS "${CREATE_DIR}/*.bak" "File backup"
 
-  if bpBackup ${FNE} ; then
-    (( F++ ))
-  else
-    (( S++ ))
-  fi
+  bpBackup "${FNE}" &>/dev/null
+  ASSERT_COMMAND_FAIL "File backup non existing file"
 
-  if bpMv ${F2} ${F3} ; then
-    (( S++ ))
-  else
-    (( F++ ))
-  fi
-  
-  if bpMv ${FNE} ${F3} ; then
-    (( F++ ))
-  else
-    (( S++ ))
-  fi
+  prePrint
+  bpMv "${FILE2RENAME}" "${FILE2RENAME}-renamed"
+  ASSERT_COMMAND_SUCCESS "Move/rename command"
+  ASSERT_FILE_EXISTS "${FILE2RENAME}-renamed" "Move/rename command"
 
-  if bpRm ${F3} ; then
-    (( S++ ))
-  else
-    (( F++ ))
-  fi
+  prePrint
+  bpMv "${FNE}" "${FNE}-renamed"
+  ASSERT_COMMAND_FAIL "Rename non existing file"
 
-  if bpRm ${FNE} ; then
-    (( S++ ))
-  else
-    (( F++ ))
-  fi
+  prePrint
+  bpRm "${FILE2REMOVE}"
+  ASSERT_COMMAND_SUCCESS "File remove"
+  ASSERT_FILE_NOT_EXISTS "${FILE2REMOVE}" "File remove"
 
-  if bpLn ${F1}  ${FL} ; then
-    (( S++ ))
-  else
-    (( F++ ))
-  fi
+  prePrint
+  bpRm "${FNE}"
+  ASSERT_COMMAND_FAIL "Remove non existing file"
 
-  if bpLn ${FNE}  ${FL} ; then
-    (( S++ ))
-  else
-    (( F++ ))
-  fi
+  prePrint
+  bpLn "${FILE1}" "${FILE1LINK}"
+  ASSERT_COMMAND_SUCCESS "File link"
+  ASSERT_LINK_EXISTS "${FILE1LINK}" "File link"
 
-#  test_cleanup
+  prePrint
+  bpLn "${FNE}" "${FNELINK}"
+
+  #  test_cleanup
 
   bpPrintLine "Stats"
   bpPrintDesc "Success" "$S"
-  bpPrintDesc "Fail"    "$F"
+  bpPrintDesc "Fail" "$F"
   bpPrintLine
 }
 
-
-##-
+#-
 
 #---------------------------------------------------------------------
 # Bashplate settings
