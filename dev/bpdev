@@ -520,6 +520,14 @@ args() { ##D Argument parsing with (getopts)
   done
 }
 
+argument() { ##D Argument numbering
+  echo "${@:-2}"
+}
+
+lls() { ##D ls
+  bpPrintDesc "ls" "$(ls -l)"
+}
+
 ##- Signals
 
 xxx() {

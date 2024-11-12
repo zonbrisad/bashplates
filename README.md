@@ -316,15 +316,13 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] Add internal BASH variables to cheatsheet  https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html
 - [ ] Improve output from bpCallStack
 - [ ] Change bpCallStack to bpPrintCallStack
+- [ ] Add bpInfo message to bpMkDir and bpLn if file/link already exists
 
 
 
 ## Sugestions
  - Plugin system
  - automatic completion generator
- - Mail feature
- - dictionary abstract datatype
- - Use logrotate for logs
  - Rename iview to iv
  - Rename ivars to ivar or iva 
  - Rename iinfo to ii
@@ -334,9 +332,17 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
    answers between runs
  - Rewrite hook system to elliminate hook variables
  - move code from bp_init to bp
- - make columnize.py to a sepparate project
  - presentation mode that shows separated in/out data in hex
  - Enable certain commands as bpMkDir, bpLn, bpRm, bpMv, bpReplace, bpReplaceLine, bpRemoveLineContaining to execute as root using a variable like bpSudo=true
+ - Rename bpRun to bpDo and bpSudo
+ - Rename bpPrindDesc to bpPrintKeyVal
+ - Shift parameters(left) sent to command functions using shift to allow commandfunctions to be used internaly 
+ 
+### Less priority sugestions
+ - make columnize.py to a sepparate project
+ - dictionary abstract datatype
+ - Mail feature
+ - Use logrotate for logs
 
 ## Documentation overhaul(again)
 The documentation system is confusing and not particularly consistent. A new revised model is needed.
@@ -351,6 +357,8 @@ Behaviour can be changed with different suffixes.
 - C for conditional display.
 A conditional function will therefore be ##FC "CONDVAR", and a conditional line is ##-C "CONDVAR"
 Other useful suffixes might be deprecated and unavailable
+- Add deprecated 
+- Add not enabled
 
 
 

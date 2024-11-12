@@ -66,13 +66,12 @@ ec() { ##D Edit Bashplate config file
   bpEdit "${BP_CONFIG}" "$2"
 }
 
-
 ##- Open project files with diff program
 dl() { ##D Diff template with [file]
   ${BP_DIFF} "${BP_SELF_DIR}/../templates/bashplate" "$2"
 }
 
-dd() { ##D Diff template with bpdev
+dd() { ##D Diff bp with bpdev
   ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "${BP_SELF_DIR}/../bp"
 }
 

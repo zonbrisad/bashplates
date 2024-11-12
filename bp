@@ -249,45 +249,72 @@ cs-cheat-sheet() {
   bpPrintDesc '< FILE' "Pipe file to command"
   bpPrintDesc '<<< VAR' "Pipe variable to command"
 
-  bpPrintLine "Array defining"
-  bpPrintDesc "Fruits=('Apple' 'Banana' 'Orange')" "" "35"
+  bpPrintLine "Array assigning"
+  bpPrintDesc "Array=('A' 'B' 'C')" "Assign direct"
   bpPrintLine
-  bpPrintDesc 'FS="Apple Banana Orange"'
-  bpPrintDesc 'read -r -a Fruits <<< $FS' "" "35"
+  bpPrintDesc 'LS="A B C"' "Assign via read"
+  bpPrintDesc 'read -r -a Array <<< $LS' ""
   bpPrintLine
-  bpPrintDesc 'Fruits[0]="Apple"' "Append element"
-  bpPrintDesc 'Fruits[1]="Banana"' "Append element"
-  bpPrintDesc 'Fruits[2]="Orange"' "Append element"
-  bpPrintDesc 'Fruits+=("Grape")' "Append element"
+  bpPrintDesc 'Array+=("D")' "Append element"
 
   bpPrintLine "Array operations"
-  #bpPrintDesc "Fruits=(\"\${Fruits[@]}\" \"Grape\")"
-  #  bpPrintDesc "Fruits=(\"\${Fruits[@]}\" \"Grape\")" "Append element" "35"
-  bpPrintDesc '${Fruits[n]}' "Element n"
-  bpPrintDesc '${Fruits[-1]}' "Last element"
-  bpPrintDesc '${Fruits[@]}' "All elements, space separated"
-  bpPrintDesc '${#Fruits[@]}' "Nr of elements"
-  bpPrintDesc '${#Fruits[n]}' "String lenght of nth element"
-  bpPrintDesc '${Fruits[@]:3:2}' "Range (from pos 3, length 2)"
-  bpPrintDesc '${!Fruits[@]}' "Keys of all elements"
-  # x=($(cat "kalle"))
+  bpPrintDesc '${Array[n]}' "Element n"
+  bpPrintDesc '${Array[-1]}' "Last element"
+  bpPrintDesc '${Array[-2]}' "Second to last element"
+  bpPrintDesc '${Array[@]}    # A B C D' "All elements"
+  bpPrintDesc '${Array[@]:1}  # B C D' "All but first element"
+  bpPrintDesc '${Array[@]:2}  # C D' "All but two first elements"
+  bpPrintDesc '${Array[@]::1} # A' "First element"
+  bpPrintDesc '${Array[@]::2} # A B' "Two first elements"
+
+  bpPrintDesc '${#Array[@]}' "Nr of elements"
+  bpPrintDesc '${#Array[n]}' "String lenght of nth element"
+  bpPrintDesc '${Array[@]:3:2}' "Range (from pos 3, length 2)"
+  bpPrintDesc '${!Array[@]}   # 0 1 2 3' "Keys of all elements"
+
+  # bpPrintLine "Array defining"
+  # bpPrintDesc "Fruits=('Apple' 'Banana' 'Orange')" "" "35"
+  # bpPrintLine
+  # bpPrintDesc 'FS="Apple Banana Orange"'
+  # bpPrintDesc 'read -r -a Fruits <<< $FS' "" "35"
+  # bpPrintLine
+  # bpPrintDesc 'Fruits[0]="Apple"' "Append element"
+  # bpPrintDesc 'Fruits[1]="Banana"' "Append element"
+  # bpPrintDesc 'Fruits[2]="Orange"' "Append element"
+  # bpPrintDesc 'Fruits+=("Grape")' "Append element"
+
+  # bpPrintLine "Array operations"
+  # bpPrintDesc '${Fruits[n]}' "Element n"
+  # bpPrintDesc '${Fruits[-1]}' "Last element"
+  # bpPrintDesc '${Fruits[@]}' "All elements, space separated"
+  # bpPrintDesc '${#Fruits[@]}' "Nr of elements"
+  # bpPrintDesc '${#Fruits[n]}' "String lenght of nth element"
+  # bpPrintDesc '${Fruits[@]:3:2}' "Range (from pos 3, length 2)"
+  # bpPrintDesc '${!Fruits[@]}' "Keys of all elements"
 
   bpPrintLine "Parameter basics"
-  bpPrintDesc 'STR="ABcDE"' "Assignment"
-  bpPrintDesc '${#STR}      # 5' "Length"
+  bpPrintDesc 'STR="ABCD"    # "ABCD"' "Assign"
+  bpPrintDesc 'STR="${STR}E" # "ABCDE"' "Append"
+  bpPrintDesc '${#STR}       # 5' "Length"
   bpPrintDesc 'POINTER=STR' ""
-  bpPrintDesc '${!POINTER}  # ABcDE' ""
+  bpPrintDesc '${!POINTER}   # "ABCDE"' "Pointer to parameter"
 
   bpPrintLine 'Parameter slicing'
-  bpPrintDesc '${STR:1}     # "BcDE"' ""
-  bpPrintDesc '${STR::-1}   # "ABcD"' ""
-  bpPrintDesc '${STR:1:-1}  # "BcD"' ""
+  bpPrintDesc '${STR:index:length}' ""
+  bpPrintLine
+  bpPrintDesc '${STR:1}      # "BCDE"' ""
+  bpPrintDesc '${STR:2}      # "CDE"' ""
+  bpPrintDesc '${STR::-1}    # "ABCD"' ""
+  bpPrintDesc '${STR::-2}    # "ABC"' ""
+  bpPrintDesc '${STR:1:-1}   # "BCD"' ""
 
-  bpPrintDesc '${STR::1}    # "A"' "First char(s)"
-  bpPrintDesc '${STR: -1}   # "E"' "Last char(s)"
+  bpPrintDesc '${STR::1}     # "A"' "First char"
+  bpPrintDesc '${STR::2}     # "AB"' "First chars"
+  bpPrintDesc '${STR: -1}    # "E"' "Last char"
+  bpPrintDesc '${STR: -2}    # "DE"' "Last chars"
 
-  bpPrintDesc '${STR:^^}    # "ABCDE"' "To uppercase"
-  bpPrintDesc '${STR:,,}    # "abcde"' "To lowercase"
+  bpPrintDesc '${STR:,,}     # "abcde"' "To lowercase"
+  bpPrintDesc '${STR:^^}     # "ABCDE"' "To uppercase"
 
   bpPrintLine 'Parameter substitution'
   bpPrintDesc '${STR%suffix}' "Remove suffix"
@@ -305,10 +332,14 @@ cs-cheat-sheet() {
   bpPrintDesc '${STR:?message}' 'Show error message and exit if $STR is unset (or null)'
   bpPrintLine
 
-  bpPrintLine "Variables"
-  bpPrintDesc "FUNCNAME[0]" "List of callstack, [0] = current executing function"
-  bpPrintDesc "LINENO" "Current executing line of code"
-  bpPrintLine
+  # bpPrintLine "Variables"
+  #bpPrintDesc "FUNCNAME[0]" $'List of callstack\n[0] = current executing function'
+  # bpPrintDesc "LINENO" "Current executing line of code"
+  # bpPrintLine
+}
+
+lls() { ##D ls
+  bpPrintDesc "ls" "$(ls -l)"
 }
 
 cse() { ##D List bash exit codes
