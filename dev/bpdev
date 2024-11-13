@@ -520,12 +520,13 @@ args() { ##D Argument parsing with (getopts)
   done
 }
 
-argument() { ##D Argument numbering
-  echo "${@:-2}"
-}
+argshift() { ##D Argument shifting
+  # https://ss64.com/bash/shift.html
+  # https://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_07.html
 
-lls() { ##D ls
-  bpPrintDesc "ls" "$(ls -l)"
+  echo "${@}"
+  shift 1
+  echo "${@}"
 }
 
 ##- Signals
