@@ -676,7 +676,6 @@ ascii() { ##D Print Ascii table
 }
 
 print-ascii() {
-  #bpPrintLine "Ascii table"
   LEN=${#asciiTable[@]}
   i=0
 
@@ -693,7 +692,6 @@ print-ascii() {
     ((i++))
     desc=${asciiTable[$i]}
     ((i++))
-    # echo $dec $hex $bin $symbol $desc
     printChar "$dec" "$hex" "$bin" "$symbol" "$escape" "$desc"
   done
 }

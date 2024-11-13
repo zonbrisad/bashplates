@@ -95,6 +95,12 @@ status() { ##D Git status
   bpCd -
 }
 
+hist() { ##D Git status
+  bpCd "${BP_SELF_DIR}"
+  git hist
+  bpCd -
+}
+
 clean() { ##D Remove leftover files
   bpCd "${BP_SELF_DIR}"
 
