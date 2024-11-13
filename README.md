@@ -274,6 +274,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] bpPrintDesc formats key/desc wrong when including terminal characters in key
 - [ ] Fixing bpExit code handling in subcommand dispatcher
 - [ ] Fix PRE_SCRIPT_HOOK 
+- [ ] `bp ascii` rows missing with 4 columns, columnize.py seems to be the problem
 
 ## TODO
 - [ ] Add option parser
@@ -338,6 +339,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
  - Rename bpPrindDesc to bpPrintKeyVal
  - Shift parameters(left) sent to command functions using shift to allow commandfunctions to be used internaly
  - Built in support for setting terminal header via xtype 
+ - ascii table in hex
  
 ### Less priority sugestions
  - make columnize.py to a sepparate project

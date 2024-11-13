@@ -654,11 +654,11 @@ ascii() { ##D Print Ascii table
   BP_LINE_CHAR=""
   #BP_KEY_LENGTH="6"
 
-  if [ "$BP_COLUMNS" -ge 232 ]; then
-    BP_COLUMNS=$(("$BP_COLUMNS" / 4 - 1))
-    print-ascii | "${BP_SELF_DIR}"/dev/columnize.py --columns 4
-    return
-  fi
+  # if ((BP_COLUMNS > 232)); then
+  #   BP_COLUMNS=$(("$BP_COLUMNS" / 4 - 1))
+  #   print-ascii | "${BP_SELF_DIR}"/dev/columnize.py --columns 4
+  #   return
+  # fi
 
   if ((BP_COLUMNS > 174)); then
     BP_COLUMNS=$(("$BP_COLUMNS" / 3 - 1))
@@ -676,7 +676,7 @@ ascii() { ##D Print Ascii table
 }
 
 print-ascii() {
-  bpPrintLine "Ascii table"
+  #bpPrintLine "Ascii table"
   LEN=${#asciiTable[@]}
   i=0
 
@@ -796,7 +796,7 @@ asciiTable=(
   "93" "5D" "01011101" "]" "" "Closing bracket"
   "94" "5E" "01011110" "^" "" "Caret - circumflex"
   "95" "5F" "01011111" "_" "" "Underscore"
-  "96" "60" "01100000" '´' "" "Grave accent"
+  "96" "60" "01100000" '´' "" " Grave accent"
   "97" "61" "01100001" "a" "" "Lowercase a"
   "98" "62" "01100010" "b" "" "Lowercase b"
   "99" "63" "01100011" "c" "" "Lowercase c"
