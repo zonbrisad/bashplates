@@ -336,7 +336,8 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
  - Enable certain commands as bpMkDir, bpLn, bpRm, bpMv, bpReplace, bpReplaceLine, bpRemoveLineContaining to execute as root using a variable like bpSudo=true
  - Rename bpRun to bpDo and bpSudo
  - Rename bpPrindDesc to bpPrintKeyVal
- - Shift parameters(left) sent to command functions using shift to allow commandfunctions to be used internaly 
+ - Shift parameters(left) sent to command functions using shift to allow commandfunctions to be used internaly
+ - Built in support for setting terminal header via xtype 
  
 ### Less priority sugestions
  - make columnize.py to a sepparate project
