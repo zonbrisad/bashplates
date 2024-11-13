@@ -365,72 +365,123 @@ c16() { ##D 16 color table
   echo
 }
 
+#!!!! OLD !!!
+# c256() { # 256 color table old
+
+#   echo
+#   #  bpPrintLine "256 Colors foreground"
+#   echo
+#   for i in {0..15}; do
+#     printf "\x1b[38;5;%sm  %3d ${E_RESET}" "$i" "$i"
+#     if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
+#       echo
+#       if ((i == 15)); then
+#         echo
+#       fi
+#     fi
+#   done
+
+#   for i in {16..231}; do
+#     printf "\x1b[38;5;%sm  %3d  ${E_RESET} " "$i" "$i"
+#     if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
+#       echo
+
+#       if ((i == 15)); then
+#         echo
+#       fi
+#     fi
+#   done
+
+#   echo
+#   for i in {232..255}; do
+#     printf "\x1b[38;5;%sm  %3d  ${E_RESET} " "$i" "$i"
+#     if ((i == 237)) || ((i == 243)) || ((i == 249)); then
+#       echo
+#     fi
+#   done
+#   echo -e "\n"
+#   echo
+
+#   #  bpPrintLine "256 Colors background"
+#   echo
+#   for i in {0..15}; do
+#     printf "\x1b[48;5;%sm  %3d ${E_RESET}" "$i" "$i"
+#     if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
+#       echo
+#       if ((i == 15)); then
+#         echo
+#       fi
+#     fi
+#   done
+
+#   for i in {16..231}; do
+#     printf "\x1b[48;5;%sm  %3d  ${E_RESET} " "$i" "$i"
+#     if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
+#       echo
+#       if ((i == 15)); then
+#         echo
+#       fi
+#     fi
+#   done
+
+#   echo
+#   for i in {232..255}; do
+#     printf "\x1b[48;5;%sm  %3d  ${E_RESET} " "$i" "$i"
+#     if ((i == 237)) || ((i == 243)) || ((i == 249)); then
+#       echo
+#     fi
+#   done
+#   echo -e "\n"
+# }
+
 c256() { ##D 256 color table
 
   echo
   #  bpPrintLine "256 Colors foreground"
-  echo
-  for i in {0..15}; do
+
+  for i in {0..7}; do
     printf "\x1b[38;5;%sm  %3d ${E_RESET}" "$i" "$i"
-    if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
-      echo
-      if ((i == 15)); then
-        echo
-      fi
-    fi
   done
-
-  for i in {16..231}; do
-    printf "\x1b[38;5;%sm  %3d  ${E_RESET} " "$i" "$i"
-    if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
-      echo
-
-      if ((i == 15)); then
-        echo
-      fi
-    fi
-  done
-
-  echo
-  for i in {232..255}; do
-    printf "\x1b[38;5;%sm  %3d  ${E_RESET} " "$i" "$i"
-    if ((i == 237)) || ((i == 243)) || ((i == 249)); then
-      echo
-    fi
-  done
-  echo -e "\n"
-  echo
-
-  #  bpPrintLine "256 Colors background"
-  echo
-  for i in {0..15}; do
+  echo -n "   "
+  for i in {0..7}; do
     printf "\x1b[48;5;%sm  %3d ${E_RESET}" "$i" "$i"
-    if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
-      echo
-      if ((i == 15)); then
-        echo
-      fi
-    fi
   done
+  echo
+  for i in {8..15}; do
+    printf "\x1b[38;5;%sm  %3d ${E_RESET}" "$i" "$i"
+  done
+  echo -n "   "
+  for i in {8..15}; do
+    printf "\x1b[48;5;%sm  %3d ${E_RESET}" "$i" "$i"
+  done
+  echo $'\n'
 
-  for i in {16..231}; do
-    printf "\x1b[48;5;%sm  %3d  ${E_RESET} " "$i" "$i"
-    if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
-      echo
-      if ((i == 15)); then
-        echo
-      fi
-    fi
+  for i in {0..35}; do
+    for j in {0..5}; do
+      x=$((16 + i * 6 + j))
+      printf "\x1b[38;5;%sm  %3d  ${E_RESET} " "$x" "$x"
+    done
+    echo -n "   "
+    for j in {0..5}; do
+      x=$((16 + i * 6 + j))
+      printf "\x1b[48;5;%sm  %3d  ${E_RESET} " "$x" "$x"
+    done
+    echo
   done
 
   echo
-  for i in {232..255}; do
-    printf "\x1b[48;5;%sm  %3d  ${E_RESET} " "$i" "$i"
-    if ((i == 237)) || ((i == 243)) || ((i == 249)); then
-      echo
-    fi
+  for i in {36..39}; do
+    for j in {0..5}; do
+      x=$((16 + i * 6 + j))
+      printf "\x1b[38;5;%sm  %3d  ${E_RESET} " "$x" "$x"
+    done
+    echo -n "   "
+    for j in {0..5}; do
+      x=$((16 + i * 6 + j))
+      printf "\x1b[48;5;%sm  %3d  ${E_RESET} " "$x" "$x"
+    done
+    echo
   done
-  echo -e "\n"
 }
 
 print_bar() {
@@ -606,12 +657,12 @@ bpErrorExit() { ##I Safely exit script with a error
 
 # Check if terminal is 16 color only
 if [[ "linux rxvt-16color" = *${TERM}* ]]; then
-  
+
   # ANSI foreground colors codes
   #
   E_BLACK=$'\e[30m'        # Black
   E_RED=$'\e[31m'          # Red
-  E_GREEN=$'\e[32m'        # Green 
+  E_GREEN=$'\e[32m'        # Green
   E_YELLOW=$'\e[33m'       # Yellow
   E_BLUE=$'\e[34m'         # Blue
   E_MAGENTA=$'\e[35m'      # Magenta
@@ -626,7 +677,7 @@ if [[ "linux rxvt-16color" = *${TERM}* ]]; then
   E_BR_CYAN=$'\e[1;36m'    # Bright Cyan
   E_WHITE=$'\e[1;37m'      # White
 
-  # ANSI background color codes 
+  # ANSI background color codes
   #
   E_BG_BLACK=$'\e[40m'      # Black
   E_BG_RED=$'\e[41m'        # Red
@@ -740,9 +791,6 @@ E_CUR_NEXT_LINE=$'\e[E'
 E_CUR_PREVIOUS_LINE=$'\e[F'
 E_SAVE_CURSOR_POS=$'\e[s'
 E_RESTORE_CURSOR_POS=$'\e[u'
-
-
-
 
 # Default Bashplate colortheme
 BP_C_OK="${E_BR_GREEN}"
