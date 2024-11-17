@@ -40,7 +40,9 @@ set -o pipefail
 #---------------------------------------------------------------------
 bpUserSettings() {
   BP_ADDONS="${BP_SELF_DIR}/addons"
-  BP_TEMPLATES="${BP_SELF_DIR}/templates"
+  BP_TEMPLATES="${BP_SELF_DIR}/../templates"
+  BP_PREAMBLE="#!/usr/bin/env bash"
+  BP_HEADER="${BP_TEMPLATES}/header"
 }
 #---------------------------------------------------------------------
 # User defined functions
@@ -49,7 +51,40 @@ bpUserSettings() {
 ##- Addons (experimental)
 
 newa() { ##D Create a new bashplate addon (experimental)
-  newScript "bashplate" "" "addon"
+  newScript "bashplate"
+}
+
+#
+# Create a new script
+#
+# $1 template file
+# $2
+# $3 type
+#
+newScript() {
+
+  # script="bashplates.unitest_$(date +"%H_%M_%S")"
+  script="bashplates.unitest"
+
+  # if [ -e "${script}" ]; then
+  #   bpError "File ${E_BR_CYAN}${script}${E_END} already exists"
+  #   return
+  # fi
+
+  echo "${BP_PREAMBLE}" >|"${script}"
+  bpImport "$BP_HEADER" >>"${script}"
+  cat "${BP_TEMPLATES}/$1" >>"${script}"
+  chmod +x "${script}"
+
+  bpInsert "${script}" "#__MODULES__" "$(bpaddon getaddontemp)"
+
+  bpReplace "${script}" "__NAME__" "${name}"
+  bpReplace "${script}" "__DATE__" "${BP_DATE} ${BP_TIME}"
+  bpReplace "${script}" "__LICENSE__" ""
+  bpReplace "${script}" "__AUTHOR__" ""
+  bpReplace "${script}" "__DESC__" "Bashplate unittest"
+
+  bpOk "Created file $script"
 }
 
 la() { ##D List addons
@@ -82,6 +117,8 @@ ADDON_AUTHOR="__AUTHOR__"
 ADDON_DATE="__DATE__"
 
 ###BPAddonBegin###
+
+#__BPADDON__
 
 ###BPAddonEnd###
 

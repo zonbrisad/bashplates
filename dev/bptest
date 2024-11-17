@@ -75,6 +75,7 @@ bpUserSettings() {
 
 S=0
 F=0
+###BPAddonBegin###
 
 test_cleanup() { ## Test cleanup
   rm -rf "${TEST_DIR}"
@@ -231,6 +232,7 @@ tf() { ##D Test file manipulation functions
   bpPrintLine
 }
 
+###BPAddonEnd###
 #-
 
 #---------------------------------------------------------------------

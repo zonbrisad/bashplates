@@ -132,18 +132,41 @@ icons_() { ## Unicode icons
 }
 
 usym() { ##D Unicode symbols
+  # Enclosed characters
+  icons_ "24"
+  echo
+
+  icons_ "25"
+  echo
+
   icons_ "26"
   echo
+
   icons_ "27"
+  echo
+
+  # Blind signs
+  # icons_ "28"
+  # echo
+
+  icons_ "29"
+  echo
+
+  icons_ "23"
+  echo
+
+  icons_ "22"
+  echo
+
+  icons_ "21"
+  echo
+
+  icons_ "20"
   echo
 
   # Emoticons
   # icons_ "1F6"
   # echo
-
-  # Enclosed characters
-  icons_ "24"
-  echo
 
   # Flags
   #icons_ "1F1"
@@ -751,6 +774,11 @@ DEFAULT_CMD_HOOK=help
 
 ##V Function run after help command is executed
 #POST_HELP_HOOK=
+
+# HOOK_PRE_SCRIPT
+# HOOK_POST_SCRIPT
+# HOOK_PRE_CMD
+# HOOK_POST_CMD
 
 #---------------------------------------------------------------------
 # Signal traps

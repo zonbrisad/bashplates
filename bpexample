@@ -336,17 +336,17 @@ attrc() { ##D Font color attributes
 
 c16() { ##D 16 color table
   FCOLORS=(E_BLACK E_RED E_GREEN E_YELLOW E_BLUE E_MAGENTA E_CYAN E_GRAY E_DARKGRAY E_BR_RED E_BR_GREEN E_BR_YELLOW E_BR_BLUE E_BR_MAGENTA E_BR_CYAN E_WHITE)
-  BCOLORS=(E_BG_BLACK E_BG_RED E_BG_GREEN E_BG_YELLOW E_BG_BLUE E_BG_MAGENTA E_BG_CYAN E_BG_WHITE)
+  BCOLORS=(E_BG_BLACK E_BG_RED E_BG_GREEN E_BG_YELLOW E_BG_BLUE E_BG_MAGENTA E_BG_CYAN E_BG_WHITE E_RESET E_I)
   BCOLORS_BR=(E_BG_DARK_GRAY E_BG_BR_RED E_BG_BR_GREEN E_BG_BR_YELLOW E_BG_BR_BLUE E_BG_BR_MAGENTA E_BG_BR_CYAN E_BG_GRAY)
 
   echo
   bpPrintLine "16 color map"
   echo
   for fc in "${FCOLORS[@]}"; do
-    eval "FG=\$$fc"
+    FG=${!fc}
     for bc in "${BCOLORS[@]}"; do
-      eval "BG=\$$bc"
-      printf "${FG}${BG}%-10s${E_RESET}" "${fc:2}"
+      BG=${!bc}
+      printf "${BG}${FG} %-10s ${E_RESET}" "${fc:2}"
     done
     echo
   done
@@ -354,10 +354,10 @@ c16() { ##D 16 color table
   echo
 
   for fc in "${FCOLORS[@]}"; do
-    eval "FG=\$$fc"
+    FG=${!fc}
     for bc in "${BCOLORS_BR[@]}"; do
-      eval "BG=\$$bc"
-      printf "${FG}${BG}%-10s${E_RESET}" "${fc:2}"
+      BG=${!bc}
+      printf "${FG}${BG} %-10s ${E_RESET}" "${fc:2}"
     done
     echo
   done
@@ -437,7 +437,8 @@ c16() { ##D 16 color table
 c256() { ##D 256 color table
 
   echo
-  #  bpPrintLine "256 Colors foreground"
+  bpPrintLine "256 Colors"
+  echo
 
   for i in {0..7}; do
     printf "\x1b[38;5;%sm  %3d ${E_RESET}" "$i" "$i"
