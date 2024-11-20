@@ -115,6 +115,10 @@ new() { ##D Create a new standard bashplate project
   newScript "bashplate" "" "script"
 }
 
+newd() { ##C BP_DEV Create a new standard bashplate project
+  newScript "bashplate-dev" "" "script"
+}
+
 news() { ##D Create a new simple bashplate project
   newScript "bashplate-simple" "" "script"
 }
@@ -1357,6 +1361,7 @@ bpPrintDescGeneric() { # Generic key/description printout function
   a=$(("${BP_COLUMNS}" - "$KL" - "$BP_RIGHT_MARGIN"))
   #LINES=$(fmt -s -w"${a}" <<<"$4")
   LINES=$(fold -w"${a}" <<<"$DESC")
+
   IFS=$'\n'
   L1=0
   for line in ${LINES}; do

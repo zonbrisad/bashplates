@@ -275,6 +275,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] Fixing bpExit code handling in subcommand dispatcher
 - [ ] Fix PRE_SCRIPT_HOOK 
 - [ ] `bp ascii` rows missing with 4 columns, columnize.py seems to be the problem
+- [ ] `bp asciie` show missaligned columns
 
 ## TODO
 - [ ] Add option parser
@@ -318,7 +319,8 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] Improve output from bpCallStack
 - [ ] Change bpCallStack to bpPrintCallStack
 - [ ] Add bpInfo message to bpMkDir and bpLn if file/link already exists
-
+- [x] ascii table in hex
+- [ ] Rewrite hook system to elliminate hook variables
 
 
 ## Sugestions
@@ -331,7 +333,6 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
  - Allow dynamic generation of subcommands via for example a generator function
  - History cache for Query commands to allow questions to remember
    answers between runs
- - Rewrite hook system to elliminate hook variables
  - move code from bp_init to bp
  - presentation mode that shows separated in/out data in hex
  - Enable certain commands as bpMkDir, bpLn, bpRm, bpMv, bpReplace, bpReplaceLine, bpRemoveLineContaining to execute as root using a variable like bpSudo=true
@@ -339,7 +340,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
  - Rename bpPrindDesc to bpPrintKeyVal
  - Shift parameters(left) sent to command functions using shift to allow commandfunctions to be used internaly
  - Built in support for setting terminal header via xtype 
- - ascii table in hex
+ - make a function accessable but hudden from help view
  
 ### Less priority sugestions
  - make columnize.py to a sepparate project

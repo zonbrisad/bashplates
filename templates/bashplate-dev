@@ -1,28 +1,3 @@
-#!/usr/bin/env bash
-# shellcheck disable=2034
-# shellcheck disable=2317
-# shellcheck disable=1090
-#---------------------------------------------------------------------
-#
-#  bpdev
-#
-#  [Description]
-#    Sandbox for testing new bashplate features.
-#
-#  [Author]
-#    Peter Malmberg <peter.malmberg@gmail.com>
-#
-#  [Date]
-#    2022-07-01
-#
-#  [License]
-#    MIT
-#
-#---------------------------------------------------------------------
-# Generated with bashplates. [https://github.com/zonbrisad/bashplates]
-#---------------------------------------------------------------------
-#
-
 # Display commands as they are executed
 #set -o xtrace
 # Display shell input lines as they are read
@@ -45,673 +20,9 @@ bpUserSettings() {
 # User defined functions
 #---------------------------------------------------------------------
 
-##- Dictionary
+##-
 
-bpDictKey() { ##I aa
-  local arr=("${@}")
-  local len=${#arr[@]}
-  local i=0
-  while [ "$i" -lt "$len" ]; do
-    alt=${arr[$i]}
-    ((i++))
-    ((i++))
-    if [ "$alt" == "$x" ]; then
-      bpReturn="${alt}"
-      return 0
-    fi
-  done
-}
-
-bpDictPrint() { ##I
-  local DICT=("${@}")
-  local LEN=${#DICT[@]}
-  local i=0
-  while [ "$i" -lt "$LEN" ]; do
-    KEY=${DICT[$i]}
-    ((i++))
-    VALUE=${DICT[$i]}
-    ((i++))
-    bpPrintDesc "$KEY" "$VALUE"
-  done
-}
-
-#
-# $1 key
-# $2 dictionary
-# return Value
-#
-bpDictFind() {
-  local DICT=("${@:2}")
-  local FKEY="${1}"
-  local LEN=${#DICT[@]}
-  local i=0
-  while [ "$i" -lt "$LEN" ]; do
-    KEY=${DICT[$i]}
-    ((i++))
-    VALUE=${DICT[$i]}
-    ((i++))
-    bpDebug "$KEY = $VALUE  ($FKEY)"
-
-    if [ "$KEY" == "$FKEY" ]; then
-      echo "$VALUE"
-      return
-    fi
-  done
-  echo ""
-}
-
-my_dict=(
-  "A" "Value A"
-  "B" "Value B"
-  "C" "Value C"
-  "D" "Value D"
-  "E" "Value E"
-)
-
-dtest() { ##D Test dictionary test
-  bpDictPrint "${my_dict[@]}"
-  echo "Dict: $(bpDictFind "C" "${my_dict[@]}")"
-  echo "Dict: $(bpDictFind "A" "${my_dict[@]}")"
-  echo "Dict: $(bpDictFind "E" "${my_dict[@]}")"
-  echo "Dict: $(bpDictFind "XX" "${my_dict[@]}")"
-}
-##- New ANSII escape functions
-
-icons_() { ## Unicode icons
-  for a in {0..31}; do
-    hex1=$(printf "%s%02x" "$1" "$a")
-    hex2=$(printf "%s%02x" "$1" $(("$a" + 32)))
-    hex3=$(printf "%s%02x" "$1" $(("$a" + 64)))
-    hex4=$(printf "%s%02x" "$1" $(("$a" + 96)))
-    hex5=$(printf "%s%02x" "$1" $(("$a" + 128)))
-    hex6=$(printf "%s%02x" "$1" $(("$a" + 160)))
-    hex7=$(printf "%s%02x" "$1" $(("$a" + 192)))
-    hex8=$(printf "%s%02x" "$1" $(("$a" + 224)))
-    echo -e " ${hex1}  \u${hex1}    $hex2  \u${hex2}    $hex3  \u${hex3}   $hex4  \u${hex4}   $hex5  \u${hex5}   $hex6  \u${hex6}   $hex7  \u${hex7}   $hex8  \u${hex8}"
-  done
-}
-
-usym() { ##D Unicode symbols
-  # Enclosed characters
-  icons_ "24"
-  echo
-
-  icons_ "25"
-  echo
-
-  icons_ "26"
-  echo
-
-  icons_ "27"
-  echo
-
-  # Blind signs
-  # icons_ "28"
-  # echo
-
-  icons_ "29"
-  echo
-
-  icons_ "23"
-  echo
-
-  icons_ "22"
-  echo
-
-  icons_ "21"
-  echo
-
-  icons_ "20"
-  echo
-
-  # Emoticons
-  # icons_ "1F6"
-  # echo
-
-  # Flags
-  #icons_ "1F1"
-  #echo
-
-  #  icons_ "1F5"
-  #  echo
-}
-
-tdim() { ##D Terminal dimensions
-  while true; do
-    lines=$(tput lines)
-    cols=$(tput cols)
-    echo "  Lines: ${lines} "
-    echo "  Cols: ${cols}   "
-    echo -en "$E_RETURN${E_RETURN}"
-  done
-
-}
-
-##- Layout and color
-
-msg() { ##D Messsages format test
-
-  bpPrintLine "Unaligned message (current)"
-  echo -e "[${BP_C_OK}Ok${E_RESET}] My little error message"
-  echo -e "[${BP_C_INFO}Info${E_RESET}] My little error message"
-  echo -e "[${BP_C_DEBUG}Debug${E_RESET}] My little error message"
-  echo -e "[${BP_C_WARNING}Warning${E_RESET}] My little error message"
-  echo -e "[${BP_C_ERROR}Error${E_RESET}] My little error message"
-  echo -e "[${BP_C_CRITICAL}Critical${E_RESET}] My little error message"
-  echo
-
-  bpPrintLine "Unaligned message (current)"
-  echo -e "   [${BP_C_OK}Ok${E_RESET}]    My little error message"
-  echo -e "  [${BP_C_INFO}Info${E_RESET}]   My little error message"
-  echo -e " [${BP_C_DEBUG}Debug${E_RESET}]   My little error message"
-  echo -e "[${BP_C_WARNING}Warning${E_RESET}]  My little error message"
-  echo -e " [${BP_C_ERROR}Error${E_RESET}]   My little error message"
-  echo -e "[${BP_C_CRITICAL}Critical${E_RESET}] My little error message"
-  echo
-
-  bpPrintLine "Uneven message length with left alligned text"
-  echo -e "[${BP_C_OK}Ok${E_RESET}]       My little error message"
-  echo -e "[${BP_C_INFO}Info${E_RESET}]     My little error message"
-  echo -e "[${BP_C_DEBUG}Debug${E_RESET}]    My little error message"
-  echo -e "[${BP_C_WARNING}Warning${E_RESET}]  My little error message"
-  echo -e "[${BP_C_ERROR}Error${E_RESET}]    My little error message"
-  echo -e "[${BP_C_CRITICAL}Critical${E_RESET}] My little error message"
-  echo
-
-  bpPrintLine "Full text messages with space padding"
-  echo -e "[${BP_C_OK}   Ok   ${E_RESET}] My little error message"
-  echo -e "[${BP_C_INFO}  Info  ${E_RESET}] My little error message"
-  echo -e "[${BP_C_DEBUG} Debug  ${E_RESET}] My little error message"
-  echo -e "[${BP_C_WARNING}Warning ${E_RESET}] My little error message"
-  echo -e "[${BP_C_ERROR} Error  ${E_RESET}] My little error message"
-  echo -e "[${BP_C_CRITICAL}Critical${E_RESET}] My little error message"
-  echo
-
-  bpPrintLine "4 character message with padding"
-  echo -e "[${BP_C_OK} Ok ${E_RESET}] My little error message"
-  echo -e "[${BP_C_INFO}Info${E_RESET}] My little error message"
-  echo -e "[${BP_C_DEBUG}Dbg ${E_RESET}] My little error message"
-  echo -e "[${BP_C_WARNING}Warn${E_RESET}] My little error message"
-  echo -e "[${BP_C_ERROR}Erro${E_RESET}] My little error message"
-  echo -e "[${BP_C_CRITICAL}Crit${E_RESET}] My little error message"
-  echo
-
-  bpPrintLine "3 character message with padding"
-  echo -e "[${BP_C_OK}Ok ${E_RESET}] My little error message"
-  echo -e "[${BP_C_INFO}Inf${E_RESET}] My little error message"
-  echo -e "[${BP_C_DEBUG}Dbg${E_RESET}] My little error message"
-  echo -e "[${BP_C_WARNING}Wrn${E_RESET}] My little error message"
-  echo -e "[${BP_C_ERROR}Err${E_RESET}] My little error message"
-  echo -e "[${BP_C_CRITICAL}Cri${E_RESET}] My little error message"
-  echo
-
-  bpPrintLine "Debug color tests"
-  echo -e "[${BP_C_DEBUG} Debug  ${E_RESET}] Default color"
-  echo -e "[${E_BG_BR_GREEN}${E_WHITE} Debug  ${E_RESET}] Bright green bg"
-  echo -e "[${E_BG_GREEN}${E_BLACK} Debug  ${E_RESET}] Green bg, black fg"
-  echo -e "[${E_BG_BR_GREEN}${E_BLACK} Debug  ${E_RESET}] Bright green bg, black fg"
-
-  echo -e "[${E_BG_BR_GREEN}${E_GREEN} Debug  ${E_RESET}] Bright green bg, green fg"
-  echo -e "[${E_BG_GREEN}${E_BR_GREEN} Debug  ${E_RESET}] Green bg, Br green fg"
-}
-
-qct() { ##D Query color test
-  BP_C_QUERY=$'\e[38;5;218m'
-  BP_C_QUERY_DEF=$'\e[38;5;240m'
-  BP_C_EMPHASIS=$'\e[38;5;255m'
-  BP_C_DEEMPHASIS=$'\e[38;5;250m'
-  ptq
-  BP_C_EMPHASIS=$'\e[38;5;255m'${E_REVERSE}
-  BP_C_DEEMPHASIS=$'\e[38;5;250m'
-  ptq
-  BP_C_EMPHASIS=$'\e[38;5;250m'${E_REVERSE}
-  BP_C_DEEMPHASIS=$'\e[38;5;250m'
-  ptq
-  BP_C_EMPHASIS=$'\e[38;5;87m'
-  BP_C_DEEMPHASIS=$'\e[38;5;75m'
-  ptq
-  BP_C_QUERY=$'\e[38;5;117m'
-  BP_C_QUERY_DEF=$'\e[38;5;240m'
-  BP_C_EMPHASIS=$'\e[38;5;255m'
-  BP_C_DEEMPHASIS=$'\e[38;5;250m'
-  ptq
-  BP_C_QUERY=$'\e[38;5;153m'
-  BP_C_QUERY_DEF=$'\e[38;5;240m'
-  BP_C_EMPHASIS=$'\e[38;5;255m'
-  BP_C_DEEMPHASIS=$'\e[38;5;250m'
-  ptq
-  BP_C_QUERY=$'\e[38;5;195m'
-  BP_C_QUERY_DEF=$'\e[38;5;240m'
-  BP_C_EMPHASIS=$'\e[38;5;255m'
-  BP_C_DEEMPHASIS=$'\e[38;5;250m'
-  ptq
-  BP_C_QUERY=$'\e[38;5;230m'
-  BP_C_QUERY_DEF=$'\e[38;5;237m'
-  BP_C_EMPHASIS=$'\e[38;5;255m'
-  BP_C_DEEMPHASIS=$'\e[38;5;250m'
-  ptq
-
-}
-
-url() {
-  echo -e "${1}https${7}://${2}zonbrisad${7}@${3}github.com${7}:${4}80${7}${5}/zonbrisad${7}/${6}bashplates.git${E_RESET}\n"
-}
-
-colorize() { ##D Url/file colorize tests
-
-  echo
-  F="/use/local/var/log/messages"
-  echo -e "Default file colorize: $(bpColorizeFile "$F")"
-  echo -e "Default url colorize:  $(bpColorizeUrl https://zonbrisad@github.com:80/zonbrisad/bashplates)"
-  echo
-  echo "Examples"
-  echo
-
-  url "$E_DARKGRAY" "$E_MAGENTA" "$E_GREEN" "$E_CYAN" "${E_GREEN}" "${E_BR_GREEN}"
-  url "$E_DARKGRAY" "$E_BR_MAGENTA" "$E_GREEN" "$E_BR_CYAN" "${E_GREEN}" "${E_BR_GREEN}" "${E_GRAY}"
-  url "$E_DARKGRAY" "$E_BR_BLUE" "$E_CYAN" "$E_BR_CYAN" "${E_MAGENTA}" "${E_BR_MAGENTA}"  #"${E_GRAY}"
-  url "$E_DARKGRAY" "$E_BLUE" "$E_BR_MAGENTA" "$E_MAGENTA" "${E_CYAN}" "${E_BR_CYAN}"     #"${E_GRAY}"
-  url "$E_DARKGRAY" "$E_BLUE" "$E_BR_MAGENTA" "$E_DARKGRAY" "${E_CYAN}" "${E_BR_CYAN}"    #"${E_GRAY}"
-  url "$E_DARKGRAY" "$E_BLUE" "$E_BR_MAGENTA" "$E_YELLOW" "${E_CYAN}" "${E_BR_CYAN}"      #"${E_GRAY}"
-  url "$E_DARKGRAY" "$E_MAGENTA" "$E_BR_MAGENTA" "$E_YELLOW" "${E_CYAN}" "${E_BR_CYAN}"   #"${E_GRAY}"
-  url "$E_YELLOW" "$E_MAGENTA" "$E_BR_MAGENTA" "$E_YELLOW" "${E_CYAN}" "${E_BR_CYAN}"     #"${E_GRAY}"
-  url "$E_DARKGRAY" "$E_MAGENTA" "$E_BR_MAGENTA" "$E_DARKGRAY" "${E_CYAN}" "${E_BR_CYAN}" #"${E_GRAY}"
-  url "$E_DARKGRAY" "$E_BLUE" "$E_BR_BLUE" "$E_DARKGRAY" "${E_CYAN}" "${E_BR_CYAN}"       #"${E_GRAY}"
-  url "$E_GRAY" "$E_BLUE" "$E_BR_BLUE" "$E_GRAY" "${E_CYAN}" "${E_BR_CYAN}"               #"${E_GRAY}"
-  echo
-}
-
-aa() {
-  bpPrintLine "$1"
-  bpPrintDesc "cmd1" "My command 1"
-  bpPrintDesc "cmd2" "My command 2"
-  bpPrintVar "NoVar" "Somevariable"
-  bpPrintVar "BP_SELF_DIR" "BP_SELF_DIR"
-  echo
-
-}
-
-cst() { ##D Color scheme tests
-  aa "Default color scheme"
-
-  BP_C_LINE="${E_DARKGRAY}"
-  BP_C_LINETEXT="${E_BR_YELLOW}"
-  BP_C_DESCRIPTION="${E_BR_CYAN}"
-  BP_C_KEY="${E_BR_MAGENTA}"
-  BP_C_FILENAME="${E_BR_CYAN}"
-  BP_C_PATH="${E_CYAN}"
-  BP_C_URL_SCHEME="${E_DARKGRAY}"
-
-  aa "Makeplates color scheme"
-}
-
-aVeryLongCommandTestCommand() { ##D Testing truncation of long command strings
-  :
-}
-
-#ICMD=10
-inactiveCommand() { ##CV ICMD Inactive command test
-  echo "Only possible if ICMD is set."
-}
-
-##- Misc
-
-s2a() { ##D String to array
-  X=$'Rad 1\nRad 2\nRad 3'
-  #X="Rad 1|Rad 2|Rad 3"
-  IFS=$'\n'
-  #IFS=$'|'
-  read -ra XX <<<"$X"
-  for x in "${XX[@]}"; do
-    echo "$x"
-  done
-
-}
-
-bp1=(
-  "██████╗  █████╗ ███████╗██╗  ██╗██████╗ ██╗      █████╗ ████████╗███████╗███████╗"
-  "██╔══██╗██╔══██╗██╔════╝██║  ██║██╔══██╗██║     ██╔══██╗╚══██╔══╝██╔════╝██╔════╝"
-  "██████╔╝███████║███████╗███████║██████╔╝██║     ███████║   ██║   █████╗  ███████╗"
-  "██╔══██╗██╔══██║╚════██║██╔══██║██╔═══╝ ██║     ██╔══██║   ██║   ██╔══╝  ╚════██║"
-  "██████╔╝██║  ██║███████║██║  ██║██║     ███████╗██║  ██║   ██║   ███████╗███████║"
-  "╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝     ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚══════╝"
-)
-
-bp2=(
-  "██████   █████  ███████ ██   ██ ██████  ██       █████  ████████ ███████ ███████ "
-  "██   ██ ██   ██ ██      ██   ██ ██   ██ ██      ██   ██    ██    ██      ██      "
-  "██████  ███████ ███████ ███████ ██████  ██      ███████    ██    █████   ███████ "
-  "██   ██ ██   ██      ██ ██   ██ ██      ██      ██   ██    ██    ██           ██ "
-  "██████  ██   ██ ███████ ██   ██ ██      ███████ ██   ██    ██    ███████ ███████ "
-  "                                                                                 "
-)
-
-bp3=(
-  "______  _______ _______ _     _  _____         _______ _______ _______ _______"
-  "|_____] |_____| |______ |_____| |_____] |      |_____|    |    |______ |______"
-  "|_____] |     | ______| |     | |       |_____ |     |    |    |______ ______|"
-  "                                                                              "
-)
-
-bp4=(
-  "___  ____ ____ _  _ ___  _    ____ ___ ____ ____ "
-  "|__] |__| [__  |__| |__] |    |__|  |  |___ [__  "
-  "|__] |  | ___] |  | |    |___ |  |  |  |___ ___] "
-)
-
-bpb() { ##D Print banner
-
-  for x in "${bp1[@]}"; do
-    echo -e "$x"
-  done
-
-  for x in "${bp2[@]}"; do
-    echo -e "$x"
-  done
-
-  #  echo ${bp3[@]}
-
-}
-
-XXprintCommand() {
-  IFS=$' '
-  read -r -a arr <<<"$1"
-  inf="${arr[*]:3}"
-  #IFS=$'\n'
-  echo -n "${arr[0]} "
-  # bpPrintDesc "${arr[0]}" "${inf}"
-}
-
-completion() { ##D Command completion
-
-  BP_HELP=1
-
-  IFS=$'\n'
-  SC="$1"
-  # HELP_LINES=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##I' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##-//' -e 'LINE' -e 'printLine')
-  HELP_LINES=$(grep -h -e "##D" -e "##C" "$0" | grep -v -e 'grep' -e '##I' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##-//' -e 'LINE' -e 'printLine')
-  HELP_LINES="${HELP_LINES//()/}"
-
-  for LINE in ${HELP_LINES}; do
-    case "$LINE" in
-    #    *"##-"*) printNamedLine "$LINE" ;;
-    #    *"##C-"*) printCondNamedLine "$LINE" ;;
-    #    *"##CV"*) printCondCommand "$LINE" 1 ;;
-    #    *"##C"*) XXprintCommand "$LINE" 0 ;;
-    *"##D"*) XXprintCommand "$LINE" '##D' ;;
-    *) ;;
-
-    esac
-  done
-
-  bpExecHook "POST_HELP_HOOK"
-}
-
-##- Function tests
-
-desctest() { ##D Test bpPrintDesc output
-  bpPrintLine
-  bpPrintDesc "Key" "Description"
-  bpPrintDesc "No description test" ""
-  bpPrintDesc "" "No key test"
-  bpPrintDesc "A very much too extra long key" "My description of a very much to long key"
-  bpPrintDesc "|-----------------------|" "My description of key"
-  bpPrintDesc "|----------------------|" "My description of key"
-  bpPrintDesc "Multiple lines desc." $'A\nB\nC\nD'
-  bpPrintDesc "Color description" "${E_BR_RED}Some ${E_BR_YELLOW}colorful ${E_BR_BLUE}description"
-  bpPrintDesc "Keylen override" "Overrideing default key-length" 18
-  bpPrintDesc "\"ls -l /\"" "$(ls -l /)"
-  bpPrintLine
-}
-
-runtest() { ##D Test bpRun
-  bpRun "${BP_SELF_DIR}/tests/file_do_not_exist"
-  bpRun "${BP_SELF_DIR}/tests/non_executable"
-  bpRun "${BP_SELF_DIR}/tests/empty_execute"
-}
-
-readtests() { ##D Test read commands
-  slist=(
-    "a" ":" "First choice"
-    "b" ":" "Second choice"
-    "3" ":" "Third alternative"
-    "4" ":" "Fourth alternative"
-    "penta" ":" "Fifth choice"
-    "hexa" ":" "Sixth choice"
-  )
-
-  RESULT=$(bpReadStr "Enter string?")
-  RESULT=$(bpReadStr "Enter string with default value?" "defval")
-  RESULT=$(bpReadInt "Read integer value" 42)
-  RESULT=$(bpReadInt "Read integer value with range" 42 22 50)
-  RESULT=$(bpReadBoolDY "Are you sure?")
-  RESULT=$(bpReadBoolDN "Are you sure?")
-  bpSelectFromList "3" "Choose your alternative" "${slist[@]}"
-}
-
-asserts() { ##D Assert test
-  bpHasCmd "apt"
-  if bpIsCmd "apt"; then
-    bpInfo "apt exists"
-  fi
-  bpAssertProgs "apt" "top" "donotexist" "someothercommand"
-}
-
-my_hook() {
-  echo "My hook"
-}
-
-MY_HOOK="my_hook"
-hooks() { ##D Test bpExecHook
-  bpExecHook "MY_HOOK"
-  bpExecHook "does_not_exist_hook"
-}
-
-##- Argument
-#xx() {
-
-# OPTS=$(getopt --longoptions idebug -- "$@")
-# echo $OPTS
-# eval set --$OPTS
-
-# while true; do
-#   case "$1" in
-#     --idebug)
-#       set -o xtrace
-#         ;;
-#     --)
-#         shift
-#         break
-#         ;;
-#     esac
-#     shift
-# done
-#}
-#echo $@
-#xx
-
-args() { ##D Argument parsing with (getopts)
-  bpInfo "Arguments#: $#"
-  bpInfo "Arguments star: $*"
-  bpInfo "Arguments at: $@"
-  while getopts ':abc' opt; do
-    case "${opt}" in
-    a) echo "A" ;;
-    b) echo "B" ;;
-    c) echo "C" ;;
-    esac
-  done
-}
-
-argshift() { ##D Argument shifting
-  # https://ss64.com/bash/shift.html
-  # https://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_07.html
-
-  echo "${@}"
-  shift 1
-  echo "${@}"
-}
-
-##- Signals
-
-xxx() {
-  echo "$1"
-}
-
-waitx() { ##D Wait for signal
-
-  #trap "kill $PID" INT TERM
-  trap "xxx ppp" USR2
-  bpPIDWrite
-  pid=$$
-  bpInfo "Sleeping...$pid"
-  #sleep infinity
-
-  quit=0
-  while [ "$quit" -ne 1 ]; do
-    #printf 'Do "kill -USR1 %d" to exit this loop after the sleep\n' "$$"
-    sleep 0.5
-  done
-
-  bpInfo "Starting..."
-  wait
-}
-
-pipedream() {
-  echo "From function"
-  while read -r data; do
-    printf "%s" "$data"
-  done
-
-}
-
-pipe2function() { ##D
-  echo "From caller" | pipedream
-}
-
-##- Simmilar named command problem
-COND=1
-
-ne() { ##D Command
-  echo "ne"
-}
-new() { ##D Command
-  echo "new"
-}
-newc() { ##D Command C
-  echo "newc"
-}
-newa() { ##C COND Command A
-  echo "newa"
-}
-newb() { ##C COND Command B
-  echo "newb"
-}
-
-##- New feature sugestions
-
-listfiles() { ##D list files
-  for file in ./*; do
-    echo "$file"
-    if [ -L "$file" ]; then
-      echo "A"
-    else
-      echo "B"
-    fi
-  done
-}
-
-#
-# $1 Number of iterations
-# $2 Command to execute
-#
-bpRepeat() { ##I Repeat command n times
-  local i max
-  max=$1
-  shift
-  for ((i = 1; i <= max; i++)); do # --> C-like syntax
-    eval "$@"
-  done
-
-}
-
-repeat() { ##D Repeat function test
-  bpRepeat 10 "ls ; sleep 1"
-}
-
-#
-# $1 Text to set as title
-#
-bpTitle() { ##I Set terminal window title
-  case "$TERM" in
-  *term* | rxvt)
-    echo -en "\e]0;$*\a"
-    ;;
-  *) ;;
-  esac
-}
-
-title() { ##D bpTitle test
-  bpTitle "Kalle"
-  bpWait 10
-}
-
-#
-# String contains
-#
-# $1 Substring to search
-# $2 String to search in
-#
-bpInString() {
-
-  if [[ "$1" = *"$2"* ]]; then
-    echo 1
-  else
-    echo 0
-  fi
-}
-
-inString() { ##D String contains test
-  A="Hello world"
-
-  if [ "$(bpInString HelloX "$A")" = "1" ]; then
-    #  if  $( bpInString "Hello" "$A" ) ; then
-    echo "A"
-  else
-    echo "B"
-  fi
-
-  bpInString "Hello" "$A"
-  bpInString "Kalle" "$A"
-}
-
-bpGPIOSet() {
-  local gpio="$1"
-  local state="$2"
-
-  if [ ! -e "/sys/class/gpio/gpio$gpio" ]; then
-    echo "$gpio" >/sys/class/gpio/export
-  fi
-
-  echo "out" >>"/sys/class/gpio/gpio$gpio/direction"
-  echo "$state" >>"/sys/class/gpio/gpio$gpio/value"
-}
-
-gpio() { ##D GPIO interface test on gpio4
-  bpGPIOSet 4 1
-  sleep 1
-  bpGPIOSet 4 0
-}
-
-gpioblink() { ##D blink gpio4
-
-  while true; do
-    bpGPIOSet 4 1
-    sleep 0.2
-    bpGPIOSet 4 0
-    sleep 0.2
-  done
-}
+#__MODULES__
 
 #---------------------------------------------------------------------
 # Bashplate settings
@@ -725,16 +36,13 @@ bpInitSettings() {
   BP_USAGE="Usage: ${BP_SELF_NAME} command [option]"
 
   ##V Description text
-  BP_DESC="Sandbox for testing new experimental bashplate features."
+  BP_DESC="__DESC__"
 
   ##V logfile (uncomment to use logfile)
   BP_LOGFILE=${BP_SELF_DIR}/${BP_SELF_NAME}.log
 
   ##V Lock file (uncomment to use lock file feature )
-  #BP_LOCK_FILE=/tmp/${BP_SELF_NAME}.lock
-
-  ##V PID file
-  BP_PID_FILE=/tmp/${BP_SELF_NAME}_${USER}.pid
+  BP_LOCK_FILE=/tmp/${BP_SELF_NAME}.lock
 
   ##V Logging options (uncomment to activate logging parameters)
   BP_LOG_OK=1
@@ -744,7 +52,7 @@ bpInitSettings() {
   BP_LOG_CRITICAL=1
 
   ##V Activate settings function (will create settings file when run)
-  BP_CONF=1
+  #BP_CONF=1
 
 }
 #---------------------------------------------------------------------
@@ -775,11 +83,6 @@ DEFAULT_CMD_HOOK=help
 ##V Function run after help command is executed
 #POST_HELP_HOOK=
 
-# HOOK_PRE_SCRIPT
-# HOOK_POST_SCRIPT
-# HOOK_PRE_CMD
-# HOOK_POST_CMD
-
 #---------------------------------------------------------------------
 # Signal traps
 #---------------------------------------------------------------------
@@ -807,7 +110,7 @@ signalTerm() {
 signalErr() {
   echo
   echo
-  bpError "Trace error Row: $2  Function: $1  ErrorCode: $3"
+  bpError "Trace error Row: $2  Function: $1"
   echo
   bpCallStack "$*"
   bpExit 1
@@ -832,7 +135,6 @@ bpCallStack() { ##I Print out BASH call stack
 
 bpCleanUp() {             ##I Cleanup function
   rm -f "${BP_LOCK_FILE}" # remove Lock file
-  rm -f "${BP_PID_FILE}"  # remove PID file
   #  echo -e "${E_SHOW}"     # Turn on cursor if turned of
 }
 
@@ -843,7 +145,9 @@ bpExit() { ##I Function for safely exiting script
   bpCleanUp
 
   # execute postscript hook if existing
-  bpExecHook "POST_SCRIPT_HOOK"
+  if [ -n "$POST_SCRIPT_HOOK" ]; then
+    ${POST_SCRIPT_HOOK}
+  fi
 
   # Check if argument is given
   if [ -z "$1" ]; then
@@ -863,87 +167,43 @@ bpErrorExit() { ##I Safely exit script with a error
 # ANSI escape codes
 #---------------------------------------------------------------------
 
-# Check if terminal is 16 color only
-if [[ "linux rxvt-16color" = *${TERM}* ]]; then
+# ANSI foreground colors codes
+#
+E_BLACK=$'\e[38:5:0m'       # Black
+E_RED=$'\e[38:5:1m'         # Red
+E_GREEN=$'\e[38:5:2m'       # Green
+E_YELLOW=$'\e[38:5:3m'      # Yellow
+E_BLUE=$'\e[38:5:4m'        # Blue
+E_MAGENTA=$'\e[38:5:5m'     # Magenta
+E_CYAN=$'\e[38:5:6m'        # Cyan
+E_GRAY=$'\e[38:5:7m'        # Gray
+E_DARKGRAY=$'\e[38:5:8m'    # Dark Gray
+E_BR_RED=$'\e[38:5:9m'      # Bright Red
+E_BR_GREEN=$'\e[38:5:10m'   # Bright Green
+E_BR_YELLOW=$'\e[38:5:11m'  # Bright Yellow
+E_BR_BLUE=$'\e[38:5:12m'    # Bright Blue
+E_BR_MAGENTA=$'\e[38:5:13m' # Bright Magenta
+E_BR_CYAN=$'\e[38:5:14m'    # Bright Cyan
+E_WHITE=$'\e[38:5:15m'      # White
 
-  # ANSI foreground colors codes
-  #
-  E_BLACK=$'\e[30m'        # Black
-  E_RED=$'\e[31m'          # Red
-  E_GREEN=$'\e[32m'        # Green
-  E_YELLOW=$'\e[33m'       # Yellow
-  E_BLUE=$'\e[34m'         # Blue
-  E_MAGENTA=$'\e[35m'      # Magenta
-  E_CYAN=$'\e[36m'         # Cyan
-  E_GRAY=$'\e[37m'         # Gray
-  E_DARKGRAY=$'\e[1;30m'   # Dark Gray
-  E_BR_RED=$'\e[1;31m'     # Bright Red
-  E_BR_GREEN=$'\e[1;32m'   # Bright Green
-  E_BR_YELLOW=$'\e[1;33m'  # Bright Yellow
-  E_BR_BLUE=$'\e[1;34m'    # Bright Blue
-  E_BR_MAGENTA=$'\e[1;35m' # Bright Magenta
-  E_BR_CYAN=$'\e[1;36m'    # Bright Cyan
-  E_WHITE=$'\e[1;37m'      # White
-
-  # ANSI background color codes
-  #
-  E_BG_BLACK=$'\e[40m'      # Black
-  E_BG_RED=$'\e[41m'        # Red
-  E_BG_GREEN=$'\e[42m'      # Green
-  E_BG_YELLOW=$'\e[43m'     # Yellow
-  E_BG_BLUE=$'\e[44m'       # Blue
-  E_BG_MAGENTA=$'\e[45m'    # Magenta
-  E_BG_CYAN=$'\e[46m'       # Cyan
-  E_BG_GRAY=$'\e[47m'       # Gray
-  E_BG_DARK_GRAY=$'\e[40m'  # Dark gray
-  E_BG_BR_RED=$'\e[41m'     # Bright Red
-  E_BG_BR_GREEN=$'\e[42m'   # Bright Green
-  E_BG_BR_YELLOW=$'\e[43m'  # Bright Yellow
-  E_BG_BR_BLUE=$'\e[44m'    # Bright Blue
-  E_BG_BR_MAGENTA=$'\e[45m' # Bright Magenta
-  E_BG_BR_CYAN=$'\e[46m'    # Bright Cyan
-  E_BG_WHITE=$'\e[47m'      # White
-
-else
-
-  # ANSI foreground colors codes
-  #
-  E_BLACK=$'\e[38:5:0m'       # Black
-  E_RED=$'\e[38:5:1m'         # Red
-  E_GREEN=$'\e[38:5:2m'       # Green
-  E_YELLOW=$'\e[38:5:3m'      # Yellow
-  E_BLUE=$'\e[38:5:4m'        # Blue
-  E_MAGENTA=$'\e[38:5:5m'     # Magenta
-  E_CYAN=$'\e[38:5:6m'        # Cyan
-  E_GRAY=$'\e[38:5:7m'        # Gray
-  E_DARKGRAY=$'\e[38:5:8m'    # Dark Gray
-  E_BR_RED=$'\e[38:5:9m'      # Bright Red
-  E_BR_GREEN=$'\e[38:5:10m'   # Bright Green
-  E_BR_YELLOW=$'\e[38:5:11m'  # Bright Yellow
-  E_BR_BLUE=$'\e[38:5:12m'    # Bright Blue
-  E_BR_MAGENTA=$'\e[38:5:13m' # Bright Magenta
-  E_BR_CYAN=$'\e[38:5:14m'    # Bright Cyan
-  E_WHITE=$'\e[38:5:15m'      # White
-
-  # ANSI background color codes
-  #
-  E_BG_BLACK=$'\e[48;5;0m'       # Black
-  E_BG_RED=$'\e[48;5;1m'         # Red
-  E_BG_GREEN=$'\e[48;5;2m'       # Green
-  E_BG_YELLOW=$'\e[48;5;3m'      # Yellow
-  E_BG_BLUE=$'\e[48;5;4m'        # Blue
-  E_BG_MAGENTA=$'\e[48;5;5m'     # Magenta
-  E_BG_CYAN=$'\e[48;5;6m'        # Cyan
-  E_BG_GRAY=$'\e[48;5;7m'        # Gray
-  E_BG_DARK_GRAY=$'\e[48;5;8m'   # Dark gray
-  E_BG_BR_RED=$'\e[48;5;9m'      # Bright Red
-  E_BG_BR_GREEN=$'\e[48;5;10m'   # Bright Green
-  E_BG_BR_YELLOW=$'\e[48;5;11m'  # Bright Yellow
-  E_BG_BR_BLUE=$'\e[48;5;12m'    # Bright Blue
-  E_BG_BR_MAGENTA=$'\e[48;5;13m' # Bright Magenta
-  E_BG_BR_CYAN=$'\e[48;5;14m'    # Bright Cyan
-  E_BG_WHITE=$'\e[48;5;15m'      # White
-fi
+# ANSI background color codes
+#
+E_BG_BLACK=$'\e[48;5;0m'       # Black
+E_BG_RED=$'\e[48;5;1m'         # Red
+E_BG_GREEN=$'\e[48;5;2m'       # Green
+E_BG_YELLOW=$'\e[48;5;3m'      # Yellow
+E_BG_BLUE=$'\e[48;5;4m'        # Blue
+E_BG_MAGENTA=$'\e[48;5;5m'     # Magenta
+E_BG_CYAN=$'\e[48;5;6m'        # Cyan
+E_BG_GRAY=$'\e[48;5;7m'        # Gray
+E_BG_DARK_GRAY=$'\e[48;5;8m'   # Dark gray
+E_BG_BR_RED=$'\e[48;5;9m'      # Bright Red
+E_BG_BR_GREEN=$'\e[48;5;10m'   # Bright Green
+E_BG_BR_YELLOW=$'\e[48;5;11m'  # Bright Yellow
+E_BG_BR_BLUE=$'\e[48;5;12m'    # Bright Blue
+E_BG_BR_MAGENTA=$'\e[48;5;13m' # Bright Magenta
+E_BG_BR_CYAN=$'\e[48;5;14m'    # Bright Cyan
+E_BG_WHITE=$'\e[48;5;15m'      # White
 
 # ANSI underline color codes
 #
@@ -1052,16 +312,19 @@ BP_RIGHT_MARGIN=3
 # $2 text color
 # $3 line color
 # $4 middle character
-# $5 line character
 #
 bpPrintLineGeneric() { ##I Print text with adjusted line after with selectable colors
   local len1="${#1}"
   local len4="${#4}"
 
   echo -en "${2}${1}${4}${3}"
-  l=$((BP_COLUMNS - len1 - len4))
-  seq -s"${5}" "${l}" | tr -d '[:digit:]'
-  echo -en "${E_RESET}"
+  if [ "${BP_LINE_CHAR}" != "" ]; then
+    l=$((BP_COLUMNS - len1 - len4))
+    seq -s"${BP_LINE_CHAR}" "${l}" | tr -d '[:digit:]'
+    echo -en "${E_RESET}"
+  else
+    echo -e "${E_RESET}"
+  fi
 }
 
 #
@@ -1070,14 +333,14 @@ bpPrintLineGeneric() { ##I Print text with adjusted line after with selectable c
 # $3 line color
 #
 bpTextLineC() { ##I Print text with adjusted line after with selectable colors
-  bpPrintLineGeneric "$1" "$2" "$3" " " "-"
+  bpPrintLineGeneric "$1" "$2" "$3" " "
 }
 
 bpPrintLine() { ##I Print text with line
   if [ "${#1}" -eq 0 ]; then
-    bpPrintLineGeneric "" "" "${BP_C_LINE}" "" "-"
+    bpPrintLineGeneric "" "" "${BP_C_LINE}" ""
   else
-    bpPrintLineGeneric "$1" "${BP_C_LINETEXT}" "${BP_C_LINE}" " " "-"
+    bpPrintLineGeneric "$1" "${BP_C_LINETEXT}" "${BP_C_LINE}" " "
   fi
 }
 
@@ -1093,41 +356,35 @@ bpPrintDescGeneric() { # Generic key/description printout function
   local DESC_COLOR="$2"
   local KEY="$3"
   local DESC="$4"
-  local KEY_LENGTH
-  local LINES
+  local KL
 
   if [ -n "$5" ]; then
-    KEY_LENGTH="$5"
+    KL="$5"
   else
-    KEY_LENGTH=${BP_KEY_LENGTH}
+    KL=${BP_KEY_LENGTH}
   fi
 
   if ((${#4} == 0)); then
-    printf "${1}  %-${KEY_LENGTH}.${KEY_LENGTH}s${E_RESET} ${2}%s${E_RESET}\n" "$3" ""
+    printf "${1}  %-${KL}.${KL}s${E_RESET} ${2}%s${E_RESET}\n" "$3" ""
   fi
 
-  local len=${#}
-  local a=$(("${BP_COLUMNS}" - "$KEY_LENGTH" - "$BP_RIGHT_MARGIN"))
-
-  if ((${#DESC} > a)); then
-    LINES=$(fold --width="${a}" <<<"$DESC")
-  else
-    LINES="$DESC"
-  fi
-
+  len=${#}
+  a=$(("${BP_COLUMNS}" - "$KL" - "$BP_RIGHT_MARGIN"))
+  #LINES=$(fmt -s -w"${a}" <<<"$4")
+  LINES=$(fold -w"${a}" <<<"$DESC")
   IFS=$'\n'
-  local L1=0
+  L1=0
   for line in ${LINES}; do
     if [ "${L1}" -eq 0 ]; then                # First line
       if ((${#KEY} > "$BP_KEY_LENGTH")); then # Oversized key
-        printf "${KEY_COLOR}  %-${KEY_LENGTH}s${E_RESET}\n" "$KEY"
-        printf "${KEY_COLOR}  %-${KEY_LENGTH}.${KEY_LENGTH}s${E_RESET} ${DESC_COLOR}%s${E_RESET}\n" "" "$line"
+        printf "${KEY_COLOR}  %-${KL}s${E_RESET}\n" "$KEY"
+        printf "${KEY_COLOR}  %-${KL}.${KL}s${E_RESET} ${DESC_COLOR}%s${E_RESET}\n" "" "$line"
       else # Normal key
-        printf "${KEY_COLOR}  %-${KEY_LENGTH}.${KEY_LENGTH}s${E_RESET} ${DESC_COLOR}%s${E_RESET}\n" "$KEY" "$line"
+        printf "${KEY_COLOR}  %-${KL}.${KL}s${E_RESET} ${DESC_COLOR}%s${E_RESET}\n" "$KEY" "$line"
       fi
       L1=1
     else # Rest of the lines
-      printf "${KEY_COLOR}  %-${KEY_LENGTH}.${KEY_LENGTH}s${E_RESET} ${DESC_COLOR}%s${E_RESET}\n" "" "$line"
+      printf "${KEY_COLOR}  %-${KL}.${KL}s${E_RESET} ${DESC_COLOR}%s${E_RESET}\n" "" "$line"
     fi
   done
 }
@@ -1178,17 +435,8 @@ bpPrintVar() { ##I Print variable value and description
 # $1 string with filename to colorize
 # ret colorized string
 #
-#bpColorizeFile() { ##I Colorize string containing filename
-#  echo "${BP_C_PATH}$(dirname "$1")/${BP_C_FILENAME}$(basename "$1")${E_RESET}"
-#}
-bpColorizeFile() { ##I Colorize string with filename
-  if [ -n "$1" ]; then
-    if [ -d "$1" ]; then
-      echo "${BP_C_PATH}${1}${E_RESET}"
-      return
-    fi
-    echo "${BP_C_PATH}$(dirname "$1")/${BP_C_FILENAME}$(basename "$1")${E_RESET}"
-  fi
+bpColorizeFile() { ##I Colorize string containing filename
+  echo "${BP_C_PATH}$(dirname "$1")/${BP_C_FILENAME}$(basename "$1")${E_RESET}"
 }
 
 #
@@ -1303,7 +551,7 @@ bpRm() { ##I Remove file(s)
 # $1 file to be backed up
 #
 bpBackup() { ##I Make backup of file
-  local BF="${1}_$(date +"%Y%m%d")-$(date +"%H%M%S").bak"
+  BF="${1}_$(date +"%Y%m%d")-$(date +"%H%M%S").bak"
 
   if cp -rf "$1" "${BF}"; then
     bpOk "Backing up file $(bpColorizeFile "$1") to $(bpColorizeFile "${BF}")."
@@ -1339,11 +587,7 @@ bpReplaceLine() { ##I Replace entire line matching pattern
 # $2 line to append
 #
 bpAppendIfNoSuchLine() { ##I Append a line if it does not exist in file
-  if [ "$BP_SUDO" == true ]; then
-    sudo grep -q -F "$2" "$1" || echo -e "$2" | sudo tee -a "$1" >/dev/null
-  else
-    grep -q -F "$2" "$1" || echo -e "$2" >>"$1"
-  fi
+  grep -q -F "$2" "$1" || echo "$2" >>"$1"
 }
 
 #
@@ -1439,24 +683,16 @@ bpReadGeneric() { ##I Read from commandline
 }
 
 #
-# $1 query
-# $2 answer
-#
-bpReadLog() { ## Log query, internal use only
-  bpLogInfo "User input: $QUERY <- $RESULT"
-}
-
-#
 # $1  Question string
 # $2  Default value
 # return string read from cmdline/default if enter pressed
 #
 bpReadStr() { ##I Read string from commandline
-  local QUERY="$1"
-  local DEFAULT="$2"
-  local RESULT=$(bpReadGeneric "$QUERY" "$DEFAULT")
+  QUERY="$1"
+  DEFAULT="$2"
 
-  bpReadLog "$QUERY" "$RESULT"
+  RESULT=$(bpReadGeneric "$QUERY" "$DEFAULT")
+  bpLogInfo "User entered: $RESULT  ($QUERY)"
   echo "${RESULT}"
 }
 
@@ -1493,7 +729,7 @@ bpReadInt() { ##I Read integer from commandline
       fi
     fi
   done
-  bpReadLog "$QUERY" "$RESULT"
+  bpLogInfo "User entered: $RESULT  ($QUERY)"
   echo "${RESULT}"
 }
 
@@ -1515,20 +751,20 @@ bpReadBool() { ##I Ask yes/no question generic
 
     case "$yn" in
     [Yy]*)
-      bpReadLog "$QUERY" "Yes"
+      bpLogInfo "User entered: Yes  ($QUERY)"
       return 0
       break
       ;;
     [Nn]*)
-      bpReadLog "$QUERY" "No"
+      bpLogInfo "User entered: No  ($QUERY)"
       return 1
       break
       ;;
     "")
       if [ "$2" -eq 0 ]; then
-        bpReadLog "$QUERY" "Yes"
+        bpLogInfo "User entered: Yes  ($QUERY)"
       else
-        bpReadLog "$QUERY" "No"
+        bpLogInfo "User entered: No  ($QUERY)"
       fi
       return "$2"
       break
@@ -1576,9 +812,9 @@ bpPrintChoiceList() { # Print items in selection list
     fi
 
     if [ "${desc}" == ":" ]; then
-      printf "%1s ${BP_C_KEY}%-7s  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$default" "$key" "$val"
+      printf "${BP_C_KEY} %-5s${E_RESET}%1s  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$key" "$default" "$val"
     else
-      printf "%1s ${BP_C_KEY}%-7s  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$default" "$key" "$desc"
+      printf "${BP_C_KEY} %-5s${E_RESET}%1s  ${BP_C_DESCRIPTION}%s${E_RESET}\n" "$key" "$default" "$desc"
     fi
   done
 }
@@ -1620,35 +856,11 @@ bpSelectFromList() { ##I Select from list
         else
           bpReturn="${val}"
         fi
-        bpReadLog "$QUERY" " $bpReturn"
+        bpLogInfo "User entered: $bpReturn  ($QUERY)"
         return 0
       fi
     done
   done
-}
-
-##C- IHELP PID file management
-
-bpPIDWrite() { ##I Write PID file to disk
-  echo $$ >"${BP_PID_FILE}"
-}
-
-bpPIDRemove() { ##I Remove PID file
-  rm -f "${BP_PID_FILE}"
-}
-
-bpPIDLoad() { ##I Load PID from file
-  if [ -e "${BP_PID_FILE}" ]; then
-    cat "${BP_PID_FILE}"
-  fi
-}
-
-bpPIDExist() { ##I Check if PID file exist
-  if [ -e "${BP_PID_FILE}" ]; then
-    return 0
-  else
-    return 1
-  fi
 }
 
 # Settings file ------------------------------------------------------
@@ -1663,18 +875,14 @@ bpPIDExist() { ##I Check if PID file exist
 # $4 description
 #
 bpAddSetting() { ##I Add setting to config file
-  local FILE="$1"
-  local KEY="$2"
-  local VAL="$3"
-  local DESC="$4"
-  if ! bpStrExist "${FILE}" "${KEY}"; then
+  if ! bpStrExist "${1}" "${2}"; then
     {
-      echo "# ${DESC}"
-      echo "${KEY}=\"${VAL}\""
+      echo "# ${4}"
+      echo "${2}=\"${3}\""
       echo
-    } >>"${FILE}"
+    } >>"${1}"
 
-    bpOk "Added setting \"$KEY=$VAL\""
+    bpOk "Added setting \"$2=$3\""
   fi
 }
 
@@ -1686,11 +894,11 @@ bpAddSetting() { ##I Add setting to config file
 # $4 description
 #
 bpChangeSetting() { ##I Change setting in config file
-  local FILE="$1"
-  local KEY="$2"
-  local VAL="$3"
-  local DESC="$4"
-  if ! bpStrExist "${FILE}" "${KEY}"; then
+  FILE="$1"
+  KEY="$2"
+  VAL="$3"
+  DESC="$4"
+  if ! bpStrExist "${1}" "${KEY}"; then
     bpAddSetting "$FILE" "$KEY" "$VAL" "$DESC"
   fi
   sed -i "s/^\(${KEY}\s*=\s*\).*\$/\1${VAL}/" "${FILE}"
@@ -1779,12 +987,11 @@ bpConfCreate() { ##I Create configuration file
 # $1 Config file
 #
 bpConfLoad() { ##I Load config file
-  local FILE="$1"
-  if [ -n "${FILE}" ]; then
-    if [ ! -e "${FILE}" ]; then
+  if [ -n "${1}" ]; then
+    if [ ! -e "${1}" ]; then
       bpConfCreate "${@}"
     fi
-    source "${FILE}"
+    source "${1}"
   fi
 }
 
@@ -1832,16 +1039,15 @@ bpConfPrint() { ##I Print settings in config list
 }
 
 bpset() { ##C BP_CONF Change setting in bp config file
-  local PARAM="$2"
-  if [ -z "$PARAM" ]; then
+  if [ -z "$2" ]; then
     bpConfPrint "" "" "${BP_CONFIG_LIST[@]}"
     return
   fi
-  if bpConfInList "$PARAM" "${BP_CONFIG_LIST[@]}"; then
+  if bpConfInList "$2" "${BP_CONFIG_LIST[@]}"; then
     bpChangeSetting "${BP_CONFIG_FILE}" "${bpReturn}" "\"${3}\""
     return
   fi
-  bpError "\"$PARAM\" is not a valid setting"
+  bpError "\"$2\" is not a valid setting"
 }
 
 ##C- IHELP Bashrc path/module handling
@@ -1857,12 +1063,11 @@ bpLsPaths() { ##I List paths
 # $1 directory to add to path
 #
 bpAddPath() { ##I Add dir to PATH variable
-  local LPATH=""
-  LPATH=$(echo "${1}" | sed -e 's/\//_/g')
+  ll=$(echo "${1}" | sed -e 's/\//_/g')
 
-  bpInfo "Adding PATH \"${LPATH}\""
+  bpInfo "Adding PATH \"${2}\""
   if [ ! -L "$1" ]; then
-    bpLn "${1}" "${BP_CONFIG_PATHS}/${LPATH}"
+    bpLn "${1}" "${BP_CONFIG_PATHS}/${ll}"
   fi
 }
 
@@ -1878,11 +1083,10 @@ bpLsModules() { ##I List modules
 }
 
 bpAddModule() { ##I Add init script to
-  local MODULE=""
-  MODULE=$(realpath "${1}")
+  m=$(realpath "${1}")
   if [ ! -L "$m" ]; then
-    rm -f "${BP_CONFIG_MODULES}/$(basename "${MODULE}")"
-    bpLn "$MODULE" "${BP_CONFIG_MODULES}/."
+    rm -f "${BP_CONFIG_MODULES}/$(basename "${m}")"
+    bpLn "$m" "${BP_CONFIG_MODULES}/."
   fi
 }
 
@@ -2042,13 +1246,18 @@ bpAssertNoLockFile() { ##I Assert that lockfile is not present
 # $1 string list of programs that are required
 #
 bpAssertProgs() { ##I Assert that required programs are available on the system
-  local FILES=("$@")
-  for file in "${FILES[@]}"; do
-    if ! bpIsCmd "${file}"; then
-      bpError "Required program \"$file\" not found."
-      bpExit 1
-    fi
+  things=("$@")
+  e=0
+  for thing in "${things[@]}"; do
+    hash "$thing" 2>&- ||
+      {
+        bpError "Required program \"$thing\" not found."
+        e=1
+      }
   done
+  if [ "$e" -eq 1 ]; then
+    bpExit 1
+  fi
 }
 
 ##C- IHELP Misc
@@ -2056,7 +1265,7 @@ bpAssertProgs() { ##I Assert that required programs are available on the system
 #
 # $1 command to check
 #
-bpIsCmd() { ##I Check whether a command exists in path and is executable
+bpHasCmd() { ##I Check whether a command exists in path and is executable
   if [ -x "$(command -v "${1}")" ]; then
     return 0
   else
@@ -2069,12 +1278,6 @@ bpIsFunction() { ##I Check if and identifier is declared as a function
     return 0
   fi
   return 1
-}
-
-bpHasCmd() { ##I (deprecated)
-  bpWarning "bpHasCmd is deprectad, use bpIsCmd instead!!!"
-  bpIsCmd "${1}"
-  return $?
 }
 
 #
@@ -2091,22 +1294,12 @@ bpGetFunction() {
 # $1 command to execute
 #
 bpRun() { ##I Execute command
-  local CMD="${1}"
-
-  if ! bpIsCmd "${CMD}"; then
-    if [ "$BP_SUDO" == true ]; then
-      bpError "Could not execute \"sudo $CMD\", command does not exist!"
-    else
-      bpError "Could not execute \"$CMD\", command does not exist!"
-    fi
+  if ! bpHasCmd "${1}"; then
+    bpError "Could not execute $1, command does not exist!"
     return 1
   fi
 
-  if [ "$BP_SUDO" == true ]; then
-    sudo "$@"
-  else
-    "$@"
-  fi
+  "$@"
   return $?
 }
 
@@ -2223,17 +1416,16 @@ help() { ##D Print help information
 # $1 command
 #
 ihelp() { ##I Print internal help information
-  local CMD="$2"
 
   # Singe command documentation
-  if [ "$CMD" != "" ]; then
+  if [ "$2" != "" ]; then
     echo
-    bpPrintLine "$CMD"
+    bpPrintLine "$2"
     echo
     echo "#"
     echo -n "# "
-    grep --no-filename "$0" -e "${CMD}()" | sed -n -e 's/^.*##I //p'
-    grep --no-filename -B 8 "$0" -e "${CMD}()" | grep "#" | grep -v "##"
+    grep --no-filename "$0" -e "${2}()" | sed -n -e 's/^.*##I //p'
+    grep --no-filename -B 8 "$0" -e "${2}()" | grep "#" | grep -v "##"
     bpPrintLine
     bpExit
   fi
@@ -2310,7 +1502,7 @@ iview() { ##I View example
   fi
 
   echo
-  if bpIsCmd batcat; then # Use batcat, if available, to view function
+  if bpHasCmd batcat; then # Use batcat, if available, to view function
     bpGetFunction "$0" "${2}" | batcat --language bash --decorations never
   else
     bpGetFunction "$0" "${2}" |
@@ -2342,7 +1534,6 @@ iview() { ##I View example
 }
 
 ivars() { ##I Print internal variables
-  local LINES
   bpPrintLine "Script variables"
   echo
   IFS=$'\n'
@@ -2363,54 +1554,34 @@ ied() { ##I Open this file with default editor
   bpEdit "$0" "$2"
 }
 
-#
-# $1 File to diff with, if not given diff with bashplate template
-#
-idiff() { ##I Run diff with file or bashplate template
-
-  if [ -z "$BP_DIFF" ]; then
-    bpError "Diff program not declared (BP_DIFF)"
-    return
-  fi
-
-  if [ -z "$2" ]; then
-    if [ -n "${BP_PATH}" ]; then
-      bpRun "${BP_DIFF}" "${BP_SELF_DIR}/${BP_SELF}" "${BP_PATH}/templates/bashplate"
-      return
-    fi
-  fi
-  bpRun "${BP_DIFF}" "${BP_SELF_DIR}/${BP_SELF}" "$2"
-}
-
 version() { ##D Print version information
   echo "$BP_VERSION"
 }
 
 # Runs a function in this file as a command
-bpParseCommand() {
-  local CMD="$1"
-  local CL
-  local CV
+bpRunCommand() {
+  if [ "$BP_ARGUMENTS" -eq 0 ]; then
 
-  # check for a default command
-  if (("$BP_ARGUMENTS" == 0)); then
-    if ! bpExecHook "DEFAULT_CMD_HOOK" "$@"; then
-      bpErrorExit "No command given"
+    # check for a default command
+    if [ -n "$DEFAULT_CMD_HOOK" ]; then
+      "$DEFAULT_CMD_HOOK" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
+      bpExit
     fi
-    bpExit
+    bpErrorExit "No command given"
   fi
 
-  # Check if subcommand is declared as internal function
-  if ! bpIsFunction "$CMD"; then
-    bpErrorExit "Command \"$CMD\" not found"
+  if [ "$(type -t "$1")" != "function" ]; then # Check if subcommand is declared as function
+    bpErrorExit "Command \"$1\" not found"
   fi
 
-  # execute pre command hook if existing
-  bpExecHook "PRE_CMD_HOOK"
+  command=$1
+  # execute pre command hook  if existing
+  if [ -n "$PRE_CMD_HOOK" ]; then
+    "${PRE_CMD_HOOK}" "$command"
+  fi
 
   # Check if command is conditional
-  # CL=$(grep -E "${command}().*##C" "$0")
-  CL=$(grep "${CMD}().*##C" "$0")
+  CL=$(grep -E "${command}().*##C" "$0")
   if [[ "$CL" = *"##C"* ]]; then
 
     # Check if condition is true and then execute else printout error message
@@ -2419,16 +1590,16 @@ bpParseCommand() {
     if [ -n "$CV" ]; then
       if [ -n "${!CV}" ]; then
         # execute command
-        "${CMD}" "$@"
+        "${command}" "$@"
       else
-        bpError "Command \"$CMD\" not available right now."
+        bpError "Command \"$command\" not available right now."
       fi
     else
-      bpError "Command \"$CMD\" is conditional, but is missing conditional variable"
+      bpError "Command \"$command\" is conditional, but is missing conditional variable"
     fi
   else
     # command is not conditional, execute
-    "${CMD}" "$@"
+    "${command}" "$@"
   fi
 
   # execute post command hook  if existing
@@ -2480,8 +1651,6 @@ BP_CONFIG_PATHS="${BP_CONFIG_DIR}/path"
 ##V Links to modules
 BP_CONFIG_MODULES="${BP_CONFIG_DIR}/modules"
 
-BP_SUDO=false
-
 # Initiate bashplate settings
 bpInitSettings
 
@@ -2496,7 +1665,7 @@ trap signalQuit SIGQUIT
 trap signalInt SIGINT
 trap signalHup SIGHUP
 trap signalTerm SIGTERM
-trap 'signalErr ${FUNCNAME} ${LINENO} $?' ERR
+trap 'signalErr ${FUNCNAME} ${LINENO}' ERR
 
 #trap  'signalDbg ${FUNCNAME} ${LINENO}' DEBUG
 
@@ -2523,10 +1692,12 @@ BP_CONFIG_LIST=(
 bpConfLoad "${BP_CONFIG_LIST[@]}"
 
 # execute prescript hook if existing
-#bpExecHook "PRE_SCRIPT_HOOK"
+if [ -n "$PRE_SCRIPT_HOOK" ]; then
+  ${PRE_SCRIPT_HOOK} "$@"
+fi
 
 # Run command parser
-bpParseCommand "$@"
+bpRunCommand "$@"
 
 # Exit cleanly
 bpExit

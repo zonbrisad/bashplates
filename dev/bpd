@@ -50,6 +50,10 @@ et() { ##D Edit bashplate template
   bpEdit "${BP_SELF_DIR}/../templates/bashplate" "$2"
 }
 
+etd() { ##D Edit bashplate-dev template
+  bpEdit "${BP_SELF_DIR}/../templates/bashplate-dev" "$2"
+}
+
 est() { ##D Edit simple bashplate template
   bpEdit "${BP_SELF_DIR}/../templates/bashplate-simple" "$2"
 }
@@ -67,19 +71,28 @@ ec() { ##D Edit Bashplate config file
 }
 
 ##- Open project files with diff program
-dl() { ##D Diff template with [file]
-  ${BP_DIFF} "${BP_SELF_DIR}/../templates/bashplate" "$2"
-}
 
-dd() { ##D Diff bp with bpdev
+ddb() { ##D Diff bpdev with bp
   ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "${BP_SELF_DIR}/../bp"
 }
 
-dt() { ##D Diff template witdh bpdev
+dtd() { ##D Diff template witdh bpdev
   ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "${BP_SELF_DIR}/../templates/bashplate"
 }
 
-de() { ##D Diff bpdev with [file]
+dtdd() { ##D Diff template-dev witdh bpdev
+  ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "${BP_SELF_DIR}/../templates/bashplate-dev"
+}
+
+dtdt() { ##D Diff template with template-dev
+  ${BP_DIFF} "${BP_SELF_DIR}/../templates/bashplate" "${BP_SELF_DIR}/../templates/bashplate-dev"
+}
+
+dtf() { ##D Diff template with [file]
+  ${BP_DIFF} "${BP_SELF_DIR}/../templates/bashplate" "$2"
+}
+
+ddf() { ##D Diff bpdev with [file]
   ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "$2"
 }
 
