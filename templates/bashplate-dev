@@ -513,7 +513,9 @@ bpColorizeUrl() { ##I Colorize string containing URL
 # $1 string to be filtered
 #
 bpFilterEscape() { ##I Filter escape characters from string
-  echo "$1" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
+  # https://superuser.com/questions/380772/removing-ansi-color-codes-from-text-stream
+
+  sed -e 's/\x1b\[[0-9;:]*[mGKHF]//g' <<<"$1"
 }
 
 ##C- IHELP File operations

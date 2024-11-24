@@ -50,32 +50,32 @@ bpUserSettings() {
     BP_DEV=1
   fi
 
-  TEST_DIR=${BP_SELF_DIR}/bp_test_directory
-  CREATE_DIR=${TEST_DIR}/create_dir
-  RO_DIR=${TEST_DIR}/read_only_dir
-
-  FILE1=${TEST_DIR}/file1
-  FILE1COPY="${FILE1}-copy"
-  FILE1LINK="${FILE1}-link"
-
-  #FILE2=${TEST_DIR}/file2
-  FILE2REMOVE=${TEST_DIR}/file_to_remove
-  FILE2RENAME=${TEST_DIR}/file_to_rename
-  FILE2BACKUP=${TEST_DIR}/file_to_backup
-
-  FNE=${TEST_DIR}/file_not_exist
-  FNECOPY="${FNE}-copy"
-  FNELINK="${FNE}-link"
 }
 #---------------------------------------------------------------------
 # User defined functions
 #---------------------------------------------------------------------
 
 ##- Tests
+###BPAddonBegin###
 
+TEST_DIR=${BP_SELF_DIR}/bp_test_directory
+CREATE_DIR=${TEST_DIR}/create_dir
+RO_DIR=${TEST_DIR}/read_only_dir
+
+FILE1=${TEST_DIR}/file1
+FILE1COPY="${FILE1}-copy"
+FILE1LINK="${FILE1}-link"
+
+#FILE2=${TEST_DIR}/file2
+FILE2REMOVE=${TEST_DIR}/file_to_remove
+FILE2RENAME=${TEST_DIR}/file_to_rename
+FILE2BACKUP=${TEST_DIR}/file_to_backup
+
+FNE=${TEST_DIR}/file_not_exist
+FNECOPY="${FNE}-copy"
+FNELINK="${FNE}-link"
 S=0
 F=0
-###BPAddonBegin###
 
 test_cleanup() { ## Test cleanup
   rm -rf "${TEST_DIR}"

@@ -164,6 +164,9 @@ usym() { ##D Unicode symbols
   icons_ "20"
   echo
 
+  icons_ "101"
+  echo
+
   # Emoticons
   # icons_ "1F6"
   # echo
@@ -505,6 +508,21 @@ MY_HOOK="my_hook"
 hooks() { ##D Test bpExecHook
   bpExecHook "MY_HOOK"
   bpExecHook "does_not_exist_hook"
+}
+
+filter() { ##D escape sequence filter test (bpFilterEscape)
+  esctext="${E_UNDERLINE}Some${E_RESET} ${E_RED}red${E_RESET}, ${E_BOLD}bold${E_RESET} text colored ${E_BG_BLUE}blue.${E_RESET}"
+  echo -e "Unfilterd:      $esctext"
+  echo -e "bpFilterEscape: $(bpFilterEscape "$esctext")"
+
+  bpOk "Some ${E_UNDERLINE}Underlines${E_RESET}"
+  bpError "Some ${E_BLUE}Blue${E_RESET}"
+  bpInfo "Some ${E_GREEN}GRENN${E_RESET}"
+  bpError "Some ${E_RED}Red${E_RESET}"
+
+  #attr=$(bpexample attr)
+  #bpFilterEscape "$attr"
+
 }
 
 ##- Argument
@@ -1109,6 +1127,8 @@ bpPrintDescGeneric() { # Generic key/description printout function
   local len=${#}
   local a=$(("${BP_COLUMNS}" - "$KEY_LENGTH" - "$BP_RIGHT_MARGIN"))
 
+  # Only fold if length of "value" longer than terminal width
+  # This is a speed optimization since runing fold for each printout takes considrable time
   if ((${#DESC} > a)); then
     LINES=$(fold --width="${a}" <<<"$DESC")
   else
@@ -1215,7 +1235,9 @@ bpColorizeUrl() { ##I Colorize string containing URL
 # $1 string to be filtered
 #
 bpFilterEscape() { ##I Filter escape characters from string
-  echo "$1" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
+  # https://superuser.com/questions/380772/removing-ansi-color-codes-from-text-stream
+
+  sed -e 's/\x1b\[[0-9;:]*[mGKHF]//g' <<<"$1"
 }
 
 ##C- IHELP File operations
@@ -1880,7 +1902,7 @@ bpLsModules() { ##I List modules
 bpAddModule() { ##I Add init script to
   local MODULE=""
   MODULE=$(realpath "${1}")
-  if [ ! -L "$m" ]; then
+  if [ ! -L "$MODULE" ]; then
     rm -f "${BP_CONFIG_MODULES}/$(basename "${MODULE}")"
     bpLn "$MODULE" "${BP_CONFIG_MODULES}/."
   fi
