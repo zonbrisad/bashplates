@@ -333,106 +333,45 @@ attrc() { ##D Font color attributes
   print_attr2 "E_UL_WHITE" "Underline white"
   echo
 }
+FCOLORS=(E_BLACK E_RED E_GREEN E_YELLOW E_BLUE E_MAGENTA E_CYAN E_GRAY E_DARKGRAY E_BR_RED E_BR_GREEN E_BR_YELLOW E_BR_BLUE E_BR_MAGENTA E_BR_CYAN E_WHITE)
+# BCOLORS=(E_BG_BLACK E_BG_RED E_BG_GREEN E_BG_YELLOW E_BG_BLUE E_BG_MAGENTA E_BG_CYAN E_BG_WHITE)
+#BCOLORS_BR=(E_BG_DARK_GRAY E_BG_BR_RED E_BG_BR_GREEN E_BG_BR_YELLOW E_BG_BR_BLUE E_BG_BR_MAGENTA E_BG_BR_CYAN E_BG_GRAY)
+BCOLORS=(E_BG_BLACK E_BG_RED E_BG_GREEN E_BG_YELLOW E_BG_BLUE E_BG_MAGENTA E_BG_CYAN E_BG_WHITE E_BG_DARK_GRAY E_BG_BR_RED E_BG_BR_GREEN E_BG_BR_YELLOW E_BG_BR_BLUE E_BG_BR_MAGENTA E_BG_BR_CYAN E_BG_GRAY)
 
 c16() { ##D 16 color table
-  FCOLORS=(E_BLACK E_RED E_GREEN E_YELLOW E_BLUE E_MAGENTA E_CYAN E_GRAY E_DARKGRAY E_BR_RED E_BR_GREEN E_BR_YELLOW E_BR_BLUE E_BR_MAGENTA E_BR_CYAN E_WHITE)
-  BCOLORS=(E_BG_BLACK E_BG_RED E_BG_GREEN E_BG_YELLOW E_BG_BLUE E_BG_MAGENTA E_BG_CYAN E_BG_WHITE E_RESET E_I)
-  BCOLORS_BR=(E_BG_DARK_GRAY E_BG_BR_RED E_BG_BR_GREEN E_BG_BR_YELLOW E_BG_BR_BLUE E_BG_BR_MAGENTA E_BG_BR_CYAN E_BG_GRAY)
 
   echo
   bpPrintLine "16 color map"
   echo
-  for fc in "${FCOLORS[@]}"; do
-    FG=${!fc}
-    for bc in "${BCOLORS[@]}"; do
-      BG=${!bc}
-      printf "${BG}${FG} %-10s ${E_RESET}" "${fc:2}"
-    done
-    echo
+
+  for i in {0..15}; do
+    bc=${BCOLORS[i]}
+    fc=${FCOLORS[i]}
+    printf "${!bc} %-15s ${E_RESET}${!fc}   %-16s ${E_RESET}\n" "${bc}" "${fc}"
   done
 
   echo
+  for i in {0..15}; do
+    FG=${FCOLORS[i]}
+    for j in {0..7}; do
+      BG=${BCOLORS[j]}
+      printf "${!BG}${!FG} %-12s ${E_RESET}" "${FCOLORS[i]}"
+    done
+    echo
+  done
+  echo
 
-  for fc in "${FCOLORS[@]}"; do
-    FG=${!fc}
-    for bc in "${BCOLORS_BR[@]}"; do
-      BG=${!bc}
-      printf "${FG}${BG} %-10s ${E_RESET}" "${fc:2}"
+  for i in {0..15}; do
+    FG=${FCOLORS[i]}
+    for j in {8..15}; do
+      BG=${BCOLORS[j]}
+      printf "${!BG}${!FG} %-12s ${E_RESET}" "${FCOLORS[i]}"
     done
     echo
   done
 
   echo
 }
-
-#!!!! OLD !!!
-# c256() { # 256 color table old
-
-#   echo
-#   #  bpPrintLine "256 Colors foreground"
-#   echo
-#   for i in {0..15}; do
-#     printf "\x1b[38;5;%sm  %3d ${E_RESET}" "$i" "$i"
-#     if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
-#       echo
-#       if ((i == 15)); then
-#         echo
-#       fi
-#     fi
-#   done
-
-#   for i in {16..231}; do
-#     printf "\x1b[38;5;%sm  %3d  ${E_RESET} " "$i" "$i"
-#     if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
-#       echo
-
-#       if ((i == 15)); then
-#         echo
-#       fi
-#     fi
-#   done
-
-#   echo
-#   for i in {232..255}; do
-#     printf "\x1b[38;5;%sm  %3d  ${E_RESET} " "$i" "$i"
-#     if ((i == 237)) || ((i == 243)) || ((i == 249)); then
-#       echo
-#     fi
-#   done
-#   echo -e "\n"
-#   echo
-
-#   #  bpPrintLine "256 Colors background"
-#   echo
-#   for i in {0..15}; do
-#     printf "\x1b[48;5;%sm  %3d ${E_RESET}" "$i" "$i"
-#     if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
-#       echo
-#       if ((i == 15)); then
-#         echo
-#       fi
-#     fi
-#   done
-
-#   for i in {16..231}; do
-#     printf "\x1b[48;5;%sm  %3d  ${E_RESET} " "$i" "$i"
-#     if ((i == 7)) || ((i == 15)) || ( ((i > 15)) && (((i - 15) % 6 == 0))); then
-#       echo
-#       if ((i == 15)); then
-#         echo
-#       fi
-#     fi
-#   done
-
-#   echo
-#   for i in {232..255}; do
-#     printf "\x1b[48;5;%sm  %3d  ${E_RESET} " "$i" "$i"
-#     if ((i == 237)) || ((i == 243)) || ((i == 249)); then
-#       echo
-#     fi
-#   done
-#   echo -e "\n"
-# }
 
 c256() { ##D 256 color table
 

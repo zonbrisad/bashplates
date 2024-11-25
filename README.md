@@ -16,7 +16,7 @@ MIT
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [About](#about)
-- [Features](#features)
+- [Features (not exhaustive)](#features-not-exhaustive)
 - [Requirements](#requirements)
   - [Runtime](#runtime)
   - [Development](#development)
@@ -31,21 +31,25 @@ MIT
 - [Internal(hidden) commands](#internalhidden-commands)
   - [ihelp](#ihelp)
   - [iinfo](#iinfo)
-  - [`iview`](#iview)
+  - [iview](#iview)
   - [ivars](#ivars)
 - [Examples](#examples)
 - [Documentation](#documentation)
-  - [Documentation tags](#documentation-tags)
+  - [Documentation tag](#documentation-tag)
   - [Standard subcommand function documentation](#standard-subcommand-function-documentation)
   - [Conditional subcommand function documentation](#conditional-subcommand-function-documentation)
 - [Log](#log)
-  - [Activate log feature](#activate-log-feature)
   - [Usage](#usage)
   - [View log](#view-log)
   - [Monitor log](#monitor-log)
 - [Files](#files)
 - [History](#history)
+- [Bugs](#bugs)
 - [TODO](#todo)
+- [Sugestions](#sugestions)
+  - [Less priority sugestions](#less-priority-sugestions)
+- [Documentation overhaul(again)](#documentation-overhaulagain)
+  - [Sugestion 1](#sugestion-1)
 - [References and tutorials](#references-and-tutorials)
 - [Example scripts](#example-scripts)
 
@@ -336,6 +340,10 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [x] ascii table in hex
 - [ ] Rewrite hook system to elliminate hook variables
 - [ ] Rewrite bpFilterEscape so to not use external sed, if possible in future
+- [ ] Rewrite bpColorizeUrl so to not use external sed, if possible in future
+- [ ] Add basic regex cheatsheet
+- [ ] Add cheatsheet for loops (for, while etcb)
+- [ ] Add brace expansion to cheatsheet <https://www.howtogeek.com/725657/how-to-use-brace-expansion-in-linuxs-bash-shell/>
 
 ## Sugestions
 
@@ -390,6 +398,7 @@ Other useful suffixes might be deprecated and unavailable
 [Internal Variables](https://tldp.org/LDP/abs/html/internalvariables.html)
 [Bash builtin commands](https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html)
 [BASH arithmetics](https://www.shell-tips.com/bash/math-arithmetic-calculation/#gsc.tab=0)
+[Brace expantion](https://www.howtogeek.com/725657/how-to-use-brace-expansion-in-linuxs-bash-shell/)
 [Best Practices for Writing Bash Scripts](http://kvz.io/blog/2013/11/21/bash-best-practices/)
 [What are the best practices for writing shell scripts?](https://www.quora.com/What-are-the-best-practices-for-writing-shell-scripts)
 [Command completion](https://opensource.com/article/18/3/creating-bash-completion-script)
