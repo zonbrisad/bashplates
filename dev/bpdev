@@ -416,35 +416,19 @@ bpb() { ##D Print banner
 
 }
 
-XXprintCommand() {
-  IFS=$' '
-  read -r -a arr <<<"$1"
-  inf="${arr[*]:3}"
-  #IFS=$'\n'
-  echo -n "${arr[0]} "
-  # bpPrintDesc "${arr[0]}" "${inf}"
-}
-
 completion() { ##D Command completion
-
   BP_HELP=1
-
   IFS=$'\n'
   SC="$1"
-  # HELP_LINES=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##I' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##-//' -e 'LINE' -e 'printLine')
   HELP_LINES=$(grep -h -e "##D" -e "##C" "$0" | grep -v -e 'grep' -e '##I' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##-//' -e 'LINE' -e 'printLine')
   HELP_LINES="${HELP_LINES//()/}"
 
   for LINE in ${HELP_LINES}; do
-    case "$LINE" in
-    #    *"##-"*) printNamedLine "$LINE" ;;
-    #    *"##C-"*) printCondNamedLine "$LINE" ;;
-    #    *"##CV"*) printCondCommand "$LINE" 1 ;;
-    #    *"##C"*) XXprintCommand "$LINE" 0 ;;
-    *"##D"*) XXprintCommand "$LINE" '##D' ;;
-    *) ;;
-
-    esac
+    if [[ $LINE == *"##D"* ]]; then
+      IFS=$' '
+      read -r -a arr <<<"$LINE"
+      echo -n "${arr[0]} "
+    fi
   done
 
   bpExecHook "POST_HELP_HOOK"
@@ -525,7 +509,45 @@ filter() { ##D escape sequence filter test (bpFilterEscape)
 
 }
 
+shopt -s extglob
+
+patmatch() { ##D Examples of pattern matching
+  #
+  # https://www.gnu.org/software/grep/manual/html_node/Character-Classes-and-Bracket-Expressions.html
+  # https://askubuntu.com/questions/889744/what-is-the-purpose-of-shopt-s-extglob
+  # https://www.linuxjournal.com/content/bash-extended-globbing
+  # https://bash-hackers.gabe565.com/syntax/pattern/
+  # https://www.gnu.org/software/grep/manual/html_node/Problematic-Expressions.html
+  #
+
+  STR="123bash456plates789"
+  STR2="AaBbCcDdaaa"
+  echo "$STR"
+  echo "${STR//[0..9]/}"
+  echo "${STR//[0123456789]/}"
+  echo "${STR//[[:digit:]]/}"
+  echo "${STR//[![:digit:]]/}"
+  echo "${STR//[[:alpha:]]/}"
+  echo "${STR2//[abcd]/}"
+
+  echo
+  COLORS="${E_BR_BLUE}Color blue   ${E_BR_RED}Color red${E_RESET}"
+  echo -e "Orig:      ${COLORS}"
+  echo -e "           ${COLORS//[[:cntrl:]]\[/}"
+  echo -e "           ${COLORS//[[:cntrl:]]\[[[:digit:]]/}"
+  echo -e "           ${COLORS//[[:cntrl:]]\[[![:alpha:]]/}"
+  echo -e "           ${COLORS//[[:cntrl:]]\[*([[:digit:]])/}"
+  echo -e "           ${COLORS//[[:cntrl:]]\[*([[:digit:]:])m/}"
+  echo
+  echo -e "           ${COLORS//[[:cntrl:]]\[*([[:digit:]:])[m|G]/}"
+
+  ATTRS="$(bpexample attr)"
+  echo -e "           ${ATTRS//[[:cntrl:]]\[*([[:digit:]:])[m|G]/}" # <-- Very slow
+
+}
+
 ##- Argument
+
 #xx() {
 
 # OPTS=$(getopt --longoptions idebug -- "$@")
@@ -654,7 +676,8 @@ bpRepeat() { ##I Repeat command n times
 }
 
 repeat() { ##D Repeat function test
-  bpRepeat 10 "ls ; sleep 1"
+  bpRepeat 10 "ls
+  sleep 1"
 }
 
 #
@@ -663,7 +686,8 @@ repeat() { ##D Repeat function test
 bpTitle() { ##I Set terminal window title
   case "$TERM" in
   *term* | rxvt)
-    echo -en "\e]0;$*\a"
+    echo -en "\e]0
+  $*\a"
     ;;
   *) ;;
   esac
@@ -693,7 +717,7 @@ inString() { ##D String contains test
   A="Hello world"
 
   if [ "$(bpInString HelloX "$A")" = "1" ]; then
-    #  if  $( bpInString "Hello" "$A" ) ; then
+    #  if  $(bpInString "Hello" "$A") ; then
     echo "A"
   else
     echo "B"
@@ -825,14 +849,14 @@ signalTerm() {
 signalErr() {
   echo
   echo
-  bpError "Trace error Row: $2  Function: $1  ErrorCode: $3"
+  bpError "Trace error Row: $2 Function: $1 ErrorCode: $3"
   echo
   bpCallStack "$*"
   bpExit 1
 }
 
 signalDbg() {
-  echo "Debug Row: $2  Function: $1"
+  echo "Debug Row: $2 Function: $1"
 }
 
 ##C- IHELP Exit and cleanup
@@ -841,7 +865,8 @@ bpCallStack() { ##I Print out BASH call stack
   bpPrintLine "Call stack"
   echo
   local frame=0
-  while caller "$frame" | sed -r -e "s/[0-9]*/${BP_C_VALUE}&${E_RESET}/"; do
+  while caller "$frame" | sed -r -e "s/[0-9]*/${BP_C_VALUE} &
+  ${E_RESET}/"; do
     ((frame++))
   done
   echo "$*"
@@ -1121,7 +1146,7 @@ bpPrintDescGeneric() { # Generic key/description printout function
   fi
 
   if ((${#4} == 0)); then
-    printf "${1}  %-${KEY_LENGTH}.${KEY_LENGTH}s${E_RESET} ${2}%s${E_RESET}\n" "$3" ""
+    printf "${1} %-${KEY_LENGTH}.${KEY_LENGTH}s${E_RESET} ${2}%s${E_RESET}\n" "$3" ""
   fi
 
   local len=${#}
@@ -1140,14 +1165,14 @@ bpPrintDescGeneric() { # Generic key/description printout function
   for line in ${LINES}; do
     if [ "${L1}" -eq 0 ]; then                # First line
       if ((${#KEY} > "$BP_KEY_LENGTH")); then # Oversized key
-        printf "${KEY_COLOR}  %-${KEY_LENGTH}s${E_RESET}\n" "$KEY"
-        printf "${KEY_COLOR}  %-${KEY_LENGTH}.${KEY_LENGTH}s${E_RESET} ${DESC_COLOR}%s${E_RESET}\n" "" "$line"
+        printf "${KEY_COLOR} %-${KEY_LENGTH}s${E_RESET}\n" "$KEY"
+        printf "${KEY_COLOR} %-${KEY_LENGTH}.${KEY_LENGTH}s${E_RESET} ${DESC_COLOR}%s${E_RESET}\n" "" "$line"
       else # Normal key
-        printf "${KEY_COLOR}  %-${KEY_LENGTH}.${KEY_LENGTH}s${E_RESET} ${DESC_COLOR}%s${E_RESET}\n" "$KEY" "$line"
+        printf "${KEY_COLOR} %-${KEY_LENGTH}.${KEY_LENGTH}s${E_RESET} ${DESC_COLOR}%s${E_RESET}\n" "$KEY" "$line"
       fi
       L1=1
     else # Rest of the lines
-      printf "${KEY_COLOR}  %-${KEY_LENGTH}.${KEY_LENGTH}s${E_RESET} ${DESC_COLOR}%s${E_RESET}\n" "" "$line"
+      printf "${KEY_COLOR} %-${KEY_LENGTH}.${KEY_LENGTH}s${E_RESET} ${DESC_COLOR}%s${E_RESET}\n" "" "$line"
     fi
   done
 }
@@ -2154,7 +2179,7 @@ icheck() { ##I Run shellcheck on script
 }
 
 irt() { ##I Remove tabs from script
-  sed -i -e 's/\t/  /g' "${BP_SELF_DIR}/${BP_SELF}"
+  sed -i -e 's/\t/ /g' "${BP_SELF_DIR}/${BP_SELF}"
 }
 
 ##C- IHELP Help & info
@@ -2302,6 +2327,7 @@ iinfo() { ##I Show information about script
   bpPrintVar TERM "Terminal"
   bpPrintVar BP_COLUMNS "Terminal columns"
   bpPrintVar BP_LINES "Terminal lines"
+  bpPrintVar BASH_VERSION "BASH Version"
 
   if [ -n "${POST_INFO_HOOK}" ]; then
     bpPrintLine "App. information"

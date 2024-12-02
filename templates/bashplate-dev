@@ -1526,6 +1526,7 @@ iinfo() { ##I Show information about script
   bpPrintVar TERM "Terminal"
   bpPrintVar BP_COLUMNS "Terminal columns"
   bpPrintVar BP_LINES "Terminal lines"
+  bpPrintVar BASH_VERSION "BASH Version"
 
   if [ -n "${POST_INFO_HOOK}" ]; then
     bpPrintLine "App. information"

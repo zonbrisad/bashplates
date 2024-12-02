@@ -108,7 +108,7 @@ status() { ##D Git status
   bpCd -
 }
 
-hist() { ##D Git status
+hist() { ##D Git history
   bpCd "${BP_SELF_DIR}"
   git hist
   bpCd -
@@ -127,6 +127,7 @@ clean() { ##D Remove leftover files
 
 commit() { ##D Commit project to repository
   bpCd "${BP_SELF_DIR}"
+  bpRun doctoc --github "${BP_SELF_DIR}"/README.md
   git commit -a
   #git push --tags -a
   bpCd -

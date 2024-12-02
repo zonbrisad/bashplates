@@ -296,7 +296,8 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 ## TODO
 
 - [ ] Add option parser
-- [ ] Add verbose/debug option
+- [ ] Add verbose ??
+- [ ] Add debug option
 - [ ] Add quiet option
 - [ ] Add color suppression option
 - [ ] Add warning/guard question(Are you sure?) to bpReadBool question (bpReadGuardBool?)
@@ -308,6 +309,11 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] Add a log complete command command, like bpExecLog that logs the entire command string and exit code
 - [ ] Add color theme override to setup file
 - [ ] Add commenttype that is always dissabled but visible, like comment or "to be implemented" something like ##DN or ##DV
+- [ ] Add errorcodes in cleartext in a large table
+- [ ] Add basic regex cheatsheet
+- [ ] Add cheatsheet for loops (for, while etcb)
+- [ ] Add brace expansion to cheatsheet <https://www.howtogeek.com/725657/how-to-use-brace-expansion-in-linuxs-bash-shell/>
+- [ ] Add internal BASH variables to cheatsheet  <https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html>
 - [ ] Add documentation of builtin commands to bp cheatsheet <https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html>
 - [ ] Rename bpHasCmd to something like bpIsCmd/bpIsCommand see bpIsFunction
 - [ ] Rename bpRemoveLineContainging to bpRemoveLine to better match bpReplaceLine
@@ -333,22 +339,17 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] Change BP_SELF to $BP_SELF_DIR/$BP_SELF_NAME, for clarity
 - [ ] Declare local variables local by using local keyword `local MY_VAR=XXX`
 - [ ] improved error/crash information printout <https://unix.stackexchange.com/questions/39623/trap-err-and-echoing-the-error-line>
-- [ ] add all? errorcodes in cleartext in a large table
-- [ ] Save and restore IFS variable in functions setting/using the IFS variable
-- [ ] Add internal BASH variables to cheatsheet  <https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html>
 - [ ] Improve output from bpCallStack
 - [x] ascii table in hex
 - [ ] Rewrite hook system to elliminate hook variables
 - [ ] Rewrite bpFilterEscape so to not use external sed, if possible in future
 - [ ] Rewrite bpColorizeUrl so to not use external sed, if possible in future
-- [ ] Add basic regex cheatsheet
-- [ ] Add cheatsheet for loops (for, while etcb)
-- [ ] Add brace expansion to cheatsheet <https://www.howtogeek.com/725657/how-to-use-brace-expansion-in-linuxs-bash-shell/>
+- [ ] Enable extended patternmatching `shopt -s extglob` per default
 
 ## Sugestions
 
 - Plugin system
-- automatic completion generator
+- Automatic command completion generator
 - Rename iview to iv
 - Rename ivars to ivar or iva
 - Rename iinfo to ii
@@ -364,6 +365,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - Shift parameters(left) sent to command functions using shift to allow commandfunctions to be used internaly
 - Built in support for setting terminal header via xtype
 - make a function accessable but hudden from help view
+- What about merging bpUserSettings() and bpInitSettings()
 
 ### Less priority sugestions
 

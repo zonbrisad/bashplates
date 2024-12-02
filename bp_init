@@ -42,7 +42,10 @@ source_exec() {
   if [ -f "${BP_SELF_DIR}/DEV" ]; then
     bpAddToPath "${BP_SELF_DIR}/dev"
     alias cdb='cd "${BP_SELF_DIR}"'
+    complete -W "$(bpdev completion)" bpdev
   fi
+
+  complete -W "new newd news newi cs cse csv ascii asciie" bp
 
   # Indicated that initscript was run
   export BP_INIT_RUN=1

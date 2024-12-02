@@ -115,7 +115,7 @@ new() { ##D Create a new standard bashplate project
   newScript "bashplate" "" "script"
 }
 
-newd() { ##C BP_DEV Create a new standard bashplate project
+newd() { ##C BP_DEV Create a new standard bashplate project (develop)
   newScript "bashplate-dev" "" "script"
 }
 
@@ -132,12 +132,6 @@ newi() { ##C BP_DEV Create new init script
   bpReplace "${script}" "__NAME__" "${name}"
   chmod +x "${script}"
   bpOk "Created file $script"
-}
-
-##- Setup
-
-bp_install() { ##D Install bashplates init
-  bpAddModule "${BP_SELF_DIR}/bp_init"
 }
 
 ##- Documentation
@@ -970,6 +964,12 @@ bp_phh() {
     bpInfo "Make sure to do load bp_init ( source $(realpath bp_init) )"
     echo
   fi
+}
+
+##- Setup
+
+bp_install() { ##D Install bashplates init
+  bpAddModule "${BP_SELF_DIR}/bp_init"
 }
 
 #---------------------------------------------------------------------
