@@ -225,18 +225,6 @@ cs-cheat-sheet() {
   bpPrintDesc "[ FILE1 -ot FILE2 ]" "2 is more recent than 1"
   bpPrintDesc "[ FILE1 -ef FILE2 ]" "Same files"
 
-  #bpPrintLine "\e]8;;https://tiswww.case.edu/php/chet/bash/bashref.html#Special-Parameters\aSpecial parameters\e]8;;\a"
-  bpPrintLine "Special parameters"
-  bpPrintDesc '$#' "Number of arguments"
-  bpPrintDesc '$*' "All arguments"
-  bpPrintDesc '$@' "All arguments, starting from first"
-  bpPrintDesc '$1' "First argument"
-  bpPrintDesc '$?' "Exit status of last task"
-  bpPrintDesc '$-' "Current option flags"
-  bpPrintDesc '$!' "PID of last background task"
-  bpPrintDesc '$$' "PID of shell"
-  bpPrintDesc '$_' "Last argument of the previous command"
-
   bpPrintLine "Redirect/pipe"
   bpPrintDesc '> FILE' "stdout to FILE"
   bpPrintDesc '2> FILE' "stderr to FILE"
@@ -249,35 +237,17 @@ cs-cheat-sheet() {
   bpPrintDesc '< FILE' "Pipe file to command"
   bpPrintDesc '<<< VAR' "Pipe variable to command"
 
-  bpPrintLine "Array assigning"
-  bpPrintDesc "Array=('A' 'B' 'C')" "Assign direct"
-  bpPrintLine
-  bpPrintDesc 'LS="A B C"' "Assign via read"
-  bpPrintDesc 'read -r -a Array <<< $LS' ""
-  bpPrintLine
-  bpPrintDesc 'Array+=("D")' "Append element"
-
-  bpPrintLine "Array operations"
-  bpPrintDesc '${Array[n]}' "Element n"
-  bpPrintDesc '${Array[-1]}' "Last element"
-  bpPrintDesc '${Array[-2]}' "Second to last element"
-  bpPrintDesc '${Array[@]}    # A B C D' "All elements"
-  bpPrintDesc '${Array[@]:1}  # B C D' "All but first element"
-  bpPrintDesc '${Array[@]:2}  # C D' "All but two first elements"
-  bpPrintDesc '${Array[@]::1} # A' "First element"
-  bpPrintDesc '${Array[@]::2} # A B' "Two first elements"
-
-  bpPrintDesc '${#Array[@]}' "Nr of elements"
-  bpPrintDesc '${#Array[n]}' "String lenght of nth element"
-  bpPrintDesc '${Array[@]:3:2}' "Range (from pos 3, length 2)"
-  bpPrintDesc '${!Array[@]}   # 0 1 2 3' "Keys of all elements"
-
   bpPrintLine "Parameter basics"
-  bpPrintDesc 'STR="ABCD"    # "ABCD"' "Assign"
-  bpPrintDesc 'STR="${STR}E" # "ABCDE"' "Append"
-  bpPrintDesc '${#STR}       # 5' "Length"
-  bpPrintDesc 'POINTER=STR' ""
+  bpPrintDesc 'STR="ABCD"    # "ABCD"' "Assign value"
+  bpPrintDesc 'STR="${STR}E" # "ABCDE"' "Append char(s)"
+  bpPrintDesc '${#STR}       # 5' "Determin length"
+  bpPrintDesc 'POINTER="STR"' ""
   bpPrintDesc '${!POINTER}   # "ABCDE"' "Pointer to parameter"
+
+  bpPrintLine 'Parameter default values'
+  bpPrintDesc '${STR:-val}' '$STR, or val if STR is unset'
+  bpPrintDesc '${STR:=val}' 'set $STR to val if unset'
+  bpPrintDesc '${STR:?message}' 'Show error message and exit if $STR is unset (or null)'
 
   bpPrintLine 'Parameter slicing'
   bpPrintDesc '${STR:index:length}' ""
@@ -306,10 +276,40 @@ cs-cheat-sheet() {
   bpPrintDesc '${STR/%from/to}' "Replace suffix"
   bpPrintDesc '${STR/#from/to}' "Replace prefix"
 
-  bpPrintLine 'Parameter default values'
-  bpPrintDesc '${STR:-val}' '$STR, or val if STR is unset'
-  bpPrintDesc '${STR:=val}' 'set $STR to val if unset'
-  bpPrintDesc '${STR:?message}' 'Show error message and exit if $STR is unset (or null)'
+  #bpPrintLine "\e]8;;https://tiswww.case.edu/php/chet/bash/bashref.html#Special-Parameters\aSpecial parameters\e]8;;\a"
+  bpPrintLine "Special parameters"
+  bpPrintDesc '$#' "Number of arguments"
+  bpPrintDesc '$*' "All arguments"
+  bpPrintDesc '$@' "All arguments, starting from first"
+  bpPrintDesc '$1' "First argument"
+  bpPrintDesc '$?' "Exit status of last task"
+  bpPrintDesc '$-' "Current option flags"
+  bpPrintDesc '$!' "PID of last background task"
+  bpPrintDesc '$$' "PID of shell"
+  bpPrintDesc '$_' "Last argument of the previous command"
+
+  bpPrintLine "Array assigning"
+  bpPrintDesc "Array=('A' 'B' 'C')" "Assign direct"
+  bpPrintLine
+  bpPrintDesc 'LS="A B C"' "Assign via read"
+  bpPrintDesc 'read -r -a Array <<< $LS' ""
+  bpPrintLine
+  bpPrintDesc 'Array+=("D")' "Append element"
+
+  bpPrintLine "Array operations"
+  bpPrintDesc '${Array[n]}' "Element n"
+  bpPrintDesc '${Array[-1]}' "Last element"
+  bpPrintDesc '${Array[-2]}' "Second to last element"
+  bpPrintDesc '${Array[@]}    # A B C D' "All elements"
+  bpPrintDesc '${Array[@]:1}  # B C D' "All but first element"
+  bpPrintDesc '${Array[@]:2}  # C D' "All but two first elements"
+  bpPrintDesc '${Array[@]::1} # A' "First element"
+  bpPrintDesc '${Array[@]::2} # A B' "Two first elements"
+  bpPrintDesc '${#Array[@]}' "Nr of elements"
+  bpPrintDesc '${#Array[n]}' "String lenght of nth element"
+  bpPrintDesc '${Array[@]:3:2}' "Range (from pos 3, length 2)"
+  bpPrintDesc '${!Array[@]}   # 0 1 2 3' "Keys of all elements"
+
   bpPrintLine
 }
 
@@ -474,7 +474,7 @@ cs-exit-codes() {
   bpPrintLine
 }
 
-csv() { ##D List BASH internal variables
+csv() { ##C BP_DEV List BASH internal variables
   # https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html
   # https://tldp.org/LDP/abs/html/internalvariables.html
 
@@ -619,6 +619,124 @@ cs-variables() {
   bpPrintDesc '$_' ""
   bpPrintDesc '$?' ""
   bpPrintDesc '$$' ""
+}
+
+csk() { ##C BP_DEV List BASH keywords
+  # https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html
+  # https://tldp.org/LDP/abs/html/internalvariables.html
+  # compgen -b
+  # compgen -k
+
+  BP_LINE_CHAR=""
+  #BP_KEY_LENGTH="6"
+
+  # if [ "$BP_COLUMNS" -ge 200 ]; then
+  #   BP_COLUMNS=$(("$BP_COLUMNS" / 4 - 1))
+  #   cs-variables | "${BP_SELF_DIR}"/dev/columnize.py --columns 4
+  #   return
+  # fi
+
+  if ((BP_COLUMNS > 150)); then
+    BP_COLUMNS=$(("$BP_COLUMNS" / 3 - 1))
+    print-keywords | "${BP_SELF_DIR}"/dev/columnize.py --columns 3
+    return
+  fi
+
+  if ((BP_COLUMNS > 100)); then
+    BP_COLUMNS=$(("$BP_COLUMNS" / 2 - 1))
+    print-keywords | "${BP_SELF_DIR}"/dev/columnize.py --columns 2
+    return
+  fi
+  print-keywords
+}
+
+print-keywords() {
+  # compgen -b
+  bpPrintDesc "if"
+  bpPrintDesc "then"
+  bpPrintDesc "else"
+  bpPrintDesc "elif"
+  bpPrintDesc "fi"
+  bpPrintDesc "case"
+  bpPrintDesc "esac"
+  bpPrintDesc "for"
+  bpPrintDesc "select"
+  bpPrintDesc "while"
+  bpPrintDesc "until"
+  bpPrintDesc "do"
+  bpPrintDesc "done"
+  bpPrintDesc "in"
+  bpPrintDesc "function"
+  bpPrintDesc "time"
+  bpPrintDesc "{"
+  bpPrintDesc "}"
+  bpPrintDesc "!"
+  bpPrintDesc "[["
+  bpPrintDesc "]]"
+  bpPrintDesc "coproc"
+
+  # compgen -k
+  bpPrintDesc "."
+  bpPrintDesc ":"
+  bpPrintDesc "["
+  bpPrintDesc "alias"
+  bpPrintDesc "bg"
+  bpPrintDesc "bind"
+  bpPrintDesc "break"
+  bpPrintDesc "builtin"
+  bpPrintDesc "caller"
+  bpPrintDesc "cd"
+  bpPrintDesc "command"
+  bpPrintDesc "compgen"
+  bpPrintDesc "complete"
+  bpPrintDesc "compopt"
+  bpPrintDesc "continue"
+  bpPrintDesc "declare"
+  bpPrintDesc "dirs"
+  bpPrintDesc "disown"
+  bpPrintDesc "echo"
+  bpPrintDesc "enable"
+  bpPrintDesc "eval"
+  bpPrintDesc "exec"
+  bpPrintDesc "exit"
+  bpPrintDesc "export"
+  bpPrintDesc "false"
+  bpPrintDesc "fc"
+  bpPrintDesc "fg"
+  bpPrintDesc "getopts"
+  bpPrintDesc "hash"
+  bpPrintDesc "help"
+  bpPrintDesc "history"
+  bpPrintDesc "jobs"
+  bpPrintDesc "kill"
+  bpPrintDesc "let"
+  bpPrintDesc "local"
+  bpPrintDesc "logout" "Exit a login shell"
+  bpPrintDesc "mapfile"
+  bpPrintDesc "popd"
+  bpPrintDesc "printf" "Formatted text output(C-style)"
+  bpPrintDesc "pushd"
+  bpPrintDesc "pwd"
+  bpPrintDesc "read"
+  bpPrintDesc "readarray"
+  bpPrintDesc "readonly"
+  bpPrintDesc "return"
+  bpPrintDesc "set"
+  bpPrintDesc "shift"
+  bpPrintDesc "shopt"
+  bpPrintDesc "source"
+  bpPrintDesc "suspend"
+  bpPrintDesc "test"
+  bpPrintDesc "times"
+  bpPrintDesc "trap"
+  bpPrintDesc "true"
+  bpPrintDesc "type"
+  bpPrintDesc "typeset"
+  bpPrintDesc "ulimit"
+  bpPrintDesc "umask"
+  bpPrintDesc "unalias"
+  bpPrintDesc "unset"
+  bpPrintDesc "wait"
 }
 
 printChar() {

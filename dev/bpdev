@@ -676,8 +676,7 @@ bpRepeat() { ##I Repeat command n times
 }
 
 repeat() { ##D Repeat function test
-  bpRepeat 10 "ls
-  sleep 1"
+  bpRepeat 10 "ls ; sleep 1"
 }
 
 #
@@ -686,8 +685,7 @@ repeat() { ##D Repeat function test
 bpTitle() { ##I Set terminal window title
   case "$TERM" in
   *term* | rxvt)
-    echo -en "\e]0
-  $*\a"
+    echo -en "\e]0;$*\a"
     ;;
   *) ;;
   esac
@@ -865,8 +863,7 @@ bpCallStack() { ##I Print out BASH call stack
   bpPrintLine "Call stack"
   echo
   local frame=0
-  while caller "$frame" | sed -r -e "s/[0-9]*/${BP_C_VALUE} &
-  ${E_RESET}/"; do
+  while caller "$frame" | sed -r -e "s/[0-9]*/${BP_C_VALUE}&${E_RESET}/"; do
     ((frame++))
   done
   echo "$*"
