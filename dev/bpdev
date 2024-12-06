@@ -676,7 +676,8 @@ bpRepeat() { ##I Repeat command n times
 }
 
 repeat() { ##D Repeat function test
-  bpRepeat 10 "ls ; sleep 1"
+  bpRepeat 10 "ls
+  sleep 1"
 }
 
 #
@@ -685,7 +686,8 @@ repeat() { ##D Repeat function test
 bpTitle() { ##I Set terminal window title
   case "$TERM" in
   *term* | rxvt)
-    echo -en "\e]0;$*\a"
+    echo -en "\e]0
+  $*\a"
     ;;
   *) ;;
   esac

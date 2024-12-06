@@ -234,6 +234,8 @@ cs-cheat-sheet() {
   bpPrintDesc '>> FILE' "append to FILE"
   bpPrintDesc '>| FILE' "overwrite FILE"
   bpPrintDesc '&> /dev/null' "stdout and stderr to /dev/null"
+
+  bpPrintDesc 'cmd1 | cmd2' "Pipe output from cmd1 to cmd2"
   bpPrintDesc '< FILE' "Pipe file to command"
   bpPrintDesc '<<< VAR' "Pipe variable to command"
 

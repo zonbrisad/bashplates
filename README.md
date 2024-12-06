@@ -292,6 +292,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] Fix PRE_SCRIPT_HOOK
 - [ ] `bp ascii` rows missing with 4 columns, columnize.py seems to be the problem
 - [ ] `bp asciie` show missaligned columns
+- [ ] bp cs witch four column output looses rows
 
 ## TODO
 

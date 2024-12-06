@@ -42,7 +42,9 @@ set -o pipefail
 # User defined Settings
 #---------------------------------------------------------------------
 bpUserSettings() {
-  :
+  if [ -f "${BP_SELF_DIR}/DEV" ]; then
+    BP_DEV=1
+  fi
 }
 #---------------------------------------------------------------------
 # User defined functions
@@ -333,11 +335,19 @@ attrc() { ##D Font color attributes
   print_attr2 "E_UL_WHITE" "Underline white"
   echo
 }
+
 FCOLORS=(E_BLACK E_RED E_GREEN E_YELLOW E_BLUE E_MAGENTA E_CYAN E_GRAY E_DARKGRAY E_BR_RED E_BR_GREEN E_BR_YELLOW E_BR_BLUE E_BR_MAGENTA E_BR_CYAN E_WHITE)
-# BCOLORS=(E_BG_BLACK E_BG_RED E_BG_GREEN E_BG_YELLOW E_BG_BLUE E_BG_MAGENTA E_BG_CYAN E_BG_WHITE)
-#BCOLORS_BR=(E_BG_DARK_GRAY E_BG_BR_RED E_BG_BR_GREEN E_BG_BR_YELLOW E_BG_BR_BLUE E_BG_BR_MAGENTA E_BG_BR_CYAN E_BG_GRAY)
 BCOLORS=(E_BG_BLACK E_BG_RED E_BG_GREEN E_BG_YELLOW E_BG_BLUE E_BG_MAGENTA E_BG_CYAN E_BG_WHITE E_BG_DARK_GRAY E_BG_BR_RED E_BG_BR_GREEN E_BG_BR_YELLOW E_BG_BR_BLUE E_BG_BR_MAGENTA E_BG_BR_CYAN E_BG_GRAY)
 
+attri() { ##C BP_DEV Show intensity attributes
+  echo "${E_BOLD}${E_UNDERLINE}  E_DIM            E_RESET(Normal)  E_BOLD    ${E_RESET}"
+  for i in {0..15}; do
+    fc=${FCOLORS[i]}
+    printf "  ${!fc}${E_DIM}%-15s${E_RESET}  ${!fc}%-15s${E_RESET}  ${!fc}${E_BOLD}%-15s${E_RESET}\n" "${fc}" "${fc}" "${fc}"
+  done
+
+  echo
+}
 c16() { ##D 16 color table
 
   echo
