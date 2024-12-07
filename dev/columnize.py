@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
 #
-# program for columnizing a datastream
+# program for columnizing a textstream
 #
 # File:     columnize
 # Author:   Peter Malmberg  <peter.malmberg@gmail.com>
-# Org:      __ORGANISTATION__
+# Org:
 # Date:     2023-11-18
 # License:
 # Python:   >= 3.0
@@ -57,7 +57,6 @@ ansi_regex = (
 )
 ansi_escape1 = re.compile(ansi_regex, flags=re.IGNORECASE)
 
-
 ansi_escape2 = re.compile(r"(?:\x1B[@-_]|[\x80-\x9F])[0-?]*[ -/]*[@-~]")
 
 
@@ -103,20 +102,25 @@ def main() -> None:
         except EOFError:
             break
 
-    lnr = len(lines)
-    lpc = math.ceil(lnr / args.columns)
+    lines_per_column = math.ceil(len(lines) / args.columns)
 
     # slice rows into columns
     columns = []
     for i in range(0, args.columns):
-        col = lines[(i * lpc) : ((i * lpc) + lpc)]
+        col = lines[
+            (i * lines_per_column) : ((i * lines_per_column) + lines_per_column)
+        ]
         columns.append(col)
 
-    for c in zip(*columns):
-        for line in c:
-            eline = ansi_escape2.sub("", line)
-            pad = (col_width - len(eline)) * " "
-            print(f"{line}{pad}", end="")
+    for i, _ in enumerate(columns[0]):
+        for col in columns:
+            try:
+                line = col[i]
+                eline = ansi_escape2.sub("", line)
+                pad = (col_width - len(eline)) * " "
+                print(f"{line}{pad}", end="")
+            except IndexError:
+                break
 
         print()  # newline
 

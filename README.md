@@ -290,9 +290,9 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] bpPrintDesc formats key/desc wrong when including terminal characters in key
 - [ ] Fixing bpExit code handling in subcommand dispatcher
 - [ ] Fix PRE_SCRIPT_HOOK
-- [ ] `bp ascii` rows missing with 4 columns, columnize.py seems to be the problem
+- [x] `bp ascii` rows missing with 4 columns, columnize.py seems to be the problem
 - [ ] `bp asciie` show missaligned columns
-- [ ] bp cs witch four column output looses rows
+- [x] bp cs witch four column output looses rows
 
 ## TODO
 

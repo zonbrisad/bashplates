@@ -317,7 +317,7 @@ cs-cheat-sheet() {
 
 cse() { ##D List BASH exit codes
   BP_LINE_CHAR=""
-  BP_KEY_LENGTH="6"
+  BP_KEY_LENGTH="4"
 
   if [ "$BP_COLUMNS" -ge 200 ]; then
     BP_COLUMNS=$(("$BP_COLUMNS" / 4 - 1))
@@ -341,7 +341,7 @@ cse() { ##D List BASH exit codes
 }
 
 cs-exit-codes() {
-  bpPrintLine "Bash exit codes"
+  #bpPrintLine "Bash exit codes"
   bpPrintDesc "0" "Success"
   bpPrintDesc "1" "Operation not permitted"
   bpPrintDesc "2" "No such file or directory"
@@ -473,7 +473,7 @@ cs-exit-codes() {
   bpPrintDesc "131" "State not recoverable"
   bpPrintDesc "132" "Operation not possible due to RF-kill"
   bpPrintDesc "133" "Memory page has hardware error"
-  bpPrintLine
+  #bpPrintLine
 }
 
 csv() { ##C BP_DEV List BASH internal variables
@@ -481,13 +481,13 @@ csv() { ##C BP_DEV List BASH internal variables
   # https://tldp.org/LDP/abs/html/internalvariables.html
 
   BP_LINE_CHAR=""
-  #BP_KEY_LENGTH="6"
+  BP_KEY_LENGTH="10"
 
-  # if [ "$BP_COLUMNS" -ge 200 ]; then
-  #   BP_COLUMNS=$(("$BP_COLUMNS" / 4 - 1))
-  #   cs-variables | "${BP_SELF_DIR}"/dev/columnize.py --columns 4
-  #   return
-  # fi
+  if [ "$BP_COLUMNS" -ge 200 ]; then
+    BP_COLUMNS=$(("$BP_COLUMNS" / 4 - 1))
+    cs-variables | "${BP_SELF_DIR}"/dev/columnize.py --columns 4
+    return
+  fi
 
   if ((BP_COLUMNS > 150)); then
     BP_COLUMNS=$(("$BP_COLUMNS" / 3 - 1))
@@ -623,20 +623,19 @@ cs-variables() {
   bpPrintDesc '$$' ""
 }
 
-csk() { ##C BP_DEV List BASH keywords
-  # https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html
-  # https://tldp.org/LDP/abs/html/internalvariables.html
+csk() { ##C BP_DEV List BASH builtin keywords
+  # https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html
   # compgen -b
   # compgen -k
 
   BP_LINE_CHAR=""
-  #BP_KEY_LENGTH="6"
+  BP_KEY_LENGTH="10"
 
-  # if [ "$BP_COLUMNS" -ge 200 ]; then
-  #   BP_COLUMNS=$(("$BP_COLUMNS" / 4 - 1))
-  #   cs-variables | "${BP_SELF_DIR}"/dev/columnize.py --columns 4
-  #   return
-  # fi
+  if [ "$BP_COLUMNS" -ge 200 ]; then
+    BP_COLUMNS=$(("$BP_COLUMNS" / 4 - 1))
+    print-keywords | "${BP_SELF_DIR}"/dev/columnize.py --columns 4
+    return
+  fi
 
   if ((BP_COLUMNS > 150)); then
     BP_COLUMNS=$(("$BP_COLUMNS" / 3 - 1))
@@ -662,83 +661,83 @@ print-keywords() {
   bpPrintDesc "case"
   bpPrintDesc "esac"
   bpPrintDesc "for"
-  bpPrintDesc "select"
+  bpPrintDesc "select" "Select words from a list and execute commands"
   bpPrintDesc "while"
-  bpPrintDesc "until"
+  bpPrintDesc "until" "Execute commands as long as a test does not succeed"
   bpPrintDesc "do"
   bpPrintDesc "done"
   bpPrintDesc "in"
-  bpPrintDesc "function"
-  bpPrintDesc "time"
+  bpPrintDesc "function" "Define shell function"
+  bpPrintDesc "time" "Report time consumed by pipeline's execution"
   bpPrintDesc "{"
   bpPrintDesc "}"
   bpPrintDesc "!"
   bpPrintDesc "[["
   bpPrintDesc "]]"
-  bpPrintDesc "coproc"
+  bpPrintDesc "coproc" "Create a coprocess"
 
   # compgen -k
-  bpPrintDesc "."
+  bpPrintDesc "." "Execute commands from a file in the current shell"
   bpPrintDesc ":"
   bpPrintDesc "["
-  bpPrintDesc "alias"
-  bpPrintDesc "bg"
-  bpPrintDesc "bind"
-  bpPrintDesc "break"
-  bpPrintDesc "builtin"
-  bpPrintDesc "caller"
-  bpPrintDesc "cd"
-  bpPrintDesc "command"
-  bpPrintDesc "compgen"
-  bpPrintDesc "complete"
-  bpPrintDesc "compopt"
-  bpPrintDesc "continue"
-  bpPrintDesc "declare"
-  bpPrintDesc "dirs"
-  bpPrintDesc "disown"
-  bpPrintDesc "echo"
-  bpPrintDesc "enable"
-  bpPrintDesc "eval"
-  bpPrintDesc "exec"
-  bpPrintDesc "exit"
-  bpPrintDesc "export"
-  bpPrintDesc "false"
-  bpPrintDesc "fc"
-  bpPrintDesc "fg"
-  bpPrintDesc "getopts"
-  bpPrintDesc "hash"
-  bpPrintDesc "help"
-  bpPrintDesc "history"
-  bpPrintDesc "jobs"
-  bpPrintDesc "kill"
-  bpPrintDesc "let"
-  bpPrintDesc "local"
+  bpPrintDesc "alias" "Define or display aliases"
+  bpPrintDesc "bg" "Move jobs to the background"
+  bpPrintDesc "bind" "Set Readline key bindings and variables"
+  bpPrintDesc "break" "Exit for, while, or until loops"
+  bpPrintDesc "builtin" "Execute shell builtins"
+  bpPrintDesc "caller" "Return the context of the current subroutine call"
+  bpPrintDesc "cd" "Change the shell working directory"
+  bpPrintDesc "command" "Execute a simple command or display information about commands"
+  bpPrintDesc "compgen" "Display possible completions depending on the options"
+  bpPrintDesc "complete" "Specify how arguments are to be completed by Readline"
+  bpPrintDesc "compopt" "Modify or display completion options"
+  bpPrintDesc "continue" "Resume for, while, or until loops"
+  bpPrintDesc "declare" "Set variable values and attributes"
+  bpPrintDesc "dirs" "Display directory stack"
+  bpPrintDesc "disown" "Remove jobs from current shell"
+  bpPrintDesc "echo" "Write arguments to the standard output"
+  bpPrintDesc "enable" "Enable and disable shell builtins"
+  bpPrintDesc "eval" "Evaluate arithmetic expressions"
+  bpPrintDesc "exec" "Replace the shell with the given command"
+  bpPrintDesc "exit" "Exit the shell"
+  bpPrintDesc "export" "Set export attribute for shell variables"
+  bpPrintDesc "false" "Return an unsuccessful result"
+  bpPrintDesc "fc" "Display or execute commands from the history list"
+  bpPrintDesc "fg" "Move job to the foreground"
+  bpPrintDesc "getopts" "Parse option arguments"
+  bpPrintDesc "hash" "Remember or display program locations"
+  bpPrintDesc "help" "Display information about builtin commands"
+  bpPrintDesc "history" "Display or manipulate the history list"
+  bpPrintDesc "jobs" "Display status of jobs"
+  bpPrintDesc "kill" "Send a signal to a job"
+  bpPrintDesc "let" "Evaluate arithmetic expressions"
+  bpPrintDesc "local" "Define local variable"
   bpPrintDesc "logout" "Exit a login shell"
-  bpPrintDesc "mapfile"
-  bpPrintDesc "popd"
+  bpPrintDesc "mapfile" "Read lines from the standard input into an indexed array variable"
+  bpPrintDesc "popd" "Remove directories from stack"
   bpPrintDesc "printf" "Formatted text output(C-style)"
-  bpPrintDesc "pushd"
-  bpPrintDesc "pwd"
-  bpPrintDesc "read"
-  bpPrintDesc "readarray"
-  bpPrintDesc "readonly"
-  bpPrintDesc "return"
-  bpPrintDesc "set"
-  bpPrintDesc "shift"
-  bpPrintDesc "shopt"
-  bpPrintDesc "source"
-  bpPrintDesc "suspend"
-  bpPrintDesc "test"
-  bpPrintDesc "times"
-  bpPrintDesc "trap"
-  bpPrintDesc "true"
-  bpPrintDesc "type"
-  bpPrintDesc "typeset"
-  bpPrintDesc "ulimit"
-  bpPrintDesc "umask"
-  bpPrintDesc "unalias"
-  bpPrintDesc "unset"
-  bpPrintDesc "wait"
+  bpPrintDesc "pushd" "Add directories to stack"
+  bpPrintDesc "pwd" "Print the name of the current working directory"
+  bpPrintDesc "read" "Read a line from the standard input and split it into fields"
+  bpPrintDesc "readarray" "Read lines from a file into an array variable"
+  bpPrintDesc "readonly" "Mark shell variable as unchangable"
+  bpPrintDesc "return" "Return from a shell function"
+  bpPrintDesc "set" "Set or unset values of shell options and positional parameters"
+  bpPrintDesc "shift" "Shift positional parameters"
+  bpPrintDesc "shopt" "Set and unset shell options"
+  bpPrintDesc "source" "Execute commands from a file in the current shell"
+  bpPrintDesc "suspend" "Suspend shell execution"
+  bpPrintDesc "test" "Evaluate conditional expression"
+  bpPrintDesc "times" "Display process times"
+  bpPrintDesc "trap" "Trap signals and other events"
+  bpPrintDesc "true" "Return a successful result"
+  bpPrintDesc "type" "Display information about command type"
+  bpPrintDesc "typeset" "Set variable values and attributes"
+  bpPrintDesc "ulimit" "Modify shell resource limits"
+  bpPrintDesc "umask" "Display or set file mode mask"
+  bpPrintDesc "unalias" "Remove each NAME from the list of defined aliases"
+  bpPrintDesc "unset" "Unset values and attributes of shell variables and functions"
+  bpPrintDesc "wait" "Wait for job completion and return exit status"
 }
 
 printChar() {
