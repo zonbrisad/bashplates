@@ -374,10 +374,6 @@ c16() { ##D 16 color table
   # Background normal colors
   for j in {0..7}; do
     bc=${BCOLORS[j]}
-    # FC=${E_BR_WHITE}
-    # if [[ $bc =~ "WHITE" ]]; then
-    #   FC="${E_BLACK}"
-    # fi
     FC=${E_BLACK}
     if [[ $bc =~ "BLACK" ]]; then
       FC="${E_BR_WHITE}"
@@ -388,10 +384,6 @@ c16() { ##D 16 color table
   # Background bright colors
   for j in {8..15}; do
     bc=${BCOLORS[j]}
-    # FC=${E_BR_WHITE}
-    # if [[ $bc =~ "WHITE" ]]; then
-    #   FC="${E_BLACK}"
-    # fi
     FC=${E_BLACK}
     if [[ $bc =~ "BLACK" ]]; then
       FC="${E_BR_WHITE}"
@@ -402,6 +394,7 @@ c16() { ##D 16 color table
   echo
   echo
 }
+
 c16a() { ##D 16 color table (alt)
 
   echo
@@ -415,9 +408,9 @@ c16a() { ##D 16 color table (alt)
     ((i += 8))
     FC2="${FCOLORS[i]}"
     BC2="${BCOLORS[i]}"
-    BFC1="${E_BR_WHITE}"
-    if [[ $BC1 =~ "WHITE" ]]; then
-      BFC1="${E_BLACK}"
+    BFC1="${E_BLACK}${E_BOLD}"
+    if [[ $BC1 =~ "BLACK" ]]; then
+      BFC1="${E_WHITE}"
     fi
     printf "${!FC1} %-10s ${!FC2} %-13s ${E_RESET}${BFC1}${!BC1} %-13s ${E_RESET}  ${BFC1}${!BC2} %-15s ${E_RESET}\n" "${FC1}" "${FC2}" "${BC1}" "${BC2}"
   done
@@ -428,14 +421,18 @@ c16a() { ##D 16 color table (alt)
 c16t() { ##D Colortable for 16 color system
 
   for j in {0..7}; do
-    bc=${BCOLORS[j]}
-    #bc="E_BG_BLACK"
-    printf "${!bc}${E_BR_WHITE}${E_BOLD} %-14s ${E_RESET}" "${bc}"
+    BC=${BCOLORS[j]}
+    FC=$E_BLACK
+    if [[ $BC =~ "BLACK" ]]; then
+      FC=$E_WHITE
+    fi
+    printf "${!BC}${FC}${E_BOLD} %-14s ${E_RESET}" "${BC}"
   done
   echo
+
   for j in {0..7}; do
-    bc=${BCOLORS[j]}
-    printf "${!bc}                ${E_RESET}"
+    BC=${BCOLORS[j]}
+    printf "${!BC}                ${E_RESET}"
   done
   echo
 
@@ -450,19 +447,21 @@ c16t() { ##D Colortable for 16 color system
   echo
 
   for j in {8..15}; do
-    bc=${BCOLORS[j]}
-    printf "${!bc}${E_BR_WHITE}${E_BOLD} %-15s${E_RESET}" "${bc}"
+    BC=${BCOLORS[j]}
+    FC=$E_BLACK
+    if [[ $BC =~ "GRAY" ]]; then
+      FC=$E_WHITE
+    fi
+    printf "${!BC}${FC}${E_BOLD} %-15s${E_RESET}" "${BC}"
   done
   echo
+
   for j in {8..15}; do
-    bc=${BCOLORS[j]}
-    printf "${!bc}                ${E_RESET}"
+    BC=${BCOLORS[j]}
+    printf "${!BC}                ${E_RESET}"
   done
-  # echo
-  # for j in {8..15}; do
-  #   printf " %-14s ${E_RESET}" "${BCOLORS[j]}"
-  # done
   echo
+
   for i in {0..15}; do
     FG=${FCOLORS[i]}
     for j in {8..15}; do
