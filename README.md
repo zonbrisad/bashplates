@@ -346,6 +346,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] Rewrite bpFilterEscape so to not use external sed, if possible in future
 - [ ] Rewrite bpColorizeUrl so to not use external sed, if possible in future
 - [ ] Enable extended patternmatching `shopt -s extglob` per default
+- [ ] Rename colors
 
 ## Sugestions
 
