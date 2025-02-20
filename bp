@@ -245,6 +245,8 @@ cs-cheat-sheet() {
   bpPrintDesc '${#STR}       # 5' "Determin length"
   bpPrintDesc 'POINTER="STR"' ""
   bpPrintDesc '${!POINTER}   # "ABCDE"' "Pointer to parameter"
+  bpPrintDesc 'local STR' "Make variable access restricted to curly bracket area"
+  bpPrintDesc 'export STR' "Make variable available to shell and sub-processes"
 
   bpPrintLine 'Parameter default values'
   bpPrintDesc '${STR:-val}' '$STR, or val if STR is unset'

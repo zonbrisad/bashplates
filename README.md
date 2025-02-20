@@ -312,7 +312,8 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] Add commenttype that is always dissabled but visible, like comment or "to be implemented" something like ##DN or ##DV
 - [ ] Add errorcodes in cleartext in a large table
 - [ ] Add basic regex cheatsheet
-- [ ] Add cheatsheet for loops (for, while etcb)
+- [ ] Add basic BASH pattern matching cheatsheet
+- [ ] Add cheatsheet for loops (for, while etc)
 - [ ] Add brace expansion to cheatsheet <https://www.howtogeek.com/725657/how-to-use-brace-expansion-in-linuxs-bash-shell/>
 - [ ] Add internal BASH variables to cheatsheet  <https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html>
 - [ ] Add documentation of builtin commands to bp cheatsheet <https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html>
@@ -343,10 +344,12 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] Improve output from bpCallStack
 - [x] ascii table in hex
 - [ ] Rewrite hook system to elliminate hook variables
-- [ ] Rewrite bpFilterEscape so to not use external sed, if possible in future
-- [ ] Rewrite bpColorizeUrl so to not use external sed, if possible in future
+- [ ] Rewrite bpFilterEscape so to not use external sed, if possible
+- [ ] Rewrite bpColorizeUrl so to not use external sed, if possible
 - [ ] Enable extended patternmatching `shopt -s extglob` per default
 - [ ] Rename colors
+- [ ] Remove/reduce usage of sed in favour of builtin filtercapabilties
+- [ ] Add multicolumn output to ihelp
 
 ## Sugestions
 
@@ -409,6 +412,7 @@ Other useful suffixes might be deprecated and unavailable
 [Exit codes demystified](https://www.redhat.com/sysadmin/exit-codes-demystified)
 [Bash exit code](https://www.cyberciti.biz/faq/linux-bash-exit-status-set-exit-statusin-bash/)
 [Remove ANSI terminal codes](https://superuser.com/questions/380772/removing-ansi-color-codes-from-text-stream)
+[Icecream](https://github.com/jtplaarj/IceCream-Bash/blob/main/src/ic.sh)
 
 # Example scripts
 
