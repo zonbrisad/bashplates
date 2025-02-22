@@ -340,13 +340,63 @@ FCOLORS=(E_BLACK E_RED E_GREEN E_YELLOW E_BLUE E_MAGENTA E_CYAN E_WHITE E_GRAY E
 BCOLORS=(E_BG_BLACK E_BG_RED E_BG_GREEN E_BG_YELLOW E_BG_BLUE E_BG_MAGENTA E_BG_CYAN E_BG_WHITE E_BG_GRAY E_BG_BR_RED E_BG_BR_GREEN E_BG_BR_YELLOW E_BG_BR_BLUE E_BG_BR_MAGENTA E_BG_BR_CYAN E_BG_BR_WHITE)
 
 attri() { ##C BP_DEV Color and attribute table
-  echo "${E_BOLD}${E_UNDERLINE}  Normal           E_DIM            E_BOLD           E_ITALIC          E_UNDERLINE      E_CROSSED  ${E_RESET}"
+  echo "${E_BOLD}${E_UNDERLINE} E_RESET       E_DIM         E_BOLD        E_ITALIC      E_UNDERLINE   E_CROSSED     E_REVERSE    ${E_RESET}"
   for i in {0..15}; do
     fc=${FCOLORS[i]}
-    printf "  ${E_RESET}${!fc}%-15s${E_DIM}  ${!fc}%-15s${E_RESET}  ${!fc}${E_BOLD}%-15s${E_RESET}  ${!fc}${E_ITALIC}%-15s${E_RESET}   ${!fc}${E_UNDERLINE}%-15s${E_RESET}  ${!fc}${E_CROSSED}%s${E_RESET}\n" "${fc}" "${fc}" "${fc}" "${fc}" "${fc}" "${fc}"
+    printf " ${E_RESET}${!fc}%-13s${E_DIM} ${!fc}%-13s${E_RESET} ${!fc}${E_BOLD}%-13s${E_RESET} ${!fc}${E_ITALIC}%-13s${E_RESET} ${!fc}${E_UNDERLINE}%-13s${E_RESET} ${!fc}${E_CROSSED}%-13s${E_RESET} ${!fc}${E_REVERSE}%-13s${E_RESET}\n" "${fc}" "${fc}" "${fc}" "${fc}" "${fc}" "${fc}" "${fc}"
+  done
+  echo
+}
+
+attra() { ##C BP_DEV Attributes
+  bpPrintLine "Font style attributes"
+  echo
+  ATTRS=(E_RESET E_BOLD E_DIM E_ITALIC E_REVERSE E_BLINK E_UNDERLINE E_CROSSED)
+  for i in {0..7}; do
+    ATTR=${ATTRS[i]}
+    FC=${FCOLORS[i]}
+    BC=${BCOLORS[i]}
+    ((j = i + 8))
+    FCB=${FCOLORS[j]}
+    BCB=${BCOLORS[j]}
+    if ((i == 0)); then
+      CC=${E_WHITE}${E_BOLD}
+    else
+      CC=${E_BLACK}${E_BOLD}
+    fi
+
+    printf " ${E_RESET}${!ATTR}%-12s${E_RESET}  ${!FC}%-9s${E_RESET}  ${!FCB}%-12s${E_RESET}  ${CC}${!BC} %-13s${E_RESET}  ${E_BLACK}${E_BOLD}${!BCB} %-15s ${E_RESET}\n" "${ATTR}" "${FC}" "${FCB}" "${BC}" "${BCB}"
   done
 
   echo
+  bpPrintLine "Extended font style attributes(only supported on certain terminals)"
+  echo
+  EATTRS=(E_FRACTUR E_UNDERLINE_CURLY E_UNDERLINE_DOUBLE E_UNDERLINE_DOT E_UNDERLINE_DASH E_SUBSCRIPT E_SUPERSCRIPT E_RAPID_BLINK E_FRAME E_OVERLINED)
+  ECATTRS=(E_UL_RED E_UL_GREEN E_UL_YELLOW E_UL_BLUE E_UL_MAGENTA E_UL_CYAN E_UL_WHITE E_UL_GRAY E_UL_BR_RED E_UL_BR_GREEN E_UL_BR_YELLOW E_UL_BR_BLUE E_UL_BR_MAGENTA E_UL_BR_CYAN E_UL_BR_WHITE)
+
+  for i in {0..9}; do
+
+    EATTR=${EATTRS[i]}
+    if ((i < 8)); then
+      ULC="${ECATTRS[i]}"
+      ULCR="${E_UNDERLINE}${!ULC}"
+    else
+      ULC=""
+      ULCR=""
+    fi
+
+    ((j = i + 8))
+    if ((j < 15)); then
+      ULC2=${ECATTRS[j]}
+      ULC2R="${E_UNDERLINE}${!ULC2}"
+    else
+      ULC2=""
+      ULC2R=""
+    fi
+
+    printf " ${E_RESET}${!EATTR}%-18s${E_RESET}  ${ULCR}%-14s${E_RESET}  ${ULC2R}%-9s${E_RESET}\n" "${EATTR}" "${ULC}" "${ULC2}"
+  done
+
 }
 
 c16() { ##D 16 color table
