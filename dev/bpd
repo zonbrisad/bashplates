@@ -76,6 +76,10 @@ ddb() { ##D Diff bpdev with bp
   ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "${BP_SELF_DIR}/../bp"
 }
 
+dde() { ##D Diff bpdev with bpexample
+  ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "${BP_SELF_DIR}/../bpexample"
+}
+
 dtd() { ##D Diff template witdh bpdev
   ${BP_DIFF} "${BP_SELF_DIR}/bpdev" "${BP_SELF_DIR}/../templates/bashplate"
 }

@@ -979,7 +979,7 @@ E_UL_BR_YELLOW=$'\e[58;5;11m'  # Bright Yellow
 E_UL_BR_BLUE=$'\e[58;5;12m'    # Bright Blue
 E_UL_BR_MAGENTA=$'\e[58;5;13m' # Bright Magenta
 E_UL_BR_CYAN=$'\e[58;5;14m'    # Bright Cyan
-E_UL_BR_WHITE=$'\e[58;5;15m'   # White
+E_UL_BR_WHITE=$'\e[58;5;15m'   # Bright White
 
 # ANSI Text attributes
 E_RESET=$'\e[0m'              # Clear all attributes
