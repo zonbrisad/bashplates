@@ -316,8 +316,8 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] Add basic BASH pattern matching cheatsheet
 - [ ] Add cheatsheet for loops (for, while etc)
 - [ ] Add brace expansion to cheatsheet <https://www.howtogeek.com/725657/how-to-use-brace-expansion-in-linuxs-bash-shell/>
-- [ ] Add internal BASH variables to cheatsheet  <https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html>
-- [ ] Add documentation of builtin commands to bp cheatsheet <https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html>
+- [x] Add internal BASH variables to cheatsheet  <https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html>
+- [x] Add documentation of builtin commands to bp cheatsheet <https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html>
 - [ ] Rename bpHasCmd to something like bpIsCmd/bpIsCommand see bpIsFunction
 - [ ] Rename bpRemoveLineContainging to bpRemoveLine to better match bpReplaceLine
 - [ ] Rename bpCallStack to bpPrintCallStack
