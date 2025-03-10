@@ -293,6 +293,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [x] `bp ascii` rows missing with 4 columns, columnize.py seems to be the problem
 - [ ] `bp asciie` show missaligned columns
 - [x] bp cs witch four column output looses rows
+- [x] bp command completion does not work correct in some terminals (gnome terminal)
 
 ## TODO
 
@@ -350,6 +351,8 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] Rename colors
 - [ ] Remove/reduce usage of sed in favour of builtin filtercapabilties
 - [ ] Add multicolumn output to ihelp
+- [ ] Add line number to debug printout to show linenr from witch call was done, use BASH_LINENO and FUNCNAME
+- [x] Replace extended ASCII table with something more sensible
 
 ## Sugestions
 
@@ -369,7 +372,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - Rename bpPrindDesc to bpPrintKeyVal
 - Shift parameters(left) sent to command functions using shift to allow commandfunctions to be used internaly
 - Built in support for setting terminal header via xtype
-- make a function accessable but hudden from help view
+- make a function accessable but hidden from help view
 - What about merging bpUserSettings() and bpInitSettings()
 
 ### Less priority sugestions
