@@ -343,6 +343,10 @@ cse() { ##D List BASH exit codes
 }
 
 cs-exit-codes() {
+  # https://tiswww.case.edu/php/chet/bash/bashref.html#Exit-Status
+  # <https://www.redhat.com/sysadmin/exit-codes-demystified>
+  # <https://www.tldp.org/LDP/abs/html/exitcodes.html>
+
   #bpPrintLine "Bash exit codes"
   bpPrintDesc "0" "Success"
   bpPrintDesc "1" "Operation not permitted"
@@ -540,7 +544,7 @@ bash_variables=(
   "" "EXECIGNORE" "Pattern for commands to ignore"
   "" "FCEDIT" "Editor used by fc"
   "" "FIGNORE" "Pattern for file names to ignore"
-  "" "FUNCNAME" "Name of the current function"
+  "" "FUNCNAME[]" "Array of functionnames on call stack"
   "" "FUNCNEST" "Function nesting level"
   "" "GLOBIGNORE" "Pattern describing files to ignore during pathname expansion"
   "" "GROUPS[]" "Array of groups to which the current user belongs"

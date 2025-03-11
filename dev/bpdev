@@ -584,6 +584,18 @@ patmatch() { ##D Examples of BASH pattern matching
 
 }
 
+linecall() {
+  echo "Line: ${BASH_LINENO[0]} Function: ${FUNCNAME[0]}"
+}
+
+linefun() { ##D Print line number and function name
+  echo "Line: $LINENO Function: ${FUNCNAME[1]}"
+  echo "Line: ${BASH_LINENO[0]} Function: ${FUNCNAME[0]}"
+  linecall
+  BP_DEBUG=1
+  bpDebug "Some debug message"
+}
+
 ##- Argument
 
 #xx() {
@@ -2044,7 +2056,7 @@ bpDebug() { ##I Debug message
     bpLogDebug "$1"
   fi
 
-  echo -e "[${BP_C_DEBUG}Dbg${E_RESET}] $1"
+  echo -e "[${BP_C_DEBUG}Dbg${E_RESET}] ${FUNCNAME[1]}:${BASH_LINENO[0]}  $1"
 }
 
 bpWarning() { ##I Warning message
@@ -2373,34 +2385,34 @@ iinfo() { ##I Show information about script
   bpPrintLine
 }
 
-bpColorizeBash()  { ## Colorize BASH script
+bpColorizeBash() { ## Colorize BASH script
   sed -e "s/#.*/\\${BP_C_COMMENT}&\\${E_RESET}/" \
-	-e "s/\<echo\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\<if\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\<then\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\<else\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\<fi\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\<do\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\<done\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\<elif\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\<case\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\<esac\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\<for\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\<in\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\<select\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\<time\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\<until\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\<select\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\<eval\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\<break\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\<while\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
-	-e "s/\".*\"/\\${BP_C_STRING}&\\${E_RESET}/" \
-	-e "s/\([^=]*\)=/${BP_C_VAR}\1\\${E_RESET}=/" <<< "${1}" 
+    -e "s/\<echo\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\<if\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\<then\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\<else\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\<fi\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\<do\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\<done\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\<elif\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\<case\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\<esac\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\<for\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\<in\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\<select\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\<time\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\<until\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\<select\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\<eval\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\<break\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\<while\>/\\${BP_C_RESERVED}&\\${E_RESET}/" \
+    -e "s/\".*\"/\\${BP_C_STRING}&\\${E_RESET}/" \
+    -e "s/\([^=]*\)=/${BP_C_VAR}\1\\${E_RESET}=/" <<<"${1}"
 }
 
 iview() { ##I View example
   # Singe command documentation
-	if [ -z "$2" ]; then
+  if [ -z "$2" ]; then
     bpExit
   fi
 
@@ -2408,7 +2420,7 @@ iview() { ##I View example
   if bpIsCmd batcat; then # Use batcat, if available, to view function
     bpGetFunction "$0" "${2}" | batcat --language bash --decorations never
   else
-	  bpColorizeBash "$(bpGetFunction "$0" "${2}")"
+    bpColorizeBash "$(bpGetFunction "$0" "${2}")"
   fi
   bpPrintLine
   bpExit
