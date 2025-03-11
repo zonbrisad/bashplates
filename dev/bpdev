@@ -245,7 +245,7 @@ msg() { ##D Messsages format test
   echo -e "[${BP_C_CRITICAL}Critical${E_RESET}] My little error message"
   echo
 
-  bpPrintLine "Full text messages with space padding"
+  bpPrintLine "8 character, centered"
   echo -e "[${BP_C_OK}   Ok   ${E_RESET}] My little error message"
   echo -e "[${BP_C_INFO}  Info  ${E_RESET}] My little error message"
   echo -e "[${BP_C_DEBUG} Debug  ${E_RESET}] My little error message"
@@ -254,7 +254,41 @@ msg() { ##D Messsages format test
   echo -e "[${BP_C_CRITICAL}Critical${E_RESET}] My little error message"
   echo
 
-  bpPrintLine "4 character message with padding"
+  bpPrintLine "7 character, left aligned"
+  echo -e "[${BP_C_OK}Ok     ${E_RESET}] My little error message"
+  echo -e "[${BP_C_INFO}Info   ${E_RESET}] My little error message"
+  echo -e "[${BP_C_DEBUG}Debug  ${E_RESET}] My little error message"
+  echo -e "[${BP_C_WARNING}Warning${E_RESET}] My little error message"
+  echo -e "[${BP_C_ERROR}Error  ${E_RESET}] My little error message"
+  #echo -e "[${BP_C_CRITICAL}Critical${E_RESET}] My little error message"
+  echo
+  bpPrintLine "7 character, centered"
+  echo -e "[${BP_C_OK}  Ok   ${E_RESET}] My little error message"
+  echo -e "[${BP_C_INFO} Info  ${E_RESET}] My little error message"
+  echo -e "[${BP_C_DEBUG} Debug ${E_RESET}] My little error message"
+  echo -e "[${BP_C_WARNING}Warning${E_RESET}] My little error message"
+  echo -e "[${BP_C_ERROR} Error ${E_RESET}] My little error message"
+  #echo -e "[${BP_C_CRITICAL}Critica${E_RESET}] My little error message"
+  echo
+
+  bpPrintLine "5 character, left aligned"
+  echo -e "[${BP_C_OK}Ok   ${E_RESET}] My little error message"
+  echo -e "[${BP_C_INFO}Info ${E_RESET}] My little error message"
+  echo -e "[${BP_C_DEBUG}Debug${E_RESET}] My little error message"
+  echo -e "[${BP_C_WARNING}Warn ${E_RESET}] My little error message"
+  echo -e "[${BP_C_ERROR}Error${E_RESET}] My little error message"
+  #echo -e "[${BP_C_CRITICAL}Critical${E_RESET}] My little error message"
+  echo
+  bpPrintLine "5 character, centered"
+  echo -e "[${BP_C_OK} Ok  ${E_RESET}] My little error message"
+  echo -e "[${BP_C_INFO}Info ${E_RESET}] My little error message"
+  echo -e "[${BP_C_DEBUG}Debug${E_RESET}] My little error message"
+  echo -e "[${BP_C_WARNING}Warn ${E_RESET}] My little error message"
+  echo -e "[${BP_C_ERROR}Error${E_RESET}] My little error message"
+  #echo -e "[${BP_C_CRITICAL}Criti${E_RESET}] My little error message"
+  echo
+
+  bpPrintLine "4 character, centered"
   echo -e "[${BP_C_OK} Ok ${E_RESET}] My little error message"
   echo -e "[${BP_C_INFO}Info${E_RESET}] My little error message"
   echo -e "[${BP_C_DEBUG}Dbg ${E_RESET}] My little error message"
@@ -263,7 +297,7 @@ msg() { ##D Messsages format test
   echo -e "[${BP_C_CRITICAL}Crit${E_RESET}] My little error message"
   echo
 
-  bpPrintLine "3 character message with padding"
+  bpPrintLine "3 character, left aligned"
   echo -e "[${BP_C_OK}Ok ${E_RESET}] My little error message"
   echo -e "[${BP_C_INFO}Inf${E_RESET}] My little error message"
   echo -e "[${BP_C_DEBUG}Dbg${E_RESET}] My little error message"
