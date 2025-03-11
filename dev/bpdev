@@ -271,6 +271,15 @@ msg() { ##D Messsages format test
   #echo -e "[${BP_C_CRITICAL}Critica${E_RESET}] My little error message"
   echo
 
+  bpPrintLine "6 character, centered"
+  echo -e "[${BP_C_OK}  Ok  ${E_RESET}] My little error message"
+  echo -e "[${BP_C_INFO} Info ${E_RESET}] My little error message"
+  echo -e "[${BP_C_DEBUG}Debug ${E_RESET}] My little error message"
+  echo -e "[${BP_C_WARNING} Warn ${E_RESET}] My little error message"
+  echo -e "[${BP_C_ERROR}Error ${E_RESET}] My little error message"
+  #echo -e "[${BP_C_CRITICAL}Critica${E_RESET}] My little error message"
+  echo
+
   bpPrintLine "5 character, left aligned"
   echo -e "[${BP_C_OK}Ok   ${E_RESET}] My little error message"
   echo -e "[${BP_C_INFO}Info ${E_RESET}] My little error message"
