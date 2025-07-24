@@ -1384,6 +1384,7 @@ bpBackup() { ##I Make backup of file
   local BF
 
   BF="${1}_$(date +"%Y%m%d")-$(date +"%H%M%S").bak"
+
   if cp -rf "$1" "${BF}"; then
     bpOk "Backing up file $(bpColorizeFile "$1") to $(bpColorizeFile "${BF}")."
     return 0
@@ -2541,8 +2542,7 @@ bpParseCommand() {
   bpExecHook "PRE_CMD_HOOK" "$CMD"
 
   # Check if command is conditional
-  # CL=$(grep -E "${command}().*##C" "$0")
-  CL=$(grep "${CMD}().*##C" "$0")
+  CL=$(grep -E "${CMD}\(\).*##C" "$0")
   if [[ "$CL" = *"##C"* ]]; then
 
     # Check if condition is true and then execute else printout error message

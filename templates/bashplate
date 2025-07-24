@@ -708,8 +708,8 @@ bpReadInt() { ##I Read integer from commandline
   local DEFAULT="$2"
   local MIN="$3"
   local MAX="$4"
-
   local RANGE=""
+
   if [ -n "$MIN" ] || [ -n "$MAX" ]; then
     RANGE=" ${BP_C_QUERY_DEF}[${E_RESET}$3-$4${BP_C_QUERY_DEF}]${E_RESET}"
   fi
@@ -1581,7 +1581,7 @@ bpRunCommand() {
   fi
 
   # Check if command is conditional
-  CL=$(grep -E "${command}().*##C" "$0")
+  CL=$(grep -E "${command}\(\).*##C" "$0")
   if [[ "$CL" = *"##C"* ]]; then
 
     # Check if condition is true and then execute else printout error message

@@ -1357,7 +1357,7 @@ E_UL_BR_YELLOW=$'\e[58;5;11m'  # Bright Yellow
 E_UL_BR_BLUE=$'\e[58;5;12m'    # Bright Blue
 E_UL_BR_MAGENTA=$'\e[58;5;13m' # Bright Magenta
 E_UL_BR_CYAN=$'\e[58;5;14m'    # Bright Cyan
-E_UL_BR_WHITE=$'\e[58;5;15m'   # White
+E_UL_BR_WHITE=$'\e[58;5;15m'   # Bright White
 
 # ANSI Text attributes
 E_RESET=$'\e[0m'              # Clear all attributes
@@ -1539,7 +1539,7 @@ bpPrintDescAlt() {
 # $3 alternative value text (optional)
 #
 bpPrintVar() { ##I Print variable value and description
-  VAR="$1"
+  local VAR="$1"
 
   if [ -n "$2" ]; then
     KEY=${2}
@@ -1577,6 +1577,9 @@ bpColorizeFile() { ##I Colorize string containing filename
 # todo: give username and port own color
 #
 bpColorizeUrl() { ##I Colorize string containing URL
+  local URL
+  local SCHEME
+
   URL=$(sed -r -e "s/^.*\/\///" <<<"$1")
   SCHEME=$(sed -r -e "s/:\/.*//" <<<"$1")
   # USERNAME=$(sed -r -e "s/@.*//" <<<"$URL")
@@ -1682,6 +1685,8 @@ bpRm() { ##I Remove file(s)
 # $1 file to be backed up
 #
 bpBackup() { ##I Make backup of file
+  local BF
+
   BF="${1}_$(date +"%Y%m%d")-$(date +"%H%M%S").bak"
 
   if cp -rf "$1" "${BF}"; then
@@ -1789,6 +1794,8 @@ bpImport() { ## Import file into variable
 # $3 text to insert
 #
 bpInsert() { ##I Insert text into file
+  local a
+  local b
   a=$(grep -A 10000 "$2" <"$1" | grep -v "$2")
   b=$(grep -B 10000 "$2" <"$1" | grep -v "$2")
 
@@ -1803,8 +1810,8 @@ bpInsert() { ##I Insert text into file
 # return string read from cmdline/default if enter pressed
 #
 bpReadGeneric() { ##I Read from commandline
-  QUERY="$1"
-  DEFAULT="$2"
+  local QUERY="$1"
+  local DEFAULT="$2"
 
   read -er -i "$DEFAULT" -p "${BP_C_QUERY}${1}${E_RESET} > " RESULT
   if [ "${RESULT}" == "" ]; then
@@ -1835,12 +1842,12 @@ bpReadStr() { ##I Read string from commandline
 # return integer read from cmdline/default if enter pressed
 #
 bpReadInt() { ##I Read integer from commandline
-  QUERY="$1"
-  DEFAULT="$2"
-  MIN="$3"
-  MAX="$4"
+  local QUERY="$1"
+  local DEFAULT="$2"
+  local MIN="$3"
+  local MAX="$4"
+  local RANGE=""
 
-  RANGE=""
   if [ -n "$MIN" ] || [ -n "$MAX" ]; then
     RANGE=" ${BP_C_QUERY_DEF}[${E_RESET}$3-$4${BP_C_QUERY_DEF}]${E_RESET}"
   fi
@@ -2272,6 +2279,8 @@ bpLogCritical() { ##I Log Critical message to file
 }
 
 log() { ##C BP_LOGFILE View logfile
+  local D
+
   if [ -n "$BP_LOGFILE" ]; then
     if [ -f "${BP_LOGFILE}" ]; then # Check that logfile exists
       D=$(sed -r -e "s|\[Info\]|\[\\${BP_C_INFO}Info\\${E_RESET}\]|" \
@@ -2480,12 +2489,16 @@ printCondCommand() {
 
 printNamedLine() {
   IFS=$' '
+  local LINE
+
   read -r -a LINE <<<"$1"
   bpPrintLine "${LINE[*]:1}"
 }
 
 printCondNamedLine() {
   IFS=$' '
+  local LINE
+
   read -r -a LINE <<<"$1"
   DESC=${LINE[*]:2}
   COND=${LINE[1]}
@@ -2500,6 +2513,9 @@ printCondNamedLine() {
 }
 
 help() { ##D Print help information
+  local LINES
+  local LINE
+
   echo "$BP_USAGE"
   echo -e "$BP_DESC"
   echo
@@ -2726,7 +2742,7 @@ bpRunCommand() {
   fi
 
   # Check if command is conditional
-  CL=$(grep -E "${command}().*##C" "$0")
+  CL=$(grep -E "${command}\(\).*##C" "$0")
   if [[ "$CL" = *"##C"* ]]; then
 
     # Check if condition is true and then execute else printout error message

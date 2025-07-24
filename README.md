@@ -353,6 +353,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] Add multicolumn output to ihelp
 - [ ] Add line number to debug printout to show linenr from witch call was done, use BASH_LINENO and FUNCNAME
 - [x] Replace extended ASCII table with something more sensible
+- [ ] use flock for lock files
 
 ## Sugestions
 
