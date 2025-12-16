@@ -2,6 +2,7 @@
 # shellcheck disable=2034
 # shellcheck disable=2317
 # shellcheck disable=1090
+# shellcheck disable=2329
 #---------------------------------------------------------------------
 #
 #  bpdev
@@ -1384,7 +1385,6 @@ bpBackup() { ##I Make backup of file
   local BF
 
   BF="${1}_$(date +"%Y%m%d")-$(date +"%H%M%S").bak"
-
   if cp -rf "$1" "${BF}"; then
     bpOk "Backing up file $(bpColorizeFile "$1") to $(bpColorizeFile "${BF}")."
     return 0
@@ -2317,7 +2317,7 @@ help() { ##D Print help information
   bpExecHook "PRE_HELP_HOOK"
 
   IFS=$'\n'
-  LINES=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##I' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##-//' -e 'LINE' -e 'printLine')
+  LINES=$(grep --no-filename '##' "$0" | grep --invert-match -e 'grep' -e '##I' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##-//' -e 'LINE' -e 'printLine')
   LINES="${LINES//()/}"
 
   for LINE in ${LINES}; do
@@ -2542,7 +2542,8 @@ bpParseCommand() {
   bpExecHook "PRE_CMD_HOOK" "$CMD"
 
   # Check if command is conditional
-  CL=$(grep -E "${CMD}\(\).*##C" "$0")
+  # CL=$(grep -E "${command}().*##C" "$0")
+  CL=$(grep "${CMD}().*##C" "$0")
   if [[ "$CL" = *"##C"* ]]; then
 
     # Check if condition is true and then execute else printout error message

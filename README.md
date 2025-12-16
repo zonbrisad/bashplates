@@ -313,7 +313,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] Add commenttype that is always dissabled but visible, like comment or "to be implemented" something like ##DN or ##DV
 - [ ] Add errorcodes in cleartext in a large table
 - [ ] Add basic regex cheatsheet
-- [ ] Add basic BASH pattern matching cheatsheet
+- [ ] Add basic BASH patternmatching cheatsheet
 - [ ] Add cheatsheet for loops (for, while etc)
 - [ ] Add brace expansion to cheatsheet <https://www.howtogeek.com/725657/how-to-use-brace-expansion-in-linuxs-bash-shell/>
 - [x] Add internal BASH variables to cheatsheet  <https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html>

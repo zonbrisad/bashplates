@@ -1,6 +1,7 @@
 # shellcheck disable=2034
 # shellcheck disable=2317
 # shellcheck disable=1090
+#Âshellcheck disable=2329
 #---------------------------------------------------------------------
 #
 #  __NAME__
