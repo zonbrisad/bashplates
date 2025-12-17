@@ -402,7 +402,6 @@ Other useful suffixes might be deprecated and unavailable
 - Add deprecated
 - Add not enabled
 
-
 ## Patternmatching examples
 
 Replace ´dirname´
@@ -425,11 +424,12 @@ c.txt
 
 [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.html#Programmable-Completion)
 [Bash Variables](https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html)
+[Shell parameter expansion](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html)
+[Pattern Matching](https://www.gnu.org/software/bash/manual/html_node/Pattern-Matching.html)
 [Internal Variables](https://tldp.org/LDP/abs/html/internalvariables.html)
 [Bash builtin commands](https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html)
 [BASH arithmetics](https://www.shell-tips.com/bash/math-arithmetic-calculation/#gsc.tab=0)
 [Brace expantion](https://www.howtogeek.com/725657/how-to-use-brace-expansion-in-linuxs-bash-shell/)
-[Best Practices for Writing Bash Scripts](http://kvz.io/blog/2013/11/21/bash-best-practices/)
 [What are the best practices for writing shell scripts?](https://www.quora.com/What-are-the-best-practices-for-writing-shell-scripts)
 [Command completion](https://opensource.com/article/18/3/creating-bash-completion-script)
 [Exit codes demystified](https://www.redhat.com/sysadmin/exit-codes-demystified)
@@ -438,7 +438,7 @@ c.txt
 [Icecream](https://github.com/jtplaarj/IceCream-Bash/blob/main/src/ic.sh)
 [Bash string manipulation cheatsheet](https://gist.github.com/magnetikonline/90d6fe30fc247ef110a1)
 
-# Example scripts
+## Example scripts
 
 [Simple bash shell script template](https://gist.github.com/KylePDavis/3901321)
 [bashsimplecurses](https://github.com/metal3d/bashsimplecurses)
