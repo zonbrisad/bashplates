@@ -1261,7 +1261,10 @@ bpColorizeFile() { ##I Colorize string with filename
       echo "${BP_C_PATH}${1}${E_RESET}"
       return
     fi
-    echo "${BP_C_PATH}$(dirname "$1")/${BP_C_FILENAME}$(basename "$1")${E_RESET}"
+    # echo "${BP_C_PATH}$(dirname "$1")/${BP_C_FILENAME}$(basename "$1")${E_RESET}"
+    # replaced above line with below for better performance by eliminating dirname and basename calls
+    echo "${BP_C_PATH}${1%/*}/${BP_C_FILENAME}${1##*/}${E_RESET}"
+
   fi
 }
 
@@ -1275,17 +1278,19 @@ bpColorizeUrl() { ##I Colorize string containing URL
   local URL
   local SCHEME
 
-  URL=$(sed -r -e "s/^.*\/\///" <<<"$1")
-  SCHEME=$(sed -r -e "s/:\/.*//" <<<"$1")
+  #URL=$(sed -r -e "s/^.*\/\///" <<<"$1")
+  #SCHEME=$(sed -r -e "s/:\/.*//" <<<"$1")
+  
+  URL=${1##*//}  # Remove scheme
+  SCHEME=${1%%://*} # Extract scheme
+
   # USERNAME=$(sed -r -e "s/@.*//" <<<"$URL")
   # PORT=$(sed -r -e "s/^:[0-9]*/XXX/" <<<"$URL")
   # echo -e "Username: $USERNAME"
   # echo -e "Port: $PORT"
 
-  #URL=$(echo -n "$1" | sed -r -e "s/^.*\/\///")
-  #SCHEME=$(echo -n "$1" | sed -r -e "s/:\/.*//")
-
-  echo -e -n "${BP_C_URL_SCHEME}${SCHEME}${E_RESET}://$(bpColorizeFile "${URL}")"
+  # echo -e -n "${BP_C_URL_SCHEME}${SCHEME}${E_RESET}://$(bpColorizeFile "${URL}")"
+  echo -e -n "${BP_C_URL_SCHEME}${SCHEME}${E_RESET}://${BP_C_PATH}${URL%/*}/${BP_C_FILENAME}${URL##*/}${E_RESET}"
 }
 
 #
@@ -2578,13 +2583,13 @@ bpParseCommand() {
 BP_TEMPLATE_VERSION="1.40beta2"
 
 ##V Directory where script is located
-BP_SELF_DIR="${0%/*}"
+BP_SELF_DIR=${0%/*}
 
 ##V Name of script
-BP_SELF_NAME=$(basename "$0")
+BP_SELF_NAME=${0##*/}
 
 ##V Name of script (to be repurposed)
-BP_SELF=$(basename "$0")
+BP_SELF=${0##*/}
 
 ##V Number of arguments given to script
 BP_ARGUMENTS=$#

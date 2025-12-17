@@ -402,6 +402,25 @@ Other useful suffixes might be deprecated and unavailable
 - Add deprecated
 - Add not enabled
 
+
+## Patternmatching examples
+
+Replace ´dirname´
+´´´bash
+S=/a/b/c.txt
+echo ${S%/*}
+/a/b
+´´´
+
+Replace ´basname´
+´´´bash
+S=/a/b/c.txt
+echo ${S##*/}
+c.txt
+´´´
+
+## String slicing examples
+
 ## References and tutorials
 
 [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.html#Programmable-Completion)
@@ -417,6 +436,7 @@ Other useful suffixes might be deprecated and unavailable
 [Bash exit code](https://www.cyberciti.biz/faq/linux-bash-exit-status-set-exit-statusin-bash/)
 [Remove ANSI terminal codes](https://superuser.com/questions/380772/removing-ansi-color-codes-from-text-stream)
 [Icecream](https://github.com/jtplaarj/IceCream-Bash/blob/main/src/ic.sh)
+[Bash string manipulation cheatsheet](https://gist.github.com/magnetikonline/90d6fe30fc247ef110a1)
 
 # Example scripts
 

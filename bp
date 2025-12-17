@@ -1567,8 +1567,15 @@ bpPrintVar() { ##I Print variable value and description
 # $1 string with filename to colorize
 # ret colorized string
 #
-bpColorizeFile() { ##I Colorize string containing filename
-  echo "${BP_C_PATH}$(dirname "$1")/${BP_C_FILENAME}$(basename "$1")${E_RESET}"
+bpColorizeFile() { ##I Colorize string with filename
+  if [ -n "$1" ]; then
+    if [ -d "$1" ]; then
+      echo "${BP_C_PATH}${1}${E_RESET}"
+      return
+    fi
+    echo "${BP_C_PATH}${1%/*}/${BP_C_FILENAME}${1##*/}${E_RESET}"
+
+  fi
 }
 
 #
@@ -1581,24 +1588,18 @@ bpColorizeUrl() { ##I Colorize string containing URL
   local URL
   local SCHEME
 
-  URL=$(sed -r -e "s/^.*\/\///" <<<"$1")
-  SCHEME=$(sed -r -e "s/:\/.*//" <<<"$1")
-  # USERNAME=$(sed -r -e "s/@.*//" <<<"$URL")
-  # PORT=$(sed -r -e "s/^:[0-9]*/XXX/" <<<"$URL")
-  # echo -e "Username: $USERNAME"
-  # echo -e "Port: $PORT"
+  
+  URL=${1##*//}  # Remove scheme
+  SCHEME=${1%%://*} # Extract scheme
 
-  #URL=$(echo -n "$1" | sed -r -e "s/^.*\/\///")
-  #SCHEME=$(echo -n "$1" | sed -r -e "s/:\/.*//")
-
-  echo -e -n "${BP_C_URL_SCHEME}${SCHEME}${E_RESET}://$(bpColorizeFile "${URL}")"
+  echo -e -n "${BP_C_URL_SCHEME}${SCHEME}${E_RESET}://${BP_C_PATH}${URL%/*}/${BP_C_FILENAME}${URL##*/}${E_RESET}"
 }
 
 #
 # $1 string to be filtered
 #
 bpFilterEscape() { ##I Filter escape characters from string
-  echo "$1" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
+  sed -e 's/\x1b\[[0-9;:]*[mGKHF]//g' <<<"$1"
 }
 
 ##C- IHELP File operations
@@ -2782,10 +2783,10 @@ BP_TEMPLATE_VERSION="1.40beta2"
 BP_SELF_DIR="${0%/*}"
 
 ##V Name of script
-BP_SELF_NAME=$(basename "$0")
+BP_SELF_NAME=${0##*/}
 
 ##V Name of script (to be repurposed)
-BP_SELF=$(basename "$0")
+BP_SELF=${0##*/}
 
 ##V Number of arguments given to script
 BP_ARGUMENTS=$#
