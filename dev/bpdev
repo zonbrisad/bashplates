@@ -1389,7 +1389,7 @@ bpRm() { ##I Remove file(s)
 bpBackup() { ##I Make backup of file
   local BF
 
-  BF="${1}_$(date +"%Y%m%d")-$(date +"%H%M%S").bak"
+  BF="${1}_$(date +"%Y-%m-%d_%H%M").bak"
   if cp -rf "$1" "${BF}"; then
     bpOk "Backing up file $(bpColorizeFile "$1") to $(bpColorizeFile "${BF}")."
     return 0

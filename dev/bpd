@@ -70,6 +70,11 @@ ec() { ##D Edit Bashplate config file
   bpEdit "${BP_CONFIG}" "$2"
 }
 
+er() { ##D Edit bashplate README file
+  bpEdit "${BP_SELF_DIR}/../README.md" "$2"
+}
+
+
 ##- Open project files with diff program
 
 ddb() { ##D Diff bpdev with bp
