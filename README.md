@@ -355,6 +355,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [x] Replace extended ASCII table with something more sensible
 - [ ] use flock for lock files
 - [ ] Change timestap format on bpBackup for better clarity use "-" to separate date
+- [ ] move shellcheck disable commands down from top of header file (does not look good to begin with them)
 
 ## Sugestions
 
