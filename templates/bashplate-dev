@@ -270,7 +270,7 @@ E_UL_BR_YELLOW=$'\e[58;5;11m'  # Bright Yellow
 E_UL_BR_BLUE=$'\e[58;5;12m'    # Bright Blue
 E_UL_BR_MAGENTA=$'\e[58;5;13m' # Bright Magenta
 E_UL_BR_CYAN=$'\e[58;5;14m'    # Bright Cyan
-E_UL_BR_WHITE=$'\e[58;5;15m'   # White
+E_UL_BR_WHITE=$'\e[58;5;15m'   # Bright White
 
 # ANSI Text attributes
 E_RESET=$'\e[0m'              # Clear all attributes
@@ -612,7 +612,7 @@ bpRm() { ##I Remove file(s)
 bpBackup() { ##I Make backup of file
   local BF
 
-  BF="${1}_$(date +"%Y%m%d")-$(date +"%H%M%S").bak"
+  BF="${1}_$(date +"%Y-%m-%d_%H%M").bak"
   if cp -rf "$1" "${BF}"; then
     bpOk "Backing up file $(bpColorizeFile "$1") to $(bpColorizeFile "${BF}")."
     return 0
@@ -838,7 +838,7 @@ bpReadBool() { ##I Ask yes/no question generic
       else
         bpLogInfo "User entered: No  ($QUERY)"
       fi
-      return "$2"
+      return "$DEFAULT"
       break
       ;;
     *) echo "Please answer yes or no." ;;
@@ -910,6 +910,7 @@ bpPrintChoiceList() { # Print items in selection list
 #  "c" ":" "Choice C"
 # )
 bpSelectFromList() { ##I Select from list
+  local DEFAULT="$1"
   local QUERY="$2"
   local key
   local val
@@ -1156,12 +1157,13 @@ bpLsPaths() { ##I List paths
 # $1 directory to add to path
 #
 bpAddPath() { ##I Add dir to PATH variable
+  local DIR="${1}"
   local LPATH=""
-  LPATH=$(echo "${1}" | sed -e 's/\//_/g')
+  LPATH=$(echo "${DIR}" | sed -e 's/\//_/g')
 
   bpInfo "Adding PATH \"${LPATH}\""
-  if [ ! -L "$1" ]; then
-    bpLn "${1}" "${BP_CONFIG_PATHS}/${LPATH}"
+  if [ ! -L "$DIR" ]; then
+    bpLn "${DIR}" "${BP_CONFIG_PATHS}/${LPATH}"
   fi
 }
 
@@ -1357,7 +1359,7 @@ bpAssertProgs() { ##I Assert that required programs are available on the system
 #
 # $1 command to check
 #
-bpIsCmd() { ##I Check whether a command exists in path and is executable
+bpIsCmd() { ##I Check whether $1 is an existing executable, function or alias 
   if [ -x "$(command -v "${1}")" ]; then
     return 0
   else
@@ -1365,15 +1367,18 @@ bpIsCmd() { ##I Check whether a command exists in path and is executable
   fi
 }
 
-bpIsFunction() { ##I Check if and identifier is declared as a function
+bpIsExec() { ##I Check if an executable exists in path, ignores aliases/functions
+  type -P "$1" &> /dev/null
+}
+
+bpIsFunction() { ##I Check if an identifier is declared as a function
   if [ "$(type -t "$1")" == "function" ]; then
     return 0
   fi
   return 1
 }
 
-bpHasCmd() { ##I (deprecated)
-  bpWarning "bpHasCmd is deprectad, use bpIsCmd instead!!!"
+bpHasCmd() { ##I (deprecated) use bpIsCmd instead
   bpIsCmd "${1}"
   return $?
 }
@@ -1391,8 +1396,10 @@ bpGetFunction() {
 #
 # $1 command to execute
 #
-bpRun() { ##I Execute command
-  if ! bpHasCmd "${1}"; then
+bpRun() { ##I Execute command if existing, error reported if not
+  local CMD="${1}"
+
+  if ! bpIsCmd "${CMD}"; then
     bpError "Could not execute $1, command does not exist!"
     return 1
   fi
@@ -1423,7 +1430,7 @@ icheck() { ##I Run shellcheck on script
 }
 
 irt() { ##I Remove tabs from script
-  sed -i -e 's/\t/  /g' "${BP_SELF_DIR}/${BP_SELF}"
+  sed -i -e 's/\t/ /g' "${BP_SELF_DIR}/${BP_SELF}"
 }
 
 ##C- IHELP Help & info
@@ -1500,7 +1507,7 @@ help() { ##D Print help information
   bpExecHook "PRE_HELP_HOOK"
 
   IFS=$'\n'
-  LINES=$(grep -h '##' "$0" | grep -v -e 'grep' -e '##I' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##-//' -e 'LINE' -e 'printLine')
+  LINES=$(grep --no-filename '##' "$0" | grep --invert-match -e 'grep' -e '##I' -e '##V' -e '\*##C' -e '\*##C-' -e '\"##' -e '##-//' -e 'LINE' -e 'printLine')
   LINES="${LINES//()/}"
 
   for LINE in ${LINES}; do
@@ -1527,7 +1534,7 @@ ihelp() { ##I Print internal help information
   local LINE
 
   # Singe command documentation
-  if [ "$CMD" != "" ]; then
+  if bpIsFunction "$CMD"; then
     echo
     bpPrintLine "$CMD"
     echo
@@ -1614,7 +1621,7 @@ iinfo() { ##I Show information about script
 
 iview() { ##I View example
   # Singe command documentation
-  if [ "$2" == "" ]; then
+  if [ -z "$2" ]; then
     bpExit
   fi
 
