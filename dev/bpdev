@@ -2169,7 +2169,7 @@ bpAssertProgs() { ##I Assert that required programs are available on the system
 #
 # $1 command to check
 #
-bpIsCmd() { ##I Check whether a command exists in path and is executable
+bpIsCmd() { ##I Check whether $1 is an existing executable, function or alias 
   if [ -x "$(command -v "${1}")" ]; then
     return 0
   else
@@ -2177,14 +2177,18 @@ bpIsCmd() { ##I Check whether a command exists in path and is executable
   fi
 }
 
-bpIsFunction() { ##I Check if and identifier is declared as a function
+bpIsExec() { ##I Check if an executable exists in path, ignores aliases/functions
+  type -P "$1" &> /dev/null
+}
+
+bpIsFunction() { ##I Check if an identifier is declared as a function
   if [ "$(type -t "$1")" == "function" ]; then
     return 0
   fi
   return 1
 }
 
-bpHasCmd() { ##I (deprecated)
+bpHasCmd() { ##I (deprecated) use bpIsCmd instead
   bpIsCmd "${1}"
   return $?
 }
@@ -2202,7 +2206,7 @@ bpGetFunction() {
 #
 # $1 command to execute
 #
-bpRun() { ##I Execute command
+bpRun() { ##I Execute command if existing, error reported if not
   local CMD="${1}"
 
   if ! bpIsCmd "${CMD}"; then
