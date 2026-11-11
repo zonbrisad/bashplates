@@ -356,6 +356,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 - [ ] use flock for lock files
 - [ ] Change timestap format on bpBackup for better clarity use "-" to separate date
 - [ ] move shellcheck disable commands down from top of header file (does not look good to begin with them)
+- [ ] stop using bpResult for return values. nameref is probably the most likely candidate, use return only for exit codes. 
 
 ## Sugestions
 
@@ -389,6 +390,7 @@ To monitor the logfile simply enter the "mlog" command and `tail` will be run on
 
 The documentation system is confusing and not particularly consistent. A new revised model is needed.
 
+
 ### Sugestion 1
 
 - ##F for function documentation
@@ -403,6 +405,20 @@ A conditional function will therefore be ##FC "CONDVAR", and a conditional line 
 Other useful suffixes might be deprecated and unavailable
 - Add deprecated
 - Add not enabled
+
+
+## Design principles
+
+### How to manage return values from functions
+
+- Return should only be used for exit codes(0-255)
+- Global variables like bpReturn should be avoided for return data
+- Avoid IFS hacks
+- Solution must handle spaces in values word splitting
+- Nameref seems like a good solution
+- Many functions produce text output, making nameref suitable
+
+
 
 ## Patternmatching examples
 

@@ -200,10 +200,10 @@ cs-cheat-sheet() {
   bpPrintDesc '(( N1 >= N2 ))' "Greater than or equal"
 
   bpPrintLine "String tests"
-  bpPrintDesc '[ "$STR1" == "$STR2" ]' "Strings equal"
-  bpPrintDesc '[ "$STR1" != "$STR2" ]' "Strings not equal"
-  bpPrintDesc '[ -z STRING ]' "Empty string"
-  bpPrintDesc '[ -n STRING ]' "Not empty string (string exists)"
+  bpPrintDesc '[[ "$STR1" == "$STR2" ]]' "Strings equal"
+  bpPrintDesc '[[ $STR1" != "$STR2" ]]' "Strings not equal"
+  bpPrintDesc '[[ -z STRING ]]' "Empty string"
+  bpPrintDesc '[[ -n STRING ]]' "Not empty string (string exists)"
   bpPrintDesc '[[ STRING =~ STRING ]]' "Regexp"
 
   bpPrintLine "Logical tests"
