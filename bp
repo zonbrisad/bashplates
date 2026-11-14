@@ -201,7 +201,7 @@ cs-cheat-sheet() {
 
   bpPrintLine "String tests"
   bpPrintDesc '[[ "$A" == "$B" ]]' "Strings equal"
-  bpPrintDesc '[[ $A" != "$B" ]]' "Strings not equal"
+  bpPrintDesc '[[ "$A" != "$B" ]]' "Strings not equal"
   bpPrintDesc '[[ -z "$A" ]]' "Empty string"
   bpPrintDesc '[[ -n "$A" ]]' "Not empty string (string exists)"
   bpPrintDesc '[[ "$A" =~ regex ]]' "Regular expression"
