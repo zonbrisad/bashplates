@@ -248,8 +248,8 @@ cs-cheat-sheet() {
   bpPrintDesc 'STR="ABCD"    # "ABCD"' "Assign value"
   bpPrintDesc 'STR="${STR}E" # "ABCDE"' "Append char(s)"
   bpPrintDesc '${#STR}       # 5' "Determin length"
-  bpPrintDesc 'POINTER="STR"' ""
-  bpPrintDesc '${!POINTER}   # "ABCDE"' "Pointer to parameter"
+  bpPrintDesc 'PTR="STR"' "Pointer assignment"
+  bpPrintDesc '${!PTR}       # "ABCDE"' "Referencing pointer"
   bpPrintDesc 'local STR' "Make variable access restricted to curly bracket area"
   bpPrintDesc 'export STR' "Make variable available to shell and sub-processes"
 
